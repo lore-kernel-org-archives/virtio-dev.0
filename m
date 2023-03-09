@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11586-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11587-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53083C64EC4
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 16E96C6FD19
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:36:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id A6BF526A25
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:20:27 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 52D0626A36
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:36:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1EBC39867F9
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:20:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 481BA98670C
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 19:36:43 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8CEF7986701; Thu,  9 Mar 2023 19:20:26 +0000 (UTC)
+	id 3C6509866FF; Thu,  9 Mar 2023 19:36:43 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,255 +24,197 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8F0CB986700
-	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Mar 2023 19:19:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 288B5986700
+	for <virtio-dev@lists.oasis-open.org>; Thu,  9 Mar 2023 19:36:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: jvsJxmSeMPm5BcdRrqizHg-1
+X-MC-Unique: lCbSIlBmN4CLoxjFYLUF6g-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678389542;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Sr6VWge0+8ziqeq37Tq4glh+pxVvaVUSkRWc9BV0uuE=;
-        b=nXJED3D7lgPtfGxTnej1Af7qxRSP6hN5n6VEXiaKcdlsP7DMiUPTn3B8qz5hnH8UYU
-         8ctHxdCLrFS9z7Cg0WHWwEZV0r5UZL8G18/tgm0NiSEcT1XcT/SBJTN2mU3tbFfmRQdZ
-         FXnIrNzRYix4ufCFp2M+//0r+7GHQCpjmFMdjXhxNevA7ugm1HuYNn5+A/VM1M5CGtgY
-         XW+eFAiPF2HuX7sgAklxf6L0omVkSoBWYclZucsZ3BThhVkheoaak5NPFwOzJVnCq0dC
-         lAxw3V7kgN3b8pELCKdlLx7Yc4KhX4ivBksOYnkYX310RctGSlRgHGfqsMJEXXRkplXi
-         0LMQ==
-X-Gm-Message-State: AO0yUKWY9zzlG6vphJOTUGQjOa2ouCTGEDtNkwYfYs6XaNyc3IZzapio
-	ytN3kJUdl5EFJkabFN/DhR4crk2niplGoAPncVyJIHQ1kNjCHgMLVr604B48cACbNxOVTRCvZ7l
-	D924Z+mOPFQrN5rwAdgqJU4V8NLF3
-X-Received: by 2002:a05:600c:b96:b0:3ea:e554:7811 with SMTP id fl22-20020a05600c0b9600b003eae5547811mr362388wmb.10.1678389541794;
-        Thu, 09 Mar 2023 11:19:01 -0800 (PST)
-X-Google-Smtp-Source: AK7set/9l3h9xx4/+9IvyLxjlsSaFFIPUSgC13QTQWfZ0QLyKPZVvDOXmt2HOmvgvSah5tTE4X1PzQ==
-X-Received: by 2002:a05:600c:b96:b0:3ea:e554:7811 with SMTP id fl22-20020a05600c0b9600b003eae5547811mr362290wmb.10.1678389539528;
-        Thu, 09 Mar 2023 11:18:59 -0800 (PST)
-Date: Thu, 9 Mar 2023 14:18:55 -0500
+        d=1e100.net; s=20210112; t=1678390595;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vrc0ENZWAjfF8ubyNjZ4Dw7ZPty7y87bUKpLpAod5DY=;
+        b=MXbEH4BenRn1pYUDLuDXZvXunSCRqs17TZ9UAOKRFIoFS22VeOaC0N+a8y7d9qeTjC
+         hcGWYVfHbOpY813zoLcQoXcurK0H5+l8AoiEEqfIR4cvFXN2wUerYCYeSzPW0J9M1zPY
+         vfM0X7ppgpDjvYArM5eGoIBl9QCnYRS522SLZdJQSVPg96ji1RFro9nNAR+hmvLDGZHN
+         2GN1o0of19mBlu/0cSCkGIHlgcjImoTzqdByXHuysAKcxzZ9iHnX9kr7t7HrvsmUhOSS
+         x7IlIQLoWMmuUivbOi9ip0aE6OHgXvJ0zJCNVCw9dN5ODI7NtHvLWWTOtYsp8sN+zBlR
+         A/ig==
+X-Gm-Message-State: AO0yUKWp/KHw76c1DJ6jrX2wTCdV+CLKgQjbwmLliTxl+Kc7rWztB6bi
+	w/v2s/iHzaAC70na1xwMsaN9xxUMZZ0EOTQLO2byqrjs+5FSXHaENy2EfoCCj5a2ItLopiXFGf+
+	e5YvhUFDyDuEH9Dd6s7pUietsKrBh
+X-Received: by 2002:a17:907:9702:b0:8b1:2cdb:b8dd with SMTP id jg2-20020a170907970200b008b12cdbb8ddmr26025374ejc.58.1678390594819;
+        Thu, 09 Mar 2023 11:36:34 -0800 (PST)
+X-Google-Smtp-Source: AK7set9uWWSgLb9aaqUlp1HaqQeYcaaE1BMCO4PLpFqmP52yIQzJXv2f3DqRhKjpyUf86TGFSeOD8A==
+X-Received: by 2002:a17:907:9702:b0:8b1:2cdb:b8dd with SMTP id jg2-20020a170907970200b008b12cdbb8ddmr26025186ejc.58.1678390590686;
+        Thu, 09 Mar 2023 11:36:30 -0800 (PST)
+Date: Thu, 9 Mar 2023 14:36:26 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-dev@lists.oasis-open.org,
-	virtio-comment@lists.oasis-open.org,
-	Alvaro Karsz <alvaro.karsz@solid-run.com>,
-	David Edmondson <david.edmondson@oracle.com>,
-	Jason Wang <jasowang@redhat.com>,
+To: Heng Qi <hengqi@linux.alibaba.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+	Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+	Yuri Benditovich <yuri.benditovich@daynix.com>,
+	Cornelia Huck <cohuck@redhat.com>,
 	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230309140313-mutt-send-email-mst@kernel.org>
-References: <20230309130521.109102-1-hengqi@linux.alibaba.com>
- <8734c0de-b041-a4ba-9f48-44dc4ceeb513@nvidia.com>
+Message-ID: <20230309142612-mutt-send-email-mst@kernel.org>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
+ <20230228061309-mutt-send-email-mst@kernel.org>
+ <25231225-59c8-91b0-e0dd-3dab8aa8164b@linux.alibaba.com>
+ <20230308093311-mutt-send-email-mst@kernel.org>
+ <c334a082-4b78-c7ea-e04a-6436f4965516@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <8734c0de-b041-a4ba-9f48-44dc4ceeb513@nvidia.com>
+In-Reply-To: <c334a082-4b78-c7ea-e04a-6436f4965516@linux.alibaba.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v11] virtio-net: support the virtqueue coalescing
- moderation
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH
+ v9] virtio-net: support inner header hash
 
-On Thu, Mar 09, 2023 at 01:53:37PM -0500, Parav Pandit wrote:
+On Thu, Mar 09, 2023 at 12:55:02PM +0800, Heng Qi wrote:
 > 
 > 
-> On 3/9/2023 8:05 AM, Heng Qi wrote:
-> > Currently, coalescing parameters are grouped for all transmit and receive
-> > virtqueues. This patch supports setting or getting the parameters for a
-> > specified virtqueue, and a typical application of this function is netdim[1].
+> 在 2023/3/8 下午10:39, Michael S. Tsirkin 写道:
+> > On Wed, Mar 01, 2023 at 10:56:31AM +0800, Heng Qi wrote:
+> > > 
+> > > 在 2023/2/28 下午7:16, Michael S. Tsirkin 写道:
+> > > > On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+> > > > > If the tunnel is used to encapsulate the packets, the hash calculated
+> > > > > using the outer header of the receive packets is always fixed for the
+> > > > > same flow packets, i.e. they will be steered to the same receive queue.
+> > > > Wait a second. How is this true? Does not everyone stick the
+> > > > inner header hash in the outer source port to solve this?
+> > > Yes, you are right. That's what we did before the inner header hash, but it
+> > > has a performance penalty, which I'll explain below.
+> > > 
+> > > > For example geneve spec says:
+> > > > 
+> > > >      it is necessary for entropy from encapsulated packets to be
+> > > >      exposed in the tunnel header.  The most common technique for this is
+> > > >      to use the UDP source port
+> > > The end point of the tunnel called the gateway (with DPDK on top of it).
+> > > 
+> > > 1. When there is no inner header hash, entropy can be inserted into the udp
+> > > src port of the outer header of the tunnel,
+> > > and then the tunnel packet is handed over to the host. The host needs to
+> > > take out a part of the CPUs to parse the outer headers (but not drop them)
+> > > to calculate the inner hash for the inner payloads,
+> > > and then use the inner
+> > > hash to forward them to another part of the CPUs that are responsible for
+> > > processing.
+> > I don't get this part. Leave inner hashes to the guest inside the
+> > tunnel, why is your host doing this?
+> 
+> Assuming that the same flow includes a unidirectional flow a->b, or a
+> bidirectional flow a->b and b->a,
+> such flow may be out of order when processed by the gateway(DPDK):
+> 
+> 1. In unidirectional mode, if the same flow is switched to another gateway
+> for some reason, resulting in different outer IP address,
+>     then this flow may be processed by different CPUs after reaching the
+> host if there is no inner hash. So after the host receives the
+>     flow, first use the forwarding CPUs to parse the inner hash, and then
+> use the hash to ensure that the flow is processed by the
+>     same CPU.
+> 2. In bidirectional mode, a->b flow may go to gateway 1, and b->a flow may
+> go to gateway 2. In order to ensure that the same flow is
+>     processed by the same CPU, we still need the forwarding CPUs to parse
+> the real inner hash(here, the hash key needs to be replaced with a symmetric
+> hash key).
+
+Oh intersting. What are those gateways, how come there's expectation
+that you can change their addresses and topology
+completely seamlessly without any reordering whatsoever?
+Isn't network topology change kind of guaranteed to change ordering
+sometimes?
+
+
 > > 
-> > When the traffic between virtqueues is unbalanced, for example, one virtqueue
-> > is busy and another virtqueue is idle, then it will be very useful to
-> > control coalescing parameters at the virtqueue granularity.
+> > > 1). During this process, the CPUs on the host is divided into two parts, one
+> > > part is used as a forwarding node to parse the outer header,
+> > >       and the CPU utilization is low. Another part handles packets.
+> > Some overhead is clearly involved in *sending* packets -
+> > to calculate the hash and stick it in the port number.
+> > This is, however, a separate problem and if you want to
+> > solve it then my suggestion would be to teach the *transmit*
+> > side about GRE offloads, so it can fill the source port in the card.
 > > 
-> > [1] https://docs.kernel.org/networking/net_dim.html
+> > > 2). The entropy of the source udp src port is not enough, that is, the queue
+> > > is not widely distributed.
+> > how isn't it enough? 16 bit is enough to cover all vqs ...
+> 
+> A 5-tuple brings more entropy than a single port, doesn't it?
+
+But you don't need more for RSS, the indirection table is not
+that large.
+
+> In fact, the
+> inner hash of the physical network card used by
+> the business team is indeed better than the udp port number of the outer
+> header we modify now, but they did not give me the data.
+
+Admittedly, out hash value is 32 bit.
+
+> > > 2. When there is an inner header hash, the gateway will directly help parse
+> > > the outer header, and use the inner 5 tuples to calculate the inner hash.
+> > > The tunneled packet is then handed over to the host.
+> > > 1) All the CPUs of the host are used to process data packets, and there is
+> > > no need to use some CPUs to forward and parse the outer header.
+> > You really have to parse the outer header anyway,
+> > otherwise there's no tunneling.
+> > Unless you want to teach virtio to implement tunneling
+> > in hardware, which is something I'd find it easier to
+> > get behind.
+> 
+> There is no need to parse the outer header twice, because we use shared
+> memory.
+
+shared with what? you need the outer header to identify the tunnel.
+
+> > > 2) The entropy of the original quintuple is sufficient, and the queue is
+> > > widely distributed.
+> > It's exactly the same entropy, why would it be better? In fact you
+> > are taking out the outer hash entropy making things worse.
+> 
+> I don't get the point, why the entropy of the inner 5-tuple and the outer
+> tunnel header is the same,
+> multiple streams have the same outer header.
+> 
+> Thanks.
+
+well our hash is 32 bit. source port is just 16 bit.
+so yes it's more entropy but RSS can't use more than 16 bit.
+why do you need so many? you have more than 64k CPUs to offload to?
+
+
 > > 
-> > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> [..]
-> >   device-types/net/description.tex | 86 ++++++++++++++++++++++++++++----
-> >   1 file changed, 75 insertions(+), 11 deletions(-)
+> > > Thanks.
+> > > > same goes for vxlan did not check further.
+> > > > 
+> > > > so what is the problem?  and which tunnel types actually suffer from the
+> > > > problem?
+> > > > 
+> > > 
+> > > This publicly archived list offers a means to provide input to the
+> > > OASIS Virtual I/O Device (VIRTIO) TC.
+> > > 
+> > > In order to verify user consent to the Feedback License terms and
+> > > to minimize spam in the list archive, subscription is required
+> > > before posting.
+> > > 
+> > > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> > > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> > > List help: virtio-comment-help@lists.oasis-open.org
+> > > List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> > > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> > > List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+> > > Committee: https://www.oasis-open.org/committees/virtio/
+> > > Join OASIS: https://www.oasis-open.org/join/
 > > 
-> > diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-> > index e71e33b..c896485 100644
-> > --- a/device-types/net/description.tex
-> > +++ b/device-types/net/description.tex
-> > @@ -83,6 +83,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
-> >   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
-> >       channel.
-> > +\item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
-> > +
-> >   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
-> >   \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
-> > @@ -139,6 +141,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
-> >   \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
-> >   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
-> >   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
-> > +\item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
-> >   \end{description}
-> >   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
-> > @@ -1505,13 +1508,13 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-> >   \paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-> > -If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
-> > -send control commands for dynamically changing the coalescing parameters.
-> > +If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, a driver can send
-> Above text had "the driver".
-> Better to not change it.
-
-I don't see why it matters. In most other cases we omit it.
-
-> dynamically changing got dropped, better to keep it.
-
-if you keep that you also need to mention parameters
-this is what is changing.
-
-I'm ok with the shorter wording - we have a full description
-separate the point here is requirement of VIRTIO_NET_F_NOTF_COAL.
-
-
-> > +commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
-> > +for notification coalescing.
-> 
-> 
-> [..]
-> 
-> > +\begin{itemize}
-> > +\item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, the structure virtio_net_ctrl_coal is write-only for a driver.
-> > +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure virtio_net_ctrl_coal_vq is write-only for a driver.
-> > +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} and \field{reserved} are write-only
-> > +      for a driver, and, the structure virtio_net_ctrl_coal is read-only for the driver.
-> for a driver and the structure ..
-> drop extra ",".
-> 
-> > +\end{itemize}
-> > +
-> > +The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
-> >   \begin{enumerate}
-> > -\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
-> > -\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
-> > +                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
-> > +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
-> > +                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
-> >   \end{enumerate}
-> > +The device may generate notifications more or less frequently than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
-> > +
-> > +If coalescing parameters are being set, the device applies the last coalescing parameters set for a
-> > +virtqueue, regardless of the command used to set the parameters. Use the following command sequence
-> > +with 2 pairs of virtqueues as an example:
-> > +Each of the following commands sets \field{max_usecs} and \field{max_packets} parameters for virtqueues.
-> > +\begin{itemize}
-> > +\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueue0 and virtqueue2, and, virtqueue1 and virtqueue3 retain their previous parameter values.
-> above "and" is confusing. It implies set on vq0,vq2 and vq1, vq3.
-> Same for below Command2 as well.
-> It also introduces new terms as virtqueue0 and virtqueueN.
-> It is better to avoid.
-> 
-> Rewriting it as below avoids creating new terms and avoids confusion around
-> "and".
-> 
-> Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for
-> virtqueues having vqn 0 and vqn 2. Virtqueues having vqn 1 and 3 retain
-> their previous parameters.
-> 
-> > +\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 0 sets coalescing parameters for virtqueue0, and virtqueue2 retains the values from command1.
-> Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} sets coalescing
-> parameters for the virtuqueue having vqn 0. Virtqueue having vqn 2 retains
-> the parameters from command1.
-> 
-> > +\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 0, the device responds with coalescing parameters of virtqueue0 set by command2.
-> parameters of vqn 0 set by command2.
-> 
-> > +\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 1 sets coalescing parameters for virtqueue1, and virtqueue3 retains its previous values.for vqn 1. Virtqueue having vqn 3 retains its previous parameters.
-> > +\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueue1 and virtqueue3, and overrides the values set by command4.
-> > +\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 1, the device responds with coalescing parameters of virtqueue1 set by command5.
-> > +\end{itemize}
-> > +
-> > +Upon disabling and re-enabling the transmit virtqueue, the device will set the coalescing parameters of the virtqueue
-> > +to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or to 0 if the command did not set any TX coalescing parameters.
-> > +
-> s/if the command/if the driver/
-
-please don't just tell people what to do. provide reasoning.
-
-
-> > +Upon disabling and re-enabling the receive virtqueue, the device will set the coalescing parameters of the virtqueue
-> > +to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or to 0 if the command did not set any RX coalescing parameters.
-> > +
-> s/if the command/if the driver/
-> >   \subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
-> >   The device sends a used buffer notification once the notification conditions are met and if the notifications are not suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
-> > @@ -1585,14 +1632,31 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-> >   \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-> > -If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
-> > +A driver MUST negotiate the VIRTIO_NET_F_NOTF_COAL feature before issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRIO_NET_CTRL_NOTF_COAL_RX_SET.
-> > +
-> > +A driver MUST negotiate the VIRTIO_NET_F_VQ_NOTF_COAL feature before issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRIO_NET_CTRL_NOTF_COAL_VQ_GET.
-> > +
-> > +A driver MUST ignore the values of coalescing parameters received from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if a device responds with VIRTIO_NET_ERR.
-> >   \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-> > -A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
-> > +A device MUST ignore \field{reserved}.
-> > +
-> > +A device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it was not able to change the parameters.
-> > +
-> > +A device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with VIRTIO_NET_ERR if it was not able to change the parameters.
-> > +
-> > +A device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with VIRTIO_NET_ERR if the given virtqueue is disabled.
-> > +
-> > +After disabling and re-enabling a transmit/receive virtqueue, the device MUST set coalescing parameters of the virtqueue
-> > +to those configured using the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or, if the command
-> s/if the command/if the driver/
-> > +did not configure TX/RX coalescing parameters, to 0.
-> 
-> Also the sentence structure should be:
-> set params to value A configured using method1, else to params B if not
-> configured.
-> 
-> Instead currently it is,
-> set params to value A using method1, else not configured to param B.
-
-I don't see anything wrong with the proposed structure, and the
-way you want it with if after else is IMHO weird and hard to read.
-
-
-
-> So to keep if-else pattern:
-> 
-> the device MUST set coalescing parameters of the virtqueue to those
-> configured using the
-> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command,
-> or to 0 if the driver did not configure TX/RX coalescing parameters.
-> 
-> Just like how you wrote it in the non normative places. :)
-> 
-
-maybe fix non-normative too. If  A then B is simple and clear.
-B if A is understandable but is harder to read.
-
-> I still think that disable,re-enable doesnt need to be documented twice.
-> Keeping it in the conformance section is good enough, specially when the
-> text is exact same.
-
-We have this duplication in lots of other places.
-But I agree the text should not be the same,
-make the non normative shorter and informal,
-with short sentences.
-
-E.g.
-
-	If VQ is disabled, its coalescing values reset to what is set
-	by VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
-	or if not set then to 0.
-
-
-> >   A device SHOULD NOT send used buffer notifications to the driver if the notifications are suppressed, even if the notification conditions are met.
-> > +The behavior of the device in response to set commands of the VIRTIO_NET_CTRL_NOTF_COAL class is best-effort:
-> > +the device MAY generate notifications more or less frequently than specified.
-> > +
-> >   Upon reset, a device MUST initialize all coalescing parameters to 0.
-> >   \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
-> 
-> Other than above small wordings change, it looks good to me.
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 
 ---------------------------------------------------------------------
