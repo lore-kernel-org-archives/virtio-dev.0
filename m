@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11588-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11589-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99C46C61DA4
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 20:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00557C6FD19
+	for <virtio-dev@archiver.kernel.org>; Fri, 10 Mar 2023 05:18:51 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id CAF0A42A6C
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 20:08:45 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1F77026A36
+	for <virtio-dev@archiver.kernel.org>; Fri, 10 Mar 2023 05:18:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BAD7598671F
-	for <virtio-dev@archiver.kernel.org>; Thu,  9 Mar 2023 20:08:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0FF2898671A
+	for <virtio-dev@archiver.kernel.org>; Fri, 10 Mar 2023 05:18:50 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id ADA3F986708; Thu,  9 Mar 2023 20:08:45 +0000 (UTC)
+	id F2624986288; Fri, 10 Mar 2023 05:18:49 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,169 +24,323 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 90839986704;
-	Thu,  9 Mar 2023 20:08:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DB83E986709;
+	Fri, 10 Mar 2023 05:18:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=af9pyt8HkVCxLfd07XdIwlwDlcJIwcDuqRU43EsP5CuA4uPZGUCHpCojEAvU2DubpQM/jd/DXZr2zOjnPxb3DwZ7UjozcTfrLcZYsSU16pKGHCABNOduqNsOrDfy3TEPIj3dyCjFC2hXaY/VxZIDD60brve85Cp9S1LOVc31DaHW9B5YG+Jz8AIIfDpl1BaLXLUoV7x4g0hOJ+Cp2OnIjn1n2PH6SyPX6hxpzx4RgAziMpwK2u6pJInlnqIhXsXGdg/U1AxLFWP1k8F2BnHeI+cF97zn8ztcx+1GeAhe9EdNL0hXTw4iUMMzj2vrR3hSnvx9QnYccdEgtCf69ppkQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JuwEYUSEBbm/TW4GKkxr60QrKZzfrRfv1PxdQ7znCpU=;
- b=dbdzE/li3pJElGo2h5GU/ktSYniPXVtzB1xyOQqBFUZDKSGOqvZ6SXW81uv0sVcknHTPeff0zotC0zYeEVitDf+QzOcN1XCQFArKINcPsRoljp7FyS5oWWOC3czp5a6oXIxCl9KDGM3ri3bW1YA+akBhK093scI9L1t75N2ssLIVxjzgQ0K+zWieGfd/hGAeWlS2784Xq8Ik1xJmqYod2/moyL0O1GFPRzWcHkvONfMPkdmZTsWUSjItdsKRPDuIrDvpUZGLWbfO1NNbd0OiRqIrcwEG2VkY04UH9BeJ9jYP1gXwRNLDpGUGnvAOhQme74zgGIDci4eKop5w10EVEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: Heng Qi <hengqi@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, Alvaro Karsz
-	<alvaro.karsz@solid-run.com>, David Edmondson <david.edmondson@oracle.com>,
-	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Thread-Topic: [PATCH v11] virtio-net: support the virtqueue coalescing
- moderation
-Thread-Index: AQHZUofRGNH/4WaD+0OGDLrUgHL6J67yy9mAgAAHEoCAAAIkgA==
-Date: Thu, 9 Mar 2023 20:08:37 +0000
-Message-ID:
- <PH0PR12MB54813A3D192DAE134B002E91DCB59@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VdVviyx_1678425521;
+Message-ID: <a32a3410-28cf-aa93-3633-976acb99a239@linux.alibaba.com>
+Date: Fri, 10 Mar 2023 13:18:40 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+To: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>,
+ Alvaro Karsz <alvaro.karsz@solid-run.com>,
+ David Edmondson <david.edmondson@oracle.com>,
+ Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <20230309130521.109102-1-hengqi@linux.alibaba.com>
  <8734c0de-b041-a4ba-9f48-44dc4ceeb513@nvidia.com>
- <20230309140313-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230309140313-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SN7PR12MB7978:EE_
-x-ms-office365-filtering-correlation-id: ed4696ba-d65c-4230-a1e0-08db20da117e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 7Wr8ksLcwxDUdRF56Hv7BdYZtxDGZw6Gstp5vrN3Src8t4mmNr9Vi7xMWT8aPr9/J99MRXqdsvPx/e8h8BTG5DOaiQ4m/yPlXKbTsnhYeXMZ8chjE9/2xAqNKKpe8SGZadOuUN32NHAE7uulhpzmfu+itH9OiH3LQbz4dPjIShjIo7cofQLTf7wpb0/vB29AkI3kiAR1mMrACog0JF/CGh556AJoVBUwRFNLbOeLr+AnZXh9bqhg/TKHB9u3jnI+eiLCWnwbkbJnH1GbRjcQGL3lNYz8d7vx922z+i8B6Mroqnazk9YiC288ZHRrJtKPzvh1qO5vqotYmlN9YZ285fVsCFeBLl8n75dc21AYiff2Bnavh2aDXzY1+5s+3X3an15FNbsc7K2sAgoaUlUvezZpGx6Nb6mUY2JN8diji7I6gc2tNEff8nWBnogHASbpDyJvj7VAwLCLaNtne5uMYnN1yYdmEBZoc6AxT+XHB9rPxv0PXk18stNltSWaLjrhIesHiwKZGwKN6CM0Z20EojB9LlnczLenhJagetupeiZHbg7DCnPeEkBuQsFqBeIcZbIlICA14z2A+u6jy32KFTxETAHzs6iJq091nkpw6xYl7lP8mTZp2fTErgmbShvwNplkAcz/kzXuslBZdZLgHz6aao75F+dIrAs2wsP/NpbjBKdsxF8mmA/NKRYGDvU7MSEROCkR1wVj1QInAkf0Gw==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(451199018)(33656002)(54906003)(478600001)(4326008)(5660300002)(7696005)(316002)(71200400001)(52536014)(8936002)(8676002)(2906002)(66476007)(66556008)(66446008)(76116006)(66946007)(64756008)(41300700001)(6916009)(6506007)(38070700005)(55016003)(38100700002)(9686003)(86362001)(186003)(122000001)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?E56hHHOcbFUIUpyzzhcfagy2xZxhzwq8BJ7oqTmhy5NJ0H9ex1XrktFLdcS4?=
- =?us-ascii?Q?Lg8ENxkLUWDb00Roc5HxqFQMSm/J40KiGhltYH+olbnnH+xRmY71Cw+wrJ8d?=
- =?us-ascii?Q?hzMf8hpokthJr4S/l22RfrGPKlyWGsnvTRXv9rRV/Yj+6JR+zA4cHQeyoUOM?=
- =?us-ascii?Q?dLeBI8wXWLQT3NyYLEAHujOzbS9xAjRl+EXn+t5ok7GUOtBdA7rlm64uO2Lt?=
- =?us-ascii?Q?ntXkOOHTq6xAh8YDIci7wMDf4JmLD8NsOaHgIMGXMCa6dmvudbVVzL9X1NFP?=
- =?us-ascii?Q?tMnVM/0EqbZsiGOKDuWCWNJTNtPLgBCV2wlR0qgzvihnq/GR2ormkYU2Ls/B?=
- =?us-ascii?Q?DCpQwlxcByAE7Kxj4fWtL6YB+M7e7JX/BYnYtYpR9vKPxs/8xD5Ak+Qvf+wL?=
- =?us-ascii?Q?O1SJ6po06v2tcPLgo9IXNStGRWmkpz7uJhXtUZRWURG89B8eDZn5TYqHSC3b?=
- =?us-ascii?Q?U8z6tFA/n9i9WlzAijndqE2+QdPH72nMNhwAsgY3mtDexWLjQo9EbWWfwDxg?=
- =?us-ascii?Q?lo+NXPaQLtgw0JNZl46/LXlT9vuuNFolj8j/nsfoJgWM0KGkGWHEg6NNGv+E?=
- =?us-ascii?Q?+LAOnrOrofavr9dr+8NSY6lOB1qiaL/LH44Srw5ycwyEZ37QzCHpXsMREV2l?=
- =?us-ascii?Q?RWHNgsqSn5OM+cL0MGCC0a2kChy+9ZM53Fv5k4xWKX8WPWpFQDP3vj+fPVpd?=
- =?us-ascii?Q?Ok+3DyFU6P1Yyvf7eXIa4mRN9U1qoPzm289kq8loGOSqYyIcg3sx8xlVplbq?=
- =?us-ascii?Q?LY5LOls39AghUwDdzlKZ7XAbtT0SKGLQXNnFJ9CUEVaPTHm63YndQ2PAcfyJ?=
- =?us-ascii?Q?oQVnyKs6ZE99kMEqJYnZbBwOTanRSWPXEukNmuGX+HJLR69PynAEICKsLDuy?=
- =?us-ascii?Q?PIuQLS/ZXtZp+vC2+X6j1iY8TegbS5FyQBDUbVlIYtw4Pj5cVONK+hd72EpN?=
- =?us-ascii?Q?764tZTHGbcR5+lQdVFfvWIwbSsndyPpwazym5rymyw08IxITtHth0H7FwmCv?=
- =?us-ascii?Q?mON2qwDsygW+uFYPO82zsUrFxRQVJVmjlOmY7CwRcqlyaeQR5rnkvdNJIoQ9?=
- =?us-ascii?Q?V8iXteRt3lW2kKqNnekT61FduML57DAehPN0Xfgckr7Zdx7tHCnjjvsaCbZ0?=
- =?us-ascii?Q?pH4V40Qh2MS6hdz1I2U0e9rR9Er3u2552kwjyfjq+fm5PUy5KHmTjabrVpZm?=
- =?us-ascii?Q?f0sz3ScEv9ufk1xhpiAt14w+wNqn37bKe7ynEqS9VfihNE58jhIRK6llQ7G1?=
- =?us-ascii?Q?YNhOsz14dPtSxKb8ifLyDdC2Rsy64Hm6i9arAAEaM2kKlmeenW4e/yeQSFcw?=
- =?us-ascii?Q?yFv9WbUeqHVnvtmhwZIk8L9p18MgmoDZ+cg8MJ7R1QPLuzXSfrnsvLFvpB3H?=
- =?us-ascii?Q?YcXGJcLAGhjAZS3ySSCI8j2ANf5E9onecQgldz6Z8Jxkb1QynghyZEoMb9jd?=
- =?us-ascii?Q?Mp5SiV05YC8oKa/cTorKOO2rWAOej2lQJ6ghX74u6exHoeh2O70tJuKw5/yW?=
- =?us-ascii?Q?bFMZtaB8svIEW3FHT0zkdTMXWKIGl+2pGBD08b52RjSSMTrDbA3c9TsclxLS?=
- =?us-ascii?Q?QA7RHtHxtr2/VsvFL5PwJMgZ5n0DEBMzNwJkwwTp7pJf2kurPVenMgnKEHs8?=
- =?us-ascii?Q?LrK4R6GpJpfJi37Up9AysD0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed4696ba-d65c-4230-a1e0-08db20da117e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2023 20:08:37.1059
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hBu5AHSDDCX6SxZ4HT0XcQFZywF/giZ/y17Qx4orpMZ+3f3L0BPni6f2Gp6I8l/yxmNRNEerkkqORUpLuib+wg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7978
-Subject: [virtio-dev] RE: [PATCH v11] virtio-net: support the virtqueue coalescing
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <8734c0de-b041-a4ba-9f48-44dc4ceeb513@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [PATCH v11] virtio-net: support the virtqueue coalescing
  moderation
 
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Thursday, March 9, 2023 2:19 PM
->=20
-> On Thu, Mar 09, 2023 at 01:53:37PM -0500, Parav Pandit wrote:
-> >
-> > > Network Device / Device Operation / Control Virtqueue /
-> > > Notifications Coalescing} -If the VIRTIO_NET_F_NOTF_COAL feature is
-> negotiated, the driver can -send control commands for dynamically changin=
-g
-> the coalescing parameters.
-> > > +If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, a driver can
-> > > +send
-> > Above text had "the driver".
-> > Better to not change it.
->=20
-> I don't see why it matters. In most other cases we omit it.
+在 2023/3/10 上午2:53, Parav Pandit 写道:
+>
+>
+> On 3/9/2023 8:05 AM, Heng Qi wrote:
+>> Currently, coalescing parameters are grouped for all transmit and 
+>> receive
+>> virtqueues. This patch supports setting or getting the parameters for a
+>> specified virtqueue, and a typical application of this function is 
+>> netdim[1].
+>>
+>> When the traffic between virtqueues is unbalanced, for example, one 
+>> virtqueue
+>> is busy and another virtqueue is idle, then it will be very useful to
+>> control coalescing parameters at the virtqueue granularity.
+>>
+>> [1] https://docs.kernel.org/networking/net_dim.html
+>>
+>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> [..]
+>>   device-types/net/description.tex | 86 ++++++++++++++++++++++++++++----
+>>   1 file changed, 75 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/device-types/net/description.tex 
+>> b/device-types/net/description.tex
+>> index e71e33b..c896485 100644
+>> --- a/device-types/net/description.tex
+>> +++ b/device-types/net/description.tex
+>> @@ -83,6 +83,8 @@ \subsection{Feature bits}\label{sec:Device Types / 
+>> Network Device / Feature bits
+>>   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>>       channel.
+>>   +\item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue 
+>> notification coalescing.
+>> +
+>>   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications 
+>> coalescing.
+>>     \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 
+>> packets.
+>> @@ -139,6 +141,7 @@ \subsubsection{Feature bit 
+>> requirements}\label{sec:Device Types / Network Device
+>>   \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>>   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or 
+>> VIRTIO_NET_F_HOST_TSO6.
+>>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>> +\item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>>   \end{description}
+>>     \subsubsection{Legacy Interface: Feature bits}\label{sec:Device 
+>> Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+>> @@ -1505,13 +1508,13 @@ \subsubsection{Control 
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>     \paragraph{Notifications Coalescing}\label{sec:Device Types / 
+>> Network Device / Device Operation / Control Virtqueue / Notifications 
+>> Coalescing}
+>>   -If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
+>> -send control commands for dynamically changing the coalescing 
+>> parameters.
+>> +If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, a driver can send
+> Above text had "the driver".
+> Better to not change it.
 
-The hunk that changes article from "the" to "a" doesn't belong to this patc=
-h.
+Ok.
 
-> > > +Upon disabling and re-enabling the transmit virtqueue, the device
-> > > +will set the coalescing parameters of the virtqueue to those configu=
-red
-> through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or to 0 if the
-> command did not set any TX coalescing parameters.
-> > > +
-> > s/if the command/if the driver/
->=20
-> please don't just tell people what to do. provide reasoning.
->=20
-Reason I think is:=20
-The command is not the object or the actor.=20
-The device and driver are the object or actor setting the parameters throug=
-h the command.
+>
+> dynamically changing got dropped, better to keep it.
 
-> +command, or, if the command
-> > s/if the command/if the driver/
-> > > +did not configure TX/RX coalescing parameters, to 0.
-> >
-> > Also the sentence structure should be:
-> > set params to value A configured using method1, else to params B if
-> > not configured.
-> >
-> > Instead currently it is,
-> > set params to value A using method1, else not configured to param B.
->=20
-> I don't see anything wrong with the proposed structure, and the way you w=
-ant it
-> with if after else is IMHO weird and hard to read.
->=20
->=20
->=20
-> > So to keep if-else pattern:
-> >
-> > the device MUST set coalescing parameters of the virtqueue to those
-> > configured using the
-> >
-> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_S
-> ET
-> > command, or to 0 if the driver did not configure TX/RX coalescing
+The motivation for this modification comes from Alvaro. We only need to 
+say here that
+feature A can send B, instead of repeatedly mentioning "action: 
+dynamically changing the coalescing parameters."
+and "object: for all tx/rx virtqueues or for the virtqueue with vqn" 
+every time a command is mentioned.
+
+>
+>> +commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and 
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
+>> +for notification coalescing.
+>
+>
+> [..]
+>
+>> +\begin{itemize}
+>> +\item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and 
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, the structure virtio_net_ctrl_coal 
+>> is write-only for a driver.
+>> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the 
+>> structure virtio_net_ctrl_coal_vq is write-only for a driver.
+>> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} 
+>> and \field{reserved} are write-only
+>> +      for a driver, and, the structure virtio_net_ctrl_coal is 
+>> read-only for the driver.
+> for a driver and the structure ..
+> drop extra ",".
+
+I'll remove it.
+
+>
+>> +\end{itemize}
+>> +
+>> +The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
+>>   \begin{enumerate}
+>> -\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} 
+>> and \field{max_packets} parameters for all transmit virtqueues.
+>> -\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} 
+>> and \field{max_packets} parameters for all receive virtqueues.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure 
+>> virtio_net_ctrl_coal to set the \field{max_usecs} and 
+>> \field{max_packets} parameters for all transmit virtqueues.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure 
+>> virtio_net_ctrl_coal to set the \field{max_usecs} and 
+>> \field{max_packets} parameters for all receive virtqueues.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure 
+>> virtio_net_ctrl_coal_vq to set the \field{max_usecs} and 
+>> \field{max_packets} parameters
+>> +                                        for an enabled 
+>> transmit/receive virtqueue whose number is \field{vqn}.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure 
+>> virtio_net_ctrl_coal_vq to get the \field{max_usecs} and 
+>> \field{max_packets} parameters
+>> +                                        for an enabled 
+>> transmit/receive virtqueue whose number is \field{vqn}.
+>>   \end{enumerate}
+>>   +The device may generate notifications more or less frequently than 
+>> specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
+>> +
+>> +If coalescing parameters are being set, the device applies the last 
+>> coalescing parameters set for a
+>> +virtqueue, regardless of the command used to set the parameters. Use 
+>> the following command sequence
+>> +with 2 pairs of virtqueues as an example:
+>> +Each of the following commands sets \field{max_usecs} and 
+>> \field{max_packets} parameters for virtqueues.
+>> +\begin{itemize}
+>> +\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing 
+>> parameters for virtqueue0 and virtqueue2, and, virtqueue1 and 
+>> virtqueue3 retain their previous parameter values.
+> above "and" is confusing. It implies set on vq0,vq2 and vq1, vq3.
+> Same for below Command2 as well.
+> It also introduces new terms as virtqueue0 and virtqueueN.
+> It is better to avoid.
+
+Indeed, I agree.
+
+>
+> Rewriting it as below avoids creating new terms and avoids confusion 
+> around "and".
+>
+> Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters 
+> for virtqueues having vqn 0 and vqn 2. Virtqueues having vqn 1 and 3 
+> retain their previous parameters.
+>
+
+I think it works, thanks for the example.
+
+>> +\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 
+>> 0 sets coalescing parameters for virtqueue0, and virtqueue2 retains 
+>> the values from command1.
+> Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} sets 
+> coalescing parameters for the virtuqueue having vqn 0. Virtqueue 
+> having vqn 2 retains the parameters from command1.
+>
+>> +\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 
+>> 0, the device responds with coalescing parameters of virtqueue0 set 
+>> by command2.
+> parameters of vqn 0 set by command2.
+>
+>> +\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 
+>> 1 sets coalescing parameters for virtqueue1, and virtqueue3 retains 
+>> its previous values.for vqn 1. Virtqueue having vqn 3 retains its 
+>> previous parameters.
+>> +\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing 
+>> parameters for virtqueue1 and virtqueue3, and overrides the values 
+>> set by command4.
+>> +\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 
+>> 1, the device responds with coalescing parameters of virtqueue1 set 
+>> by command5.
+>> +\end{itemize}
+>> +
+>> +Upon disabling and re-enabling the transmit virtqueue, the device 
+>> will set the coalescing parameters of the virtqueue
+>> +to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET 
+>> command, or to 0 if the command did not set any TX coalescing 
+>> parameters.
+>> +
+> s/if the command/if the driver/
+>
+>> +Upon disabling and re-enabling the receive virtqueue, the device 
+>> will set the coalescing parameters of the virtqueue
+>> +to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 
+>> command, or to 0 if the command did not set any RX coalescing 
+>> parameters.
+>> +
+> s/if the command/if the driver/
+>> \subparagraph{Operation}\label{sec:Device Types / Network Device / 
+>> Device Operation / Control Virtqueue / Notifications Coalescing / 
+>> Operation}
+>>     The device sends a used buffer notification once the notification 
+>> conditions are met and if the notifications are not suppressed as 
+>> explained in \ref{sec:Basic Facilities of a Virtio Device / 
+>> Virtqueues / Used Buffer Notification Suppression}.
+>> @@ -1585,14 +1632,31 @@ \subsubsection{Control 
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>     \drivernormative{\subparagraph}{Notifications Coalescing}{Device 
+>> Types / Network Device / Device Operation / Control Virtqueue / 
+>> Notifications Coalescing}
+>>   -If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the 
+>> driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
+>> +A driver MUST negotiate the VIRTIO_NET_F_NOTF_COAL feature before 
+>> issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and 
+>> VIRIO_NET_CTRL_NOTF_COAL_RX_SET.
+>> +
+>> +A driver MUST negotiate the VIRTIO_NET_F_VQ_NOTF_COAL feature before 
+>> issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and 
+>> VIRIO_NET_CTRL_NOTF_COAL_VQ_GET.
+>> +
+>> +A driver MUST ignore the values of coalescing parameters received 
+>> from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if a device 
+>> responds with VIRTIO_NET_ERR.
+>>     \devicenormative{\subparagraph}{Notifications Coalescing}{Device 
+>> Types / Network Device / Device Operation / Control Virtqueue / 
+>> Notifications Coalescing}
+>>   -A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands 
+>> with VIRTIO_NET_ERR if it was not able to change the parameters.
+>> +A device MUST ignore \field{reserved}.
+>> +
+>> +A device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and 
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it 
+>> was not able to change the parameters.
+>> +
+>> +A device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 
+>> command with VIRTIO_NET_ERR if it was not able to change the parameters.
+>> +
+>> +A device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and 
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with VIRTIO_NET_ERR if the 
+>> given virtqueue is disabled.
+>> +
+>> +After disabling and re-enabling a transmit/receive virtqueue, the 
+>> device MUST set coalescing parameters of the virtqueue
+>> +to those configured using the 
+>> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 
+>> command, or, if the command
+> s/if the command/if the driver/
+>> +did not configure TX/RX coalescing parameters, to 0.
+>
+> Also the sentence structure should be:
+> set params to value A configured using method1, else to params B if 
+> not configured.
+>
+> Instead currently it is,
+> set params to value A using method1, else not configured to param B.
+>
+> So to keep if-else pattern:
+>
+> the device MUST set coalescing parameters of the virtqueue to those 
+> configured using the 
+> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET/VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 
+> command, or to 0 if the driver did not configure TX/RX coalescing 
 > parameters.
-> >
-> > Just like how you wrote it in the non normative places. :)
-> >
->=20
-> maybe fix non-normative too. If  A then B is simple and clear.
-> B if A is understandable but is harder to read.
->=20
-Documenting one way is needed and without exact duplication at two places.
+
+Ok. Then I think we can move the description of the non-normative part 
+here, and keep only one description to avoid repetition. As Michael 
+suggested, we keep the 'if then' syntax for readability.
+
+>
+> Just like how you wrote it in the non normative places. :)
+>
+> I still think that disable,re-enable doesnt need to be documented twice.
+>
+> Keeping it in the conformance section is good enough, specially when 
+> the text is exact same.
+
+Sure.
+
+>
+>>     A device SHOULD NOT send used buffer notifications to the driver 
+>> if the notifications are suppressed, even if the notification 
+>> conditions are met.
+>>   +The behavior of the device in response to set commands of the 
+>> VIRTIO_NET_CTRL_NOTF_COAL class is best-effort:
+>> +the device MAY generate notifications more or less frequently than 
+>> specified.
+>> +
+>>   Upon reset, a device MUST initialize all coalescing parameters to 0.
+>>     \subsubsection{Legacy Interface: Framing 
+>> Requirements}\label{sec:Device
+>
+> Other than above small wordings change, it looks good to me.
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+
+Thank you very much! :)
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
