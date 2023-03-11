@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11603-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11604-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92178C64EC4
-	for <virtio-dev@archiver.kernel.org>; Fri, 10 Mar 2023 15:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 21C1AC61DA4
+	for <virtio-dev@archiver.kernel.org>; Sat, 11 Mar 2023 03:23:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D6A8D33576
-	for <virtio-dev@archiver.kernel.org>; Fri, 10 Mar 2023 15:06:50 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 73A133358C
+	for <virtio-dev@archiver.kernel.org>; Sat, 11 Mar 2023 03:23:19 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CC118986766
-	for <virtio-dev@archiver.kernel.org>; Fri, 10 Mar 2023 15:06:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 700C2986725
+	for <virtio-dev@archiver.kernel.org>; Sat, 11 Mar 2023 03:23:19 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C0E2B986721; Fri, 10 Mar 2023 15:06:50 +0000 (UTC)
+	id 63B3A986723; Sat, 11 Mar 2023 03:23:19 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,85 +24,199 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A708598671E;
-	Fri, 10 Mar 2023 15:06:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4CAA2986703;
+	Sat, 11 Mar 2023 03:23:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IMPcvqdr9XDm0it0iGAByyXCaobewIvbe2VvQVSOPwlvj/oNsVb+LMwJ6llHojRpOZhqzIGY9TdWUzbfQN+H+5n3tC2rJW+RYNMIyZDJgV0uCBV8Mkuc4sRAAZX/1ZjxGxL+89cz39qmWdJQF6DmsKQSCvv/wYPXkPMnRcp7tzLibLKqEpil2zUGI9pvOr6qHg9tKVaqYI345Uxr8bQ1aATM+WnrfvmXkkqzBDRmt56ia5Zh43hPLR1emyysyk7FIlOuF8EpYrUwVPYuw3ISqYDnTjEnC1u4x5ydzr8ZinSdCUaom77C+g+k0OE1nFb0h0oK4o91jwUbatTud/CGrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X8sw7Ok14W+UffM97/ZVjWpcng4M8s5TnpO0BEY/jVg=;
- b=drv7PQRG8Ff87FJ5mVfAda1b0+G6q+e/XyHBTYObgs9RajwfbzVOQgTrmMbmTlGYa4VooVm8zLS4OjTikLdvAbmbkKpZgBzhrXf/fqKjK1JcQlLXdNxJX596UZ+IaX9qbJjRrGYX7BsHnSc3//Kc33Xd9fKCdXmU/QVgLskxz3aI+xNK0eBDL8wIx+5hut222IC/fEnKaz9GG4YvnexSAzG59pjPBtwRFybue7LAg30BwHdhj3zOuQ7xM8Pc3kheUY8BH6+IqW8YBjnKSTH4kkw8abwj32t9Fs+YERNsw2KfUeUI78WmnIehHefIywMtEBv5pYrT4g5FWUBd+MCPZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-From: Parav Pandit <parav@nvidia.com>
-To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
-CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
-	<parav@nvidia.com>
-Date: Fri, 10 Mar 2023 17:06:20 +0200
-Message-ID: <20230310150620.115188-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VdZ5uxD_1678504988;
+Message-ID: <021eeb40-aab1-07b9-cfe7-9dd61a32e0b3@linux.alibaba.com>
+Date: Sat, 11 Mar 2023 11:23:08 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230218143715.841-1-hengqi@linux.alibaba.com>
+ <20230228061309-mutt-send-email-mst@kernel.org>
+ <25231225-59c8-91b0-e0dd-3dab8aa8164b@linux.alibaba.com>
+ <20230308093311-mutt-send-email-mst@kernel.org>
+ <c334a082-4b78-c7ea-e04a-6436f4965516@linux.alibaba.com>
+ <20230309142612-mutt-send-email-mst@kernel.org>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <20230309142612-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT014:EE_|IA0PR12MB7674:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5df6116d-a972-4a04-dbcd-08db21790eac
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	qKfmaOAb2GTSkeH10pHnQhAUNZB8PyUn2SySP8TeoFL93jJhIrWFbO2Omfp9ylo16jSs+OnLIz9Y75cIROISBpAn/tWPuthnvGYl6GEpoMXe9rXcp5p+SdzWj8fEkSxXke1ll77CywjfK+DgROwsDF5NZEobP0FyrW7wzz56qJcmIeM54E0Lt15tXlR6zn3HL1Y/rRjV1Jjh3ZtmcqFHtdT+6LQOd1KVuuOt17Is/+IP4QAhJTbfrr3rHfq2wLJ+O9apU16/q1UXv7xM8DwPWJyFe4ylqnmCULEoYmBDDPLXLp4kpSVoN6iT0mmNvfKPhjNI0r2wlx+/tajSZJgMdOyoaYNNCtADy0lw8BMC2Z2fKiFcJGKpUf05/ChdxHkGHN2ovIY8x8droy2MYhs91mfPgNyl79NOI0zJl007GLVql26Jx/CvPJbVgDoKAtdUzNsiK10x+xsut8KnRIVfVLgBSDZv39eydhAR8SWu2I+0AA8I9hsRUxxlPThXw2ZQ5RBF6EUX+XFPYpSCqpSEvGz9/VOrRXm2B3FkQyH578AQkmP6HJnLMCbiaeoA9fSBJgC5Y6pg/zwWff7v3Xf2F9uhEL7r9v3MvHQOxFy6H+XpzU8C1PyZpuHCrWazHvMZtWtzwE7nHXeWjhwLqwmVRWKaIyZpkn3vvsApblrXP2V4rz+dD5SzPb8jjIfZKpf1oLCzrkqO41VDCKGC3iEJf66fD43dOQF8vzmfvB6kvG2E4nu2a/ynlacJ6glQmJBW
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(396003)(136003)(376002)(451199018)(40470700004)(46966006)(36840700001)(36860700001)(82740400003)(186003)(36756003)(478600001)(54906003)(356005)(110136005)(316002)(86362001)(41300700001)(82310400005)(83380400001)(26005)(426003)(7636003)(6666004)(2616005)(40460700003)(16526019)(336012)(107886003)(2906002)(1076003)(4744005)(70206006)(5660300002)(4326008)(8936002)(8676002)(70586007)(47076005)(40480700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 15:06:42.2463
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5df6116d-a972-4a04-dbcd-08db21790eac
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT014.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7674
-Subject: [virtio-dev] [PATCH] transport-pci: Remove duplicate word structure
+Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH v9]
+ virtio-net: support inner header hash
 
-Remove duplicate word structure.
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- transport-pci.tex | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/transport-pci.tex b/transport-pci.tex
-index 01fb652..b07a822 100644
---- a/transport-pci.tex
-+++ b/transport-pci.tex
-@@ -813,7 +813,7 @@ \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio
- \end{tabular}
- 
- Note: When MSI-X capability is enabled, device-specific configuration starts at
--byte offset 24 in virtio common configuration structure structure. When MSI-X capability is not
-+byte offset 24 in virtio common configuration structure. When MSI-X capability is not
- enabled, device-specific configuration starts at byte offset 20 in virtio
- header.  ie. once you enable MSI-X on the device, the other fields move.
- If you turn it off again, they move back!
--- 
-2.26.2
+
+在 2023/3/10 上午3:36, Michael S. Tsirkin 写道:
+> On Thu, Mar 09, 2023 at 12:55:02PM +0800, Heng Qi wrote:
+>>
+>> 在 2023/3/8 下午10:39, Michael S. Tsirkin 写道:
+>>> On Wed, Mar 01, 2023 at 10:56:31AM +0800, Heng Qi wrote:
+>>>> 在 2023/2/28 下午7:16, Michael S. Tsirkin 写道:
+>>>>> On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+>>>>>> If the tunnel is used to encapsulate the packets, the hash calculated
+>>>>>> using the outer header of the receive packets is always fixed for the
+>>>>>> same flow packets, i.e. they will be steered to the same receive queue.
+>>>>> Wait a second. How is this true? Does not everyone stick the
+>>>>> inner header hash in the outer source port to solve this?
+>>>> Yes, you are right. That's what we did before the inner header hash, but it
+>>>> has a performance penalty, which I'll explain below.
+>>>>
+>>>>> For example geneve spec says:
+>>>>>
+>>>>>       it is necessary for entropy from encapsulated packets to be
+>>>>>       exposed in the tunnel header.  The most common technique for this is
+>>>>>       to use the UDP source port
+>>>> The end point of the tunnel called the gateway (with DPDK on top of it).
+>>>>
+>>>> 1. When there is no inner header hash, entropy can be inserted into the udp
+>>>> src port of the outer header of the tunnel,
+>>>> and then the tunnel packet is handed over to the host. The host needs to
+>>>> take out a part of the CPUs to parse the outer headers (but not drop them)
+>>>> to calculate the inner hash for the inner payloads,
+>>>> and then use the inner
+>>>> hash to forward them to another part of the CPUs that are responsible for
+>>>> processing.
+>>> I don't get this part. Leave inner hashes to the guest inside the
+>>> tunnel, why is your host doing this?
+
+
+Let's simplify some details and take a fresh look at two different 
+scenarios: VXLAN and GENEVE (Scenario1) and GRE (Scenario2).
+
+1. In Scenario1, we can improve the processing performance of the same 
+flow by implementing inner symmetric hashing.
+
+This is because even though client1 and client2 communicate 
+bidirectionally through the same flow, their data may pass
+
+through and be encapsulated by different tunnels, resulting in the same 
+flow being hashed to different queues and processed by different CPUs.
+
+To ensure consistency and optimized processing, we need to parse out the 
+inner header and compute a symmetric hash on it using a special rss key.
+
+Sorry for not mentioning the inner symmetric hash before, in order to 
+prevent the introduction of more concepts, but it is indeed a kind of 
+inner hash.
+
+2. In Scenario2 with GRE, the lack of outer transport headers means that 
+flows between multiple communication pairs encapsulated by the same tunnel
+
+will all be hashed to the same queue. To address this, we need to 
+implement inner hashing to improve the performance of RSS. By parsing 
+and calculating
+
+the inner hash, different flows can be hashed to different queues.
+
+Thanks.
+
+
+
+>> Assuming that the same flow includes a unidirectional flow a->b, or a
+>> bidirectional flow a->b and b->a,
+>> such flow may be out of order when processed by the gateway(DPDK):
+>>
+>> 1. In unidirectional mode, if the same flow is switched to another gateway
+>> for some reason, resulting in different outer IP address,
+>>      then this flow may be processed by different CPUs after reaching the
+>> host if there is no inner hash. So after the host receives the
+>>      flow, first use the forwarding CPUs to parse the inner hash, and then
+>> use the hash to ensure that the flow is processed by the
+>>      same CPU.
+>> 2. In bidirectional mode, a->b flow may go to gateway 1, and b->a flow may
+>> go to gateway 2. In order to ensure that the same flow is
+>>      processed by the same CPU, we still need the forwarding CPUs to parse
+>> the real inner hash(here, the hash key needs to be replaced with a symmetric
+>> hash key).
+> Oh intersting. What are those gateways, how come there's expectation
+> that you can change their addresses and topology
+> completely seamlessly without any reordering whatsoever?
+> Isn't network topology change kind of guaranteed to change ordering
+> sometimes?
+>
+>
+>>>> 1). During this process, the CPUs on the host is divided into two parts, one
+>>>> part is used as a forwarding node to parse the outer header,
+>>>>        and the CPU utilization is low. Another part handles packets.
+>>> Some overhead is clearly involved in *sending* packets -
+>>> to calculate the hash and stick it in the port number.
+>>> This is, however, a separate problem and if you want to
+>>> solve it then my suggestion would be to teach the *transmit*
+>>> side about GRE offloads, so it can fill the source port in the card.
+>>>
+>>>> 2). The entropy of the source udp src port is not enough, that is, the queue
+>>>> is not widely distributed.
+>>> how isn't it enough? 16 bit is enough to cover all vqs ...
+>> A 5-tuple brings more entropy than a single port, doesn't it?
+> But you don't need more for RSS, the indirection table is not
+> that large.
+>
+>> In fact, the
+>> inner hash of the physical network card used by
+>> the business team is indeed better than the udp port number of the outer
+>> header we modify now, but they did not give me the data.
+> Admittedly, out hash value is 32 bit.
+>
+>>>> 2. When there is an inner header hash, the gateway will directly help parse
+>>>> the outer header, and use the inner 5 tuples to calculate the inner hash.
+>>>> The tunneled packet is then handed over to the host.
+>>>> 1) All the CPUs of the host are used to process data packets, and there is
+>>>> no need to use some CPUs to forward and parse the outer header.
+>>> You really have to parse the outer header anyway,
+>>> otherwise there's no tunneling.
+>>> Unless you want to teach virtio to implement tunneling
+>>> in hardware, which is something I'd find it easier to
+>>> get behind.
+>> There is no need to parse the outer header twice, because we use shared
+>> memory.
+> shared with what? you need the outer header to identify the tunnel.
+>
+>>>> 2) The entropy of the original quintuple is sufficient, and the queue is
+>>>> widely distributed.
+>>> It's exactly the same entropy, why would it be better? In fact you
+>>> are taking out the outer hash entropy making things worse.
+>> I don't get the point, why the entropy of the inner 5-tuple and the outer
+>> tunnel header is the same,
+>> multiple streams have the same outer header.
+>>
+>> Thanks.
+> well our hash is 32 bit. source port is just 16 bit.
+> so yes it's more entropy but RSS can't use more than 16 bit.
+> why do you need so many? you have more than 64k CPUs to offload to?
+>
+>
+>>>> Thanks.
+>>>>> same goes for vxlan did not check further.
+>>>>>
+>>>>> so what is the problem?  and which tunnel types actually suffer from the
+>>>>> problem?
+>>>>>
+>>>> This publicly archived list offers a means to provide input to the
+>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>
+>>>> In order to verify user consent to the Feedback License terms and
+>>>> to minimize spam in the list archive, subscription is required
+>>>> before posting.
+>>>>
+>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>> Join OASIS: https://www.oasis-open.org/join/
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 
 ---------------------------------------------------------------------
