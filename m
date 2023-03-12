@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11607-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11608-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BBD95C6FD1F
-	for <virtio-dev@archiver.kernel.org>; Sun, 12 Mar 2023 12:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 392E4C74A4B
+	for <virtio-dev@archiver.kernel.org>; Sun, 12 Mar 2023 13:22:21 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id F02B726A26
-	for <virtio-dev@archiver.kernel.org>; Sun, 12 Mar 2023 12:46:40 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 54EC123D45
+	for <virtio-dev@archiver.kernel.org>; Sun, 12 Mar 2023 13:22:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E3BDB9861F9
-	for <virtio-dev@archiver.kernel.org>; Sun, 12 Mar 2023 12:46:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4B4C19861F9
+	for <virtio-dev@archiver.kernel.org>; Sun, 12 Mar 2023 13:22:20 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D765B9860BE; Sun, 12 Mar 2023 12:46:40 +0000 (UTC)
+	id 412DB9860AD; Sun, 12 Mar 2023 13:22:20 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,245 +24,123 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0E2B9860AD;
-	Sun, 12 Mar 2023 12:46:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 29E729860BE;
+	Sun, 12 Mar 2023 13:22:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Vdd4Ugi_1678625188;
-From: Heng Qi <hengqi@linux.alibaba.com>
-To: virtio-dev@lists.oasis-open.org,
-	virtio-comment@lists.oasis-open.org
-Cc: "Michael S . Tsirkin" <mst@redhat.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Alvaro Karsz <alvaro.karsz@solid-run.com>,
-	David Edmondson <david.edmondson@oracle.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Date: Sun, 12 Mar 2023 20:46:28 +0800
-Message-Id: <20230312124628.8527-1-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SH8i4fAK0FZjalMIz6Ye6YyddawnjuHt/UzY6L3rhs3kU0tJ0YfLD+4dKljbrwYSVuy1k/1jWtmOL2bmE1i4iMkkmeX/ePRxV/7z0iY+vIYino/Zj5v5gn8CYIhDsvDeRP8SSQEqHYv1L09MIH18leW8C9bSwPF979P1qhFE170jUS+uBVKYc3aIwzyFfsPQQXsHTcYyac+qaJui2FHtOFzsnxVlrhqacCBOeQGVKuq4PyRv4aFYQK5b3SNdFRu8IQMY6Kvzg+Pw64016BEzJ87rxgQCmuw7JBrE3Px/wXeX0LUTvnPcp6A/okiu30skqu41BT8xC/BRfYY5v6DkUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yruz7/whWvEtiFClWbpQKxvTZHGEWZdr/sj5jMnEARE=;
+ b=Hr17VcEeJRhEE96exOT9NAYupAv98DY+3/nfdVWKjEecsKxiMZLVp65iqkDMMnKkcYBNU/JkBTTnNDhuIwrNqq7HPJeUddqE4kksRP2FpdST36DnqDWcXJFUulYVwOIqlp6oj6VCs1suyVMyfgMvB2f8Dk57etkYljFVFItQzGxcmmByf1HKUQSPY7n8dH2Z36UmjHeb7Jyc2yibySXKl31njZMTOLj6myKBBnxMXMFdgkAR7fOO9eS5irOB1Iugyt+wo6/8cbV0gr9x6CY+XlgU+Wbcyj2jQXzQ8QqchYn5p05s5GrtV/7repfa4mI0mzMkChDSi1C2CxbjbH9y8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: Stefan Hajnoczi <stefanha@redhat.com>
+CC: "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+Thread-Topic: [virtio-comment] [PATCH] virtio-blk: Define dev cfg layout
+ before its fields
+Thread-Index: AQHZR44SBM2m5bVfBEeSkO5d+VQF6a7dAKGAgBo7NtA=
+Date: Sun, 12 Mar 2023 13:22:02 +0000
+Message-ID:
+ <PH0PR12MB54812629987A9530712C0649DCB89@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230223135205.175949-1-parav@nvidia.com>
+ <Y/fQl7ImbYGHEtVY@fedora>
+In-Reply-To: <Y/fQl7ImbYGHEtVY@fedora>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BL1PR12MB5174:EE_
+x-ms-office365-filtering-correlation-id: df40bbc4-c72e-438f-0308-08db22fcc4a6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ j10D2NJlWaiFnWu9TFNo3zrX/VRQI0+DzVDUdF0k3rGptcwlT7KwxuxVhdHINWUR3RAI/EMWM7Lv7xdAvtcwcHm+N0Lg0sEqvtJWYRDeFxUvl4givd+l8xhJt6UyQdLFieP/UfaCgF0WCUbklvXi4T7VXZYEmrHTa0tXPdJJINR9MtthfWY59dW1KQiu6yjOEc5tO9//nkecBpD0mImTVvQBWa6Zpd9ZIse6gSMvEu5HTASoB/xTbDWS9tUEHvxlZ2G4+qEWxMqIvjv6F1Qkt0Yms4AtyFZU2kTJHZrTTywlOJ+FMtS/3xwT/eHrJrh3rJPdGto6kzlVoR8Z420VFz/amPHq4PrHCYPSjUp3uY8eCHkqBfi/EDX+gkglU0JXONIlDLf/HS8YykKLbDPvF3TR0HG28wcjWyQC/TNZQxPLcpSp+77elHm6VX1DGa34EI8CENxO/20la0kZLayVS/QvpIb2miPPdvQEVKEO5Ns3DbKaTUU/zMEuuEImLiEoa7WgfYZj61EtHAy4reGAFpOrjvBuE9xYvKAtCB76kkHcA+8VAeIp3ycge0C1cKKfwuDZ5YwAc8/hNKVkPiuTgAfIxvNdl06XSug8l0vaVS9wvM/rKvvluFM5DJ3yDgbo10lD0LDOnuUsmWawej3vhvBRxz92leV1Tt4qKqtddYwiGVedt+6Yd5Vc/Np3JekalxUv9B//JGuMTKbmjwy6PQ==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(136003)(376002)(346002)(366004)(451199018)(107886003)(7696005)(316002)(38100700002)(122000001)(478600001)(54906003)(52536014)(33656002)(8936002)(55016003)(186003)(71200400001)(6506007)(9686003)(4744005)(5660300002)(4326008)(6916009)(8676002)(66446008)(66476007)(66556008)(66946007)(76116006)(64756008)(41300700001)(86362001)(38070700005)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?VbRsgVIIWbSx05Zhhr4C5Cfx40CK728rVOWxjcU7SOXwde7oHIM7ryo1wgoy?=
+ =?us-ascii?Q?MtbHyysXO4kpa/o5rgxYRCWNRqFaqQQjbL9TME4w15+vSN5DG9pFU6Yiap3f?=
+ =?us-ascii?Q?OdMjoZYJLWkPlPKmy1no+R/hft9+V3TaQq5ovXW41QBvnITBJBMp36Rtl4cw?=
+ =?us-ascii?Q?A3EREZkuHmNDtF52TFF9vFIvhPHKkN5Zl4FSyEdNKpOn6DlweL1K2WgiM3y3?=
+ =?us-ascii?Q?Txb3+moE+jzm+jV9uuL+K7BVWWEAQv9t51cNLAavLvsX0METkrl+M9eqSeHM?=
+ =?us-ascii?Q?C0agmdrzr1coQ0at9E5Tap75Z0CZlN/5zkxk+EXL/qTYehAFPmjJq4EHaBoP?=
+ =?us-ascii?Q?CNBtmRx7UnGPfUFFDKeCOzduA7HNQGbC5nEjx5N4rMT8hUcqKo/edvc6JrND?=
+ =?us-ascii?Q?jEfdG17pRblw8XVd/dwP0OrTZpU/NxmrQ1ViHpKYGkLhQjPrnpzYWxdxHAgA?=
+ =?us-ascii?Q?TO3/jrXsGpcUsX1iGl8LKGRvnb8zgH0I6MvVJtTMgNL7LvOYSVg9MplfEVqa?=
+ =?us-ascii?Q?7qfMA54Mi+0zkZD8V1mhGhErB7o42TrJkScL/Dw1M2GoQJ3OUc7gStVKQ5QK?=
+ =?us-ascii?Q?2Il3gp0UI5ur0gKTKCtVDEBB2+J9chl0iXl6V/4sc9yk19KM5aUlw3IBgI94?=
+ =?us-ascii?Q?3ftOw93EaG+drjIT1+ZvMStEyD3xSPkptLMHWA37k7gj2/60apM6DznPoBVp?=
+ =?us-ascii?Q?hvkwgvGdw8FKHJIxj7onTfmPQB3KyNa8+BqelUmqd51vxKmAPur1w4o6fR3Q?=
+ =?us-ascii?Q?t6ZiN5AiuAMdS5p39AmV3xrJiFZBR5mF79dzUT74joJK4EaNyPBE94kfsA4G?=
+ =?us-ascii?Q?pjINP62kPjhTIyN63D1k21HgKp9YhiFtPoO7Upmp00MOjpmndhWyRViWSnZQ?=
+ =?us-ascii?Q?IJt70zN6agKxUcPhyVXFNRfcYCT0PmAMsuiqGZrAHBDUauldGmwIOkB3fZze?=
+ =?us-ascii?Q?tDiILq4K0mok8W6g0vt/69kldLi3mBKi/aIYLz8q5LjZJdzYZwfaH6pdZ9c0?=
+ =?us-ascii?Q?+KZ4hD7lA5QOMC+uxCeS0BTvF9N4fZoQTUK/JG5XDxyLh7f58ZoJz7F/UqHr?=
+ =?us-ascii?Q?VH4Pg9oum3c4qBoXXkaQoCd9bByalEGi/gmh4Kg2+K+KPQkZByQaGAlptiGy?=
+ =?us-ascii?Q?BSM1dI3CNoUyYF2gopxU5rCtfqvv/EEq6+r4KJYEHBkgoYjcSdkywb+7yuIm?=
+ =?us-ascii?Q?XkSnJZrTuTKnWoM/R9ULpoQI1IDsXN+w0b4lvVccPWm8hOiLRiwyzZfnRvoz?=
+ =?us-ascii?Q?n6/ijBivGryjsrNRWa4MJdZznebIvo4g+TTJ3XuNoEl4VRfvqERPrWV8gqEu?=
+ =?us-ascii?Q?eyIwgih9J2WbgjQFGdYBMXhGLl9QRI0e3xGKdt457KDqqkhPcvb/YAm7IszK?=
+ =?us-ascii?Q?ivDlzVpk4kCDshAP2gkiiJhcNVsPI7BaJglB8XRO2OslBZ6gXJllHjh0pPg/?=
+ =?us-ascii?Q?sDdICecfBTr8WuR/sTnEdhi5akM8nGU/dCzY7koCaJwkic8xYiFB1vWAzkvJ?=
+ =?us-ascii?Q?nJdjyqICUzbtRYw06LbSo1968R5WDI87I04T5ywFE6+ZkTB6DtxIbCaaWWbU?=
+ =?us-ascii?Q?oGwVvhmlvtjHXM2HvU5wiP/+hi8UcF+uU8nhfFMz7YkS73GNzyRnGGvpb3V9?=
+ =?us-ascii?Q?NqMR2WVjPnMpwb3dx1sclj8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v12] virtio-net: support the virtqueue coalescing moderation
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: df40bbc4-c72e-438f-0308-08db22fcc4a6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2023 13:22:02.8748
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gaMG4EjcDSOrpbHboeKXCVlU3upmtiU5pVpQRDxOqzomQt+rj9MNzTNedg0xTIkvYhQj/iOJmT5XZ+f7FvBcjQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5174
+Subject: [virtio-dev] RE: [virtio-comment] [PATCH] virtio-blk: Define dev cfg layout before
+ its fields
 
-Currently, coalescing parameters are grouped for all transmit and receive
-virtqueues. This patch supports setting or getting the parameters for a
-specified virtqueue, and a typical application of this function is netdim[1].
 
-When the traffic between virtqueues is unbalanced, for example, one virtqueue
-is busy and another virtqueue is idle, then it will be very useful to
-control coalescing parameters at the virtqueue granularity.
 
-[1] https://docs.kernel.org/networking/net_dim.html
+> From: Stefan Hajnoczi <stefanha@redhat.com>
+> Sent: Thursday, February 23, 2023 3:46 PM
+>=20
+> On Thu, Feb 23, 2023 at 03:52:05PM +0200, Parav Pandit wrote:
+> > Define device configuration layout structure before describing its
+> > individual fields.
+> >
+> > This is an editorial change.
+> >
+> > Suggested-by: Cornelia Huck <cohuck@redhat.com>
+> > Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> > Signed-off-by: Parav Pandit <parav@nvidia.com>
+> > ---
+> >  device-types/blk/description.tex | 95
 
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
----
-v11->v12:
-       1. Use virtqueue having vqn N instead of virtqueueN. @Parav Pandit
-       2. Some minor modifications. @Parav Pandit, @Michael S . Tsirkin
-       3. Add Parav's Reviewed-by tag (Thanks!).
+[..]
 
-v10->v11:
-       1. Describe read and write attributes for the structure. @Parav Pandit
-       2. Some minor modifications. @Parav Pandit
+> Yes, please!
+>=20
+> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-v9->v10:
-       1. Remove the "global values". @Parav Pandit
-       2. Avoid multiple interpretations of command behavior. @Alvaro Karsz
+Hi Cornelia,
 
-v8->v9:
-       1. Declare the commands that can be sent for each feature. @Alvaro Karsz
-       2. Add information about "global values" in the command's explanation. @Alvaro Karsz
-
-v7->v8:
-       1. Use "best-effort" in Alvaro's patch instead of "the device may set the parameter to a value close to 2". @Michael S . Tsirkin, @David Edmondson
-
-v6->v7:
-       1. Clarify the relationship of VIRTIO_NET_CTRL_NOTF_COAL_TX/RX_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET. @Alvaro Karsz, @Michael S. Tsirkin
-       2. Remove the formula for vqn range. @Parav Pandit
-       3. Some expressions are clearer. @Parav Pandit, @Michael S. Tsirkin
-
-v5->v6:
-       1. Explain that the device may set a different value than the one passed in by the driver. @David Edmondson
-
-v4->v5:
-       1. Add the correspondence between virtio_net_ctrl_coal and virtio_net_ctrl_coal_vq and control commands. @Michael S. Tsirkin
-       2. Add read and write attributes for each field. @Michael S. Tsirkin
-       3. A clearer description of how to set coalescing parameters for vq reset. @Michael S. Tsirkin
-       4. Fix some syntax errors. @Michael S. Tsirkin, @David Edmondson
-
-v3->v4:
-       1. Include virtio_net_ctrl_coal in the virtio_net_ctrl_coal_vq structure. @Alvaro Karsz
-       2. Add consideration of vq reset. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-       3. Avoid too many examples by giving a comprehensive example. @Michael S. Tsirkin
-       4. Fix typos and streamline clarifications. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-
-v2->v3:
-       1. Add the netdim link. @Parav Pandit
-       2. VIRTIO_NET_F_VQ_NOTF_COAL no longer depends on VIRTIO_NET_F_NOTF_COAL. @Michael S. Tsirkin, @Alvaro Karsz
-       3. _VQ_GET is explained more. @Michael S. Tsirkin
-       4. Add more examples to avoid misunderstandings. @Michael S. Tsirkin
-       5. Clarify some statements. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-       6. Adjust the virtio_net_ctrl_coal_vq structure. @Michael S. Tsirkin
-       7. Fix some typos. @Michael S. Tsirkin
-
-v1->v2:
-       1. Rename VIRTIO_NET_F_PERQUEUE_NOTF_COAL to VIRTIO_NET_F_VQ_NOTF_COAL. @Michael S. Tsirkin
-       2. Use the \field{vqn} instead of the qid. @Michael S. Tsirkin
-       3. Unify tx and rx control structures into one structure virtio_net_ctrl_coal_vq. @Michael S. Tsirkin
-       4. Add a new control command VIRTIO_NET_CTRL_NOTF_COAL_VQ. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-       5. The special value 0xFFF is removed because VIRTIO_NET_CTRL_NOTF_COAL can be used. @Alvaro Karsz
-       6. Clarify some special scenarios. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
-
- device-types/net/description.tex | 80 ++++++++++++++++++++++++++++----
- 1 file changed, 70 insertions(+), 10 deletions(-)
-
-diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-index e71e33b..c6ab806 100644
---- a/device-types/net/description.tex
-+++ b/device-types/net/description.tex
-@@ -83,6 +83,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
- \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
-     channel.
- 
-+\item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
-+
- \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
- 
- \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
-@@ -139,6 +141,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
- \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
- \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
- \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
-+\item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
- \end{description}
- 
- \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
-@@ -1506,12 +1509,12 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- \paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
- If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
--send control commands for dynamically changing the coalescing parameters.
-+send commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
-+for notification coalescing.
- 
--\begin{note}
--The behavior of the device in response to these commands is best-effort:
--the device may generate notifications more or less frequently than specified.
--\end{note}
-+If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, the driver can
-+send commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET
-+for virtqueue notification coalescing.
- 
- \begin{lstlisting}
- struct virtio_net_ctrl_coal {
-@@ -1519,25 +1522,63 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
-     le32 max_usecs;
- };
- 
-+struct virtio_net_ctrl_coal_vq {
-+    le16 vqn;
-+    le16 reserved;
-+    struct virtio_net_ctrl_coal coal;
-+};
-+
- #define VIRTIO_NET_CTRL_NOTF_COAL 6
-  #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
-  #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
-+ #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 2
-+ #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET 3
- \end{lstlisting}
- 
- Coalescing parameters:
- \begin{itemize}
-+\item \field{vqn}: The virtqueue number of an enabled transmit or receive virtqueue.
- \item \field{max_usecs} for RX: Maximum number of microseconds to delay a RX notification.
- \item \field{max_usecs} for TX: Maximum number of microseconds to delay a TX notification.
- \item \field{max_packets} for RX: Maximum number of packets to receive before a RX notification.
- \item \field{max_packets} for TX: Maximum number of packets to send before a TX notification.
- \end{itemize}
- 
--The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
-+\field{reserved} is reserved and it is ignored by a device.
-+
-+Read/Write attributes for coalescing parameters:
-+\begin{itemize}
-+\item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, the structure virtio_net_ctrl_coal is write-only for a driver.
-+\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure virtio_net_ctrl_coal_vq is write-only for a driver.
-+\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} and \field{reserved} are write-only
-+      for a driver, and the structure virtio_net_ctrl_coal is read-only for the driver.
-+\end{itemize}
-+
-+The class VIRTIO_NET_CTRL_NOTF_COAL has 4 commands:
- \begin{enumerate}
--\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
--\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
-+                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
-+\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
-+                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
- \end{enumerate}
- 
-+The device may generate notifications more or less frequently than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
-+
-+If coalescing parameters are being set, the device applies the last coalescing parameters set for a
-+virtqueue, regardless of the command used to set the parameters. Use the following command sequence
-+with 2 pairs of virtqueues as an example:
-+Each of the following commands sets \field{max_usecs} and \field{max_packets} parameters for virtqueues.
-+\begin{itemize}
-+\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueues having vqn 0 and vqn 2. Virtqueues having vqn 1 and vqn 3 retain their previous parameters.
-+\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 0 sets coalescing parameters for virtqueue having vqn 0. Virtqueue having vqn 2 retains the parameters from command1.
-+\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 0, the device responds with coalescing parameters of vqn 0 set by command2.
-+\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 1 sets coalescing parameters for virtqueue having vqn 1. Virtqueue having vqn 3 retains its previous parameters.
-+\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueues having vqn 1 and vqn 3, and overrides the parameters set by command4.
-+\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 1, the device responds with coalescing parameters of vqn 1 set by command5.
-+\end{itemize}
-+
- \subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
- 
- The device sends a used buffer notification once the notification conditions are met and if the notifications are not suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
-@@ -1585,14 +1626,33 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- 
- \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
--If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
-+A driver MUST negotiate the VIRTIO_NET_F_NOTF_COAL feature before issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRIO_NET_CTRL_NOTF_COAL_RX_SET.
-+
-+A driver MUST negotiate the VIRTIO_NET_F_VQ_NOTF_COAL feature before issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRIO_NET_CTRL_NOTF_COAL_VQ_GET.
-+
-+A driver MUST ignore the values of coalescing parameters received from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if a device responds with VIRTIO_NET_ERR.
- 
- \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
--A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
-+A device MUST ignore \field{reserved}.
-+
-+A device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it was not able to change the parameters.
-+
-+A device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with VIRTIO_NET_ERR if it was not able to change the parameters.
-+
-+A device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with VIRTIO_NET_ERR if the given virtqueue is disabled.
-+
-+Upon disabling and re-enabling the transmit virtqueue, the device MUST set the coalescing parameters of the virtqueue
-+to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or, if the driver did not set any TX coalescing parameters, to 0.
-+
-+Upon disabling and re-enabling the receive virtqueue, the device MUST set the coalescing parameters of the virtqueue
-+to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or, if the driver did not set any RX coalescing parameters, to 0.
- 
- A device SHOULD NOT send used buffer notifications to the driver if the notifications are suppressed, even if the notification conditions are met.
- 
-+The behavior of the device in response to set commands of the VIRTIO_NET_CTRL_NOTF_COAL class is best-effort:
-+the device MAY generate notifications more or less frequently than specified.
-+
- Upon reset, a device MUST initialize all coalescing parameters to 0.
- 
- \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
--- 
-2.19.1.6.gb485710b
-
+Can you please merge this?
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
