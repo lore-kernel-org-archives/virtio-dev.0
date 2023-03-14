@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11612-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11613-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DEFF7C6FD1F
-	for <virtio-dev@archiver.kernel.org>; Tue, 14 Mar 2023 05:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7FE58C74A5B
+	for <virtio-dev@archiver.kernel.org>; Tue, 14 Mar 2023 13:59:27 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 138B742A67
-	for <virtio-dev@archiver.kernel.org>; Tue, 14 Mar 2023 05:06:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 491E3190925
+	for <virtio-dev@archiver.kernel.org>; Tue, 14 Mar 2023 13:59:26 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E5B9E986370
-	for <virtio-dev@archiver.kernel.org>; Tue, 14 Mar 2023 05:06:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 30983986398
+	for <virtio-dev@archiver.kernel.org>; Tue, 14 Mar 2023 13:59:26 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CB8CC985FF0; Tue, 14 Mar 2023 05:06:33 +0000 (UTC)
+	id 1FD76985FF0; Tue, 14 Mar 2023 13:59:26 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,271 +24,366 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B735698635A
-	for <virtio-dev@lists.oasis-open.org>; Tue, 14 Mar 2023 05:06:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0A13398635A;
+	Tue, 14 Mar 2023 13:59:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678770391;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8qpg/kib063B8lcnmtL06vE18pb3SKj5IvJ54Tj+HE4=;
-        b=QCUTP33ryEyphYUNeV+r1BQiMf6U2pHrQzvixluzuD2gBYqWj7pt281hIELbw+n6Aa
-         haOTjdkUJxjOfYCXXB7OVZhkduIPf1aYVumS3FU/14Yq1Yb+SfUKkxOapp4mVHIMBGac
-         2mjDG4t0b968kl7sXuGYL5tF+b/tPd//RVH4si8jkJWbCYliRyEzEGyk6WXak9wkBTJc
-         FIOQAr4WS/vFnOqw7a3wwx/XbbsQ9ELs3NIvdjkyau76cDy4KwPb7DB17x3FpyHgikH6
-         Dcnm+lEXIE8814NSSBx1Q+ZzGTfaZoXNAg52MmjZBrLH8tqLTnVmEFXGkcSMu5ME64y+
-         ZBcA==
-X-Gm-Message-State: AO0yUKVb9zawzmWh3sATzakoMtaDGOACMp926higCSFcWBwQRRt2Tlua
-	bOYF31shgwagWdV5mz7E1r3ar9DcXcjLT30gf6U=
-X-Google-Smtp-Source: AK7set+BzEkkIJS92EkDIKb7+Q/hIMToxdc5rDN5yMcZBYgBjNnKILCxByniGQcl1hcUpV4jjrvmuQ==
-X-Received: by 2002:a17:906:5fcc:b0:8b2:2141:6de8 with SMTP id k12-20020a1709065fcc00b008b221416de8mr1256884ejv.73.1678770390764;
-        Mon, 13 Mar 2023 22:06:30 -0700 (PDT)
-X-Received: by 2002:a05:600c:1c9b:b0:3e2:1a5e:b13c with SMTP id
- k27-20020a05600c1c9b00b003e21a5eb13cmr41852wms.2.1678770388656; Mon, 13 Mar
- 2023 22:06:28 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VdsVXUJ_1678802358;
+Message-ID: <45039ab0-e703-7fce-b2cd-328fb2e7303c@linux.alibaba.com>
+Date: Tue, 14 Mar 2023 21:59:17 +0800
 MIME-Version: 1.0
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <5fa6dc30-af86-e58c-2d39-fde2836192c3@opensynergy.com> <CAPBb6MWqqAFB+g=JZu9-VgZbEJxS3wYaEgA-R_P=OyHRTHy7eQ@mail.gmail.com>
- <8ec36252-97c6-0378-e25b-fc972ea3a66d@opensynergy.com> <CAPBb6MVDKfKOyDFPiOL3fRp4Jn6WwMpSZt6V32EJ1CYW_+rw+w@mail.gmail.com>
- <909867c6-b66c-1281-45a7-38fd0aa32123@opensynergy.com> <87cz6mnaqk.fsf@redhat.com>
- <CAPBb6MWNfPH+e8=4zUcq2dV-59OdzTYSuN04Cg2rRPWao-nseQ@mail.gmail.com>
- <877cwttw2x.fsf@redhat.com> <87a60kg9rh.fsf@redhat.com> <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
- <877cvog030.fsf@redhat.com>
-In-Reply-To: <877cvog030.fsf@redhat.com>
-From: Alexandre Courbot <acourbot@chromium.org>
-Date: Tue, 14 Mar 2023 14:06:16 +0900
-X-Gmail-Original-Message-ID: <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
-Message-ID: <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Alexander Gordeev <alexander.gordeev@opensynergy.com>, virtio-dev@lists.oasis-open.org, 
-	Keiichi Watanabe <keiichiw@chromium.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, 
-	Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=C3=B6ll?= <Matti.Moell@opensynergy.com>, 
-	Andrew Gazizov <andrew.gazizov@opensynergy.com>, Enrico Granata <egranata@google.com>, 
-	Gustavo Padovan <gustavo.padovan@collabora.com>, Peter Griffin <peter.griffin@linaro.org>, 
-	=?UTF-8?Q?Bart=C5=82omiej_Grzesik?= <bag@semihalf.com>, 
-	Tomasz Figa <tfiga@chromium.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	Enric Balletbo i Serra <eballetb@redhat.com>, Albert Esteve <aesteve@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
+ Parav Pandit <parav@nvidia.com>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230306154817.14115-1-hengqi@linux.alibaba.com>
+In-Reply-To: <20230306154817.14115-1-hengqi@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [PATCH v10] virtio-net: support inner header hash
 
-Hi Cornelia,
+Hi, Parav, do you have any comments on this? :)
 
-On Fri, Mar 10, 2023 at 11:20=E2=80=AFPM Cornelia Huck <cohuck@redhat.com> =
-wrote:
+Thanks!
+
+在 2023/3/6 下午11:48, Heng Qi 写道:
+> Currently, a received encapsulated packet has an outer and an inner header, but
+> the virtio device is unable to calculate the hash for the inner header. Multiple
+> flows with the same outer header but different inner headers are steered to the
+> same receive queue. This results in poor receive performance.
 >
-> On Fri, Mar 10 2023, Alexandre Courbot <acourbot@chromium.org> wrote:
+> To address this limitation, a new feature VIRTIO_NET_F_HASH_TUNNEL has been
+> introduced, which enables the device to advertise the capability to calculate the
+> hash for the inner packet header. Compared with the out header hash, it regains
+> better receive performance.
 >
-> > Hi Cornelia,
-> >
-> > On Fri, Mar 10, 2023 at 7:51=E2=80=AFPM Cornelia Huck <cohuck@redhat.co=
-m> wrote:
-> >>
-> >> On Tue, Feb 07 2023, Cornelia Huck <cohuck@redhat.com> wrote:
-> >>
-> >> > On Tue, Feb 07 2023, Alexandre Courbot <acourbot@chromium.org> wrote=
-:
-> >> >
-> >> >> On Mon, Feb 6, 2023 at 11:13 PM Cornelia Huck <cohuck@redhat.com> w=
-rote:
-> >> >>> I hope we can sort this out soon -- I guess I'm not the only one w=
-ho is
-> >> >>> anxious about this spec moving forward :) Please let me know if I =
-can
-> >> >>> help in any way.
-> >> >>
-> >> >> I'll try to address Alexander's points in more detail, but I am not
-> >> >> seeing any blocking issue with using the V4L2 UAPI as the basis for
-> >> >> virtio-video (we are working on a small proof-of-concept and things
-> >> >> are going smoothly so far).
-> >> >
-> >> > Great to hear, looking forward to it!
-> >>
-> >> Quick question: Is there any git repo or similar where interested
-> >> parties can follow along? It would be great to have virtio-video in 1.=
-3;
-> >> if you have some idea on when it might be ready, we could come up with=
- a
-> >> schedule to accommodate that.
-> >
-> > I'm glad you asked, as a matter of fact I have just finished the
-> > virtio-v4l2 proof of concept today! It is capable of exposing a camera
-> > or encoder V4L2 device from the host to the guest, by encapsulating
-> > V4L2 commands into virtio.
+> Reviewed-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+> v9->v10:
+> 	1. Removed hash_report_tunnel related information. @Parav Pandit
+> 	2. Re-describe the limitations of QoS for tunneling.
+> 	3. Some clarification.
 >
-> \o/ Excellent news!
-
-I am delighted that you seem to like it!
-
+> v8->v9:
+> 	1. Merge hash_report_tunnel_types into hash_report. @Parav Pandit
+> 	2. Add tunnel security section. @Michael S . Tsirkin
+> 	3. Add VIRTIO_NET_F_HASH_REPORT_TUNNEL.
+> 	4. Fix some typos.
+> 	5. Add more tunnel types. @Michael S . Tsirkin
 >
-> >
-> > The guest driver code (single file for simplicity):
-> > https://github.com/Gnurou/linux/blob/virtio-v4l2/drivers/media/virtio-v=
-4l2/virtio_v4l2_driver.c
-> >
-> > Bulk of the host-side crosvm device code:
-> > https://github.com/Gnurou/crosvm/blob/virtio-v4l2/devices/src/virtio/v4=
-l2/protocol.rs
-> > https://github.com/Gnurou/crosvm/blob/virtio-v4l2/devices/src/virtio/v4=
-l2/worker.rs
-> >
-> > Neither are works of art, so please forgive the few inefficiencies
-> > here and there - the goal was to make them easy to understand. Still,
-> > the guest driver is probably closer to what a final driver would look
-> > like. It fits in around 1,000 LoCs (comments excluded), which is
-> > enough to support stateful video encoders as well as USB camera
-> > devices. Decoders cannot be run yet because they require support for
-> > V4L2 events and polling - I will try to enable these features next.
-> > But even in its current state this driver shows one interesting aspect
-> > of virtio-v4l2, at least for Linux guests: a single and relatively
-> > simple driver is able to drive a wide range of devices.
+> v7->v8:
+> 	1. Add supported_hash_tunnel_types. @Jason Wang, @Parav Pandit
+> 	2. Change hash_report_tunnel to hash_report_tunnel_types. @Parav Pandit
+> 	3. Removed re-definition for inner packet hashing. @Parav Pandit
+> 	4. Fix some typos. @Michael S . Tsirkin
+> 	5. Clarify some sentences. @Michael S . Tsirkin
 >
-> I had a quick look at the driver; it indeed looks like a big win on
-> Linux systems. (The one thing I'm missing is how easy it would be to
-> replicate the used v4l2 parts on non-Linux systems.)
-
-For non-Linux systems (host or guest, we may need to copy/paste or
-reproduce the UAPI structures. Thankfully they are unambiguously
-described in the UAPI documentation, see for example
-https://www.kernel.org/doc/html/v4.9/media/uapi/v4l/vidioc-enum-fmt.html
-for the formats structure.
-
+> v6->v7:
+> 	1. Modify the wording of some sentences for clarity. @Michael S. Tsirkin
+> 	2. Fix some syntax issues. @Michael S. Tsirkin
 >
-> >
-> > The crosvm device code proxies a V4L2 device on the host, again using
-> > roughly 1,200 lines of non-comment code. This design does not intend
-> > to reflect what an actual host device will look like - in effect they
-> > should be much more specialized since they are unlikely to also call
-> > into V4L2 on the host side. However, if the host is Linux and we just
-> > want to expose a USB camera or other V4L2 device almost as-is, then
-> > this could actually be a good fit.
-> >
-> > The protocol should be easy to understand by looking at the code - we
-> > only have 5 virtio commands to open/close a session, map/unmap a
-> > host-allocated buffer into the guest PAS, and the IOCTL command which
-> > sends V4L2 ioctl structures to the host and waits for its reply. All
-> > ioctls are synchronous per-session, meaning that a session only sends
-> > one ioctl at a time and waits for its response before it can send the
-> > next (as this is what user-space does too). Ioctls, however, never
-> > block on the host side and the ones that would do (DQBUF and DQEVENT)
-> > are replaced by host-initiated events. On top of being familiar to
-> > people who have worked with V4L2 (i.e. a large portion of the media
-> > folks), this simple design seems to be efficient as I have observed
-> > identical performance on both host and guest with the vicodec virtual
-> > encoder. Since this device generates frames using the CPU and keeps
-> > one core 100% busy, any overhead introduced by virtualization should
-> > be noticeable - yet I got nearly identical framerates on both host and
-> > guest.
+> v5->v6:
+> 	1. Fix some syntax and capitalization issues. @Michael S. Tsirkin
+> 	2. Use encapsulated/encaptulation uniformly. @Michael S. Tsirkin
+> 	3. Move the links to introduction section. @Michael S. Tsirkin
+> 	4. Clarify some sentences. @Michael S. Tsirkin
 >
-> I haven't worked with v4l2, but this approach sounds reasonable to me.
+> v4->v5:
+> 	1. Clarify some paragraphs. @Cornelia Huck
+> 	2. Fix the u8 type. @Cornelia Huck
 >
-> >
-> > Things that still need to be implemented before this can be considered
-> > more complete:
-> >
-> > * Controls. This should not be particularly difficult but I left it
-> > for now as they are not necessary to demonstrate the viability of this
-> > project.
-> > * Guest-allocated memory buffers and virtio objects. Based on our
-> > previous experience with virtio-video these should not be difficult to
-> > implement. Currently all video buffers are allocated by the host, and
-> > mapped into the guest if needed.
-> > * Events and polling, required to use a decoder. Again these were not
-> > strictly necessary for the proof of concept, but since we've gone this
-> > far I will try to get them to work as the next step.
-> > * Requests and multi-part media devices. This will be necessary in
-> > order to support more modern camera pipelines. I haven't made up my
-> > mind yet about whether we should support this, but if we want to it
-> > should not be too hard (describe several devices in the configuration
-> > space and enable the request-related commands). I need to talk to
-> > camera folks to know whether there is an actual interest in this.
-> > * Support for more ioctls, in case we want to support tuners and radios=
-.
-> >
-> > If you want to try this code, you need to build the guest kernel with
-> > CONFIG_VIRTIO_V4L2 and enable the `v4l2` feature when building crosvm
-> > (check out the Book of Crosvm if you need instructions on how to build
-> > and use it). Then pass --virtio-v4l2=3D/dev/videoX to crosvm in order t=
-o
-> > expose the /dev/videoX host V4L2 device to the guest.
-> >
-> > I have successfully captured frames (and verified their validity)
-> > using the following devices:
-> >
-> > * A simple USB camera using the `uvcvideo` driver. Both host and guest
-> > could capture a MJPEG stream with the following command:
-> > v4l2-ctl -d0 -v pixelformat=3DMJPG --stream-mmap --stream-to=3Dtest.mjp=
-g
-> >
-> > * The vivid virtual camera driver. I could capture a valid YUV stream
-> > using the following command:
-> > v4l2-ctl -d0 -v pixelformat=3DNV12 --stream-mmap --stream-to test.yuv
-> >
-> > * The encoder device of the vicodec virtual codec driver. On both host
-> > and guest, the following command produces a valid FWHT stream in
-> > `test.fwht`:
-> > v4l2-ctl -x pixelformat=3DNV12 --stream-mmap --stream-out-mmap
-> > --stream-to-hdr test.fwht
+> v3->v4:
+> 	1. Rename VIRTIO_NET_F_HASH_GRE_VXLAN_GENEVE_INNER to VIRTIO_NET_F_HASH_TUNNEL. @Jason Wang
+> 	2. Make things clearer. @Jason Wang @Michael S. Tsirkin
+> 	3. Keep the possibility to use inner hash for automatic receive steering. @Jason Wang
+> 	4. Add the "Tunnel packet" paragraph to avoid repeating the GRE etc. many times. @Michael S. Tsirkin
 >
-> This looks very good already.
-
-Turns out that ffmpeg can also be used to capture video and encode it
-in a more convenient format, e.g:
-
-ffmpeg -f v4l2 -i /dev/video0 output.mkv
-
-This is a very good sign with respect to compliance with V4L2
-protocols. We had a very hard time getting the original virtio-video
-to be used with common tools and passing the V4L2 compliance test in
-general, but with this approach it seems like it will be much simpler
-to achieve.
-
+> v2->v3:
+> 	1. Add a feature bit for GRE/VXLAN/GENEVE inner hash. @Jason Wang
+> 	2. Chang \field{hash_tunnel} to \field{hash_report_tunnel}. @Jason Wang, @Michael S. Tsirkin
 >
-> >
-> > By this work I hope to demonstrate to people interested in video
-> > virtualization that encapsulating V4L2 in virtio is not only a viable
-> > solution, it is a huge shortcut in terms of specification crafting,
-> > driver writing, and overall headaches involved in specifying something
-> > as complex as a video device. Not only could we support video decoders
-> > and encoders, which was the goal of virtio-video, we would also get
-> > image processors, video overlays and simple cameras for free, and
-> > potentially more complex cameras if we decide to.
-> >
-> > After writing this prototype (and a couple attempts at the
-> > virtio-video specification) I don't see any reason not to rely on a
-> > battle-tested protocol instead of designing our own that does
-> > basically the same thing. The genericity of V4L2 may mean that
-> > sometimes we will need 2 commands where virtio-video would require
-> > only one, but we are talking about a low frequency of virtio commands
-> > (60 fps for video playback typically) and that genericity comes with
-> > the benefit of a single Linux guest driver.
-> >
-> > If there is an agreement to move forward with this, I guess the next
-> > step for me will be to write a proper spec so the protocol can be
-> > understood and discussed in detail. Then why not try and upstream the
-> > kernel driver and make ChromeOS use this too in place of our
-> > heavily-patched virtio-video. :) We might even make it for virtio 1.3.
-> >
-> > Looking forward to your feedback. Please don't hesitate to ask
-> > questions, especially if you are not familiar with V4L2. I can also
-> > help folks interested in running this with the setup if needed.
+> v1->v2:
+> 	1. Remove the patch for the bitmask fix. @Michael S. Tsirkin
+> 	2. Clarify some paragraphs. @Jason Wang
+> 	3. Add \field{hash_tunnel} and VIRTIO_NET_HASH_REPORT_GRE. @Yuri Benditovich
 >
-> Thank you for sharing your work! I think this looks very promising, and
-> I'd like to hear feedback from others as well. I assume that would make
-> the spec change more digestible than earlier versions.
+>   device-types/net/description.tex | 120 +++++++++++++++++++++++++++++--
+>   introduction.tex                 |  24 +++++++
+>   2 files changed, 140 insertions(+), 4 deletions(-)
+>
+> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+> index 0500bb6..e53d625 100644
+> --- a/device-types/net/description.tex
+> +++ b/device-types/net/description.tex
+> @@ -83,6 +83,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+>   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>       channel.
+>   
+> +\item[VIRTIO_NET_F_HASH_TUNNEL(52)] Device supports inner header hash
+> +    for tunnel-encapsulated packets.
+> +
+>   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+>   
+>   \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+> @@ -139,6 +142,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+>   \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+> +\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ.
+>   \end{description}
+>   
+>   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+> @@ -198,20 +202,27 @@ \subsection{Device configuration layout}\label{sec:Device Types / Network Device
+>           u8 rss_max_key_size;
+>           le16 rss_max_indirection_table_length;
+>           le32 supported_hash_types;
+> +        le32 supported_tunnel_hash_types;
+>   };
+>   \end{lstlisting}
+> -The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
+> +The following field, \field{rss_max_key_size} only exists if VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT or VIRTIO_NET_F_HASH_TUNNEL is set.
+>   It specifies the maximum supported length of RSS key in bytes.
+>   
+>   The following field, \field{rss_max_indirection_table_length} only exists if VIRTIO_NET_F_RSS is set.
+>   It specifies the maximum number of 16-bit entries in RSS indirection table.
+>   
+>   The next field, \field{supported_hash_types} only exists if the device supports hash calculation,
+> -i.e. if VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
+> +i.e. if VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT or VIRTIO_NET_F_HASH_TUNNEL is set.
+>   
+>   Field \field{supported_hash_types} contains the bitmask of supported hash types.
+>   See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types} for details of supported hash types.
+>   
+> +The next field, \field{supported_tunnel_hash_types} only exists if the device
+> +supports inner hash calculation, i.e. if VIRTIO_NET_F_HASH_TUNNEL is set.
+> +
+> +Field \field{supported_tunnel_hash_types} contains the bitmask of supported tunnel hash types.
+> +See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled tunnel hash types} for details of supported tunnel hash types.
+> +
+>   \devicenormative{\subsubsection}{Device configuration layout}{Device Types / Network Device / Device configuration layout}
+>   
+>   The device MUST set \field{max_virtqueue_pairs} to between 1 and 0x8000 inclusive,
+> @@ -235,7 +246,7 @@ \subsection{Device configuration layout}\label{sec:Device Types / Network Device
+>   negotiated.
+>   
+>   The device MUST set \field{rss_max_key_size} to at least 40, if it offers
+> -VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+> +VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT or VIRTIO_NET_F_HASH_TUNNEL.
+>   
+>   The device MUST set \field{rss_max_indirection_table_length} to at least 128, if it offers
+>   VIRTIO_NET_F_RSS.
+> @@ -843,11 +854,13 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>   \begin{itemize}
+>   \item The feature VIRTIO_NET_F_RSS was negotiated. The device uses the hash to determine the receive virtqueue to place incoming packets.
+>   \item The feature VIRTIO_NET_F_HASH_REPORT was negotiated. The device reports the hash value and the hash type with the packet.
+> +\item The feature VIRTIO_NET_F_HASH_TUNNEL was negotiated. The device supports inner hash calculation.
+>   \end{itemize}
+>   
+>   If the feature VIRTIO_NET_F_RSS was negotiated:
+>   \begin{itemize}
+>   \item The device uses \field{hash_types} of the virtio_net_rss_config structure as 'Enabled hash types' bitmask.
+> +\item The device uses \field{hash_tunnel_types} of the virtio_net_rss_config structure as 'Enabled hash tunnel types' bitmask if VIRTIO_NET_F_HASH_TUNNEL was negotiated.
+>   \item The device uses a key as defined in \field{hash_key_data} and \field{hash_key_length} of the virtio_net_rss_config structure (see
+>   \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / Setting RSS parameters}).
+>   \end{itemize}
+> @@ -855,6 +868,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>   If the feature VIRTIO_NET_F_RSS was not negotiated:
+>   \begin{itemize}
+>   \item The device uses \field{hash_types} of the virtio_net_hash_config structure as 'Enabled hash types' bitmask.
+> +\item The device uses \field{hash_tunnel_types} of the virtio_net_hash_config structure as 'Enabled hash tunnel types' bitmask if VIRTIO_NET_F_HASH_TUNNEL was negotiated.
+>   \item The device uses a key as defined in \field{hash_key_data} and \field{hash_key_length} of the virtio_net_hash_config structure (see
+>   \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}).
+>   \end{itemize}
+> @@ -868,8 +882,26 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>    \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}.
+>   \end{itemize}
+>   
+> +\subparagraph{Tunnel/Encapsulated packet}
+> +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Tunnel/Encapsulated packet}
+> +A tunnel packet is encapsulated from the original packet based on the tunneling
+> +protocol (only a single level of encapsulation is currently supported). The
+> +encapsulated packet contains an outer header and an inner header, and the device
+> +calculates the hash over either the inner header or the outer header.
+> +
+> +When the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received encapsulated
+> +packet's outer header matches one of the supported \field{hash_tunnel_types},
+> +the hash of the inner header is calculated. Supported encapsulation types are listed
+> +in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming
+> +Packets / Hash calculation for incoming packets / Supported/enabled hash tunnel types}.
+> +
+> +Some encapsulated packet types: \hyperref[intro:GRE]{[GRE]}, \hyperref[intro:VXLAN]{[VXLAN]},
+> +\hyperref[intro:GENEVE]{[GENEVE]}, \hyperref[intro:IPIP]{[IPIP]} and \hyperref[intro:NVGRE]{[NVGRE]}.
+> +
+>   \subparagraph{Supported/enabled hash types}
+>   \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types}
+> +This paragraph relies on definitions from \hyperref[intro:IP]{[IP]},
+> +\hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
+>   Hash types applicable for IPv4 packets:
+>   \begin{lstlisting}
+>   #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
+> @@ -889,6 +921,39 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>   #define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
+>   \end{lstlisting}
+>   
+> +\subparagraph{Supported/enabled tunnel hash types}
+> +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled tunnel hash types}
+> +If the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the value of
+> +\field{hash_tunnel_types} is set to VIRTIO_NET_HASH_TUNNEL_TYPE_NONE,
+> +the device calculates the hash using the outer header of the encapsulated packet.
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NONE         (1 << 0)
+> +\end{lstlisting}
+> +
+> +If the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated, the encapsulation
+> +hash type below indicates that the hash is calculated over the inner header of
+> +the encapsulated packet:
+> +Hash type applicable for inner payload of the gre-encapsulated packet
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE         (1 << 1)
+> +\end{lstlisting}
+> +Hash type applicable for inner payload of the vxlan-encapsulated packet
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 2)
+> +\end{lstlisting}
+> +Hash type applicable for inner payload of the geneve-encapsulated packet
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 3)
+> +\end{lstlisting}
+> +Hash type applicable for inner payload of the ip-encapsulated packet
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 4)
+> +\end{lstlisting}
+> +Hash type applicable for inner payload of the nvgre-encapsulated packet
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 5)
+> +\end{lstlisting}
+> +
+>   \subparagraph{IPv4 packets}
+>   \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv4 packets}
+>   The device calculates the hash on IPv4 packets according to 'Enabled hash types' bitmask as follows:
+> @@ -980,6 +1045,44 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>   (see \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv6 packets without extension header}).
+>   \end{itemize}
+>   
+> +\subparagraph{Inner hash calculation of an encapsulated packet}
+> +If the driver negotiates the VIRTIO_NET_F_HASH_TUNNEL feature, it can configure the
+> +hash parameters (including \field{hash_tunnel_types}) for inner hash calculation by
+> +sending the VIRTIO_NET_CTRL_MQ_HASH_CONFIG command. Additionally, if the VIRTIO_NET_F_RSS
+> +feature is also negotiated, the driver can use the VIRTIO_NET_CTRL_RSS_CONFIG command to
+> +configure the hash parameters. If multiple commands are sent, the device configuration
+> +will be defined by the last command received.
+> +
+> +If the feature VIRTIO_NET_F_HASH_TUNNEL is negotiated and the corresponding
+> +encapsulation hash type is set in \field{hash_tunnel_types}, the device calculates the
+> +hash on the inner header of an encapsulated packet (See \ref{sec:Device Types
+> +/ Network Device / Device Operation / Processing of Incoming Packets /
+> +Hash calculation for incoming packets / Tunnel/Encapsulated packet}). If the encapsulation
+> +type of an encapsulated packet is not included in \field{hash_tunnel_types} or the value
+> +of \field{hash_tunnel_types} is VIRTIO_NET_HASH_TUNNEL_TYPE_NONE, the device calculates
+> +the hash on the outer header.
+> +
+> +\field{hash_tunnel_types} is set to VIRTIO_NET_HASH_TUNNEL_TYPE_NONE by the device for the
+> +unencapsulated packets.
+> +
+> +\subparagraph{Tunnel QoS limitation}
+> +Note that the limitation mentioned below is not only introduced by inner hash calculation,
+> +and the limitation of the tunnel itself, and even the driver may have only one receive queue.
+> +
+> +When a specific receive queue is shared by multiple tunnels to receive encapsulating packets,
+> +there is no quality of service (QoS) for these packets of multiple tunnels. For example, when the
+> +flooded packets of a certain tunnel are hashed to the queue, it may cause the traffic of this
+> +queue to be unbalanced, resulting in potential packet loss and data delay.
+> +
+> +Possible mitigations:
+> +\begin{itemize}
+> +\item Use a tool with good forwarding performance such as DPDK to keep the queue from filling up.
+> +\item If the quality of service is unavailable, the driver can set \field{hash_tunnel_types} to
+> +      VIRTIO_NET_HASH_TUNNEL_TYPE_NONE to disable inner hash calculation for encapsulated packets.
+> +\item Choose a hash key that can avoid queue collisions.
+> +\item Outside the device, prevent abnormal traffic from entering or switch the traffic to attack clusters.
+> +\end{itemize}
+> +
+>   \paragraph{Hash reporting for incoming packets}
+>   \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash reporting for incoming packets}
+>   
+> @@ -1392,12 +1495,17 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>       le16 reserved[4];
+>       u8 hash_key_length;
+>       u8 hash_key_data[hash_key_length];
+> +    le32 hash_tunnel_types;
+>   };
+>   \end{lstlisting}
+>   Field \field{hash_types} contains a bitmask of allowed hash types as
+>   defined in
+>   \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types}.
+> -Initially the device has all hash types disabled and reports only VIRTIO_NET_HASH_REPORT_NONE.
+> +
+> +Field \field{hash_tunnel_types} contains a bitmask of allowed hash tunnel types as
+> +defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash tunnel types}.
+> +
+> +Initially the device has all hash types and hash tunnel types disabled and reports only VIRTIO_NET_HASH_REPORT_NONE.
+>   
+>   Field \field{reserved} MUST contain zeroes. It is defined to make the structure to match the layout of virtio_net_rss_config structure,
+>   defined in \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS)}.
+> @@ -1421,6 +1529,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>       le16 max_tx_vq;
+>       u8 hash_key_length;
+>       u8 hash_key_data[hash_key_length];
+> +    le32 hash_tunnel_types;
+>   };
+>   \end{lstlisting}
+>   Field \field{hash_types} contains a bitmask of allowed hash types as
+> @@ -1441,6 +1550,9 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>   
+>   Fields \field{hash_key_length} and \field{hash_key_data} define the key to be used in hash calculation.
+>   
+> +Field \field{hash_tunnel_types} contains a bitmask of allowed hash tunnel types as
+> +defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash tunnel types}.
+> +
+>   \drivernormative{\subparagraph}{Setting RSS parameters}{Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
+>   
+>   A driver MUST NOT send the VIRTIO_NET_CTRL_MQ_RSS_CONFIG command if the feature VIRTIO_NET_F_RSS has not been negotiated.
+> diff --git a/introduction.tex b/introduction.tex
+> index 287c5fc..25c9d48 100644
+> --- a/introduction.tex
+> +++ b/introduction.tex
+> @@ -99,6 +99,30 @@ \section{Normative References}\label{sec:Normative References}
+>       Standards for Efficient Cryptography Group(SECG), ``SEC1: Elliptic Cureve Cryptography'', Version 1.0, September 2000.
+>   	\newline\url{https://www.secg.org/sec1-v2.pdf}\\
+>   
+> +	\phantomsection\label{intro:GRE}\textbf{[GRE]} &
+> +    Generic Routing Encapsulation
+> +	\newline\url{https://datatracker.ietf.org/doc/rfc2784/}\\
+> +	\phantomsection\label{intro:VXLAN}\textbf{[VXLAN]} &
+> +    Virtual eXtensible Local Area Network
+> +	\newline\url{https://datatracker.ietf.org/doc/rfc7348/}\\
+> +	\phantomsection\label{intro:GENEVE}\textbf{[GENEVE]} &
+> +    Generic Network Virtualization Encapsulation
+> +	\phantomsection\label{intro:IPIP}\textbf{[IPIP]} &
+> +    IP Encapsulation within IP
+> +	\newline\url{https://www.rfc-editor.org/rfc/rfc2003}\\
+> +	\phantomsection\label{intro:IPIP}\textbf{[NVGRE]} &
+> +    NVGRE: Network Virtualization Using Generic Routing Encapsulation
+> +	\newline\url{https://www.rfc-editor.org/rfc/rfc7637.html}\\
+> +	\newline\url{https://datatracker.ietf.org/doc/rfc8926/}\\
+> +	\phantomsection\label{intro:IP}\textbf{[IP]} &
+> +    INTERNET PROTOCOL
+> +	\newline\url{https://www.rfc-editor.org/rfc/rfc791}\\
+> +	\phantomsection\label{intro:UDP}\textbf{[UDP]} &
+> +    User Datagram Protocol
+> +	\newline\url{https://www.rfc-editor.org/rfc/rfc768}\\
+> +	\phantomsection\label{intro:TCP}\textbf{[TCP]} &
+> +    TRANSMISSION CONTROL PROTOCOL
+> +	\newline\url{https://www.rfc-editor.org/rfc/rfc793}\\
+>   \end{longtable}
+>   
+>   \section{Non-Normative References}
 
-The spec should indeed be considerably lighter. I'll wait for more
-feedback, but if the concept appeals to other people as well, I may
-give the spec a try soon.
-
-Meanwhile I'll also try to add support for stateful decoders and
-guest-allocated buffers to the prototype so it can be considered more
-complete.
-
-Cheers,
-Alex.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
