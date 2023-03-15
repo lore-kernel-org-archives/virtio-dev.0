@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11638-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11639-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 973F2C61DA4
-	for <virtio-dev@archiver.kernel.org>; Wed, 15 Mar 2023 23:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0A038C61DA4
+	for <virtio-dev@archiver.kernel.org>; Wed, 15 Mar 2023 23:25:08 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D0F3187486
-	for <virtio-dev@archiver.kernel.org>; Wed, 15 Mar 2023 23:07:05 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 34E19157EEA
+	for <virtio-dev@archiver.kernel.org>; Wed, 15 Mar 2023 23:25:08 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CC1B1986434
-	for <virtio-dev@archiver.kernel.org>; Wed, 15 Mar 2023 23:07:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2B7F7986432
+	for <virtio-dev@archiver.kernel.org>; Wed, 15 Mar 2023 23:25:08 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C14EC986259; Wed, 15 Mar 2023 23:07:05 +0000 (UTC)
+	id 1F9C6986259; Wed, 15 Mar 2023 23:25:08 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,159 +24,138 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A85DD98637D;
-	Wed, 15 Mar 2023 23:06:59 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0E8B798637D;
+	Wed, 15 Mar 2023 23:25:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lqBk+OqDX3q+M6Hq+uRuZvKhYnLws5gJlUKacI6ok3ht+uLq6zw2lPCAC8m0s3xaOYsUNWnXwjApbngwSUv49g4mJ83mIGzmZZafYysZwWFy0iakpWz2VyjxQuAbIgNiG/0Dy5kxd1uZmuaVrmTKnfBB7ugkjkFymgvFYIWKJ281OD6tlBg0QCH+oOcNRlKKHc6/uJhS/INDnuAx1gXsyog2MDL0nJnXOIk08RJcB5yLazsDR5MYMD2XuFyka2cnpx6ga5xHzpLITuQq+TPw0LYA/v0pjo0nXsswE3Dh+F/9BiOZa2B4MNKhzFAR6tr6di+RimaaQRPUxYLDgx9vyA==
+ b=LxZcpA3jVSdVVHac2fQ09h+3Skt98kbZ8/wQR5e5M+97PF3P4MKTNYWDXhSu3GwETJC9pBw5Rq9x326T+4DmDpBGdpD/CzmS75UFQzxYcuf5kZmSpD1gwxoER2cByn6Fzn6zqve32AVDreCkhtmorVgn+2+YiMmTuB16ladvRzrJ8Zr4WgroCRojwW1LNzTK6Je6J+eDbFpW5JkrcBBcqiRRkDN22V8Og6MZVSxM3T7r974HG2glE/FZS0WPaYvVyi2skGQsWsyE1ZPyMxPLEqG8hzoGkNDj8WI4CDhAsDgiHzBAaQ0hV7qYEC6+t8MTbm0BJ3mjEWPJ6dCZTcvZ1A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rpsv3awN8mKPjEsoi8VVNapzHW0QiNUHJfztZ07Q1T8=;
- b=XX/gIALD0FqFnEDTzJWEeMzonNymtpD6tkLukD8TRa1rxaX9CSVVzmkPX/Yiz0zP27tollgqjjZmbOMVlgmnsGIJKK9mS3Yoi8JU0A11j0JyEgXkxQuJdmla/ypZqS5yVNLaobxNt8hIKdx5O1PyZ+avSlNaW3vJezuEsJP6r1aT3QkYPj4M3Kbf73zznilYwHv88I6Lj0SywVbIFpGGn0x1UCxpXTdcF1su1B6X4pA09MS2fGGlEVVaHpWzzzVWj22W3VHFlm00NixGDbr3enIo+UH13kTTzaIakSOhAGEq85SODyn82/GtdiIOlj6c1mkdmVdFSeH4OcpL62hsiQ==
+ bh=pAhOv/f3IQxCLxVa2Gzsjb1/qsa5n0ARxxLIwVZwPcs=;
+ b=TPYXuyMTXcG/oq566qFZ38VPTHYLy1KDLdn/HeTIWUQ10eHkPnP/ABuLSfyNrjlIgBvKTCcp355Snp14ZcTbbnhHRg/fTDX9ZzYDRycnuZDsreNBxbphWUmaXiLAwfrr+kp8u5O3eJBPAOaC2TTVSxnfFhjCS5QrvjF4/gdSjuxVZAF65EyVt/qXExFPnOwHD49jHSICN70/prKBpEwei1J0iQU13B4wD2sKhPS3M9hHwxJHe2F5/Fl9ghC26alT1EqfU+iRoZ5z8IgTOisdvKpMzMLsWm1rtUw1HD3D7i+DYUQwym5c+3BcAIQW8SpAHOktGCwcLjk0kM/WvVnF9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
-Message-ID: <9f6286ea-51b2-dcc0-86c9-66509d92d8c2@nvidia.com>
-Date: Wed, 15 Mar 2023 19:06:53 -0400
+Message-ID: <11cce86e-8068-2e83-9fc5-e1b825adde29@nvidia.com>
+Date: Wed, 15 Mar 2023 19:24:57 -0400
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-To: Heng Qi <hengqi@linux.alibaba.com>, virtio-dev@lists.oasis-open.org,
- virtio-comment@lists.oasis-open.org
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+Content-Language: en-US
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org, Jason Wang <jasowang@redhat.com>,
  Yuri Benditovich <yuri.benditovich@daynix.com>,
  Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <20230306154817.14115-1-hengqi@linux.alibaba.com>
  <c81de233-227c-73c8-a4bd-d43aa374dd86@nvidia.com>
- <e573702a-9a2e-d210-f13a-f0b241442991@linux.alibaba.com>
-Content-Language: en-US
+ <20230315075954-mutt-send-email-mst@kernel.org>
 From: Parav Pandit <parav@nvidia.com>
-In-Reply-To: <e573702a-9a2e-d210-f13a-f0b241442991@linux.alibaba.com>
+In-Reply-To: <20230315075954-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SA9PR13CA0138.namprd13.prod.outlook.com
- (2603:10b6:806:27::23) To PH0PR12MB5481.namprd12.prod.outlook.com
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA1P222CA0028.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:22c::30) To PH0PR12MB5481.namprd12.prod.outlook.com
  (2603:10b6:510:d4::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5481:EE_|PH0PR12MB7982:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3a51075b-38c2-4b5b-b01d-08db25a9f957
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5481:EE_|MN2PR12MB4048:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3139ca0e-7bf4-47bc-f9ec-08db25ac7fe0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	B4xnDaTHImvkjYuitiwd5MGyZ1Rno7USsiJzNojxKvtjrlTDT2GRj0ieZtKzdvMTHH0VkGyAPrBZUaAGN7KZozhdnhOVkhbsGz+kLL3VM7bOia81i8a+DoOBXKLyqFMIhtQkEIaz4213kLMMIrEBXOQaJ/WDRRgG7m3Vc6hb4e4JYx7JwMNsQrqilvqUCvlE/kp0DMYDNx1nIR4X4gxIK+C9wAP1JNxqGVrwngUgXLP3Sivi+oM/2ASPOorJGmM2KKPSfFD6k/DXVLVYkpQ8c/PVF0mahFeWs0yHgr4D6wrtI5b7jlI4wd+Kj9Ak7Mv1DROKPgX4+r0inGWyKt1cPVnar8uhWXP3BAxEAqS6N5/k+gFDAli4O8ub+SuApHSdBYuNbxEipbi3CY56p+Uzn7oKETBnpYkBzMdHBf/9Y+ZXQdqWXUvfahNmRApwE1QlXwNcWzhcUAfyQs6J2SP3cFC14CcwE+H1M0/PEmNnPPPUmoQxCcRlNby4jQs975QLgc/96rdLqhwYzbAkEyfl6p48+4uQ5uDfUkTi0OZwqrsw+YF/K2YOTsBBeppHg1Fb9N5+EC0AZp1JHoYiOeu8mjDH7srmnlfSdmFlp/wY3mnzZk4i4IobU8byawvDWKCG0m0vG4Run+FKUAQONQR/IMai0GBnfm5yBnJQjCSJaSB+kKOXXBw8C+DQsNqsNeIj2mvrvytqC7nLzKUpBB0Ou6r5Bun+uYH3zsvpDo1wynE=
+	//M9Ximm60bd99vdVpG+Xz/6QENWoVrWjlrpv4HHkk5eYyZ7HX9s6kqDYBPSacIlGzLI+l+3o9nXf6cM7amy/VK8SwiCAGcZXUbbg2Qg3RrUt7IHaAAkimgbhXGwOxsNzNQuCtXMA0y/aply+Ywq3thitiWVnjVpKqGYrc20FPQgqL8cqZokn5iJKGaShO+TiTWDhpf3iZMu4ZATG8jNuf6ZmvwBhtHMRf+vRw/Rg8K//UKkWFwZVFhl1Uj0OxELIA4KMJUbXI30g3BWRDSdTdhSKyx0pidfNclTwpOVtBLuShArEzcEwi4RyebgXcxuhZ3ebHHcZG08iEGK+rRp977V8hdhoHH7OqAKWlzjpiWHdVpeHFgW4LrGDMSzgku3M7b/Uh+MxbkFPb3vMPaWZSAlL6th2R8VBV0FCrkIRJ9F5RZXJ8NHyKlRRP+teTNrSzTnjBtXFmkbGaHVgmgjdr+wKk1IxEGpxqzlxry1TfqLDs6tQLt9D/eaEVuQLm6hEWtJXLUzBPqXEi6jNd5Guwt7QOGJqDa2WR+6lZDOeigEdsmYrNiu31i+e489dq+ePEtk2bwSSVL+mG1/9+yiarhZW8tfdk6E2dndNolGUy9mh6hq212L6BPSKpt360v64YsWLflUBlAFcIcnV05o8QVgHAS0N66EV+uHmiC8vTBChgFHCJPJdP8EgED0aLt5k6FshT83Ul+/kBt1MrCW9jDS25EHGSmh+5mNq7Di2cA=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(136003)(346002)(376002)(366004)(451199018)(66556008)(66476007)(66946007)(4326008)(8676002)(41300700001)(2906002)(38100700002)(5660300002)(8936002)(6666004)(26005)(6486002)(6506007)(86362001)(6512007)(31696002)(53546011)(31686004)(2616005)(186003)(36756003)(316002)(54906003)(83380400001)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(136003)(366004)(346002)(396003)(451199018)(36756003)(86362001)(31696002)(38100700002)(41300700001)(8936002)(2906002)(5660300002)(26005)(4326008)(2616005)(6512007)(53546011)(6506007)(186003)(316002)(54906003)(66476007)(8676002)(6486002)(66946007)(6666004)(6916009)(478600001)(66556008)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WjdEZ2hhYjFrYWtEdWRHMG5DNk9sZDRvR1plZUh1WURmbnF1VDk4Y3Fwa0Ir?=
- =?utf-8?B?enJUUDNCOHZDelE0bkZDOURydUJvZ3dXYit3Mm94QWMwVFA2MSszUmFia2h4?=
- =?utf-8?B?Nk1sMWdobVhJMEVnVlFVVElsWW5HMlZvUExRYWJ3SWJ5MjFUTVgrUkZTUWtz?=
- =?utf-8?B?RjJwODFoOU5iREVuMHpTd0hpdllZM0xObEZhd2pFN3FJV2Q1UmhWTWJOUmRX?=
- =?utf-8?B?QzBjNHVVaGZMNGtwWms5ZXY2emM0YXlkdVliVzJQcUVzNU9NTUhsTVpRckVB?=
- =?utf-8?B?MUdHdzI0UVpUMU1BK2owSnk3SG1lTzdYZHJjbGFkWDFKOURCQi94SEttWVRG?=
- =?utf-8?B?ajNjQW4wUkNHejFZSEh5eGRpVUw1S2hEbnpOZWZ0T3NKd2UxSFdoQytpZ0FK?=
- =?utf-8?B?OTl1d1lOYnNoUzQxU1BHMGUvY1JqQ3lQRkh5N3g4dXlDV2tidHhjbE9hQWZ0?=
- =?utf-8?B?Qm5FSk40VlowLzFkU3NCL1dRbmlxRnlpazBmOGQyOUp2UjhCcUorRGpzOEVU?=
- =?utf-8?B?REJJdDV1MWRiNVpBNll6N1ZSNWtxQXJGcDNuZzJodFd0S0xqRFNmV1cwS0tJ?=
- =?utf-8?B?QjZZVWdHNml4VlpOV1J6VnVGZURnbVJhWjFKTThCZHRtbW10YlVLeTVyaEFj?=
- =?utf-8?B?dnlHZ0dzNkYzMzRpclRVVjI4aEwzZmRoK0xhZGZVblVyVlE2a2FkL0ZFMFdE?=
- =?utf-8?B?M2tFY09oYk5oSnVIOUVXK0hCaTBvTTBFQmNydGg2ZEdVTTlwSlF2N2RPOWNL?=
- =?utf-8?B?Y09TaXZnS3dtSjZncElrdkgwcVAxeURlajJLSHZydTlOSWJpMzdPZjRMekFO?=
- =?utf-8?B?UGhENUxwQ1EwRVRGRDlJUnlVVVhQR3l3MG1YamZHNXg5VUozejlTN3BQVE9a?=
- =?utf-8?B?eVhPVTk2WXNHZThnWnZGMG5XNS85K3FTVGJ1b1dZeWpnaVNGQThKVUVkV2Yw?=
- =?utf-8?B?Ui9MZ0g4bHI4MmtRTFZYSFhsajliWDNFYXdFa0hBeTYycnJrd043VU0xbWdO?=
- =?utf-8?B?bkZlVkNiVEFSdHAvemRnQWEzdzVHSnFLUTR6Nkg5OWIwVkFKZ0JDK253SjB3?=
- =?utf-8?B?Zzh4TmFMdzFJRnVUMS9maGplbU1aSXp4anpId2hqUGwxYWcwSTNpQnp4bnlw?=
- =?utf-8?B?QWlRZFRyR2dnMGd6WDVzYTd5YTZhcUVndXljY2s1RFRGeUcvNzZyUWhpMjl0?=
- =?utf-8?B?K1IzdzBaUnQ3TGFUUllCQkhiQzN1T2dpcnNnaGlBcTMwc2NJWkZ2ak5ORTM3?=
- =?utf-8?B?Mk1QVDVtMWR6ekN1djZaeG1EN2VIZlAzL1VFQnVUUzJGaStTcHNzbGxpbUV4?=
- =?utf-8?B?YlFUK2EwYmd6TEYwMWNIMjFDQ3B6Z0tWaTVrV3lzcmlUOHBwWWR2bllhMWRo?=
- =?utf-8?B?TmZQUXBMY3lwWnRkVUlBTzY2Q2JLNVc1Y0hVUTJtbkNpMnBFWWM1RDY0OG9F?=
- =?utf-8?B?NnltaUo3bTZOczFZYXM0bVp4OHJMaTZvcXFrQ1E4VWxHMFhpbE5ocUp2U1Q0?=
- =?utf-8?B?dEFXSlp2am9WTklabVpsRzE5MTYzeTl5YmNQSkdQMXhQMm1CUFBIZk9lbDdT?=
- =?utf-8?B?U2U5MWUyYTI5NUd2S1YyMDFFdXEyZHl3VW9nek9KMUU0eUxlQXJWTmFZNngy?=
- =?utf-8?B?dEZ0SDdRWi9IcGNoK0Q3cCtSM0RtQVBFWDM2NUtxOGlDWEQ1enBqVjIvZVU3?=
- =?utf-8?B?SHE5a01JN05zYTNCdVRyajFFakpqNnRQc0JacGQxUW5wTEFtQnlWRktwMEg3?=
- =?utf-8?B?SS81RVdvamY5RE4wbWVZTU5uTE1Nb1RkaGVleXlvSkc4aEZVNGxrT3NId1Bt?=
- =?utf-8?B?TnZWWHI2ZUs4cUxKaFdGNUVVK0d1U2hnekdhRFhUMnp0REhtUCtsN2ZUQUxS?=
- =?utf-8?B?dWNnM215WVloSzFzU1dlQ1poOFNKU2MrSzh1bUpoMEVFK00xVE8xM1pIc2xu?=
- =?utf-8?B?R3pjakQ4RWludmlFa2Y2ZEUzZVEyTGVyeSttYm1tWEZWdTVsWFk3VStJeWJB?=
- =?utf-8?B?d0Z6Vlp1ckJVUDI3L2FVbzYybno5ZEUraVFaWWtFWjR3eVRMTnJUd0JzSTRy?=
- =?utf-8?B?WE5nVjRtZk1nVzRjRVE4a2NZZ1FuSFZ1cDAyNjNWOTk5R05LOGdSTU0xYUJs?=
- =?utf-8?Q?EKMLKgsk8LX2gxtmH0ziEzECf?=
+	=?utf-8?B?d3QxWnZCUFBmM2p2QTY3ajN0N2kxMWFkUFoweXpEWUxQbVN3NlU2K2d4aXcr?=
+ =?utf-8?B?VDdrdzVRUG5OODJkQ1ByQXdRc3ZQS1lHRk5wd01RVlpKZjN6K0xscDZldXVQ?=
+ =?utf-8?B?MnBFUUUxclZVQkFPWkljNmVTbjlBbmFwRGxqbG55dXpCaU1wOVREbUI5aUxr?=
+ =?utf-8?B?WkUyUzExREg1Q0xPMWFHNFVuV0F3U1c0enpsUzlubUY2T0dQbk5jRUJ2eGt1?=
+ =?utf-8?B?Qm5YbzhlaWRWcGplcy9kdmZnSFlxYnhIR2ZxdGpwMmRQbmxEWmtuSzFFOWwr?=
+ =?utf-8?B?S2hMdDY3T0NPR3VsSFFlOUV5ZkV1SEVjUkZQSTNoWEtqajFsdlQ0YjRDQUl2?=
+ =?utf-8?B?WEJrOTRMVWRCaVhOOXo0MldZYW9wdUFOSzZiSlNIM0grcmh1NUJyOFA1RE83?=
+ =?utf-8?B?MkpuNE5lL2IxWlBaMW96Z2dLQks0OVIwQTdVN2twcjh4Mkw1K1JKbHRDeDQy?=
+ =?utf-8?B?QzdkNURZRWViU2FTSUFkaU1sVTBOT0JJZW42bEMwZ1k3NnNBcFgrNElnbmc5?=
+ =?utf-8?B?TUtUZXpqWld4VEtxOTNRb2VISFpYcFRzc0hEVVRZTjF0MXNMZDN5RVZGVllh?=
+ =?utf-8?B?Ky9PYVVsWkRDZVA0ckVRN1hSNjdmWGhCVzNZT2xnVG1veDk1aEhSUVJGVW9w?=
+ =?utf-8?B?czdZbG1JYUVOME5lWE5IV1cxTkdpTmtrMjFVaG5YdGVCVzlVSEVoVFlGSzA3?=
+ =?utf-8?B?ZThiZXZtWGpNeFNtb0J2L3FyNDQxbGFaOWQ1QUJXc0hKTmJXS2x2UmFabWs0?=
+ =?utf-8?B?aStmMHVjeU9xd0ZHUWJuTStyOENwRm5TWU9YTUpVZGFSZUs0NXJnZkljaFFF?=
+ =?utf-8?B?L1dReEt3UjlCS0xKREtvMnZRbFEwK2t0NE5BTVlJZE9hakcvSnlGZlRkVkVD?=
+ =?utf-8?B?YmdQUXh2WVo5cHQrSnYxOUxvUzg4THdyYkxMZG9hUTNQcm11OVpqVC9nemw2?=
+ =?utf-8?B?U1NrdVhnYlVkeDJRcGxTNlBBZE5LazlvVk1Sb3NMRnhVdlMrdytRd21DVCtR?=
+ =?utf-8?B?OGIxWUFYelEzTGZPbWVPOHdiY1lrLy95VXhGSkJlY0VYdlRkbkdIMUMrSElU?=
+ =?utf-8?B?anY2YlZUWHF2SUkxcCsvVG5ScUd1MEVpWmttOEtrWEI1YWVUZUlqZmZPMFJZ?=
+ =?utf-8?B?dnRvSm9iV0JzSVptc3NzVmNEWDBIZVgyZllMNmxKaTNZZngrLzBaN05tTXNw?=
+ =?utf-8?B?YWJBYjNnaUhTWkgwV25HMmNVN05TQUNJK0NQYUJuZlY0V3hiY2htL0dTd0k0?=
+ =?utf-8?B?Q0UxZmsydk4za1JmK1ErMnFEZnFRK1JhYjQvVFFNNjVwREVNREdvK0FEcm1L?=
+ =?utf-8?B?ZHMvOUFzcU9KampzbGZwaEsyWVh1RTRLb3lpMkFJbDJiYSt1VlZuSjhOY0RG?=
+ =?utf-8?B?eDRFN3I2emkzRk85TzVjakVlemluWWVFLzFoY0szNkQwU051TG9Cd3A3NzFQ?=
+ =?utf-8?B?Vjh6U25RWWF2UkRVTEFvb1B1QkVLcEtCMExtaVJGQ0NLZ0dRdXJvdzNyNElO?=
+ =?utf-8?B?eTRyUDd6M2pNblNDSUNCdnVFRFdESzliSm1tVUZtWUN0K1VZaTRpeHRFNTlB?=
+ =?utf-8?B?aERjeUNaUlhuV2R3dFA4UCtqK3JJaWRyNzVBTW1SQlplVUk2Tk9vL04vZ2xT?=
+ =?utf-8?B?UFRnS1ljNUNNSFVjUEdkbzVhNHJieFBhcG1oaStsVDJsd0VXa0J2bzV3QURE?=
+ =?utf-8?B?NFZDRVhNYVphT2pDMExJYnBVdGpVYldJb1FSRnR2eUZObnNPSTBYR0hJMHRV?=
+ =?utf-8?B?Ykh6d05uNGRaMW5SRVptak5CYi9sams1V25pVkNzL2ttZjQ4TXVtY2swTitu?=
+ =?utf-8?B?eGN5MWllWVpVaGNWYjZqSlRRYTNCWWFVV3E3TDljY1czQW5IbHRQZ2REVkln?=
+ =?utf-8?B?aVVGeDJQVG1YT2RIbXdqTUY2c0V4SUFiYTVCSm94bUZ0cW50Vlp3d1ZYOVU0?=
+ =?utf-8?B?UXB6Q0xrYnk0ZGJ1MTlpQmtINTJ1UTRuS244aDcxNENkMnIyS2RlSlVIbDJt?=
+ =?utf-8?B?c3JHSEJMMFZ4SktqR1VRK1BJMGFTOXVjUXIwcDBYZWRITi9wTkZhM3Q0Z3NO?=
+ =?utf-8?B?OWJ3eDc4dmMydmlUYjZFL29ucjh4R3E0WVhLcXFPbitLK2dRYjZKNG11RTcz?=
+ =?utf-8?Q?chSH5ICfgs//sKAh58x/BF5Od?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a51075b-38c2-4b5b-b01d-08db25a9f957
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3139ca0e-7bf4-47bc-f9ec-08db25ac7fe0
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 23:06:56.7906
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 23:25:01.4574
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A/HDw6bYA7clJZvImwLqLQE0hpJ59OYXxGyKDov3aw85IUtqLrKSxa0jQfYUryesDcnkbIBIpkbsLy8ICxAlFA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7982
-Subject: [virtio-dev] Re: [PATCH v10] virtio-net: support inner header hash
+X-MS-Exchange-CrossTenant-UserPrincipalName: e67Fg2z5AxDAnPQGGksuNhwkYC6fcwFICa2p7UbGExvZjiQb/b7juFUqCNi4zzJ5vQSXKgjONqRZs+hX/AoBZQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4048
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v10] virtio-net: support inner header
+ hash
 
 
+On 3/15/2023 8:10 AM, Michael S. Tsirkin wrote:
+> On Tue, Mar 14, 2023 at 11:23:55PM -0400, Parav Pandit wrote:
+>> If not, for now it may be better to skip vxlan and nvegre as they inherently
+>> have unique outer header UDP src port based on the inner header.
+> 
+> So what's left, GRE?  GRE is actually different, in that it's not IP at
+> all.
+Sorry, I wrongly wrote nvegre above.
 
-On 3/15/2023 9:19 AM, Heng Qi wrote:
-> 
-> 
-> 在 2023/3/15 上午11:23, Parav Pandit 写道:
->>
->>
->> On 3/6/2023 10:48 AM, Heng Qi wrote:
->>
-[..]
->>>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
->>> +\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ.
->> I think this should also say that HASH_TUNNEL requires either of the 
->> F_RSS or F_HASH_REPORT.
->> Because without it HASH_TUNNEL is not useful.
-> 
-> F_HASH_TUNNEL indicates that the hash should be calculated using the 
-> inner packet header, even without F_RSS or F_HASH_REPORT,
-> we can continue to use the hash value in scenarios such as RPS or ebpf 
-> programs.
-Yes.
-Even for rps or ebpf programs, F_HASH_TUNNEL is fine.
-When such feature arrives in future, it above line will have OR 
-condition for RPS feature bit.
+IPoIP, GRE and NVGRE are left.
+
+vxlan and geneve has the udp src entropy.
 
 > 
-> 
-> I think it's fine to let F_HASH_TUNNEL rely on F_RSS or _F_HASH_REPORT 
-> as those are probably important scenarios where inner packet header hash 
-> is used.
-Yes.
+Not sure I understand "its not IP at all".
 
->> If not, for now it may be better to skip vxlan and nvegre as they 
->> inherently have unique outer header UDP src port based on the inner 
->> header.
-> 
-> Symmetric hashing ignores the order of the five-tuples when calculating 
-> the hash, that is, using (a1,a2,p1,p2) and (a2,a1,p2,p1) respectively 
-> can calculate the same hash.
-> There is a scenario that the two directions client1->client2 and 
-> client2->client1 of the same flow may pass through different tunnels.
-> In order to allow the data in two directions to be processed by the same 
-> CPU, we need to calculate a symmetric hash based on the inner packet 
-> header.
-I am lost in two directions and two clients above.
-When you say two directions, do you mean tx and rx?
-and do symmetric hashing between tx and rx between two end points within 
-single tunnel?
+GRE has outer IP header + GRE header with the key to identify the flow.
+The key is effectively the hash for the flow.
 
->>> +\field{hash_tunnel_types} is set to VIRTIO_NET_HASH_TUNNEL_TYPE_NONE 
->>> by the device for the
->>> +unencapsulated packets.
->>> +
-I missed this before. unencapsulated is not a term.
-s/unencapsulated packets/Non encapsulated packets or non tunneled packets
+> So if we are talking about GRE, hash is indeed not calculated at all at
+> the moment, right?  
+Hash of the outer IP header of the src and dst IP can be still 
+calculated currently for GRE when the optional key is not present.
+
+> And I would say a natural first step for GRE is
+> actually adding a hash type that will support this protocol.
+>
+For GRE and NVGRE GRE_header.key as the flow/hash identifier should work 
+without inner header hash.
+Older version of the GRE doesn't have key, so inner header hash is useful.
+
+> How about doing that? It seems like this should be a small step
+> and completely uncontroversial.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
