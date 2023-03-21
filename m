@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11671-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11672-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9903CC6FD1D
-	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 07:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01F0FC6FD1D
+	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 08:47:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id CE617190908
-	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 07:37:11 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2BE9A77E7
+	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 08:47:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C575D98644E
-	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 07:37:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 127B298643E
+	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 08:47:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BA8FF983DFC; Tue, 21 Mar 2023 07:37:11 +0000 (UTC)
+	id F329E983DFC; Tue, 21 Mar 2023 08:47:03 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,77 +24,135 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AA0919863AC
-	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Mar 2023 07:37:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DEFEF98642A
+	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Mar 2023 08:47:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 8vhRFwhyNB-7U9Rgaeb0Bw-1
+X-MC-Unique: tzmtAoyIPn2EgXbfHMbquA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679384228;
+        d=1e100.net; s=20210112; t=1679388420;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NE6UqgxJ3wpmG1iuIxcjjf188FQy/cmlZBHyFhrT8u8=;
-        b=r5rKMtUMEVm3X/Iu/2MN3EQDmS6l9csszBbkMjOTj8NTpLl8jeLWH/rA3iST6wP7YS
-         fdDZxScr0HSbifm1+CPiBs5qlIehIRa5zE2U68zo6uKpqP+jNTPmgUDhp6qeiBqPUdMU
-         9pc5eDKvIR8RwXi9a1PgviKep1fl6stkHa8pno++F5V8gVELDK60t8bYyCh+P2SA4fEG
-         A5y/+TJ2WTIbMIGPZvk21Q/M74hAU6fbz0de5lBiXx2LLQZWpKpcmW9PI/qsJg1lxsS7
-         T7yYKgOW6zOFf1uXnQlM5LGVIFrVth0ffFNwOGiBu1c03X0t/DHyUcdP/HQD0ElIhV0N
-         RASg==
-X-Gm-Message-State: AO0yUKX9n7G3lagYLpkxThqzXW8EhDFFp+ru1glWAjgD7UjRZn80+90m
-	4gQjQ8yoH0xtmdXa44plpYzDke3aDVa1I6ZC2f/erRfysiOmBztzgifc3XfWcqWlKmNWlBRstwC
-	BefRA7R4lR9cGwBrZVTdz4hVnOVSp
-X-Received: by 2002:a5d:68c8:0:b0:2d7:3cd3:85b2 with SMTP id p8-20020a5d68c8000000b002d73cd385b2mr1282222wrw.23.1679384228556;
-        Tue, 21 Mar 2023 00:37:08 -0700 (PDT)
-X-Google-Smtp-Source: AK7set90i8fr5N3gwLeA2ESlUhHIU1ZAz/2LaLR0CEBRGotyR7stiMcZ7DOJq7VebCWXt4BekaO3Dw==
-X-Received: by 2002:a5d:68c8:0:b0:2d7:3cd3:85b2 with SMTP id p8-20020a5d68c8000000b002d73cd385b2mr1282210wrw.23.1679384228285;
-        Tue, 21 Mar 2023 00:37:08 -0700 (PDT)
-Date: Tue, 21 Mar 2023 03:37:04 -0400
+        bh=U4Kv+v5AGPo+t8NwLXR718+5GT8uyb916qGatEOsvMI=;
+        b=Ptj1CJtnZ2lHQnAuHyekut/9kLpuLdhXCBbCeIPjTPymFIObWyQHMwIvaP2W+ugsui
+         ek3n1Znhqe1jTZZOGkmIzwlaPiJN7u8wE4LWk/Gxo1wp0YLEV6LmN7KQFtO/9z2zstG5
+         hnWknqYi4Dja2uNsjAbr2Hn9gfvYEChv5qzrUopQliD7NozhnbtIg9tjUZOVBIHAK+r7
+         LXQ59qxj2sjACPVwm5xDLXooftdoeJrwwKKWoVW71a/YtXAqlbmIrdX69WzfKWpociz9
+         FJGC7s8hXgH1M4JGZHpeQb7pwne/iyI26PyhGjDm5BgAowuXNfgmA1aVW5wmTpMnk059
+         K2+g==
+X-Gm-Message-State: AO0yUKX/bPxCGA6K24ORDC188l1SCSwEs1E6zDrTrcPUSTqXuv8sHCpF
+	/ln6YgmxL7EWE2n6qHZdFLi35zivoKR2PIdrOISVd8uCCnpCT37rAW7LWaLb2Ba0/nXBbOvBbdg
+	31OPbk+JBlAy8qnycaQqcJSnGIJWB
+X-Received: by 2002:a5d:6ace:0:b0:2d8:908c:8fa0 with SMTP id u14-20020a5d6ace000000b002d8908c8fa0mr1672139wrw.9.1679388420407;
+        Tue, 21 Mar 2023 01:47:00 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8FiOpchgTrqXc6ebRmCnKXDIn4Yoj92NXLSGSmYSqsvnuBKWK1BK5o2c/w9IEaij6lx9oQ/w==
+X-Received: by 2002:a5d:6ace:0:b0:2d8:908c:8fa0 with SMTP id u14-20020a5d6ace000000b002d8908c8fa0mr1672125wrw.9.1679388420146;
+        Tue, 21 Mar 2023 01:47:00 -0700 (PDT)
+Date: Tue, 21 Mar 2023 04:46:56 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>,
-	Alvaro Karsz <alvaro.karsz@solid-run.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Jason Wang <jasowang@redhat.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230321033449-mutt-send-email-mst@kernel.org>
-References: <20230320111840.64039-1-hengqi@linux.alibaba.com>
- <20230320144625-mutt-send-email-mst@kernel.org>
- <3a1969e7-2c4d-b64e-33b2-57311d73fb45@linux.alibaba.com>
- <PH0PR12MB5481C6A8454381F508A30387DC819@PH0PR12MB5481.namprd12.prod.outlook.com>
+Cc: virtio-dev@lists.oasis-open.org, pasic@linux.ibm.com, cohuck@redhat.com,
+	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
+Message-ID: <20230321044539-mutt-send-email-mst@kernel.org>
+References: <20230321041036.201439-1-parav@nvidia.com>
+ <20230321041036.201439-6-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481C6A8454381F508A30387DC819@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <20230321041036.201439-6-parav@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: Re: [virtio-dev] Re: [PATCH v11] virtio-net: support inner header
- hash
+Subject: [virtio-dev] Re: [PATCH v2 5/7] transport-ccw: Refer to the vq by its number
 
-On Tue, Mar 21, 2023 at 04:19:17AM +0000, Parav Pandit wrote:
-> One (this proposal) is solving spread to different RSS queues.
-
-Spread is mostly ok with modern protocols though. It seems to
-optimize for a specific monitoring solution.
-
-> Another one is finding out which exact packet to drop/pass when queue usage is high. (ebpf/tc other ways to solve it).
+On Tue, Mar 21, 2023 at 06:10:34AM +0200, Parav Pandit wrote:
+> Currently specification uses virtqueue index and
+> number interchangeably to refer to the virtqueue.
 > 
-> Ebpf sounds cooler than the real offload implementation in the hw device at the current level.
-> I remember Jason's good talk on the ebpf a few years back, which is possible when done in sw on the hypervisor.
+> Instead refer to it by its number.
+> 
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
 
-I was talking about classic bpf though. no state.
+OK, but I'd say it's worth referring to the old name here, too.
 
-> On mlx5 device inner hash is supported for IPnIP and GRE tunnels.
+> ---
+> changelog:
+> v0->v1:
+> - new patch
+> ---
+>  transport-ccw.tex | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
+> 
+> diff --git a/transport-ccw.tex b/transport-ccw.tex
+> index c2e60b6..b8ba0b7 100644
+> --- a/transport-ccw.tex
+> +++ b/transport-ccw.tex
+> @@ -236,12 +236,12 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
+>  
+>  \begin{lstlisting}
+>  struct vq_config_block {
+> -        be16 index;
+> +        be16 queue_select;
+>          be16 max_queue_size;
+>  };
+>  \end{lstlisting}
+>  
+> -The requested number of buffers for queue \field{index} is returned in
+> +The requested number of buffers for queue \field{queue_select} is returned in
+>  \field{max_queue_size}.
+>  
+>  \begin{note}
+> @@ -256,7 +256,7 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
+>  struct vq_info_block {
+>          be64 desc;
+>          be32 res0;
+> -        be16 index;
+> +        be16 queue_select;
 
-which variants of GRE are supported?
+/* Previously known as index */
 
-> None of the existing users see tunnel attacks when used as forwarding plane.
+>          be16 size;
+>          be64 driver;
+>          be64 device;
+> @@ -265,7 +265,7 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
+>  
+>  \field{desc}, \field{driver} and \field{device} contain the guest
+>  addresses for the descriptor area,
+> -available area and used area for queue \field{index}, respectively. The actual
+> +available area and used area for queue number \field{queue_select}, respectively. The actual
+>  virtqueue size (number of allocated buffers) is transmitted in
+>  \field{size}.
+>  
+> @@ -286,12 +286,13 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
+>  struct vq_info_block_legacy {
+>          be64 queue;
+>          be32 align;
+> -        be16 index;
+> +        be16 queue_select;
 
-good to know.
+/* Previously known as index */
 
--- 
-MST
+>          be16 size;
+>  };
+>  \end{lstlisting}
+>  
+> -\field{queue} contains the guest address for queue \field{index},
+> +\field{queue} contains the guest address for queue number
+> +\field{queue_select},
+>  \field{size} the number of buffers
+>  and \field{align} the alignment. The queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}.
+>  
+> @@ -583,7 +584,7 @@ \subsubsection{Guest->Host Notification}\label{sec:Virtio Transport Options / Vi
+>  For example:
+>  \begin{lstlisting}
+>  info->cookie = do_notify(schid,
+> -                         virtqueue_get_queue_index(vq),
+> +                         virtqueue_get_queue_number(vq),
+>                           info->cookie);
+>  \end{lstlisting}
+>  \end{note}
+> -- 
+> 2.26.2
 
 
 ---------------------------------------------------------------------
