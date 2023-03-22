@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11699-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11700-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4D9F5C6FD20
-	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 23:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 42F32C6FD20
+	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 02:38:00 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7B5212A827
-	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 23:24:49 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 969C460409
+	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 02:37:59 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5F262986452
-	for <virtio-dev@archiver.kernel.org>; Tue, 21 Mar 2023 23:24:49 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8F1CD98646A
+	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 02:37:59 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 46DBA98631B; Tue, 21 Mar 2023 23:24:49 +0000 (UTC)
+	id 83FC498643E; Wed, 22 Mar 2023 02:37:59 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,339 +24,183 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3664A98643D
-	for <virtio-dev@lists.oasis-open.org>; Tue, 21 Mar 2023 23:24:49 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6D5A798643D;
+	Wed, 22 Mar 2023 02:37:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679441086;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1oI23eJUaLPl73s+aexPq0J8E4r6l36cl4I73AOIZ5Q=;
-        b=ZwNp6gGvpLi31kZb1TeFZn4a9HhNaLYtmoAtCh63BdDEHsJ7StQinCVEMsrJ8AaIXi
-         xKrPe7Wp6NllcRnW3hATSTbS4sDKBFza3znesFiJDLmA+HuedJIjzgCcCM+pF2h2y5mc
-         YiapIn5yfHv0+8ASIHlGID0LrMSsRxAwlmbfQue635Fly+O2/cApLVWTrssYyju5pPYA
-         pZ3LJr1gBJmVbX2P/xPF1ONTrxvk1OxmLBpmS1XOF4KKWgVtQZbX8XDFFmmY+bVVACRN
-         PszfmwWaxN+GSSfRSk50/WNFKTSm4ADa9OYeQZ4mcOQrBQfyEVmS0+j99BRsZlFZvHJK
-         6jLg==
-X-Gm-Message-State: AO0yUKWLk23w1WRu8gQs2+iZtAzG34ZXoG45Mj0zBhAJEherT8smIhrK
-	oWNw9fiWY54fVY6SIW0prAdjJxftSI3AnCx6qoZzLg==
-X-Google-Smtp-Source: AK7set+IugtFKiktZeY3ZNXOpTAJ1ocNR9HbellJ+sIwluGyCNdItp3/GB5yxgGNPNeTuAz4qRzX5y6xxjBNh3d1vMk=
-X-Received: by 2002:a1f:a34e:0:b0:401:4daf:d581 with SMTP id
- m75-20020a1fa34e000000b004014dafd581mr2520146vke.0.1679441085907; Tue, 21 Mar
- 2023 16:24:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230310062613.109867-1-Igor.Skalkin@opensynergy.com> <20230310062613.109867-2-Igor.Skalkin@opensynergy.com>
-In-Reply-To: <20230310062613.109867-2-Igor.Skalkin@opensynergy.com>
-From: Enrico Granata <egranata@google.com>
-Date: Tue, 21 Mar 2023 17:24:34 -0600
-Message-ID: <CAPR809u5AehjXzjn4QcsVUybL=pW9mWGDJHXfcXRZCXvTcEiLw@mail.gmail.com>
-To: Igor Skalkin <Igor.Skalkin@opensynergy.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org, 
-	luiz.dentz@gmail.com, mst@redhat.com, marcel@holtmann.org, 
-	johan.hedberg@gmail.com, jasowang@redhat.com, 
-	Hao Chen <chenhaosjtuacm@google.com>, Sal Savage <salsavage@google.com>
-Content-Type: text/plain; charset="UTF-8"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I55xLKWZ3TG66q/Zl9w4oBSYXACqJSvnM27H/veSqATfFplMRyCiBSfTixvtuK4ziAwEbKlK5LKd7MSYja4x6GN9EChnU7uwibLVBJfibsqVXxDVm+52L3cSE/0ki/fHN2FoAR9mZqoOAeOQZ5QSDlVjXDh5Z3CW4U+Qh/5/EQ1q95p01cOpoV2uQ7VGwZRKUcFtFGEP9C7hPLbM+9EcecvIKcu8oMz69xYeCbE37dnyHYDSdo8j/6kJofvzkrcu/67qnuFipp3n4pR4zj+fkZo2UKhFSVLAxpKnYSKa+pv5jKH+6ZwC5XQddRyyxbTC53KZIjBMbW14R92P7hSxaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aVH3WX1rUnjNRg9SGHft7xJfljbpKEbj88G5i8sLUgo=;
+ b=lGuvn6ycoz1PNAjfq2rnLJDc9U0wCyNzYR+R1Eht5YevE0lQQx1kXL2bwLnRq5uMpLOlqzu2MawOJZ476a0P6C9PysOijT4O3al4FgAhV72otWTL2nsP5wKUT3ZyidfxvK8NwjlDvcXu5S/JxKh2AZ2qI4Ou3KiK+vVgEutcPY4zuEqgs0FyDvlUY4JXEg+CbbZLtmLmnjLHuZSFyHu+WNK4Fy7Tk1r3N615oLMnWny3mlwN2rTZejq/t4Y3vaWMgJ1vC7kr02XOktG9i+gPZyWs8Dm1TE4QcaTwUybea3DFibWu7zN8lsVZY5WOGSeDeC2U/VoROpYqm4mvt40njg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"pasic@linux.ibm.com" <pasic@linux.ibm.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH v3 8/8] virtio-net: Describe RSS using receive queue
+ handle
+Thread-Index: AQHZXEBhAOCcFxUsWUm/MA+nPP3zI68FzRqAgABGj4A=
+Date: Wed, 22 Mar 2023 02:37:48 +0000
+Message-ID:
+ <PH0PR12MB5481DD9C8A5D0B1B14A3B184DC869@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230321215834.225856-1-parav@nvidia.com>
+ <20230321215834.225856-9-parav@nvidia.com>
+ <20230321180052-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230321180052-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BL1PR12MB5285:EE_
+x-ms-office365-filtering-correlation-id: 065ce0ae-d441-4dfb-a1f0-08db2a7e6cfe
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ E6Wd2biBgI0Nh2SqbNtiQHoNuT5Qd2BvOVLXt2EaDjMboMz68da9avhi90GR5o3Jg1bCEBGvlSow2HaXEP22G26hFckv5NK3IO4Ql0BbOPKDnZyQPTBnSl/eNvEUD7bfQgI9nx5JEp7uy0MMlPKpv2zQpT0s2ak0+pDL522SdsueE3C7lZ+mSZiiL6zM6Ou4MoCGAsbBHO4szkx/sDnXIBeOI+4o/XH9sle1grpeCifYQBa91/XRoZetr2qhqSsIS2vDTskwwF9JMHJ4DT53q7f2S+nqyZlEfMgyKclaB01QsZPKbrVV0ySSMG0dyAeACQEzNFZU8j8w//jNmNgPzQEOeANbrOjfvcoaxcdcyGmZWJuYS4Kb3wFyD1jrqgoJMgL9umgzO2nBfrjMbHCWi/ByqY353Q8R3Mlpg90amFMXgn7Oub1eSYgI1JXXsQ8mNJEeGFs5EUE/eUUujWqSZ/gkKEGgqGwXXAAMmYwaRgpKBW39CrB7TLO4dqL8Jvo9ZgWp0myLPdR5mqxuyJmt6pwOMc/MkXtekfSCmaijvomVaADs/yqR4VhzHhS5oP1oBQMppe7BzH2WDNUt7RTTICDtx5tVGM7tnHjW36TPs+caFbypul99vUt89ltFFwXtrkOwzsRtbr0vmes1cyCqzKEuLJ8iZiurpK+AzRS2BqzAHDXku3LWW96kRFzauDcNi4B+RGD2ypJRHmjtYwFbRQ==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(136003)(366004)(376002)(396003)(451199018)(7696005)(54906003)(86362001)(38100700002)(38070700005)(55016003)(122000001)(71200400001)(66476007)(2906002)(64756008)(8676002)(4326008)(66556008)(66446008)(8936002)(6916009)(66946007)(52536014)(76116006)(41300700001)(5660300002)(9686003)(107886003)(6506007)(33656002)(26005)(478600001)(316002)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?ia3hNHgGQBLPa2/nbbVomgbY+uK19QxkjY0sM45f0nXT+6jS0knMjb1rzbaU?=
+ =?us-ascii?Q?I4yvZFknJopvWnbTMDrhFq/T6t8TYueS0u5hBh6E5RehHJvDA86lu8Bp3rUh?=
+ =?us-ascii?Q?tjWqqhpkgXrafkLLQ+Lqt8USPBHwY/s5Xf3oYpRmWNryMydkKrvv0VAjM4Ny?=
+ =?us-ascii?Q?/MLWnDTq/8/h07FSc7wdERG0QN9eTq8qqrXYfoM9hLQsBD3Mf93AY7+nVjFX?=
+ =?us-ascii?Q?hq+Srv4LOhyyerlJwKQqu+YUS4ZWPCbUGGUMta5BEOpY1EbzOdC5aMgLXUVO?=
+ =?us-ascii?Q?FDUT2c+QMQQopWoapwO30lBcsa/OFdAapfzCAN5wNLDE0FLHjpW7muFaXu31?=
+ =?us-ascii?Q?tlLnmdlUbJaiiqiAMWRwkYpcZTzRxhHobEkJDZy821FlfVXuj7G9J3PatJ0j?=
+ =?us-ascii?Q?6yaPAQWCKjt7JNfxK3helIWkyLCrApNMFU/2qd4ZDwvKU8UPGtl6mltDRwVb?=
+ =?us-ascii?Q?bUGpYtRzTHHcj4JX3WyPX9HV4yu1qmVKNSPCY+EgS0/5gT9PwuU4x4TLuL3F?=
+ =?us-ascii?Q?gxKGIOPcpoc5BxKUZptjFqUHGWEDO6U4iexsB9npZjtBgk7JpvKBTrDUJNdA?=
+ =?us-ascii?Q?9MhzAGccPq7QZ34xXR+BVMgu5tlsiDAthQF1yfmFEwxryDTyPqVMlupTJL4T?=
+ =?us-ascii?Q?qgj3PRjlHV1KINyX5OEYoOc/LnMf0Kel3tXbCkW94V/73PbfXe6M5ah+C0ec?=
+ =?us-ascii?Q?kx84jJKhm7cHM7lpeOXAVTsrqoqu0rj/OZGLdi7UlpLyFFxFSqsj7YU2zdkQ?=
+ =?us-ascii?Q?RU9Z54zBBmPLpDfjtYQ1DDhNZpUF25wNMljBl8c+GLl6gEECFu0S/M29+TGg?=
+ =?us-ascii?Q?Y+Lh4I6AAgB7gmisoSqI3FJmOUZz0kotDveu85j4oydfqfZQ/tFv3TzOeEx3?=
+ =?us-ascii?Q?ph7rWXeWiYj45HNk97XgSOxcsRuXS/ptoCX8iOqm0vAVdjT4pBF2jKVPNbsB?=
+ =?us-ascii?Q?z0Gmy465gmmTLMZPqZJl4GlnJW2upkEgMrZp26vrX9O2vDtvc2Ukm3cJ/oqf?=
+ =?us-ascii?Q?bHyM3ffd88Ud63X05hnFq+iA3ycwI05lNOUrg+QNOSuInafa7g+ux6TlyA/e?=
+ =?us-ascii?Q?0KX2kSZAi84HSl8xCJ6e+rgl5lcNoUg6Opi1tpysT6ODK6zIeMw9gt7xPNZR?=
+ =?us-ascii?Q?GYjQaqg2TW7zyy2ILSFLh5lJz4xFnIjJux4aT0KX/SDqzqSs3b66hcAiMcqo?=
+ =?us-ascii?Q?zhPktwcFAnwoDT2cZHV1psYrg1IZoOyj69GlGrjHBP6gywcdDv0U8jRzZSgu?=
+ =?us-ascii?Q?97OXyExFn9oTs2hyc1EGb4RssC7pxjc/5QvuSXStD/TctpRtyv/j5I7XAeFF?=
+ =?us-ascii?Q?40Oto6muyCn6grFUR881kGkaV4e1WlXa91rqHgFSPEsH3PNvAFkPWKru5+jD?=
+ =?us-ascii?Q?DE1PzT5z1YQ062u4iY9ndCe2FlgLRz7UuJMSuHMQSEM4onJCeCEmtLiRmAJ9?=
+ =?us-ascii?Q?va9MlrZilcJUcrC94h9pR0r4OYcY03KBjLmWcZpTn6gpy41wlnfK0rpEL/5f?=
+ =?us-ascii?Q?Gw0zEjt1VLDV0F0fkA5IOBRnf6V6X0xX4XnClGXH0WRmhm25VgpUlzcqEIEw?=
+ =?us-ascii?Q?hDRFRrG5YQa2BxsMut0=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] [PATCH 1/1] RFC: virtio-bt: add virtio BT device specification
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 065ce0ae-d441-4dfb-a1f0-08db2a7e6cfe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2023 02:37:48.5617
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aMgotHScmkTV7AAZMt75o/n8u26rxoT/GXrigTAt6JfWs6uRq54lNEBKVq+UgZqnRNM3apagOKVrBIVuQ1QmTg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5285
+Subject: [virtio-dev] RE: [PATCH v3 8/8] virtio-net: Describe RSS using receive queue
+ handle
 
-On Thu, Mar 9, 2023 at 11:27=E2=80=AFPM Igor Skalkin
-<Igor.Skalkin@opensynergy.com> wrote:
->
-> This PR is aimed as review for comments(RFC) purpose.
->
-> * Initial draft version.
->
-> Signed-off-by: Igor Skalkin <Igor.Skalkin@opensynergy.com>
-> ---
->  conformance.tex                        |  12 ++-
->  content.tex                            |   1 +
->  device-types/bt/description.tex        | 112 +++++++++++++++++++++++++
->  device-types/bt/device-conformance.tex |   8 ++
->  device-types/bt/driver-conformance.tex |   8 ++
->  5 files changed, 137 insertions(+), 4 deletions(-)
->  create mode 100644 device-types/bt/description.tex
->  create mode 100644 device-types/bt/device-conformance.tex
->  create mode 100644 device-types/bt/driver-conformance.tex
->
-> diff --git a/conformance.tex b/conformance.tex
-> index 01ccd69..a69eb47 100644
-> --- a/conformance.tex
-> +++ b/conformance.tex
-> @@ -32,8 +32,9 @@ \section{Conformance Targets}\label{sec:Conformance / C=
-onformance Targets}
->  \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
->  \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conforman=
-ce},
->  \ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
-> -\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance} or
-> -\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
-> +\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance},
-> +\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance} or
-> +\ref{sec:Conformance / Driver Conformance / BT Driver Conformance}
->
->      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional D=
-evice and Transitional Driver Conformance}.
->    \end{itemize}
-> @@ -59,8 +60,9 @@ \section{Conformance Targets}\label{sec:Conformance / C=
-onformance Targets}
->  \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
->  \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conforman=
-ce},
->  \ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
-> -\ref{sec:Conformance / Device Conformance / GPIO Device Conformance} or
-> -\ref{sec:Conformance / Device Conformance / PMEM Device Conformance}.
-> +\ref{sec:Conformance / Device Conformance / GPIO Device Conformance},
-> +\ref{sec:Conformance / Device Conformance / PMEM Device Conformance} or
-> +\ref{sec:Conformance / Device Conformance / BT Device Conformance}
->
->      \item Clause \ref{sec:Conformance / Legacy Interface: Transitional D=
-evice and Transitional Driver Conformance}.
->    \end{itemize}
-> @@ -152,6 +154,7 @@ \section{Conformance Targets}\label{sec:Conformance /=
- Conformance Targets}
->  \input{device-types/scmi/driver-conformance.tex}
->  \input{device-types/gpio/driver-conformance.tex}
->  \input{device-types/pmem/driver-conformance.tex}
-> +\input{device-types/bt/driver-conformance.tex}
->
->  \conformance{\section}{Device Conformance}\label{sec:Conformance / Devic=
-e Conformance}
->
-> @@ -238,6 +241,7 @@ \section{Conformance Targets}\label{sec:Conformance /=
- Conformance Targets}
->  \input{device-types/scmi/device-conformance.tex}
->  \input{device-types/gpio/device-conformance.tex}
->  \input{device-types/pmem/device-conformance.tex}
-> +\input{device-types/bt/device-conformance.tex}
->
->  \conformance{\section}{Legacy Interface: Transitional Device and Transit=
-ional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transit=
-ional Device and Transitional Driver Conformance}
->  A conformant implementation MUST be either transitional or
-> diff --git a/content.tex b/content.tex
-> index 0c7cdf8..3723ec8 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -3022,6 +3022,7 @@ \chapter{Device Types}\label{sec:Device Types}
->  \input{device-types/scmi/description.tex}
->  \input{device-types/gpio/description.tex}
->  \input{device-types/pmem/description.tex}
-> +\input{device-types/bt/description.tex}
->
->  \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->
-> diff --git a/device-types/bt/description.tex b/device-types/bt/descriptio=
-n.tex
-> new file mode 100644
-> index 0000000..3ce265d
-> --- /dev/null
-> +++ b/device-types/bt/description.tex
-> @@ -0,0 +1,112 @@
-> +\section{BT Device}\label{sec:Device Types / BT Device}
-> +
-> +The virtio-bt device provides an HCI (Host Control Interface) over VirtI=
-O
-> +link between the guest HCI device and the host HCI backend.
-> +Also, the device can inform the guest driver which vendor-specific comma=
-nd
-> +set it supports.
-> +Host Control Interface is described in Bluetooth Core Specification:
-> +\newline\url{https://www.bluetooth.com/specifications/specs/core-specifi=
-cation-5-4/}\\
 
-Are you giving any thought to out of band communication (e.g. A2DP and HFP)=
-?
 
-> +
-> +\subsection{Device ID}\label{sec:Device Types / BT Device / Device ID}
-> +
-> +40
-> +
-> +\subsection{Virtqueues}\label{sec:Device Types / BT Device / Virtqueues}
-> +
-> +\begin{description}
-> +\item[0] transmitq
-> +\item[1] receiveq
-> +\end{description}
-> +
-> +\subsection{Feature bits}\label{sec:Device Types / BT Device / Feature b=
-its}
-> +
-> +\begin{description}
-> +\item[VIRTIO_BT_F_VND_HCI (0)]  Indicates vendor command support.
-> +\item[VIRTIO_BT_F_MSFT_EXT (1)] Indicates MSFT vendor support.
-> +\item[VIRTIO_BT_F_AOSP_EXT (2)] Indicates AOSP vendor support.
-> +\item[VIRTIO_BT_F_CONFIG_V2 (3)] The device uses the second version of t=
-he
-> +configuration space structure.
-> +\end{description}
-> +
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Tuesday, March 21, 2023 6:17 PM
 
-How are these different from the vendor fields discussed elsewhere in the s=
-pec?
-Is it the idea that any vendor could support AOSP or MSFT specific
-command sets, and so you need two separate flags?
-
-If so, maybe calling them "guest OS support" instead of "vendor" might
-be a better choice to avoid confusion
-Also, we should probably document somewhere what commands those
-extensions entail
-
-> +\devicenormative{\subsubsection}{Feature bits}{Device Types / BT Device =
-/ Feature bits}
-> +
-> +The device MUST require the driver to accept the VIRTIO_BT_F_CONFIG_V2 f=
-eature
-> +bit, i.e. not set FEATURES_OK without it, and use the second version
-> +(struct virtio_bt_config_v2) of the configuration layout, because the
-> +first one (struct virtio_bt_config) is unaligned, which violates the
-> +specification.
-> +
-> +The device should offer VIRTIO_BT_F_MSFT_EXT or VIRTIO_BT_F_AOSP_EXT fea=
-ture bit
-> +if it supports correspondingly MSFT or AOSP extension command sets. In c=
-ase of
-> +VIRTIO_BT_F_MSFT_EXT, device should also set configuration \field{msft_o=
-pcode}.
-> +
-> +The device should offer VIRTIO_BT_F_VND_HCI feature bit and set \field{v=
-endor}
-> +to the VIRTIO_BT_CONFIG_VENDOR_ZEPHYR, VIRTIO_BT_CONFIG_VENDOR_INTEL or
-> +VIRTIO_BT_CONFIG_VENDOR_REALTEK, if it supports corresponding vendor ext=
-ensions.
-> +
-> +\drivernormative{\subsubsection}{Feature bits}{Device Types / BT Device =
-/ Feature bits}
-> +
-> +The driver MUST accept VIRTIO_BT_F_CONFIG_V2 feature bit if offered by t=
-he device.
-> +
-> +The driver SHOULD accept any of the  VIRTIO_BT_F_VND_HCI, VIRTIO_BT_F_MS=
-FT_EXT
-> +or VIRTIO_BT_F_AOSP_EXT feature bits if offered by the device.
-> +
-> +\subsection{Device configuration layout}\label{sec:Device Types / BT Dev=
-ice / Device configuration layout}
-> +
-> +
-> +The first version:
-> +\begin{lstlisting}
-> +struct virtio_bt_config {
-> +       u8 type;
-> +       le16 vendor;
-> +       le16 msft_opcode;
-> +} __attribute__((packed));
-> +\end{lstlisting}
-> +
-> +is deprecated, new devices must use the second one:
-> +\begin{lstlisting}
-> +struct virtio_bt_config_v2 {
-> +       u8 type;
-> +       u8 alignment;
-> +       le16 vendor;
-> +       le16 msft_opcode;
-> +};
-> +\end{lstlisting}
-> +
-> +\devicenormative{\subsubsection}{Device configuration layout}{Device Typ=
-es / BT Device / Device configuration layout}
-> +The device MUST NOT present a value different than
-> +\begin{lstlisting}
-> +       VIRTIO_BT_CONFIG_TYPE_PRIMARY =3D 0,
-> +       VIRTIO_BT_CONFIG_TYPE_AMP =3D 1,
-> +\end{lstlisting}
-> +in \field{type}.
-
-What do these values mean?
-
-> +
-> +The values 1..3 of the \field{vendor} are already reserved for vendor ex=
-tensions listed below:
-> +\begin{lstlisting}
-> +       VIRTIO_BT_CONFIG_VENDOR_NONE =3D 0
-> +       VIRTIO_BT_CONFIG_VENDOR_ZEPHYR =3D 1
-> +       VIRTIO_BT_CONFIG_VENDOR_INTEL =3D 2
-> +       VIRTIO_BT_CONFIG_VENDOR_REALTEK =3D 3
-> +\end{lstlisting}
-> +
-
-How would any other vendor add their extensions to this list?
-For example, say I start my own Bluetooth adapter company tomorrow,
-how do I add VENDOR_ENRICO to the list?
-
-> +If value of the \field{vendor} is not VIRTIO_BT_CONFIG_VENDOR_NONE, devi=
-ce MUST
-> +offer VIRTIO_BT_F_VND_HCI feature bit.
-> +
-> +\drivernormative{\subsubsection}{Driver configuration layout}{Device Typ=
-es / BT Device / Driver configuration layout}
-> +All configuration fields are read-only for the driver.
-> +
-> +\subsection{Device initialization}\label{sec:Device Types / BT Device / =
-Device initialization}
-> +
-> +The virtqueues are initialized.
-> +
-> +\subsection{Device operations}\label{sec:Device Types / BT Device / Devi=
-ce operations}
-> +
-> +The driver SHOULD populate the receive queue with at least one buffer of=
- at
-> +least 258 bytes to contain 1 byte "packet type" and HCI event packet (2 =
-bytes
-> +of HCI event packet header and up to 255 bytes payload).
-> +Synchronous and asynchronous data packets that are longer than the provi=
-ded
-> +buffer will be fragmented.
-> +
-> +The driver sends to the transmit queue all (command and data) packets, r=
-eceived
-> +from the guest HCI device, and transfers to the guest HCI device all (ev=
-ent and
-> +data) HCI packets, received from the receive queue.
-> diff --git a/device-types/bt/device-conformance.tex b/device-types/bt/dev=
-ice-conformance.tex
-> new file mode 100644
-> index 0000000..7b73f4a
-> --- /dev/null
-> +++ b/device-types/bt/device-conformance.tex
-> @@ -0,0 +1,8 @@
-> +\conformance{\subsection}{Bluetooth Device Conformance}\label{sec:Confor=
-mance / Device Conformance / Bluetooth Device Conformance}
-> +
-> +A BT device MUST conform to the following normative statements:
-> +
-> +\begin{itemize}
-> +\item \ref{devicenormative:Device Types / BT Device / Feature bits}
-> +\item \ref{devicenormative:Device Types / BT Device / Device configurati=
-on layout}
-> +\end{itemize}
-> diff --git a/device-types/bt/driver-conformance.tex b/device-types/bt/dri=
-ver-conformance.tex
-> new file mode 100644
-> index 0000000..2264a79
-> --- /dev/null
-> +++ b/device-types/bt/driver-conformance.tex
-> @@ -0,0 +1,8 @@
-> +\conformance{\subsection}{BT Driver Conformance}\label{sec:Conformance /=
- Driver Conformance / BT Driver Conformance}
-> +
-> +A BT driver MUST conform to the following normative statements:
-> +
-> +\begin{itemize}
-> +\item \ref{drivernormative:Device Types / BT Device / Feature bits}
-> +\item \ref{drivernormative:Device Types / BT Device / Driver configurati=
-on layout}
-> +\end{itemize}
-> --
-> 2.37.2
+> > -Field \field{unclassified_queue} contains the 0-based index of -the
+> > receive virtqueue to place unclassified packets in. Index 0 corresponds=
+ to
+> receiveq1.
+> > +\begin{lstlisting}
+> > +le16 rq_handle;
+> > +\end{lstlisting}
+> > +
+> > +\field{rq_handle} is a receive virtqueue handle. It is calculated as
+> > +virtqueue number divided by two. For example a receive virtqueue
+> > +handle value of 3 corresponds to virtqueue number 6 maps to receiveq4.
+> > +
+> > +Field \field{unclassified_queue} contains the receive queue handle
+> > +\field{rq_handle} described above.
+>=20
+> You dropped *which* queue this refers to.
 >
+Will add back.
+=20
+> And it's still kind of complex and non-standard. E.g. what does \begin{ls=
+tlisting}
+> le16 rq_handle;
+> \end{lstlisting}
+> mean exactly? Apparently nothing ...
+>=20
+Why nothing, it is referenced further down.
+Did you suggest moving before using it?
+It was just fine to provide forward reference.
+
+> I feel what we keep there is really the virtqueue number itself.
+> Just stored in this strage format.
 >
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> And all this talk about handles kind of seems to add yet another term to =
+learn.
+> Where in fact all it is, is just a different way to store vqn.
+>=20
+> So my idea was this: we say something like:
+>=20
+>=20
+> \field{unclassified_queue} contains the virtqueue number of the receive q=
+ueue
+> to place unclassified packets in.
+> \field{indirection_table} contains an array of virtqueue numbers of recei=
+ve
+> queues.
 >
+Above two lines are clearly confusing where virtqueue number describe in re=
+st of the spec and above doesn't align to same notion.
+So better to say field A contains the rq_handle and
+
+struct rq_handle {
+	le16 vqn_16_1: 15;
+	le16 reserved : 1;
+};
+
+=20
+> Both \field{unclassified_queue} and \field{indirection_table} use the fol=
+lowing
+> format for the virtqueue numbers:
+> \begin{lstlisting}
+> struct rss_virtqueue_number {
+It is really not any superior in term of cost of learning.
+
+> 	le16 vqn_16_1 : 15; /* Bits 16 to 1 of the virtqueue number */
+> 	le16 reserved : 1; /* Set to 0 */
+I like the structure and reserved bit that enables to claim one bit for som=
+e unknown future use.
+> }
+> \end{lstlisting}
+> for example, a value of 3 corresponds to virtqueue number 6 and maps to
+> receiveq4.
+>=20
+>=20
+>=20
+> and then everywhere else we just say it keeps a vq number, we already
+> explained it is using this format once no need to repeat that.
+>
+I just prefer to rename it to rq_handle ( or at least other than virtqueue =
+number) to distinguish it from rest of the virtqueue number.
+=20
+> WDYT?
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
