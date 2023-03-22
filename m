@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11728-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11729-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E6950C6FD1F
-	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 21:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ABDD1C761AF
+	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 21:53:53 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id A9E742AD63
-	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 21:53:22 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B210726A37
+	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 21:53:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A30F8986528
-	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 21:53:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 42CE9986593
+	for <virtio-dev@archiver.kernel.org>; Wed, 22 Mar 2023 21:53:23 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 983C99864C3; Wed, 22 Mar 2023 21:53:22 +0000 (UTC)
+	id DB2A398657D; Wed, 22 Mar 2023 21:53:22 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7617698672D;
-	Wed, 22 Mar 2023 21:53:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DF59E986463;
+	Wed, 22 Mar 2023 21:53:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lFtE8v4X3jZ9kpaA1oVyX11hgfCsWrxCpuZK6ayAMGqa3S78912pJuET0GW36aQ40PsND86LUcbfy7cIiwv6Dk+NaTW29vNHBQQzVh/7P8QsCaHzkl6YVw/1kW2zerY6nKA0uXTrRmzXohvPW2LJXNv2V6B6pMKo9/J7FojJiQjbidqtrTB98NqLz44CXVdpltEPN6YCKY8xCXiad1ESqh1QiwH+sgZHbtfWiaIf6eZ2B3ZJrf/5lGJVZE1gxjtt2OJ+LPOrw8zeCRAdiHujJnexrz8VnrgwZA94VKb3blTxDvtEXyJmP4mz5x//zovPOX6hhYczA+g0w9O7Bk0zTQ==
+ b=TlihN4GCZuE7K6USd0M3BqvtC9Wr6Z2fkG3+O7fYvRMUCFN64JCLlzJoWE9sOQ7BUpLoOtxmsHXnTgU6gzvLc7xq2es6VkgDntn0Q0y8VPL1dzWJtSULBsM8lKUvNywmKM6NMykxJbugyFNWLY1RhpasLS35Cb0oV23aDYj2VSTET9+c9ELUlfKa4LtL7HWav3cnlJEyGodrhAkVV+Rk/MIIwrYDjD9po3SI310aivgIJO9gyJajGHw+RzXmW1IBS6t9+K0CJyzAWmnTAhr58v2blIDKPON2VA1trYu83CRVit/ns9mmaPMAxSFI0uHLQitUKUsQF5uVu+g6HnyRKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=airtlll1gtet/B6KKmqxtGiV85mQTkCQdAIwFUWD5bo=;
- b=gR8IwuCPE7qcvl9/atKZz+w51j8etbjUgFlc25RmINv1/NW38QXd7U8OjIqFmnMTuJ40xBwjWnbRDkBVUFcCKnpZANtuHxOaIagmCBwSIqsnShCoN134FaxdR1jrOdIHOqxvJelWaQGhb8hvvz6qhkVyguafybk+jwzlqLZ68WK7PZtZgAbzphK+iUKQFVyyRo/VLigFRmA4wJAz3bRKfx6BHuSqRV/x3fiJE99QmF7ePPcySOQiIJtQFlutAo6WUJ1aE/rWxyuwxXmXor03eB4uxRI+InVA8AQ7xdblinH5ZDw/UuCgchRQ8aJbLLGlDm324OARKyygCZD2aRgAhw==
+ bh=H/y2yHD9+eaIc+KixlneYCSkG+JIP/pzXy9DSNAAr7c=;
+ b=fLv1OwoQ9+gpdi2Ky3tGwtEHwUGYEpCeUSRE3n17hD5wOpffmSAvO+sTo1pX6ajyE0A7N5l8oJFvMQTE1XnRmX2eioDACqTFuNsdOwThWPIo6EsiTxgO//m7oOLyqkbtJ4MZ8e+/F/AGzNqx07tT0yi/NHAmsCuSTrdcj+9TqGMM+QjxeVK13nULK4s5r90tgJZtXeji2b455ImfrjQwiQQzab+WeSzSs4VUvTsMegZT1sZ25aQDuLfG7XETsSbrLQpxKal1zBz+/PKN1K+1qnAmHiGaRGCQwFUm8rMuUuG3eliXwqG9Na1KOKBOLBJIfMXHNAFUnbWm45+VfRxBAQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -48,9 +48,9 @@ From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>,
 	<pasic@linux.ibm.com>, <cohuck@redhat.com>
 CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
-	<parav@nvidia.com>
-Date: Wed, 22 Mar 2023 23:52:41 +0200
-Message-ID: <20230322215243.249524-7-parav@nvidia.com>
+	<parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Date: Wed, 22 Mar 2023 23:52:38 +0200
+Message-ID: <20230322215243.249524-4-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20230322215243.249524-1-parav@nvidia.com>
 References: <20230322215243.249524-1-parav@nvidia.com>
@@ -62,110 +62,184 @@ X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT082:EE_|DM8PR12MB5413:EE_
-X-MS-Office365-Filtering-Correlation-Id: 590327fd-b2c0-43ce-3e95-08db2b1fd3db
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT055:EE_|MW4PR12MB6850:EE_
+X-MS-Office365-Filtering-Correlation-Id: 333ed598-9128-4244-2285-08db2b1fd1cc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	2odHIjpSWdw6eaUPiZHplYq6sawN3KK0H+cRKgdTk67Q7McpNvckF470eOE2EE0kb4aSnNXq+QweehgOCBKpcgt0h+/0B8DyRv7fofAou1eBz764xTEUBJCs2YEsR74rmrmibBtbRlHCdl8FkYuTUvyFnnt0qwtbMARqIqk6wXZHjQ+dNRqMCX6zOeWos5zHi3j3mDy+ReiQAJgdW65EyHM/u4GdjPJmKBvsKhTpmkK7VRJeXYafQiP5/rx2YnfYMZEs7/HJIYCHu/eBfjHo4ZLNGkni/B32OooxSKSYOOWlexK99JKnRyYz10DWdVct4TD0/ixXZAyyhU7LapzQ7iPyrqGFCQ080XNjSz6a9v4yWE9apAfQ+Zij8eGCkjJ8A5bRToh04pOkLvMXoCUFRj3U0W8LOwsY3ttYAMBC5sPjHhbvt2tzU5YyNS7E+TR8MT3ZsXTBtPlGvbtczGX42e0mTRFWWa3t7xJwonLqecCPRGx7vY8fHzGrBs03RrVhYK7maY7Fp+Vnrn+avUEIbAgY1uEySG8Z6V0oKwElQHPpLut5enb31H7+X6ZKK+0rwN/I1ubJOLnYPwDD6jKMNjCiHdmJLobqtknsioRLSdtRDXFaekr03awy2YH7SEdvumv3doa9fQjGqfQnIO2awd/d0CHV4a0uVs8c8ZKYmf3jBnMlkaRh7nH7KPRmmI6WBAhWrojoJOnmmXbRDUItw2pgKfjkw/ukv5MbkuQR+Oa0Vg6iAMIIcjuU5rKh1zDDoE5VtvOYAofRCjKFaHWF3vBffmtQ7YzeVlVG4zAZc/g=
+	r5E9mjf7pR/jQ410YDd6Oawntpritlz4Q8TwLYmW7Q8TH7+Q56G3LWoGVNtvQi/LItnTooegzF5dLi41G1RmB0BkueCHdj2a8WtbZ9VzmuDQVadBtgqJD/NVG1wk9k1SWKXdEXAyM0e2QIb8CA4TlHLGg/EkFJ4JI3b08ELc1UzD6BJ4Mw1ZyBPtIbkRxehfLtco2epn9D3os8wCMhsPk1geku7+I9wU1DaWiTEc7bJcTA6xVDaXgHvN7bgkPmf5YuxM075AXTv3vWb878GKqBgXzYWezXHEdN/IJe+tWhNReDZVqF35itowPfefh6xgMU3xoIgnBdndNYI9GHHEVaQ0Twi9jG7xPX2qU32gsgvCHeSBSROOt7jQgzXw+r5U8Jts8JYXQnUkFfnWw/CAOrp9LijSdqoBNOqIBXboUM+CSNHJTyFUxrjoWbVMdl4QrVOQ6nF9PsTNqc//2konQeDbasLN7vEKLH+Ju1DgEIa6ZHgmQ693e4NEVfBRrohYWyfjwxnYvkYiAIkcKAmF+NmY/0rKcvSMQ2bKLmdJMarcTAu2oQGTPxYivvhWHIqX3JkGQ7j4Vni97Wu70V0knVZmSSnwPd2u9vOHyLTk/xdLnzMP3Ss0htg6gioENZU59r8vG8NPFwfdcR0lu5ubuqnOzQX3Uwnl394UbK2I4W8GOv2TcN8+i7Qzf7/iLTRXNZAZosZ1hKrpFmPkCvmDWt9MU/IywMVCMNGfykW3pALKc06brmSilyJmcfr7VrLo9mD3zTxUZqStStvuvjqhz65TgJ+WzRFl+bP7VuxxHkw=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(376002)(136003)(451199018)(36840700001)(46966006)(40470700004)(356005)(478600001)(7636003)(2616005)(110136005)(316002)(82310400005)(16526019)(186003)(2906002)(70206006)(82740400003)(8676002)(70586007)(26005)(83380400001)(54906003)(4326008)(86362001)(36756003)(1076003)(107886003)(6666004)(40480700001)(41300700001)(5660300002)(47076005)(36860700001)(336012)(40460700003)(426003)(8936002)(966005);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(376002)(136003)(396003)(451199018)(36840700001)(40470700004)(46966006)(40480700001)(83380400001)(41300700001)(36860700001)(478600001)(40460700003)(70206006)(70586007)(316002)(8676002)(4326008)(54906003)(186003)(110136005)(26005)(16526019)(1076003)(6666004)(336012)(107886003)(86362001)(82740400003)(82310400005)(2616005)(36756003)(2906002)(426003)(7636003)(8936002)(5660300002)(966005)(47076005)(356005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 21:53:09.9836
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 21:53:06.5291
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 590327fd-b2c0-43ce-3e95-08db2b1fd3db
+X-MS-Exchange-CrossTenant-Network-Message-Id: 333ed598-9128-4244-2285-08db2b1fd1cc
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT082.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT055.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5413
-Subject: [virtio-dev] [PATCH v4 6/8] transport-ccw: Refer to the vq by its number
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6850
+Subject: [virtio-dev] [PATCH v4 3/8] transport-mmio: Rename QueueNum register
 
-Currently specification uses virtqueue index and
-number interchangeably to refer to the virtqueue.
+Currently specification uses virtqueue index and number
+interchangeably to refer to the virtqueue.
 
-Instead refer to it by its number.
+It is better to always refer to it the virtqueue in consistent manner.
+
+Two registers QueueNumMax and QueueNum actually reflects the queue size
+or queue depth indicating max and actual number of entries in the queue.
+
+These are further named differently between pci and mmio transport.
+PCI transport indicates queue size as queue_size.
+
+To bring consistency between pci and mmio transport, and to avoid
+confusion between number and index, rename the QueueNumMax and QueueNum
+registers to QueueSizeMax and QueueSize respectively.
 
 Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 
 ---
 changelog:
-v3->v4:
-- moved note to comment
-v2->v3:
-- added comment note for queue_select similar to max_queue_size
 v0->v1:
-- new patch
+- replaced references of QueueNumMax to QueueSizeMax
+- replaced references of QueueNum to QueueSize
+- added note for renamed fields old name suggested by @Michael Tsirkin
 ---
- transport-ccw.tex | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ transport-mmio.tex | 42 ++++++++++++++++++++++++++++--------------
+ 1 file changed, 28 insertions(+), 14 deletions(-)
 
-diff --git a/transport-ccw.tex b/transport-ccw.tex
-index b4bc83b..b405db1 100644
---- a/transport-ccw.tex
-+++ b/transport-ccw.tex
-@@ -236,12 +236,12 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
+diff --git a/transport-mmio.tex b/transport-mmio.tex
+index f884a2c..3047633 100644
+--- a/transport-mmio.tex
++++ b/transport-mmio.tex
+@@ -110,24 +110,31 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+   \hline
+   \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
+     Writing to this register selects the virtual queue that the
+-    following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
++    following operations on \field{QueueSizeMax},
++    \field{QueueSize}, \field{QueueReady},
+     \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
+     \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
+     number of the first queue is zero (0x0).
+   }
+   \hline
+-  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
++  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+     Reading from the register returns the maximum size (number of
+     elements) of the queue the device is ready to process or
+     zero (0x0) if the queue is not available. This applies to the
+     queue selected by writing to \field{QueueSel}.
++    \begin{note}
++    \field{QueueSizeMax} was previously known as QueueNumMax.
++    \end{note}
+   }
+   \hline
+-  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
++  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
+     Queue size is the number of elements in the queue.
+     Writing to this register notifies the device what size of the
+     queue the driver will use. This applies to the queue selected by
+     writing to \field{QueueSel}.
++    \begin{note}
++    \field{QueueSize} was previously known as QueueNum.
++    \end{note}
+   }
+   \hline
+   \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
+@@ -308,11 +315,11 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
  
- \begin{lstlisting}
- struct vq_config_block {
--        be16 index;
-+        be16 queue_select; /* Previously named as index */
-         be16 max_queue_size; /* Previously named as max_num */
- };
- \end{lstlisting}
+ Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
  
--The requested number of buffers for queue \field{index} is returned in
-+The requested number of buffers for queue \field{queue_select} is returned in
- \field{max_queue_size}.
+-The driver MUST write a value to \field{QueueNum} which is less than
+-or equal to the value presented by the device in \field{QueueNumMax}.
++The driver MUST write a value to \field{QueueSize} which is less than
++or equal to the value presented by the device in \field{QueueSizeMax}.
  
- Afterwards, CCW_CMD_SET_VQ is issued by the driver to inform the
-@@ -252,7 +252,7 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
- struct vq_info_block {
-         be64 desc;
-         be32 res0;
--        be16 index;
-+        be16 queue_select; /* Previously named as index */
-         be16 size; /* Previously named as num */
-         be64 driver;
-         be64 device;
-@@ -261,7 +261,7 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
+ When \field{QueueReady} is not zero, the driver MUST NOT access
+-\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
++\field{QueueSize}, \field{QueueDescLow}, \field{QueueDescHigh},
+ \field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \field{QueueDeviceHigh}.
  
- \field{desc}, \field{driver} and \field{device} contain the guest
- addresses for the descriptor area,
--available area and used area for queue \field{index}, respectively. The actual
-+available area and used area for queue number \field{queue_select}, respectively. The actual
- virtqueue size (number of allocated buffers) is transmitted in
- \field{size}.
+ To stop using the queue the driver MUST write zero (0x0) to this
+@@ -363,14 +370,14 @@ \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Vir
+    and expect a returned value of zero (0x0).
  
-@@ -278,12 +278,13 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
- struct vq_info_block_legacy {
-         be64 queue;
-         be32 align;
--        be16 index;
-+        be16 queue_select; /* Previously named as index */
-         be16 size; /* Previously named as num */
- };
- \end{lstlisting}
+ \item Read maximum queue size (number of elements) from
+-   \field{QueueNumMax}. If the returned value is zero (0x0) the
++   \field{QueueSizeMax}. If the returned value is zero (0x0) the
+    queue is not available.
  
--\field{queue} contains the guest address for queue \field{index},
-+\field{queue} contains the guest address for queue number
-+\field{queue_select},
- \field{size} the number of buffers
- and \field{align} the alignment. The queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}.
+ \item Allocate and zero the queue memory, making sure the memory
+    is physically contiguous.
  
-@@ -571,7 +572,7 @@ \subsubsection{Guest->Host Notification}\label{sec:Virtio Transport Options / Vi
- For example:
- \begin{lstlisting}
- info->cookie = do_notify(schid,
--                         virtqueue_get_queue_index(vq),
-+                         virtqueue_get_queue_number(vq),
-                          info->cookie);
- \end{lstlisting}
- \end{note}
+ \item Notify the device about the queue size by writing the size to
+-   \field{QueueNum}.
++   \field{QueueSize}.
+ 
+ \item Write physical addresses of the queue's Descriptor Area,
+    Driver Area and Device Area to (respectively) the
+@@ -465,25 +472,32 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+   \hline
+   \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
+     Writing to this register selects the virtual queue that the
+-    following operations on the \field{QueueNumMax}, \field{QueueNum}, \field{QueueAlign}
++    following operations on the \field{QueueSizeMax},
++    \field{QueueSize}, \field{QueueAlign}
+     and \field{QueuePFN} registers apply to. The index
+     number of the first queue is zero (0x0).
+ .
+   }
+   \hline
+-  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
++  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+     Reading from the register returns the maximum size of the queue
+     the device is ready to process or zero (0x0) if the queue is not
+     available. This applies to the queue selected by writing to
+     \field{QueueSel} and is allowed only when \field{QueuePFN} is set to zero
+     (0x0), so when the queue is not actively used.
++    \begin{note}
++    \field{QueueSizeMax} was previously known as QueueNumMax.
++    \end{note}
+   }
+   \hline
+-  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
++  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
+     Queue size is the number of elements in the queue.
+     Writing to this register notifies the device what size of the
+     queue the driver will use. This applies to the queue selected by
+     writing to \field{QueueSel}.
++    \begin{note}
++    \field{QueueSize} was previously known as QueueNum.
++    \end{note}
+   }
+   \hline
+   \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}{%
+@@ -543,16 +557,16 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+    expecting a returned value of zero (0x0).
+ 
+ \item Read maximum queue size (number of elements) from
+-   \field{QueueNumMax}. If the returned value is zero (0x0) the
++   \field{QueueSizeMax}. If the returned value is zero (0x0) the
+    queue is not available.
+ 
+ \item Allocate and zero the queue pages in contiguous virtual
+    memory, aligning the Used Ring to an optimal boundary (usually
+    page size). The driver should choose a queue size smaller than or
+-   equal to \field{QueueNumMax}.
++   equal to \field{QueueSizeMax}.
+ 
+ \item Notify the device about the queue size by writing the size to
+-   \field{QueueNum}.
++   \field{QueueSize}.
+ 
+ \item Notify the device about the used alignment by writing its value
+    in bytes to \field{QueueAlign}.
 -- 
 2.26.2
 
