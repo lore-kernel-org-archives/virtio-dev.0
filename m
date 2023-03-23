@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11750-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11751-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4774AC6FD1C
-	for <virtio-dev@archiver.kernel.org>; Thu, 23 Mar 2023 14:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3DF25C74A5B
+	for <virtio-dev@archiver.kernel.org>; Thu, 23 Mar 2023 15:24:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C1C9A97B05
-	for <virtio-dev@archiver.kernel.org>; Thu, 23 Mar 2023 14:50:23 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 726D442B63
+	for <virtio-dev@archiver.kernel.org>; Thu, 23 Mar 2023 15:24:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 358CC98645C
-	for <virtio-dev@archiver.kernel.org>; Thu, 23 Mar 2023 14:50:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6C1AF986486
+	for <virtio-dev@archiver.kernel.org>; Thu, 23 Mar 2023 15:24:33 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 902B7986456; Thu, 23 Mar 2023 14:50:22 +0000 (UTC)
+	id 61EBE986458; Thu, 23 Mar 2023 15:24:33 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,120 +24,253 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 127B2986455;
-	Thu, 23 Mar 2023 14:49:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4E63D986455;
+	Thu, 23 Mar 2023 15:24:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Date: Thu, 23 Mar 2023 15:46:56 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: virtio-comment@lists.oasis-open.org, hans@linux.alibaba.com,
-        herongguang@linux.alibaba.com, zmlcc@linux.alibaba.com,
-        dust.li@linux.alibaba.com, tonylu@linux.alibaba.com,
-        zhenzao@linux.alibaba.com, helinguo@linux.alibaba.com,
-        gerry@linux.alibaba.com, mst@redhat.com, cohuck@redhat.com,
-        jasowang@redhat.com, Jan Kiszka <jan.kiszka@siemens.com>,
-        wintera@linux.ibm.com, kgraul@linux.ibm.com, wenjia@linux.ibm.com,
-        jaka@linux.ibm.com, hca@linux.ibm.com, twinkler@linux.ibm.com,
-        raspl@linux.ibm.com, virtio-dev@lists.oasis-open.org,
-        Halil Pasic
- <pasic@linux.ibm.com>
-Message-ID: <20230323154656.7f036d52.pasic@linux.ibm.com>
-In-Reply-To: <20230209033056.96657-2-xuanzhuo@linux.alibaba.com>
-References: <20230209033056.96657-1-xuanzhuo@linux.alibaba.com>
-	<20230209033056.96657-2-xuanzhuo@linux.alibaba.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VeUonxr_1679585062;
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: virtio-dev@lists.oasis-open.org,
+	virtio-comment@lists.oasis-open.org
+Cc: Cornelia Huck <cohuck@redhat.com>,
+	Parav Pandit <parav@nvidia.com>,
+	"Michael S . Tsirkin" <mst@redhat.com>,
+	Alvaro Karsz <alvaro.karsz@solid-run.com>,
+	David Edmondson <david.edmondson@oracle.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Thu, 23 Mar 2023 23:24:22 +0800
+Message-Id: <20230323152422.113103-1-hengqi@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5pNF-H-UZh-t8cGbO2uA7pOVsWKVGsL8
-X-Proofpoint-ORIG-GUID: kHA2SVJvqmbF9vfEoxBN2slV1DrT-dbq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-22_21,2023-03-23_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 adultscore=0 malwarescore=0
- mlxlogscore=999 spamscore=0 impostorscore=0 clxscore=1011 mlxscore=0
- bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303150002 definitions=main-2303230109
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH v3 1/1] virtio-ism: introduce new
- device virtio-ism
+Subject: [virtio-dev] [PATCH v14] virtio-net: support the virtqueue coalescing moderation
 
-On Thu,  9 Feb 2023 11:30:56 +0800
-Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+Currently, coalescing parameters are grouped for all transmit and receive
+virtqueues. This patch supports setting or getting the parameters for a
+specified virtqueue, and a typical application of this function is netdim[1].
 
-> +\subsection{Device configuration layout}\label{sec:Device Types / ISM Device / Device configuration layout}
-> +
-> +\begin{lstlisting}
-> +struct virtio_ism_config {
-> +	le128 cdid;
-> +	le64 devid;
-> +	le64 chunk_size;
-> +	le64 notify_size;
-> +};
-> +\end{lstlisting}
-> +
-> +\begin{description}
-> +    \item[\field{cdid}] This is used to identify the communication domain. Only
-> +        ism devices with the same \field{cdid} can communicate. A \field{cdid}
-> +        is world-wide unique in a sense that there not be another communication
-> +        domain with the same \field{cdid}.
-> +
-> +    \item[\field{devid}] This is used to identify the ism device in the single
-> +        communication domain.
-> +
-> +    \item[\field{chunk_size}] This is the size of the ism chunk. The device
-> +        memory is divided into multiple chunks. Every ism chunk has the same
-> +        size.
-> +
-> +    \item[\field{notify_size}] This is the size of the ism notify-address. The
-> +        notify-address is used to notify the device that the content of the
-> +        ism region has been updated.
-> +
-> +\end{description}
-> +
-> +\devicenormative{\subsubsection}{Device configuration layout}{Device Types / ISM Device / Device configuration layout}
-> +
-> +The device MUST ensure that the \field{cdid} of the device on the same
-> +communication domain is same. The \field{cdid} MUST be a version 4 UUID as
-> +specified by \hyperref[intro:rfc4122]{[RFC4122]}.
-> +
-> +In the single communication domain, the device MUST ensure that the \field{devid}
-> +is unique.
-> +
+When the traffic between virtqueues is unbalanced, for example, one virtqueue
+is busy and another virtqueue is idle, then it will be very useful to
+control coalescing parameters at the virtqueue granularity.
 
+[1] https://docs.kernel.org/networking/net_dim.html
 
-Hi Xuan Zhou!
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+---
+v13->v14:
+       1. Modifications to sentence structure descriptions.
 
-My understanding is the following: you goal for virtio-ism is that
-it should be suitable for usage with SMC-D (much like the original ISM
-device). Is that right?
+v12->v13:
+       1. Added normative statement that driver must not send invalid \field{vqn}. @Cornelia Huck
+       2. Some minor modifications. @Cornelia Huck
 
-If yes, then let us have a look at the following example. We have
-two guests sitting on the same hypervisor: A and B. Both of the
-guests have an rdma capable interface, a virtio-ism device and
-traditional ISM device. So they could talk over SMC-R, SMC-D via
-virtio and SMC-D via (PCI-)ISM. How would the CLC Proposal message
-look like?
+v11->v12:
+       1. Use virtqueue having vqn N instead of virtqueueN. @Parav Pandit
+       2. Some minor modifications. @Parav Pandit, @Michael S . Tsirkin
+       3. Add Parav's Reviewed-by tag (Thanks!).
 
-Where I am going with this? Either you need a novel way to
-discover peers (probably before the usual way is employed)
-or (probably preferably) you need to make this part of the
-CLC stuff. What are your ideas with regards to this? How is
-it supposed to work?
+v10->v11:
+       1. Describe read and write attributes for the structure. @Parav Pandit
+       2. Some minor modifications. @Parav Pandit
 
-To get back to the things proposed here: the cdid is IMHO
-a nice thing, and is functionally corresponding to the
-(S)EID. But it is 16 byte wide, and I have no idea how
-is it supposed to be used in the CLC handshake.
+v9->v10:
+       1. Remove the "global values". @Parav Pandit
+       2. Avoid multiple interpretations of command behavior. @Alvaro Karsz
 
-If this is really supposed to work with SMC and not just take
-inspiration from it, I would like some insight from our
-SMC experts (they are already on copy).
+v8->v9:
+       1. Declare the commands that can be sent for each feature. @Alvaro Karsz
+       2. Add information about "global values" in the command's explanation. @Alvaro Karsz
 
-Regards,
-Halil
+v7->v8:
+       1. Use "best-effort" in Alvaro's patch instead of "the device may set the parameter to a value close to 2". @Michael S . Tsirkin, @David Edmondson
+
+v6->v7:
+       1. Clarify the relationship of VIRTIO_NET_CTRL_NOTF_COAL_TX/RX_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET. @Alvaro Karsz, @Michael S. Tsirkin
+       2. Remove the formula for vqn range. @Parav Pandit
+       3. Some expressions are clearer. @Parav Pandit, @Michael S. Tsirkin
+
+v5->v6:
+       1. Explain that the device may set a different value than the one passed in by the driver. @David Edmondson
+
+v4->v5:
+       1. Add the correspondence between virtio_net_ctrl_coal and virtio_net_ctrl_coal_vq and control commands. @Michael S. Tsirkin
+       2. Add read and write attributes for each field. @Michael S. Tsirkin
+       3. A clearer description of how to set coalescing parameters for vq reset. @Michael S. Tsirkin
+       4. Fix some syntax errors. @Michael S. Tsirkin, @David Edmondson
+
+v3->v4:
+       1. Include virtio_net_ctrl_coal in the virtio_net_ctrl_coal_vq structure. @Alvaro Karsz
+       2. Add consideration of vq reset. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+       3. Avoid too many examples by giving a comprehensive example. @Michael S. Tsirkin
+       4. Fix typos and streamline clarifications. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+
+v2->v3:
+       1. Add the netdim link. @Parav Pandit
+       2. VIRTIO_NET_F_VQ_NOTF_COAL no longer depends on VIRTIO_NET_F_NOTF_COAL. @Michael S. Tsirkin, @Alvaro Karsz
+       3. _VQ_GET is explained more. @Michael S. Tsirkin
+       4. Add more examples to avoid misunderstandings. @Michael S. Tsirkin
+       5. Clarify some statements. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+       6. Adjust the virtio_net_ctrl_coal_vq structure. @Michael S. Tsirkin
+       7. Fix some typos. @Michael S. Tsirkin
+
+v1->v2:
+       1. Rename VIRTIO_NET_F_PERQUEUE_NOTF_COAL to VIRTIO_NET_F_VQ_NOTF_COAL. @Michael S. Tsirkin
+       2. Use the \field{vqn} instead of the qid. @Michael S. Tsirkin
+       3. Unify tx and rx control structures into one structure virtio_net_ctrl_coal_vq. @Michael S. Tsirkin
+       4. Add a new control command VIRTIO_NET_CTRL_NOTF_COAL_VQ. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+       5. The special value 0xFFF is removed because VIRTIO_NET_CTRL_NOTF_COAL can be used. @Alvaro Karsz
+       6. Clarify some special scenarios. @Michael S. Tsirkin, @Parav Pandit, @Alvaro Karsz
+
+ device-types/net/description.tex | 83 ++++++++++++++++++++++++++++----
+ 1 file changed, 73 insertions(+), 10 deletions(-)
+
+diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+index e71e33b..ee48a57 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -83,6 +83,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+ 
++\item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
++
+ \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
+ 
+ \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 packets.
+@@ -139,6 +141,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+ \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
++\item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \end{description}
+ 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+@@ -1506,12 +1509,12 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+ \paragraph{Notifications Coalescing}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+ 
+ If the VIRTIO_NET_F_NOTF_COAL feature is negotiated, the driver can
+-send control commands for dynamically changing the coalescing parameters.
++send commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
++for notification coalescing.
+ 
+-\begin{note}
+-The behavior of the device in response to these commands is best-effort:
+-the device may generate notifications more or less frequently than specified.
+-\end{note}
++If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, the driver can
++send commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET
++for virtqueue notification coalescing.
+ 
+ \begin{lstlisting}
+ struct virtio_net_ctrl_coal {
+@@ -1519,25 +1522,63 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+     le32 max_usecs;
+ };
+ 
++struct virtio_net_ctrl_coal_vq {
++    le16 vqn;
++    le16 reserved;
++    struct virtio_net_ctrl_coal coal;
++};
++
+ #define VIRTIO_NET_CTRL_NOTF_COAL 6
+  #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+  #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
++ #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 2
++ #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET 3
+ \end{lstlisting}
+ 
+ Coalescing parameters:
+ \begin{itemize}
++\item \field{vqn}: The virtqueue number of an enabled transmit or receive virtqueue.
+ \item \field{max_usecs} for RX: Maximum number of microseconds to delay a RX notification.
+ \item \field{max_usecs} for TX: Maximum number of microseconds to delay a TX notification.
+ \item \field{max_packets} for RX: Maximum number of packets to receive before a RX notification.
+ \item \field{max_packets} for TX: Maximum number of packets to send before a TX notification.
+ \end{itemize}
+ 
+-The class VIRTIO_NET_CTRL_NOTF_COAL has 2 commands:
++\field{reserved} is reserved and it is ignored by the device.
++
++Read/Write attributes for coalescing parameters:
++\begin{itemize}
++\item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, the structure virtio_net_ctrl_coal is write-only for the driver.
++\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure virtio_net_ctrl_coal_vq is write-only for the driver.
++\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} and \field{reserved} are write-only
++      for the driver, and the structure virtio_net_ctrl_coal is read-only for the driver.
++\end{itemize}
++
++The class VIRTIO_NET_CTRL_NOTF_COAL has the following commands:
+ \begin{enumerate}
+-\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
+-\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
++\item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
++\item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
++\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
++                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
++\item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
++                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
+ \end{enumerate}
+ 
++The device may generate notifications more or less frequently than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
++
++If coalescing parameters are being set, the device applies the last coalescing parameters set for a
++virtqueue, regardless of the command used to set the parameters. Use the following command sequence
++with two pairs of virtqueues as an example:
++Each of the following commands sets \field{max_usecs} and \field{max_packets} parameters for virtqueues.
++\begin{itemize}
++\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueues having vqn 0 and vqn 2. Virtqueues having vqn 1 and vqn 3 retain their previous parameters.
++\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 0 sets coalescing parameters for virtqueue having vqn 0. Virtqueue having vqn 2 retains the parameters from command1.
++\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 0, the device responds with coalescing parameters of vqn 0 set by command2.
++\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 1 sets coalescing parameters for virtqueue having vqn 1. Virtqueue having vqn 3 retains its previous parameters.
++\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueues having vqn 1 and vqn 3, and overrides the parameters set by command4.
++\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 1, the device responds with coalescing parameters of vqn 1 set by command5.
++\end{itemize}
++
+ \subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
+ 
+ The device sends a used buffer notification once the notification conditions are met and if the notifications are not suppressed as explained in \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Used Buffer Notification Suppression}.
+@@ -1585,11 +1626,33 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+ 
+ \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+ 
+-If the VIRTIO_NET_F_NOTF_COAL feature has not been negotiated, the driver MUST NOT issue VIRTIO_NET_CTRL_NOTF_COAL commands.
++The driver MUST set \field{vqn} to the virtqueue number of an enabled transmit or receive virtqueue.
++
++The driver MUST have negotiated the VIRTIO_NET_F_NOTF_COAL feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET.
++
++The driver MUST have negotiated the VIRTIO_NET_F_VQ_NOTF_COAL feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET.
++
++The driver MUST ignore the values of coalescing parameters received from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if the device responds with VIRTIO_NET_ERR.
+ 
+ \devicenormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+ 
+-A device SHOULD respond to the VIRTIO_NET_CTRL_NOTF_COAL commands with VIRTIO_NET_ERR if it was not able to change the parameters.
++The device MUST ignore \field{reserved}.
++
++The device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it was not able to change the parameters.
++
++The device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with VIRTIO_NET_ERR if it was not able to change the parameters.
++
++The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with
++VIRTIO_NET_ERR if the designated virtqueue is not an enabled transmit or receive virtqueue.
++
++Upon disabling and re-enabling a transmit virtqueue, the device MUST set the coalescing parameters of the virtqueue
++to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or, if the driver did not set any TX coalescing parameters, to 0.
++
++Upon disabling and re-enabling a receive virtqueue, the device MUST set the coalescing parameters of the virtqueue
++to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET command, or, if the driver did not set any RX coalescing parameters, to 0.
++
++The behavior of the device in response to set commands of the VIRTIO_NET_CTRL_NOTF_COAL class is best-effort:
++the device MAY generate notifications more or less frequently than specified.
+ 
+ A device SHOULD NOT send used buffer notifications to the driver if the notifications are suppressed, even if the notification conditions are met.
+ 
+-- 
+2.19.1.6.gb485710b
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
