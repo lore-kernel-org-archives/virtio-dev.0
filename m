@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11826-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11827-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C698C76196
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 20:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C39B8C761A6
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 20:19:08 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3463F7A054
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 20:18:48 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id D32E1C612C
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 20:18:52 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 29251986533
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 20:18:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C6CF39864AF
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 20:18:52 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1CFDB9864D1; Tue, 28 Mar 2023 20:18:48 +0000 (UTC)
+	id BC9EF98413E; Tue, 28 Mar 2023 20:18:52 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,33 +24,34 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0862E9863C4;
-	Tue, 28 Mar 2023 20:18:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9D8479864B0;
+	Tue, 28 Mar 2023 20:18:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IIS9Xwlz1aJW79RCn9RezlLL9Z2HL+0nvsfCjsPaDge6QjWYuS6TSTDcw4D4sO1BtB1Vd4N1w/07e/Fc54edOT23wkD3+Sgs6KJD6rGPONpoEbQory/0Gn2BDOzmsc66bxf3SBlBBXyzABxY/YJ6NTyK/yS0Z8RQYMh3ZrCZHfnlkXsuaXw7qX+CtteCew4pW1hSMhRnYR9WaO0qi2MGzm+zu4uIJPdx6sWkl58pjfSwzNSNDXjoXnw7C2uDX9q01Fq0J3zK/ck5E9eBjrbKkvUGSBRxc9WKZZJ9qm9JQcJ/U6nvMJ4CGgCkrw7zEVHxptFjuwFsM6lgUUjCC7XUkg==
+ b=QS2D9ppRmwTr0Ct3CKsFgZ47zM3JRyDsYmmpB0uU2u5rHcPCOvn+I1fAo/THEsSLzuOm9VZfl8MTItVY3wng8kSANZU19x3F1/NwYi8oAaPONJ+BGc8vJuG/h0L2tzOFhEc7JMhT8psH9xYcSJAZYoDxM4s2dsRPdewg3rbFkgnyEV8XMWrTlmiRKLabi8xXGfUQn010YX1coDU72xzeTXQ4/bCfNnUPuSi12Aphz9vVeHePQW2ol09Ism3a2dG9u0qFPLCUuSwDtgvtJvjS6MvZQutHW5Ca24KPsUZ9d/FTE2oOX6jGeaw7k8a70CiJDz828OO98Yw/F9IG0M9SLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aIOnMpHrp78ckFj91nknkysgVqT93tDWcGS96VAdzQM=;
- b=EXLkkIeUGZfxWnziWNfmhVch+q0GcnZ103pAXVaf7zO1mRjXnWtpXBGorDRRT2Z/vP0q03Nl2LSImrwJtR2hC8cXVNtdfHYFxbLu1uoCJ4/GfVTdBYS28rFmabg2GTC2EsuZHXqnOg9mBGC0/eoMvy/mpw/3+yTmXxl1vBYBMuLo4KglyjBi7E/6lHaRf55dMsjZtXZnFjt7+k3jJaDzP9z7MxSCA2i7ETDjOMz3ACgPLtkGFnKbCpHJ5Fhlj4K6vxT8UjCE5QB7O2a34IbDpEJnox8nv02XNZgTi1nAfO7Ej8wBmyauZTz5XOSAkTCZBBwLvmICpt2j+oLykGOq5A==
+ bh=Dsg/Epu5ok/cP10Whq0mnZQCq9p4QGAaH0344h2NW3A=;
+ b=TaxD8tGfXWYrqMS9OJUgbNmUv1EES7Wr0HUWrFMgZLZHfikTOwSlrjfWK9TZlPP+pippP4IUloLgX15v2TeKM0pb67njzRZA3/u4txUciAM0pTDUKIo4B/AdUAhB5GLdq3yr8vIltnl2QQ4vQg0DvGrfgboWAUKneEJURYmg8ljGPGqD8opUN7Y3+b7goxx6/7XdfrWgUIVpVgaLJqY0liKCBhbg2fwyiDf9r4tBrynxn+Q8CIOBEJsK6ZBk3kbUikGXOPZXJ9927oDBbPosabpGc5oHY7nnbLdzj99UccJOJ9RvmnsxMHSdBEZRAwEyeSGuXPutKFYIr10F0a+Wag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>,
 	<pasic@linux.ibm.com>, <cohuck@redhat.com>
 CC: <sgarzare@redhat.com>, <virtio-comment@lists.oasis-open.org>,
-	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Date: Tue, 28 Mar 2023 23:17:51 +0300
-Message-ID: <20230328201754.440974-6-parav@nvidia.com>
+	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Jiri Pirko
+	<jiri@nvidia.com>
+Date: Tue, 28 Mar 2023 23:17:50 +0300
+Message-ID: <20230328201754.440974-5-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20230328201754.440974-1-parav@nvidia.com>
 References: <20230328201754.440974-1-parav@nvidia.com>
@@ -62,99 +63,126 @@ X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000100D0:EE_|SJ2PR12MB8941:EE_
-X-MS-Office365-Filtering-Correlation-Id: 14f427d4-6100-47e4-a9ed-08db2fc9967e
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C97F:EE_|BY5PR12MB4306:EE_
+X-MS-Office365-Filtering-Correlation-Id: afa82082-7529-4575-c65a-08db2fc9974b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	1YpmJC3fkUgpvgbtSSZnFEird9hycpulDGOBdG7EUnFI/d9RGYu+2JJKk+o6dW5I1RPLH+joNRtJ4/kyJzpo3h8+3rZOZL6IGKwn47nYqdKfAQPVYI70SP5LH74Pzbvc7k+GVQQayhd3Gg9CdDywOYmgoc4/ZsqsYLHHAprFNPM3WKSpXpkBgqWL7+2YMk7DsexXrJXx0z3PnyIjbvpd6WO3JagD2+txraSOav9CCo6C5+RRM1wgZDSvJsVs4ZXiuxxPY1n0WsVZacFI03x4DF2Yu7RPA8omJb4pgxGalsujNM2lDlsDDLPVEavWCXvhnZdKhSFIZQ7NYq9vYqweoicsY2LJPzLRHOMDQTejTVceX5qHddbPPV0IFbccYNX482gOqTy9jq3X4kCVCvE3F3D2ESqOTyHT44NtE7vgh60UVaZWJUAbOYni0T3IDHvGKmukmscnRQ1Jz+06/pb2fXQUUrQqElIQwVpOtESJP4VmxVE55/WejzL5EC1X84leuYqZawleK55l3NUhn/dRYdPyIc+qXkWCVnYmynsW0P4RFsQRXbIZaarKHqwC4M5PK66CHe9xQ2O8hhrMFPFT7XHyrbGx3t9EoQXsrMCsQY9FSLadsE7jy71lEj5dy5u9GWJ51SxHmCrWas+sPIT68c5cGgSbqxsf4MgJF128ISyvrlJC5TGBwGDJmExpU2E3wRCn9Dy3V/M1WsQF9KK3XBIAgRuKBwnkJFKBZVGuwD9pGXi2oK6TawPF0BSbA4TTqucVhX8B8fPxXfHd1ZaaMR9B+5jtL19evwPzxC4Aif8=
+	kToay/VYyO4yvBD77pnHcyZXcYi8GUrLOhI3k1NO4raw4kDfagxkQ9HYXo6nHcM4FRzGjY6uwzsT0sbqhFTzpreLhEkBKh+DcSyVeL7qDSg82n0WQnjtosou6S64CX3Aij0IiWZs11/WJjMDEcevgq96/omS5o/3UWtcDL/VvpG+N6lHRaZEQRF2C1YgCH5QqZT5cwZ1BrtbwB6VqHLkLETMIV0ieGxHouUnlN9FodmQ6T04sQ63QAeEyaF1xIAa7VMlUmvLvTUItmkmxts12Azhp9oVF/RNx5kjHZUNNzchMBlePSPhVi3rSgIphQ3DPF2epSfshgnSgn78xELWRCq/vS7OrrPfpxLW4XnEQD8ShreW3pWC2ySgGk4OLcGinJam9/g5Yi/ajryEMny9stDrdPeEfwBkSW4virJOrlwnVpTv7aT7Y7qSjl5Zk0IUAKREufm7fYQdwu2RnD1HdfDGuDV5pQz4LDl4gX28yKZxeYV+JbGh+g81xdc5EncTpW327ZPJD+5zLp75UZcHeV1A2liPkr8g7fhMm801XIt8rxaTrLPyfC8HRXTYFJqTWMAQLJA81OTnVuM1I1Lv8VAsf+TgnUVb1ygYJSrzcb556ZtjNT87rOB2FrL5LoiBpjdv+28ZeyVHp+rv2oY5wI8SMYaUnQtuu4v3OkEDioxeIqske2oZEY9KG7KIkilFzEeg7lqc7eLG4Ra95Z/jdEiuQa1kltgmBfonaRz/7YYoGb3HzLQWNSlFUFgD1uTF/JFL2zHfR9Uh+PzUCxMRaw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(39860400002)(376002)(451199021)(36840700001)(46966006)(40470700004)(41300700001)(40460700003)(8676002)(4326008)(70586007)(16526019)(70206006)(186003)(2906002)(36756003)(426003)(336012)(83380400001)(47076005)(82310400005)(86362001)(5660300002)(7636003)(356005)(82740400003)(36860700001)(8936002)(6666004)(107886003)(478600001)(54906003)(966005)(2616005)(40480700001)(26005)(316002)(1076003)(110136005);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199021)(46966006)(36840700001)(2906002)(47076005)(83380400001)(82310400005)(8936002)(5660300002)(107886003)(110136005)(36756003)(966005)(316002)(478600001)(54906003)(6666004)(2616005)(26005)(7636003)(36860700001)(1076003)(426003)(4326008)(186003)(16526019)(336012)(70586007)(8676002)(40480700001)(41300700001)(70206006)(82740400003)(356005)(86362001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 20:18:26.0528
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 20:18:27.4596
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 14f427d4-6100-47e4-a9ed-08db2fc9967e
+X-MS-Exchange-CrossTenant-Network-Message-Id: afa82082-7529-4575-c65a-08db2fc9974b
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF000100D0.namprd05.prod.outlook.com
+	CY4PEPF0000C97F.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8941
-Subject: [virtio-dev] [PATCH v9 5/8] transport-ccw: Rename queue depth/size to other transports
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4306
+Subject: [virtio-dev] [PATCH v9 4/8] transport-mmio: Refer to the vq by its number
 
-max_num field reflects the maximum queue size/depth. Hence align name of
-this field with similar field in PCI and MMIO transport to
-max_queue_size.
-Similarly rename 'num' to 'size'.
+Currently specification uses virtqueue index and
+number interchangeably to refer to the virtqueue.
+
+Instead refer to it by its number.
 
 Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 
 ---
 changelog:
 v8->v9:
-- replaced 'named' as 'known'
-v3->v4:
-- moved note to comment
----
- transport-ccw.tex | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+- added 'by' at two places
+- replaced 'queue number' with 'vq number'
 
-diff --git a/transport-ccw.tex b/transport-ccw.tex
-index c492cb9..488c46c 100644
---- a/transport-ccw.tex
-+++ b/transport-ccw.tex
-@@ -237,12 +237,12 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
- \begin{lstlisting}
- struct vq_config_block {
-         be16 index;
--        be16 max_num;
-+        be16 max_queue_size; /* Previously known as max_num */
- };
- \end{lstlisting}
+v6->v7:
+- remove text around first vq as it is already covered in the basic
+  virtqueues facility section
+---
+ transport-mmio.tex | 23 +++++++++--------------
+ 1 file changed, 9 insertions(+), 14 deletions(-)
+
+diff --git a/transport-mmio.tex b/transport-mmio.tex
+index 9b450b8..acc72f1 100644
+--- a/transport-mmio.tex
++++ b/transport-mmio.tex
+@@ -108,13 +108,12 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+     bits accessible by writing to \field{DriverFeatures}.
+   }
+   \hline
+-  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
++  \mmioreg{QueueSel}{Virtual queue number}{0x030}{W}{%
+     Writing to this register selects the virtual queue that the
+     following operations on \field{QueueSizeMax},
+     \field{QueueSize}, \field{QueueReady},
+     \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
+-    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
+-    number of the first queue is zero (0x0).
++    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to.
+   }
+   \hline
+   \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+@@ -150,7 +149,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+     there are new buffers to process in a queue.
  
- The requested number of buffers for queue \field{index} is returned in
--\field{max_num}.
-+\field{max_queue_size}.
+     When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
+-    the value written is the queue index.
++    the value written is the vq number.
  
- Afterwards, CCW_CMD_SET_VQ is issued by the driver to inform the
- device about the location used for its queue. The transmitted
-@@ -253,7 +253,7 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
-         be64 desc;
-         be32 res0;
-         be16 index;
--        be16 num;
-+        be16 size; /* Previously known as num */
-         be64 driver;
-         be64 device;
- };
-@@ -262,7 +262,8 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
- \field{desc}, \field{driver} and \field{device} contain the guest
- addresses for the descriptor area,
- available area and used area for queue \field{index}, respectively. The actual
--virtqueue size (number of allocated buffers) is transmitted in \field{num}.
-+virtqueue size (number of allocated buffers) is transmitted in
-+\field{size}.
+     When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
+     the \field{Notification data} value has the following format:
+@@ -364,8 +363,7 @@ \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Vir
+ The driver will typically initialize the virtual queue in the following way:
  
- \devicenormative{\paragraph}{Configuring a Virtqueue}{Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue}
+ \begin{enumerate}
+-\item Select the queue writing its index (first queue is 0) to
+-   \field{QueueSel}.
++\item Select the queue by writing its number to \field{QueueSel}.
  
-@@ -278,11 +279,12 @@ \subsubsection{Configuring a Virtqueue}\label{sec:Virtio Transport Options / Vir
-         be64 queue;
-         be32 align;
-         be16 index;
--        be16 num;
-+        be16 size; /* Previously known as num */
- };
- \end{lstlisting}
+ \item Check if the queue is not already in use: read \field{QueueReady},
+    and expect a returned value of zero (0x0).
+@@ -393,8 +391,8 @@ \subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Option
  
--\field{queue} contains the guest address for queue \field{index}, \field{num} the number of buffers
-+\field{queue} contains the guest address for queue \field{index},
-+\field{size} the number of buffers
- and \field{align} the alignment. The queue layout follows \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}.
+ When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
+ the driver sends an available buffer notification to the device by writing
+-the 16-bit virtqueue index
+-of the queue to be notified to \field{QueueNotify}.
++the 16-bit vq number of the queue to be notified to
++\field{QueueNotify}.
  
- \subsubsection{Communicating Status Information}\label{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Communicating Status Information}
+ When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
+ the driver sends an available buffer notification to the device by writing
+@@ -471,13 +469,11 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+     (see QueuePFN).
+   }
+   \hline
+-  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
++  \mmioreg{QueueSel}{Virtual queue number}{0x030}{W}{%
+     Writing to this register selects the virtual queue that the
+     following operations on the \field{QueueSizeMax},
+     \field{QueueSize}, \field{QueueAlign}
+-    and \field{QueuePFN} registers apply to. The index
+-    number of the first queue is zero (0x0).
+-.
++    and \field{QueuePFN} registers apply to.
+   }
+   \hline
+   \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+@@ -552,8 +548,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+ 
+ The virtual queue is configured as follows:
+ \begin{enumerate}
+-\item Select the queue writing its index (first queue is 0) to
+-   \field{QueueSel}.
++\item Select the queue by writing its number to \field{QueueSel}.
+ 
+ \item Check if the queue is not already in use: read \field{QueuePFN},
+    expecting a returned value of zero (0x0).
 -- 
 2.26.2
 
