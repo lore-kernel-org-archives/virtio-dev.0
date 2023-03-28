@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11812-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11813-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4DDFC77B62
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 14:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1AE7CC76196
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 14:01:59 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 12BF9190906
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 14:00:16 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8955E33564
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 14:01:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 04BC79863E4
-	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 14:00:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 861769863DF
+	for <virtio-dev@archiver.kernel.org>; Tue, 28 Mar 2023 14:01:58 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id EEB3F98637D; Tue, 28 Mar 2023 14:00:15 +0000 (UTC)
+	id 7B16998637D; Tue, 28 Mar 2023 14:01:58 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,178 +24,285 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DDFFD98638E;
-	Tue, 28 Mar 2023 14:00:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6833398638E;
+	Tue, 28 Mar 2023 14:01:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GewMkm7vV9DRU85kV7uyObuLjWPWt9+pJFD2e2sl7fUaj1UeVT+SiRXnkCCO4ltzI6ARW6j44hWavcYNBClf7N0kjPYU+ud5/qjorQ/vpf5ORBV4Dx8vEGlVvJ6saf+7FLz7XznnoJ87pNHyEs5Fk+y7nDaNqjrku2QKcB+PwH0w/H97qWva8wQVsWdhfDVhidD/aoK8hdcEvhSwKduMPu9nrrJ/BcZ/drrby8luQpLvagFv3bylnueTGirosx3RFrZo630keZ9OVlevwWUQAn/1CiHs34j2UStrU9dT3tH8K4DVQ+Vj4Tdzt/AkNx39uHt4gcqfOLXVDxKyhIXkKw==
+ b=OR0dTkuECgp4UPU06tkUqK21bXX6RFMsGEJ29OXCUPtGJw71Ons/YgsbsgsAc2Rla3fBaToKLUZCXqezSLnofm8ah77MxlVQwzxUG1D0uns9Pm+1ywTSTCk2GDj+J7ZAy53S8vloZspb8hr1rRB4SDTve7LlMIeicf1N4AUh3DEPlAui732ZA1/clYE776b71qgpWogEKEXbgMF01S2RuIV9Z12PKF/y/fKcL48w8TMuZnlEo8yfcDynlGfxrXhJj5SwCXvyjHc8JLLyhOEgamirQekJdkahM1pzh/uQqvu4FD6h3FmiVG1PTI9mPuZEgeCa1QUyJpBnW/R7jKAWMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LKJbjDIFFmGYgE2MEoO7BJijndL85+VQQ5lpoGvghFU=;
- b=jfm7I6p4iLHZHoiC3F0KvuSnth69NagVGb0/COOX8yEMVLS6YwLlBos5Y3ltPjh8on7reuZgKptbqzpILgAPkrjPaoasUCrxKwzW9+/e4jDmTdtyHP2jSXTe4ilziennTnXOD/+lNWNFleW8FG5Ku/lIwIdxGx/OXBNkWjrh4RjOuKZ6509gcHNlJjyMR9bctAUjWpkViQUWykk8U/vYyH3sDMkIIfVzIQi9kpIm5C6bDngv78SrI8YVAHTfd16fIafYQKHgZeztZeuuFBVX8nKyrKSbGzsuCAfSWm0WxU9Nk4m8pI+csfPraT+V5//QQnWH1T9AqJxdQO80OxOMsg==
+ bh=BgMP1QsKMnSmFm+BquJkB/qnNNeiIjAkEaRnOsNwH/I=;
+ b=HBFGrFLtoMhfMS96GMVDxOT6XPk9JJHExMDFnBumKTxyxuBwm1m+vbt0TMVQ3Elx1avOlFLDA4bjGQZbNEkFX6LP1KiRPUlfv4zjNR9Suk4nE9LfOWoEft8RKl+n8tnyOq4at6O1tBx3MYE0YJP6/ttjphFHSpLQJh1szH8ZBbHKmQ8bofLGx0FiuwjALwq+QMYuJhkaYWig3oi6rGrN93pt7iluwA8izEqwv/1lcIVHc9U3zDwrttmuh4GLowjlwo8AOIX/jKRFmj6NnWX4BahZn0lJC7yBVMxpLdJljmKGu0jEDdIpD7WwpXDQLxIxBY/KtQBn09qBPyIJfTO/LQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: David Edmondson <david.edmondson@oracle.com>, "mst@redhat.com"
-	<mst@redhat.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "pasic@linux.ibm.com"
-	<pasic@linux.ibm.com>, "cohuck@redhat.com" <cohuck@redhat.com>
-CC: "sgarzare@redhat.com" <sgarzare@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [virtio-comment] Re: [virtio-dev] [PATCH v8 1/8] content: Add vq
- number text
-Thread-Index: AQHZYQg+dUPpBPQQuUeFxwscQI5HEK8QODWAgAAAnRA=
-Date: Tue, 28 Mar 2023 14:00:08 +0000
-Message-ID:
- <PH0PR12MB54818C63DA9F19F9EC501E16DC889@PH0PR12MB5481.namprd12.prod.outlook.com>
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+From: David Edmondson <david.edmondson@oracle.com>
+To: Parav Pandit <parav@nvidia.com>, mst@redhat.com,
+        virtio-dev@lists.oasis-open.org, pasic@linux.ibm.com,
+        cohuck@redhat.com
+Cc: sgarzare@redhat.com, virtio-comment@lists.oasis-open.org,
+        shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>,
+        Jiri Pirko
+ <jiri@nvidia.com>
+In-Reply-To: <20230327235936.414196-4-parav@nvidia.com>
 References: <20230327235936.414196-1-parav@nvidia.com>
- <20230327235936.414196-2-parav@nvidia.com> <m2bkkdc734.fsf@oracle.com>
-In-Reply-To: <m2bkkdc734.fsf@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CO6PR12MB5491:EE_
-x-ms-office365-filtering-correlation-id: 99d38bfc-462d-4cbd-70b0-08db2f94bd66
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- XonFtQerWnOAwGZD2tZqkZ/4rt5yxkahPobma6Em/GOqSRv1qMfFIx63E/x81p6myHOIk2V6GLe5uCdzPDW4/PEUmSlAWqvtR3Dsu1vkhZLKYMTm5vsBy6eblzvjb7y6nHtnv/H6THfpEg8zkcPzzdGfpd93lMASJv8PYxsz0rU+EXt8NQ8V9fAB/I6KZ4Nt6tge4OUtCIHXg/TekC/cEVdxjO5eA12yx4PxGWwNB9be2DtjDPPfQJmfkri43BFZeXANLbhIks7zYq6J3AkF8Nxqbqm4DZlMvZ3p2P0lmfpxSm/EFawjDqWmsdcpISOAqaeJfaJU7liv3PLvPqoD24aCv/j5r4vtb6LgKaF6D4ysrlIGNS2h38DY8U0jUfXIEvgaTDpQyyNxODXQUCyn8kA1iDbfUmU/rEc3BuQjSzyPA9ILwNVGnliHEQcvCvMWmkEsTnvUJX6apoc7sZR2yK1AkRcygNTuWEMaqThGmfPGx+xN6vOe2CG/UwsmbzpEMv6x6vtgv1ncEZUH14qO7E37A3Y7KaPAcH2rQO5AzrAu2fz7IIZLTQH/J0vbvan8B/k7NoiVnYWoSp9RyTbfgzFz1QBlXWGbEtCa1VusITMPBZ6Ja9TfLFWosF54xxxiQFu9/2FI8JJ8tAuLKIQTZwyh/YFPYDfdGXQCj7XKMpsH6CIZiwHI7tXFbuojVQm3
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(39860400002)(396003)(346002)(451199021)(966005)(71200400001)(7696005)(107886003)(478600001)(110136005)(54906003)(6506007)(9686003)(4326008)(5660300002)(186003)(41300700001)(52536014)(8936002)(83380400001)(66899021)(2906002)(316002)(26005)(38100700002)(122000001)(38070700005)(76116006)(64756008)(66476007)(8676002)(66556008)(66446008)(33656002)(66946007)(55016003)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?PAkgWcPfshk+AfDgRyUjyMUwE/NSRpBRTw3Pq94VWI0mK8XprmwVCuTKbwTU?=
- =?us-ascii?Q?KgjBoVKx/o+dq3qPcoI+heWy0WpT1Jm2vpdBDHeqjIWqhOIs684Ii00tyai5?=
- =?us-ascii?Q?8kinhzvbOXrm3JSZKxMkIJfSOKuG1ijLw42zJGUpKAANrBAiv0c7LNOTn5S1?=
- =?us-ascii?Q?jggNrBHY47ucqg04W2c7ZoCRgIDKav0VCtIqigaLCXrmvC89MlSfGW03+Fh1?=
- =?us-ascii?Q?zGVJ4wkgr1KZiC2TM2Q6cQp9oD9bSs/AYo1ANT4qW2g+PGVtwj+QOMyXx1ug?=
- =?us-ascii?Q?U65bpYiFaPL2zsS09xynoYGYvaLwinN5xfeci4dkMuQnIsk7JXZwPg9Rpe9e?=
- =?us-ascii?Q?CPuQ2XdE2iNXnPnar2CfOuJW+R0WAIWUAIJ9rfR6Swa0i6FEESBHbYKUS1do?=
- =?us-ascii?Q?D/Lb3mEaE0st8pSPjh6YUrdc+qWVUmcnP1CV2nxSGGA0uJEPSpw3Rsw4Fjx1?=
- =?us-ascii?Q?lOCfAKEpuGcvrOH1e1r6MIuhKRn1Yvg4cBXuvIVdX9Q60C4wxQ2ychYz0Kpg?=
- =?us-ascii?Q?QbQDfqucfB2RUm0ZbjrtLsCYqNCTN9NNIwO4RqJQAxvuoV4Ge/gc+FCDJ+02?=
- =?us-ascii?Q?hax0hcZsdWOYh6GwCpBn9kg/GsXCRckag4X0D81CtdRjsdCIWyPuViNPypP7?=
- =?us-ascii?Q?cUBbXFzex8VkFzN5GV225+7GdmkbQLhPXaA13Z0CE30hGrhjYWtay9lMAovu?=
- =?us-ascii?Q?b9nQaEBxxGZE/qMScoluCPaNX/Qx5a2kFCkLeiW0o/XK0vZbaaO0txTMqtEV?=
- =?us-ascii?Q?MrtcKURSg+2QGjUVaCLalIdc0MQpL4How1ziRAT1/29zQ3hILyM8fHQGpSpk?=
- =?us-ascii?Q?Rs2Os0kFgM9eWnpTW9/A2NlhZ4enTUf9jDmHuwch5mnuu3jncJVKfqV1Rlaf?=
- =?us-ascii?Q?tTbVbVqt7atNTcDNJYU/yIWSo90SqKBIFwptKjLmeYfHFfcxHN3AG1X8XRQ3?=
- =?us-ascii?Q?CUNGW1uj8mcDQCDj+6MTST1bGCW3EtO6rf0cZKIXg7f1lPxzm3/EqlHOeUrr?=
- =?us-ascii?Q?1U9sieNClIuUaKeySruXU72oXAlJmaBsDEQu2e3y43DpFPZGk5tC+FsS7g0J?=
- =?us-ascii?Q?RckqGRmE39OZmPwDESRPPwcHJ/39+i7GkDia3z4v2slXg1Abgbqv5+uPK/DT?=
- =?us-ascii?Q?03Fw58aUCLOC6/UIH/jyqAGjpzldRSRn9Kg8IZ9e+DkcZ5MFRGisJft6q4fe?=
- =?us-ascii?Q?JJ+75yQeFtBycSE+I+xsg3SAtY4gO+y/NSSyz7I2aFClnnJ3ER43OSk2hk7S?=
- =?us-ascii?Q?jSzBeWbrcgnAga2yknMzQ+guw3shWjrbkNMH3mCXcJcTIrXhGIjVx1UtGET/?=
- =?us-ascii?Q?rB8cx98Ko2J4AuhVDEbHxPI02vXQLX4NAMdVThiLP6lL1AHQXzxGjSsnxHlW?=
- =?us-ascii?Q?ll7y9O6R6tVAShjr+odYQc9KE+gBcySf7K6T7vEbALaa1GF/Wao2qfRqqBfi?=
- =?us-ascii?Q?pmz4QpZcsIixJOg4aw4gmcuM9c1tpnh4iD/7USsPyZjEvi9bFyvWolri/GML?=
- =?us-ascii?Q?gSbDTNL+vvpCXUjmVU73cJy+6MRegFfeJ5aZRDwuUsBc4HF4JxkUNSdSt86n?=
- =?us-ascii?Q?weXZs418Q3FmnNEdemw=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <20230327235936.414196-4-parav@nvidia.com>
+Date: Tue, 28 Mar 2023 15:01:35 +0100
+Message-ID: <m24jq5c6v4.fsf@oracle.com>
+Content-Type: text/plain
+X-ClientProxiedBy: LO4P123CA0639.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:296::6) To DS7PR10MB4926.namprd10.prod.outlook.com
+ (2603:10b6:5:3ac::20)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|MW4PR10MB6629:EE_
+X-MS-Office365-Filtering-Correlation-Id: bb5ba150-050f-405f-a68c-08db2f94f4bc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	mIztrhN5ZOjXQkGCtFATu3u1FvZ5i+9859Qr//RUYIQleVHE6/rOplWgy+CuxKKJ5F+ZkZHbTItekYwseKlG8AvymFhS935X2unFO99qfEkj6ujNyi+Ov/hmPPkk4WMMYmBptBY0Wbij+ppuRNnXskyveaf4HZc7gXYU1dRR0iJSPIxR9jQfOYXFE/D7uUpWK3+WtBqFFGQQmAbX+wDuHKowjQp9hc8P05necUOf7HPySOOejp9GPtL3/hKm5pSnvj5Xz/6B21D8rWGfonMCZZJNo4KzLCxGNo65lM409PUtFP1iqCYGYBpF+XwQoEG6kZ1vhmcjp+LCzDxIU/6BeIwTmHAk05bk2JBimlt0pPT6eQ3jU8TrIK3gx0rZ0mjm5rMoNsnWN59QcljZAX3gu5F/jpkDOB4qRuidjdL/ManadTCVTXCU2M2N55mEMdYHnvE3QNVtbdRco3cChPCtKx2HsaCbYD5762R4ZyI4khYChXPxQoeZ8vEUrNmPvtL/h0cjvwd+LLSH19h7GdmAnT8+X48Zm1wY6XLLD3t6+jZmmO9sPPkWGVF8ddnJ3hn7QcSkAR8QhxZlRXVuv04GHg==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(346002)(136003)(366004)(39860400002)(451199021)(6666004)(6512007)(6506007)(26005)(36756003)(5660300002)(478600001)(8936002)(6486002)(966005)(54906003)(41300700001)(66476007)(66556008)(66946007)(86362001)(4326008)(8676002)(316002)(38100700002)(44832011)(83380400001)(2906002)(2616005)(186003)(66899021);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?us-ascii?Q?UbLnbYDCw9hxljVX+BcNTHAX4ScAICwBNuVHpyK2pUFb8qPt7eEzFwTBCESB?=
+ =?us-ascii?Q?sUDUEWZcM1brghsaZvg9Kdv+5sEHRI+IZU41pveJjrDMlcto+yMWy2mf/kp3?=
+ =?us-ascii?Q?x5+2bxGazhU7+k78ck2ZyjXw+StTCqbSidWklheXMv7ZCrSo/GjH7bd1EQv6?=
+ =?us-ascii?Q?r14GewNTJfMPovpBjl/5OkW8DPiUyoLzaWkt6gxYofjUNz9/fmg/gZJdv6qq?=
+ =?us-ascii?Q?wkjWKwfsvfvVZSOzgzVjQ1WQQxHO86Is8AiWxybzIPaZ5Q7Ja0LR5R5NtXxa?=
+ =?us-ascii?Q?DqSDtTy2EqT7KoiFp942PjbubsPx/3YnUxX7AdxqbQHwDK1idqz2F3V04aJX?=
+ =?us-ascii?Q?ad+T8LHMeGD6vuP1OUPWWPVB6Y7cLY4y7Kt+Tt8Lv64oW1oGJVCP0ffI/1QV?=
+ =?us-ascii?Q?TcWC5CFS4ksMzWFrfxza4MX7nlznnSbHvNTLwA96nWXGF0c5JK1nnjRzAZzy?=
+ =?us-ascii?Q?bFmejoF3z9LGzu4EjPi8korKSvck64esBDbtneZY1+H96DGrXShWOM+Hs23x?=
+ =?us-ascii?Q?/eyewvAtS0CEjnJDGa52JH7nUMpMz03AUXY7f3FfHWpRFXCVoF15a0GPbPPQ?=
+ =?us-ascii?Q?U6UZ90d84Y606lWL/qJabvHucevl9BP3SgVLbLl0/5bAUmw3EAmsm/TIYhKN?=
+ =?us-ascii?Q?qBnQjukkN/rOESKIFeh0gj2PFD3xjZMQVznxNfYGH2igDhDkQEVaB2qu0W+Z?=
+ =?us-ascii?Q?p5pXlBtuTvXmTuu1v/XNT4fAO6WqTbl171hoRHkSvZvL34GXgGVVo7w+l6VF?=
+ =?us-ascii?Q?NNlZIwQZEBdfE7lCvDS+d0VHRbs8odXm0NmfdJwatZnS69LIECfZGqE4vJAb?=
+ =?us-ascii?Q?8wpD1M8GJ64Askr1N46Y0gXFC0JjXuaWCD6l91dU1mfYGcmQowi0/PMl28w7?=
+ =?us-ascii?Q?1QA8QhZisCWrdNzyD2lQJdPvaRkQuYQujB+3n3utDH3R9OcOk9ujhvHIw04N?=
+ =?us-ascii?Q?bpBKXUCrPTgrQLseumn4AOSDKf3MBxrmuy747vPcpsDoW6gkuRGzDSw0eNJM?=
+ =?us-ascii?Q?N4vp7N/rNa5CB8DySjSZ3eWJK5HrHOXRizewJszNd6++5cyeQR7wQ0Oq5sYB?=
+ =?us-ascii?Q?MMM9BilllwhWWCSB3zUCGFSIGW9HMTimziTMvFH15uLvmlDlBoVayolfHawD?=
+ =?us-ascii?Q?++f+V6lFp3AkVr+tjjp9otKCy15rjXfqcX8Me+GTSJARTH5DtFa2nnMa7hC7?=
+ =?us-ascii?Q?Ejzm+qzRP+43SA0NxlhazQoRqsQFCNFKH2gKcR0LM9vBcx9bKHEYrqt30JyM?=
+ =?us-ascii?Q?VOSKaqiDUEWzHq0WkbFSK7GNn/gVXKC1J56q9XbdkFLA0BabIRuXlbbqPPIa?=
+ =?us-ascii?Q?yCi6HtJbLKoGDro3cGmddyr+wVf+Rs9oNPLe7trSJyHH53pky5dm6okeMK7U?=
+ =?us-ascii?Q?OtsRBNRWRKL4oGsvQkBOA2fgn28Y+ingjj7hSHZ22ANxaCCcGwYawUodjeBh?=
+ =?us-ascii?Q?I/UA61FZTxXcAuKhXe1IPZumHdx4nbSe3rRmP3tgg3YmkZHs67xGa6ZguDYw?=
+ =?us-ascii?Q?wQX9A9x0v1tBpu1FWTPqR8qquZs1/TI99qE5t8FbMXY+9B1l5MZfVdkjLEPr?=
+ =?us-ascii?Q?F6gcqpPlxMdG4eC/nm10FLNCZA0o+bg5DGJXlAvFOEjnQl8zXJnfBE35/WBl?=
+ =?us-ascii?Q?/g=3D=3D?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	MnsdGj7dC8pksOLbPKKN+xq21Otzg1xgzr+1UdFYbl3wxHWdCARUMi1mpEMp/g81Ge7+Bf7LMCfPTI3+BVmB6RA8AlhEdvzxJ7ALxhBMqpeYeUc8ICYTEnNIRTce3pFTR7NFFHLQkTu5P6Q5XC/BNK29lNMfJOoN36tCy8ESFXTh4TyU2PKEpiIZxoDePSMdtQxCxG1usK0Yi6kWsV/fRZDgDS5YHw7PcOlHFaDl+RgqIUqVc+gKoRTvTqXXOqYEuaPs39BbEuAnKYQSSvAlnrDDKLK+bHCHqxQUclnlBSioJ+grEyWMFs8dst3U4Ju9J4hgxmqJRqBDgnKHKjq0IXhklqoDNP7RlFLBwbKWFDOFfSHBYW9WmfxAkte9fcHYSV2C2hwyZ+TIXzKSou1KS0FRMbSd7joTVzn2y1cKzkHi9XTf28ASqENSHJUEx0LZiSMDTTE1iq0Uv979uzFE87n3KkGA4HM7904eeSbCDx6tgQnUX/tOBYCmgMVT/clYDj4gBirn0mgt8fVHGpabNjSI1R2emaHEVPziGVLIpYMoEKRWLI7YZBYRt7x6k6nCDsT14EBnMZB0Ap1MABs7px35Jn4r9zJtUJAPJWBfHc9j3QNhFGafC4CkaSOx/qY+L4UbRtOWH8F8oP8+/cB722yUo/ZU9Xcy6Rz/xCTw/4spr/iZmtbujgMIQPP7tHJzIvHhvK1+nTB7uWkkZVkKXqXEaqudlBFcKXO7b3WTpOPE1j8CJEmWEwcFXC/eCCLBdzlozeLraoDzZ1HEj8G79vCw5zaWSDoymSsdvC8pA/pbXaxwC1xw2xATbZwY/0LVUwUhbJYa5HexKI3xn72hxtQhPy0/rjMPlta+Qfg2M1UkNc7ZFkfL3RAfZilJou06
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb5ba150-050f-405f-a68c-08db2f94f4bc
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB4926.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99d38bfc-462d-4cbd-70b0-08db2f94bd66
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2023 14:00:08.2235
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 14:01:41.2043
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 977SMDqgimTeEnCYbNDj0RenA4yywUSp2RLbdZpm4KBMYnA4Hhr+4WeTU8moBi4TIQyLnyi1xbdzsiJtXFWHxQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5491
-Subject: [virtio-dev] RE: [virtio-comment] Re: [virtio-dev] [PATCH v8 1/8] content: Add vq
- number text
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Fyaclg5+rPhL4lYOTVEe1phf5u8UkKPXH3ahrGqhw32/d0xeKhymR7CZPVxVk86ahL9BVY4oUsLKmJJ9BQjVidMa+DUQhdcIhiCY8PeekJE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6629
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-24_11,2023-03-28_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 malwarescore=0
+ mlxscore=0 mlxlogscore=999 adultscore=0 suspectscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
+ definitions=main-2303280110
+X-Proofpoint-ORIG-GUID: s8iNel8QskRZHwN5NzVFbzSinlEnvUic
+X-Proofpoint-GUID: s8iNel8QskRZHwN5NzVFbzSinlEnvUic
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v8 3/8] transport-mmio: Rename QueueNum
+ register
 
+Parav Pandit <parav@nvidia.com> writes:
 
+> Currently specification uses virtqueue index and number
+> interchangeably to refer to the virtqueue.
+>
+> It is better to always refer to it the virtqueue in consistent manner.
+>
+> Two registers QueueNumMax and QueueNum actually reflects the queue size
+> or queue depth indicating max and actual number of entries in the queue.
+>
+> These are further named differently between pci and mmio transport.
+> PCI transport indicates queue size as queue_size.
+>
+> To bring consistency between pci and mmio transport, and to avoid
+> confusion between number and index, rename the QueueNumMax and QueueNum
+> registers to QueueSizeMax and QueueSize respectively.
+>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+>
+> ---
+> changelog:
+> v0->v1:
+> - replaced references of QueueNumMax to QueueSizeMax
+> - replaced references of QueueNum to QueueSize
+> - added note for renamed fields old name suggested by @Michael Tsirkin
+> ---
+>  transport-mmio.tex | 42 ++++++++++++++++++++++++++++--------------
+>  1 file changed, 28 insertions(+), 14 deletions(-)
+>
+> diff --git a/transport-mmio.tex b/transport-mmio.tex
+> index f884a2c..3047633 100644
+> --- a/transport-mmio.tex
+> +++ b/transport-mmio.tex
+> @@ -110,24 +110,31 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+>    \hline
+>    \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
+>      Writing to this register selects the virtual queue that the
+> -    following operations on \field{QueueNumMax}, \field{QueueNum}, \field{QueueReady},
+> +    following operations on \field{QueueSizeMax},
+> +    \field{QueueSize}, \field{QueueReady},
+>      \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
+>      \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
+>      number of the first queue is zero (0x0).
+>    }
+>    \hline
+> -  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
+> +  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+>      Reading from the register returns the maximum size (number of
+>      elements) of the queue the device is ready to process or
+>      zero (0x0) if the queue is not available. This applies to the
+>      queue selected by writing to \field{QueueSel}.
+> +    \begin{note}
+> +    \field{QueueSizeMax} was previously known as QueueNumMax.
 
-> From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
-> open.org> On Behalf Of David Edmondson
->=20
-> Parav Pandit <parav@nvidia.com> writes:
->=20
-> > Introduce vq number and its range so that subsequent patches can refer
-> > to it.
-> >
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > ---
-> > changelog:
-> > v5->v6:
-> > - moved description close to introduction, it was in middle of
-> >   queue data transfer description
-> > v2->v3:
-> > - new patch
-> > ---
-> >  content.tex | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/content.tex b/content.tex index cff548a..5171c12 100644
-> > --- a/content.tex
-> > +++ b/content.tex
-> > @@ -298,6 +298,9 @@ \section{Virtqueues}\label{sec:Basic Facilities of
-> > a Virtio Device / Virtqueues}  virtqueues\footnote{For example, the
-> > simplest network device has one virtqueue for  transmit and one for rec=
-eive.}.
-> >
-> > +Each virtqueue is identified by a vq number or also referred to as a
-> > +virtqueue number; vq number range is from 0 to 65535.
-> > +
->=20
-> It would be nice to use the unabbreviated version first, and we could als=
-o
-> include "vqn", as it's in use during discussions:
->=20
-I prefer vq number first, as reader can pick that first when using somewher=
-e else.
+Use \field for the old name (and in other places).
 
->   Each virtqueue is identified by a virtqueue number, also referred to
->   as a vq number or vqn. The range of virtqueue numbers is 0 to 65535
->   inclusive.
-"inclusive" is important to add.
-Will add to v9.
-
->=20
-> >  Driver makes requests available to device by adding  an available
-> > buffer to the queue, i.e., adding a buffer  describing the request to
-> > a virtqueue, and optionally triggering
-> > --
-> > 2.26.2
-> >
-> >
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> --
-> The sound of a barking dog on a loop, a plane rises in the crystal blue.
->=20
-> This publicly archived list offers a means to provide input to the OASIS =
-Virtual
-> I/O Device (VIRTIO) TC.
->=20
-> In order to verify user consent to the Feedback License terms and to mini=
-mize
-> spam in the list archive, subscription is required before posting.
->=20
+> +    \end{note}
+>    }
+>    \hline
+> -  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
+> +  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
+>      Queue size is the number of elements in the queue.
+>      Writing to this register notifies the device what size of the
+>      queue the driver will use. This applies to the queue selected by
+>      writing to \field{QueueSel}.
+> +    \begin{note}
+> +    \field{QueueSize} was previously known as QueueNum.
+> +    \end{note}
+>    }
+>    \hline
+>    \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
+> @@ -308,11 +315,11 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
+>  
+>  Before writing to the \field{DriverFeatures} register, the driver MUST write a value to the \field{DriverFeaturesSel} register.
+>  
+> -The driver MUST write a value to \field{QueueNum} which is less than
+> -or equal to the value presented by the device in \field{QueueNumMax}.
+> +The driver MUST write a value to \field{QueueSize} which is less than
+> +or equal to the value presented by the device in \field{QueueSizeMax}.
+>  
+>  When \field{QueueReady} is not zero, the driver MUST NOT access
+> -\field{QueueNum}, \field{QueueDescLow}, \field{QueueDescHigh},
+> +\field{QueueSize}, \field{QueueDescLow}, \field{QueueDescHigh},
+>  \field{QueueDriverLow}, \field{QueueDriverHigh}, \field{QueueDeviceLow}, \field{QueueDeviceHigh}.
+>  
+>  To stop using the queue the driver MUST write zero (0x0) to this
+> @@ -363,14 +370,14 @@ \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Vir
+>     and expect a returned value of zero (0x0).
+>  
+>  \item Read maximum queue size (number of elements) from
+> -   \field{QueueNumMax}. If the returned value is zero (0x0) the
+> +   \field{QueueSizeMax}. If the returned value is zero (0x0) the
+>     queue is not available.
+>  
+>  \item Allocate and zero the queue memory, making sure the memory
+>     is physically contiguous.
+>  
+>  \item Notify the device about the queue size by writing the size to
+> -   \field{QueueNum}.
+> +   \field{QueueSize}.
+>  
+>  \item Write physical addresses of the queue's Descriptor Area,
+>     Driver Area and Device Area to (respectively) the
+> @@ -465,25 +472,32 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+>    \hline
+>    \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
+>      Writing to this register selects the virtual queue that the
+> -    following operations on the \field{QueueNumMax}, \field{QueueNum}, \field{QueueAlign}
+> +    following operations on the \field{QueueSizeMax},
+> +    \field{QueueSize}, \field{QueueAlign}
+>      and \field{QueuePFN} registers apply to. The index
+>      number of the first queue is zero (0x0).
+>  .
+>    }
+>    \hline
+> -  \mmioreg{QueueNumMax}{Maximum virtual queue size}{0x034}{R}{%
+> +  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
+>      Reading from the register returns the maximum size of the queue
+>      the device is ready to process or zero (0x0) if the queue is not
+>      available. This applies to the queue selected by writing to
+>      \field{QueueSel} and is allowed only when \field{QueuePFN} is set to zero
+>      (0x0), so when the queue is not actively used.
+> +    \begin{note}
+> +    \field{QueueSizeMax} was previously known as QueueNumMax.
+> +    \end{note}
+>    }
+>    \hline
+> -  \mmioreg{QueueNum}{Virtual queue size}{0x038}{W}{%
+> +  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
+>      Queue size is the number of elements in the queue.
+>      Writing to this register notifies the device what size of the
+>      queue the driver will use. This applies to the queue selected by
+>      writing to \field{QueueSel}.
+> +    \begin{note}
+> +    \field{QueueSize} was previously known as QueueNum.
+> +    \end{note}
+>    }
+>    \hline
+>    \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}{%
+> @@ -543,16 +557,16 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+>     expecting a returned value of zero (0x0).
+>  
+>  \item Read maximum queue size (number of elements) from
+> -   \field{QueueNumMax}. If the returned value is zero (0x0) the
+> +   \field{QueueSizeMax}. If the returned value is zero (0x0) the
+>     queue is not available.
+>  
+>  \item Allocate and zero the queue pages in contiguous virtual
+>     memory, aligning the Used Ring to an optimal boundary (usually
+>     page size). The driver should choose a queue size smaller than or
+> -   equal to \field{QueueNumMax}.
+> +   equal to \field{QueueSizeMax}.
+>  
+>  \item Notify the device about the queue size by writing the size to
+> -   \field{QueueNum}.
+> +   \field{QueueSize}.
+>  
+>  \item Notify the device about the used alignment by writing its value
+>     in bytes to \field{QueueAlign}.
+> -- 
+> 2.26.2
+>
+>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
 > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
 > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
 > List help: virtio-comment-help@lists.oasis-open.org
 > List archive: https://lists.oasis-open.org/archives/virtio-comment/
 > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-l=
-ists
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
 > Committee: https://www.oasis-open.org/committees/virtio/
 > Join OASIS: https://www.oasis-open.org/join/
-
+-- 
+I didn't get a lot in class, but I know it don't come in a shot glass.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
