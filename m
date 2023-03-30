@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11862-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11863-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 44FB9C7619A
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 21:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24A09C7619A
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id CE66F21180
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 21:50:39 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5ED613DF2D
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 84D86986758
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 21:50:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 58EC098658E
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8D20A9865BA; Thu, 30 Mar 2023 21:50:37 +0000 (UTC)
+	id 4C15298656B; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,142 +24,267 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C4632986563
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Mar 2023 21:50:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3909F986563;
+	Thu, 30 Mar 2023 22:59:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=Sophos;i="5.98,306,1673884800"; 
-   d="scan'208";a="226745727"
-IronPort-SDR: Y6yqjj2ly2PkzYPT2BZodstLB2hmmCo1QYmDxLdwv9Hdbq59SRVzfkx5qR9pgGek9xsb1tI6Km
- YxzhI4hsTw/8QJThpIcuh/I3Ky0MeS8mKnWOmrL+jaLW6DVUbp/lBh7JLOEx8cvieBIzHHg8Tu
- siaLHBQWGOXqStkYRThRlM+PbSgIvKddk0XKcFwrmrbs1JNzc+Kca5S7WfL1B9TGj2nxsOCHIA
- YZtOd5n11a1hCafQewrs4fDFfYL97QdFiyuPmJDyGCui0LAPKC/PJKOKxadJADppQpvb3GUs17
- ElQ=
-IronPort-SDR: DNvGBiq89+ZAQJlWk3BqyqkYzKCO/2v/F1gd7R/I6LgvpyUPRbBjFHdso6rFzxziCulUKYkrh/
- tENgRzamSf6jpHM+NOCreBYdFJVcBX9QsnKAIBa988xqK400Usuq+hoVuuOFzQGfaDGN2UX0OO
- PurFpJYjJx5dwVrMdWsLK8umP2+eGv3udnZQiBNFLT2Q84pdA2BkzNOSNue6gULJE16W7trw1w
- 9x3lT0PX6oIsH1MrrPeArXLbV2JW56fvpK4FEUx32X/usacniiyGW1H4x+GyiDWqDyasKPvSHJ
- 0Hg=
-WDCIronportException: Internal
-From: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-To: Jens Axboe <axboe@kernel.dk>,
-	linux-block@vger.kernel.org,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Stefan Hajnoczi <stefanha@gmail.com>,
-	Hannes Reinecke <hare@suse.de>,
-	Sam Li <faithilikerun@gmail.com>
-Cc: virtio-dev@lists.oasis-open.org,
-	virtualization@lists.linux-foundation.org,
-	Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Date: Thu, 30 Mar 2023 17:49:53 -0400
-Message-Id: <20230330214953.1088216-3-dmitry.fomichev@wdc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230330214953.1088216-1-dmitry.fomichev@wdc.com>
-References: <20230330214953.1088216-1-dmitry.fomichev@wdc.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a5+GOaxmhwgS2Z6dI5bkgZDS75K7Ge/lcmkh4QYK+QnFjBk/v2nheFXo6UgU/mbnFaGzIK7MTcM1cFQAvWRlmD5uGEom4oEOJp2g9ragYfU1D/zHR6qZvUNGPXebDJn+Rl/bstbDqx+WXvZr8PH88sYzovH1lRkYgew1y2JoLLXJchKzbWz4quY1KbY5sNGuPcnWcvTbTcqOrWYLDL3VeSuLfybfZeuaNDJT9cA4ijhOey3D3aGA1k1bPoehLg0R5acrnvQHDQ+IeIxNhsnzI4x/FcUsDKpU5V1VUvB3Sja56HLNEz9bEOWaXv+2bR1S57wZ1IC8Sx0UeA76uA0Ijg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rDHmUVljLgtm8ZwkzV/6Rtvki8EKzLmQJq0rcbu+prk=;
+ b=X+g9sBjUPqWEB87hr2lBIYuSmKihqz5Ac5Y+jmsA215gE9tziwA2iApupZprBa3xr3p1sDRzrBhCSrGqSD51dEE2MkSuVe00XfZ6S0qDiG4+RNg48bGnbVxg9fNooWF+PAMGJOxwAImeUKh21/UqDG997H80PXC+6b0dkiA0MiwP6XW20KM4zfgTADvKe+15ti7fvV9uNKbBPqXDqCCkEQ96ygxxlTgh3p+bYzcmTnGMa+4svMfeDJ0skq6Ea8uZU03tEnO0mTbhIFSH+iri4uSGnMLje5AcXfNnBh36GFwWZAhqHaaZNoqV2QLfwizJ5W4T+28jvz4HvW//3sLg5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+From: Parav Pandit <parav@nvidia.com>
+To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
+CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
+	<parav@nvidia.com>
+Date: Fri, 31 Mar 2023 01:58:23 +0300
+Message-ID: <20230330225834.506969-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v2 2/2] virtio-blk: fix ZBD probe in kernels without ZBD support
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT017:EE_|PH7PR12MB6465:EE_
+X-MS-Office365-Filtering-Correlation-Id: 35eca08b-54ba-4bdb-3fc1-08db317266f1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	s9w/BMexE9Szcp8e2L3Bq9vKHMiHBH6HxZbZ9STMyeDfjnwNjjrjy4XOY+aIJK1wiA/dtOzpb0d5oTT+Xg+TZ2i6hCLsbxcYNIDnss4llCxP2j4yyhRhcLU40lZiJPGr2q9UhAqhFeca+9FMpdDuzkd2V7hQt6yIrrxGAc/e72hFI0XnmN7799Ht9AHZdOSlAcDL0tnRgEnJI9olls07Iy6yVRTIxOZlm4bK/TpyZcY7TsZraZllg+8KR6Gcj5+LPi4Cn61fnVWWt0+9l/cQGJ3Ktx73T9P+gR0rK9sViV0roQykichFTH6fvSwL3P3vcyw2sX6rn7uHRXmphBqxN42kVtYN5J+cNJbrRNXpxJu+1Izt1j0f/Mjd4XhEY1Xe3Xu3Qd0KZhKnA2RkCEAyznBO8WdYybc6Jj2TA/MOyXegNcfyDDy2xpIlQ6ePnKQaCCKAoRBP+NEYrQQrbOAQyXIINBK/IRMjmbb3Ivj/JaGxMrTADRaO08yi3usoGHP2bFW9TOmSEfEobKatOvx4C9FpehvFxRQA7j58W08/qJ6KWtN3Cc1mxGOAusZTfc5QpWoLsT3MbZuM4w0owBywGbpFwvUdy1KBkV+H9ZinM3bsqtjR4WI2NyX8XfRikAWmbCcVg9IszAFy15VUlefQ0YOdZ7UrqnICJpJ60p32sshoUnRV4PqrRHQOANWATrq40G4ghjRUcPxjUFTBPxaieqSK5SR1V7ocX2uqM6zT74VXHqbu19O3RewO/jmVzhmmlhXmdpTfIZ9Pk1VIWJY9qDP13EymXA6VYRRoV2ruPrE=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(396003)(346002)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(6666004)(107886003)(478600001)(1076003)(36756003)(426003)(83380400001)(86362001)(70206006)(5660300002)(2616005)(186003)(54906003)(40480700001)(16526019)(2906002)(7636003)(316002)(36860700001)(4326008)(8676002)(110136005)(41300700001)(34020700004)(82310400005)(336012)(82740400003)(8936002)(40460700003)(47076005)(356005)(70586007)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 22:59:22.4457
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35eca08b-54ba-4bdb-3fc1-08db317266f1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6465
+Subject: [virtio-dev] [PATCH 00/11] Introduce transitional mmr pci device
 
-When the kernel is built without support for zoned block devices,
-virtio-blk probe needs to error out any host-managed device scans
-to prevent such devices from appearing in the system as non-zoned.
-The current virtio-blk code simply bypasses all ZBD checks if
-CONFIG_BLK_DEV_ZONED is not defined and this leads to host-managed
-block devices being presented as non-zoned in the OS. This is one of
-the main problems this patch series is aimed to fix.
+Overview:
+---------
+The Transitional MMR device is a variant of the transitional PCI device.
+It has its own small Device ID range. It does not have I/O
+region BAR; instead it exposes legacy configuration and device
+specific registers at an offset in the memory region BAR.
 
-In this patch, make VIRTIO_BLK_F_ZONED feature defined even when
-CONFIG_BLK_DEV_ZONED is not. This change makes the code compliant with
-the voted revision of virtio-blk ZBD spec. Modify the probe code to
-look at the situation when VIRTIO_BLK_F_ZONED is negotiated in a kernel
-that is built without ZBD support. In this case, the code checks
-the zoned model of the device and fails the probe is the device
-is host-managed.
+Such transitional MMR devices will be used at the scale of
+thousands of devices using PCI SR-IOV and/or future scalable
+virtualization technology to provide backward
+compatibility (for legacy devices) and also future
+compatibility with new features.
 
-The patch also adds the comment to clarify that the call to perform
-the zoned device probe is correctly placed after virtio_device ready().
+Usecase:
+--------
+1. A hypervisor/system needs to provide transitional
+   virtio devices to the guest VM at scale of thousands,
+   typically, one to eight devices per VM.
 
-Fixes: 95bfec41bd3d ("virtio-blk: add support for zoned block devices")
-Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
----
- drivers/block/virtio_blk.c | 33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+2. A hypervisor/system needs to provide such devices using a
+   vendor agnostic driver in the hypervisor system.
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 4f0dbbb3d4a5..2b918e28acaa 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -866,16 +866,12 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
- 	return ret;
- }
- 
--static inline bool virtblk_has_zoned_feature(struct virtio_device *vdev)
--{
--	return virtio_has_feature(vdev, VIRTIO_BLK_F_ZONED);
--}
--
- #else
- 
- /*
-  * Zoned block device support is not configured in this kernel.
-- * We only need to define a few symbols to avoid compilation errors.
-+ * Host-managed zoned devices can't be supported, but others are
-+ * good to go as regular block devices.
-  */
- #define virtblk_report_zones       NULL
- 
-@@ -886,12 +882,16 @@ static inline void virtblk_revalidate_zones(struct virtio_blk *vblk)
- static inline int virtblk_probe_zoned_device(struct virtio_device *vdev,
- 			struct virtio_blk *vblk, struct request_queue *q)
- {
--	return -EOPNOTSUPP;
--}
-+	u8 model;
- 
--static inline bool virtblk_has_zoned_feature(struct virtio_device *vdev)
--{
--	return false;
-+	virtio_cread(vdev, struct virtio_blk_config, zoned.model, &model);
-+	if (model == VIRTIO_BLK_Z_HM) {
-+		dev_err(&vdev->dev,
-+			"virtio_blk: zoned devices are not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
- }
- #endif /* CONFIG_BLK_DEV_ZONED */
- 
-@@ -1577,7 +1577,11 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	virtblk_update_capacity(vblk, false);
- 	virtio_device_ready(vdev);
- 
--	if (virtblk_has_zoned_feature(vdev)) {
-+	/*
-+	 * All steps that follow use the VQs therefore they need to be
-+	 * placed after the virtio_device_ready() call above.
-+	 */
-+	if (virtio_has_feature(vdev, VIRTIO_BLK_F_ZONED)) {
- 		err = virtblk_probe_zoned_device(vdev, vblk, q);
- 		if (err)
- 			goto out_cleanup_disk;
-@@ -1683,10 +1687,7 @@ static unsigned int features[] = {
- 	VIRTIO_BLK_F_RO, VIRTIO_BLK_F_BLK_SIZE,
- 	VIRTIO_BLK_F_FLUSH, VIRTIO_BLK_F_TOPOLOGY, VIRTIO_BLK_F_CONFIG_WCE,
- 	VIRTIO_BLK_F_MQ, VIRTIO_BLK_F_DISCARD, VIRTIO_BLK_F_WRITE_ZEROES,
--	VIRTIO_BLK_F_SECURE_ERASE,
--#ifdef CONFIG_BLK_DEV_ZONED
--	VIRTIO_BLK_F_ZONED,
--#endif /* CONFIG_BLK_DEV_ZONED */
-+	VIRTIO_BLK_F_SECURE_ERASE, VIRTIO_BLK_F_ZONED,
- };
- 
- static struct virtio_driver virtio_blk = {
+3. A hypervisor system prefers to have single stack regardless of
+   virtio device type (net/blk) and be future compatible with a
+   single vfio stack using SR-IOV or other scalable device
+   virtualization technology to map PCI devices to the guest VM.
+   (as transitional or otherwise)
+
+Motivation/Background:
+----------------------
+The existing transitional PCI device is missing support for
+PCI SR-IOV based devices. Currently it does not work beyond
+PCI PF, or as software emulated device in reality. It currently
+has below cited system level limitations:
+
+[a] PCIe spec citation:
+VFs do not support I/O Space and thus VF BARs shall not
+indicate I/O Space.
+
+[b] cpu arch citiation:
+Intel 64 and IA-32 Architectures Software Developer’s Manual:
+The processor’s I/O address space is separate and distinct from
+the physical-memory address space. The I/O address space consists
+of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
+
+[c] PCIe spec citation:
+If a bridge implements an I/O address range,...I/O address range
+will be aligned to a 4 KB boundary.
+
+[d] I/O region accesses at PCI system level is slow as they are non-posted
+operations in PCIe fabric.
+
+The usecase requirements and limitations above can be solved by
+extending the transitional device, mapping legacy and device
+specific configuration registers in a memory PCI BAR instead
+of using non composable I/O region.
+
+Please review.
+
+Patch summary:
+--------------
+patch 1 to 5 prepares the spec
+patch 6 to 11 defines transitional mmr device
+
+patch-1 uses lower case alphabets to name device id
+patch-2 move transitional device id in legay section along with
+        revision id
+patch-3 splits legacy feature bits description from device id
+patch-4 rename and moves virtio config registers next to 1.x
+        registers section
+patch-5 Adds missing helper verb in terminology definitions
+patch-6 introduces transitional mmr device
+patch-7 introduces transitional mmr device pci device ids
+patch-8 introduces virtio extended pci capability
+patch-9 describes new pci capability to locate legacy mmr
+        registers
+patch-10 extended usage of driver notification capability for
+         the transitional mmr device
+patch-11 adds conformance section of the transitional mmr device
+
+This design and details further described below.
+
+Design:
+-------
+Below picture captures the main small difference between current
+transitional PCI SR-IOV VF and transitional MMR SR-IOV VF.
+
++------------------+ +--------------------+ +--------------------+
+|virtio 1.x        | |Transitional        | |Transitional        |
+|SRIOV VF          | |SRIOV VF            | |MMR SRIOV VF        |
+|                  | |                    | |                    |
+++---------------+ | ++---------------+   | ++---------------+   |
+||dev_id =       | | ||dev_id =       |   | ||dev_id =       |   |
+||{0x1040-0x106C}| | ||{0x1000-0x103f}|   | ||{0x10f9-0x10ff}|   |
+|+---------------+ | |+---------------+   | |+---------------+   |
+|                  | |                    | |                    |
+|+------------+    | |+------------+      | |+-----------------+ |
+||Memory BAR  |    | ||Memory BAR  |      | ||Memory BAR       | |
+|+------------+    | |+------------+      | ||                 | |
+|                  | |                    | || +--------------+| |
+|                  | |+-----------------+ | || |legacy virtio || |
+|                  | ||IOBAR impossible | | || |+ dev cfg     || |
+|                  | |+-----------------+ | || |registers     || |
+|                  | |                    | || +--------------+| |
+|                  | |                    | |+-----------------+ |
++------------------+ +--------------------+ +--------------------+
+
+Here transitional MMR SR-IOV VF has legacy configuration and
+legacy device specific registers located at an offset in the memory
+region BAR.
+
+A memory region can be dedicated at BAR0 or it can be in an
+existing BAR, allowing flexibility when implementing support
+in a hardware device.
+
+Transitional MMR SR-IOV VFs use a distinct device ID range to that
+of existing virtio SR-IOV VFs to allow flexibility in driver
+binding.
+
+A more zoom-in version of transitional MMR SR-IOV device shows
+that the location of the legacy registers are discovered by the
+driver using a new capability.
+
++------------------------------+
+|Transitional                  |
+|MMR SRIOV VF                  |
+|                              |
+++---------------+             |
+||dev_id =       |             |
+||{0x10f9-0x10ff}|             |
+|+---------------+             |
+|                              |
+++--------------------+        |
+|| PCIe ext cap = 0xB |        |
+|| cfg_type = 10      |        |
+|| offset   = 0x1000  |        |
+|| bar      = N {0..5}|        |
+|+--|-----------------+        |
+|   |                          |
+|   |                          |
+|   |    +-------------------+ |
+|   |    | Memory BAR = A    | |
+|   |    |                   | |
+|   +------>+--------------+ | |
+|        |  |legacy virtio | | |
+|        |  |+ dev cfg     | | |
+|        |  |registers     | | |
+|        |  +--------------+ | |
+|        +-----------------+ | |
++------------------------------+
+
+Software usage:
+---------------
+Transitional MMR device can be used by multiple ways.
+
+1. The most common way to use and map to the guest VM is by
+using vfio driver framework in Linux kernel.
+
+                +----------------------+
+                |pci_dev_id = 0x100X   |
++---------------|pci_rev_id = 0x0      |-----+
+|vfio device    |BAR0 = I/O region     |     |
+|               |Other attributes      |     |
+|               +----------------------+     |
+|                                            |
++   +--------------+     +-----------------+ |
+|   |I/O to memory |     | Other vfio      | |
+|   |rd/wr mapper  |     | functionalities | |
+|   +--------------+     +-----------------+ |
+|                                            |
++-------------------+------------------------+
+                    |
+       +------------+-----------------+
+       |         Transitional         |
+       |         MMR SRIOV VF         |
+       +------------------------------+
+
+2. Virtio pci driver to bind to the listed device id and
+   use it as native device in the host.
+
+3. Use it in a light weight hypervisor to run bare-metal OS.
+
+Parav Pandit (11):
+  transport-pci: Use lowecase alphabets
+  transport-pci: Move transitional device id to legacy section
+  transport-pci: Split notes of PCI Device Layout
+  transport-pci: Rename and move legacy PCI Device layout section
+  introduction: Add missing helping verb
+  introduction: Introduce transitional MMR interface
+  transport-pci: Introduce transitional MMR device id
+  transport-pci: Introduce virtio extended capability
+  transport-pci: Describe PCI MMR dev config registers
+  transport-pci: Use driver notification PCI capability
+  conformance: Add transitional MMR interface conformance
+
+ conformance.tex      |  11 +-
+ introduction.tex     |  34 +++-
+ tmmr-conformance.tex |  27 +++
+ transport-pci.tex    | 405 ++++++++++++++++++++++++++++++-------------
+ 4 files changed, 354 insertions(+), 123 deletions(-)
+ create mode 100644 tmmr-conformance.tex
+
 -- 
-2.34.1
+2.26.2
 
 
 ---------------------------------------------------------------------
