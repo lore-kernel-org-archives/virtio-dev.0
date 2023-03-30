@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11869-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11870-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1404C7619A
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 23:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 88E67C6FD1D
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 23:00:15 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 24D727E2A7
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AF5999917F
 	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D8F1F9868A5
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6136B9868E7
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:35 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BF2289868AE; Thu, 30 Mar 2023 22:59:33 +0000 (UTC)
+	id 082D398686B; Thu, 30 Mar 2023 22:59:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,32 +24,32 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AC4A698675A;
-	Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 961BF98662C;
+	Thu, 30 Mar 2023 22:59:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nmKc7I4eRhTqheZjsQFUIYKkZirn+eM1Z9eoKiUOzeY8wLtlmnFK+Ex1kdHOaiFleEYbqfcsUS0HdTQzWZMIW1x4vG5zQDPW8Ml0WCa/73MVVfFBdsuoD4curHOYBvv7t+qQqPYpcqTxmaCg1/0oKlQ2q4FfJJz9VqbfeuleW61Q+MAxvfn/+Am5+zyQnHfcQEUXEvU9x624YNqTUizScPUdclHcHfnSHU0L9HVdI0cQifvtXfErmU9EAtyxuPERe/jYRmywKwNNeEDZPbpT31bdgK7S7RwXB7LgYiKJtBDvmaRhKO5jr79gkShslRnTllrbktYGvNKQjghmTl7xjg==
+ b=XVDV4+4QULQ7xWFxB2++fhIfI1BdkOu4NgeoeJq2sGf3ylPkl5QduvNoTKL0ubksDDmubo4TdM6C9DL14FfdSa3RSpaO+0c8DKsO/4st2IRWfLCK9h7JX0yVla1CFmqxkhze3CW2P5A/tHfnpexGgkSKmBMgS8PPsVTNvGmXENpyWkcw6BeEbfy8ZK6+7NpYe2URs5Ak+uOa8dopg1MSbLLIoKLORUbw3FF9F9alu266TjIMLPjPmCSeFDaMm7EF6Up3M+gS7QCGaLF4M5PPunxkQVHFWlAoVo7P6cb/cilbxadJP8D1PfTg1e5mWVg3oRvDlTrqFeG5ldk6Txcn7Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/blO9pq15sQ/uC5nG/HcVldLTaq8TzaajKAIURUVYO4=;
- b=OC4HLjnPfswy+IsxWpqSlqgtKqrQkvufHAiaMBKKxYETj+PbOeTH/kVlF/fFcL3lBcf3poLysgQri8u8xgPwkQwArxZj89mXUGv3Cga4D2tTU7RlRRYiVe+jQsFGiwqklb7969hoabTga2o27GFhEauDXHDGFqeU7Kd/6I8YgqrSWBsb6OfrtR75NyckURFDK9N4viB00luumADTz8b8RJhmHGVNad7M8aZ242ZXaNyH4wLW+4S0MtNRhUei2Go91pZhZpd3/kDdhTq1cFm9pcEU2t5tHRxXRnihICDZRkhFQj/ZCwcuFswMiazRUQyQWQNXt8gYZIx/eOalyYzAlw==
+ bh=D9HTrGugx+JNPjQM+wZh8VrtQdUvoYUNK9B6LvSo090=;
+ b=Z4jHkErFt+3C7eM3CX06oVcFzHNpPJ22qj3yjPOwch7RmnLz50/WdmxMPHL8U8ngaa8/O+heijNFV3UGxyG4exqg3nvFOZp+verbLgpyIaw2QOJVU5Ds2bxrtw8uY8krPb9m/53aXuzIq4Iua+wlAQXMJCiVpfrcUaLuOTPLbR5rB/2Aql3y3m61kPh79buz21OTkOSPIboyuNUCJPZrGRq4x+VpLaCdfeF37g1ytNBptKAGlx7Q8aDOhvj+q28KJLwcydL8LN/cUnsA795mmy2ORaDUeB2uMLH+PXea5SW/IPD4xmTZICm943LyrlF5VQXPspVTRKB1iNeZc3Ci9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
 CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
-	<parav@nvidia.com>, Satananda Burla <sburla@marvell.com>
-Date: Fri, 31 Mar 2023 01:58:31 +0300
-Message-ID: <20230330225834.506969-9-parav@nvidia.com>
+	<parav@nvidia.com>
+Date: Fri, 31 Mar 2023 01:58:28 +0300
+Message-ID: <20230330225834.506969-6-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20230330225834.506969-1-parav@nvidia.com>
 References: <20230330225834.506969-1-parav@nvidia.com>
@@ -61,129 +61,59 @@ X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT052:EE_|DM6PR12MB4268:EE_
-X-MS-Office365-Filtering-Correlation-Id: 88faef2f-178c-400a-e871-08db31726a7a
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT006:EE_|PH7PR12MB7188:EE_
+X-MS-Office365-Filtering-Correlation-Id: e5ecf66c-5220-418f-4048-08db31726b28
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	xjnJFIV0Erxo9Mvip7Ab/54edRU07OxJCsYjSv5FRo5b4u95ZscMmLQ3CNwgRGR54UYkCHI1sAL7u1zTo/Xa1igk4K3hqo8tNXDJg/Ov7I1fklYRgh1qmq9vMWya6MUEFg8r9QRm1heMw6rkMB8uy0Ef9/DwCHTyObEezPni2lvuu12OLZ7lPBHpY5dQmXiOYkCIPv7aFL2LGMQWdbe4ESuHkE98uVUT1cWgP7SIB8kkWEvSgUU6LhyNZHqmB0ZQ5ANKY0IGhpBVVNfYU9oat41DElVEO7KWyR7Wq/670XEVvJJpci7eqURcpatY3WxVxbletYMGv9EL4D7VsZ3ha0b38oXiAlaiFyoeioEXEbXh12hGqHsUspOINggMX7JOB/lC5KJcvGTYHucSEBfxqJLvTBKi+C7S6I02w59I0md0dTZz09xTgxlBa9yyVmIhq8gFwv8WZUISpTMGfWgkmuW2Isz2w1aCTGafc2DdQiFuQumuKeDCjiqMjObC2xSKgObq+GLEoO+DPeHNr90I6yDNZtF+KIyQhXlS5GE8Jjri4nWePTtxIfBEVWnx1iHByIgg7VgbBj4j9CrIr47ybjJFU/EOlgqYLakD2e/MTbwhvC+8cBxH9i2PwtWNGvuPnudFHcxxEqkzhmHB2hwafwiqnYkehE9bKybiYz+8SMxtXMLjPtVsR/TG72yUJvjt52jVgdAturqEDMyCoYKIOqsA9mXRZkn2xoSTryrZWGDYeFMDNoBFgh1mPOUdXgIY5xKvcuQUu23qV/abo7yOsTYscvjLhWSwF6U8NL1dKk8=
+	6nFXlGgJhwTDMfifRan5fJa0e46JsoF1SekyxaJTu7kJfEFsG9BIo7Ae7MWvN5H1NXCZ0qssjSpS4RifrAKfnSM3ZNatsxCJbAtYM1C3uhhoZEl8YtfLkTUR/7lDBj2J8STGAY8mLrGQ1FtdrdU8Sb7N+0jrLfkT9fmIVHcRHoAkklM/cfLtCnW0Mix+nP5SjTh0y2s/BjRB8+GrC99HL0HLbk2DV7XibNvfxYCrMRgEtXQw4aF4n+e8TnrroRyLsq6Gx29SNYrfcax2BRTsFiTgVnwf73unyIUVnZVX1kzG2lR2/gXTWHPLDjOYycoPoTFkmAF/Yh0mITHPV97bn9v1ix62u1q7HaahYDIbNp2pPZlYBEbXlvV/UOrEH5ytoZbPFtqzihh7KF8d2VbgXrxe1IrHIEWKtZPlIpaDd/CkWo1seFA03ZmznmGFtr9+5NgTU3jc6eRPpJZt+DDmsZEeuigpQDc35+H7xKA1PTjkXjF2XXUEAi2vOS85F6hc/s2AX9Rk+QV1wCLA163v0gsTm6cEG6Uvv+7teHQJZ/m2RxXTHHGvwFHE+4yykVevm8gYKwbctEuatGbbpI/uEUm1Y9bMB+HY7BwJO2CLLhuaP5dNd1fV9mhTTQG5Hr/Il5RN/NJAiH7ZiVEskIqhfvL2S9eanN+YrBf9Av/20f/wrfZbfjvQI4VHRui0Ed0t/6Z7ULMD6j24oEDOxQvxVq4VPk+QRdc2ydKYOo+1ub9PVX54rKOJ90uulBF+knBrq+w5ewQBN/Q0OywpoSFEXmPDojMANF+Bz1R45AHCK7o=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(346002)(39860400002)(136003)(451199021)(46966006)(36840700001)(40470700004)(40460700003)(47076005)(34020700004)(2616005)(426003)(36860700001)(83380400001)(1076003)(16526019)(110136005)(316002)(54906003)(478600001)(6666004)(26005)(186003)(2906002)(5660300002)(70586007)(86362001)(82310400005)(7636003)(36756003)(356005)(8936002)(4326008)(8676002)(41300700001)(70206006)(40480700001)(82740400003)(336012);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(40460700003)(426003)(47076005)(70206006)(356005)(8936002)(7636003)(36756003)(4326008)(82310400005)(4744005)(70586007)(5660300002)(86362001)(8676002)(40480700001)(82740400003)(41300700001)(83380400001)(336012)(2616005)(36860700001)(6666004)(34020700004)(2906002)(54906003)(107886003)(110136005)(1076003)(186003)(478600001)(316002)(26005)(16526019);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 22:59:28.4123
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 22:59:29.5327
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88faef2f-178c-400a-e871-08db31726a7a
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5ecf66c-5220-418f-4048-08db31726b28
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4268
-Subject: [virtio-dev] [PATCH 08/11] transport-pci: Introduce virtio extended capability
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7188
+Subject: [virtio-dev] [PATCH 05/11] introduction: Add missing helping verb
 
-PCI device configuration space for capabilities is limited to only 192
-bytes shared by many PCI capabilities of generic PCI device and virtio
-specific.
+The terminology of Transitional device and driver is missing the helping
+verb 'is' similar to other terminologies.
 
-Hence, introduce virtio extended capability that uses PCI Express
-extended capability.
-Subsequent patch uses this virtio extended capability.
+Hence, add them to complete the sentence.
 
-Co-developed-by: Satananda Burla <sburla@marvell.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
- transport-pci.tex | 69 ++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 68 insertions(+), 1 deletion(-)
+ introduction.tex | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/transport-pci.tex b/transport-pci.tex
-index 665448e..aeda4a1 100644
---- a/transport-pci.tex
-+++ b/transport-pci.tex
-@@ -174,7 +174,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
- the function, or accessed via the special VIRTIO_PCI_CAP_PCI_CFG field in the PCI configuration space.
+diff --git a/introduction.tex b/introduction.tex
+index 287c5fc..e8b34e3 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -145,14 +145,14 @@ \subsection{Legacy Interface: Terminology}\label{intro:Legacy
  
- The location of each structure is specified using a vendor-specific PCI capability located
--on the capability list in PCI configuration space of the device.
-+on the capability list in PCI configuration space of the device
-+unless stated otherwise.
- This virtio structure capability uses little-endian format; all fields are
- read-only for the driver unless stated otherwise:
+ \begin{description}
+ \item[Transitional Device]
+-        a device supporting both drivers conforming to this
++        is a device supporting both drivers conforming to this
+         specification, and allowing legacy drivers.
+ \end{description}
  
-@@ -301,6 +302,72 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
- fields provide the most significant 32 bits of a total 64 bit offset and
- length within the BAR specified by \field{cap.bar}.
+ Similarly, a driver MAY implement:
+ \begin{description}
+ \item[Transitional Driver]
+-        a driver supporting both devices conforming to this
++        is a driver supporting both devices conforming to this
+         specification, and legacy devices.
+ \end{description}
  
-+Virtio extended PCI Express capability structure defines
-+the location of certain virtio device configuration related
-+structures using PCI Express extended capability. Virtio
-+extended PCI Express capability structure uses PCI Express
-+vendor specific extended capability (VSEC). It has a below
-+layout:
-+
-+\begin{lstlisting}
-+struct pcie_ext_cap {
-+        le16 cap_vendor_id; /* Generic PCI field: 0xB */
-+        le16 cap_version : 2; /* Generic PCI field: 0 */
-+        le16 next_cap_offset : 14; /* Generic PCI field: next cap or 0 */
-+};
-+
-+struct virtio_pcie_ext_cap {
-+        struct pcie_ext_cap pcie_ecap;
-+        u8 cfg_type; /* Identifies the structure. */
-+        u8 bar; /* Index of the BAR where its located */
-+        u8 id; /* Multiple capabilities of the same type */
-+        u8 zero_padding[1];
-+        le64 offset; /* Offset with the bar */
-+        le64 length; /* Length of the structure, in bytes. */
-+        u8 data[]; /* Optional variable length data */
-+};
-+\end{lstlisting}
-+
-+This structure contains optional data, depending on
-+\field{cfg_type}. The fields are interpreted as follows:
-+
-+\begin{description}
-+\item[\field{cap_vendor_id}]
-+         0x0B; identifies a vendor-specific extended capability.
-+
-+\item[\field{cap_version}]
-+         contains a value of 0.
-+
-+\item[\field{next_cap_offset}]
-+        Offset to the next capability.
-+
-+\item[\field{cfg_type}]
-+        follows the same definition as \field{cfg_type}
-+        from the \field{struct virtio_pci_cap}.
-+
-+\item[\field{bar}]
-+        follows the same  same definition as  \field{bar}
-+        from the \field{struct virtio_pci_cap}.
-+
-+\item[\field{id}]
-+        follows the same  same definition as  \field{id}
-+        from the \field{struct virtio_pci_cap}.
-+
-+\item[\field{offset}]
-+        indicates where the structure begins relative to the
-+        base address associated with the BAR. The alignment
-+        requirements of offset are indicated in each
-+        structure-specific section that uses
-+        \field{struct virtio_pcie_ext_cap}.
-+
-+\item[\field{length}]
-+        indicates the length of the structure indicated by this
-+        capability.
-+
-+\item[\field{data}]
-+        optional data of this capability.
-+\end{description}
-+
- \drivernormative{\subsubsection}{Virtio Structure PCI Capabilities}{Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}
- 
- The driver MUST ignore any vendor-specific capability structure which has
 -- 
 2.26.2
 
