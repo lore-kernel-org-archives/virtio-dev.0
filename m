@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11851-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11852-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 04BF6C77B61
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 07:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CADBEC77B61
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 07:53:27 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5D9F560350
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 07:48:07 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3C73F6E6DE
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 07:53:27 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 583AA986546
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 07:48:07 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2FB4298654A
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 07:53:27 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4EA88986526; Thu, 30 Mar 2023 07:48:07 +0000 (UTC)
+	id 225D0986526; Thu, 30 Mar 2023 07:53:27 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,56 +24,63 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3F73B986529
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Mar 2023 07:48:07 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 13397986528
+	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Mar 2023 07:53:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: jhIhNXk0OxG9NlpqxUGzGA-1
+X-MC-Unique: J-OLwQENNLWcXSc87FfOvw-1
 From: Cornelia Huck <cohuck@redhat.com>
 To: Parav Pandit <parav@nvidia.com>, mst@redhat.com,
  virtio-dev@lists.oasis-open.org, pasic@linux.ibm.com
 Cc: sgarzare@redhat.com, virtio-comment@lists.oasis-open.org,
  shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
-In-Reply-To: <20230329212341.465843-7-parav@nvidia.com>
+In-Reply-To: <20230329212341.465843-8-parav@nvidia.com>
 Organization: Red Hat GmbH
 References: <20230329212341.465843-1-parav@nvidia.com>
- <20230329212341.465843-7-parav@nvidia.com>
+ <20230329212341.465843-8-parav@nvidia.com>
 User-Agent: Notmuch/0.37 (https://notmuchmail.org)
-Date: Thu, 30 Mar 2023 09:48:01 +0200
-Message-ID: <87zg7ufzny.fsf@redhat.com>
+Date: Thu, 30 Mar 2023 09:53:20 +0200
+Message-ID: <87wn2yfzf3.fsf@redhat.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain
-Subject: [virtio-dev] Re: [PATCH v10 6/8] transport-ccw: Refer to the vq by its number
+Subject: [virtio-dev] Re: [PATCH v10 7/8] virtio-net: Avoid duplicate receive queue example
 
 On Thu, Mar 30 2023, Parav Pandit <parav@nvidia.com> wrote:
 
-> Currently specification uses virtqueue index and
-> number interchangeably to refer to the virtqueue.
+> Receive queue number/index example is duplicate which is already defined
+> in the Setting RSS parameters section.
 >
-> Instead refer to it by its number.
+> Hence, avoid such duplicate example and prepare it for the subsequent
+> patch to describe using receive queue handle.
 >
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
 > Signed-off-by: Parav Pandit <parav@nvidia.com>
+> ---
+>  device-types/net/description.tex | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> ---
-> changelog:
-> v9->v10:
-> - replaced queue_select with vqn
-> - used lower case letter for first word in comment
-> v8->v9:
-> - replaced 'named' with 'known'
-> - replaced 'queue number' with 'vq number'
-> v3->v4:
-> - moved note to comment
-> v2->v3:
-> - added comment note for queue_select similar to max_queue_size
-> v0->v1:
-> - new patch
-> ---
->  transport-ccw.tex | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
+> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+> index d7c8b1b..435c1fc 100644
+> --- a/device-types/net/description.tex
+> +++ b/device-types/net/description.tex
+> @@ -1467,8 +1467,8 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  The device MUST determine the destination queue for a network packet as follows:
+>  \begin{itemize}
+>  \item Calculate the hash of the packet as defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets}.
+> -\item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure (value of 0 corresponds to receiveq1).
+> -\item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq (value of 0 corresponds to receiveq1).
+> +\item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure.
+> +\item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq.
+
+As you touch this sentence anyway, maybe make it "the 0-based number"?
+
+>  \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
+>  \end{itemize}
+>  
+
+Otherwise,
 
 Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 
