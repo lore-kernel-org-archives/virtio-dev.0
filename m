@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11853-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11854-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 765E0C6FD1D
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 09:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A455C761A6
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 12:10:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D621E7A0C7
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 09:17:16 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 71354190934
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 12:10:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CC65B98653E
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 09:17:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 66C3198654B
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 12:10:56 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C1A12986528; Thu, 30 Mar 2023 09:17:16 +0000 (UTC)
+	id 588C2986531; Thu, 30 Mar 2023 12:10:56 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,161 +24,293 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id ACD36986530
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Mar 2023 09:17:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 44802986533;
+	Thu, 30 Mar 2023 12:10:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: Jx297kYZOA-x4Za3ZJXI-A-1
-From: Cornelia Huck <cohuck@redhat.com>
-To: Parav Pandit <parav@nvidia.com>, mst@redhat.com,
- virtio-dev@lists.oasis-open.org, pasic@linux.ibm.com
-Cc: sgarzare@redhat.com, virtio-comment@lists.oasis-open.org,
- shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
-In-Reply-To: <20230329212341.465843-9-parav@nvidia.com>
-Organization: Red Hat GmbH
-References: <20230329212341.465843-1-parav@nvidia.com>
- <20230329212341.465843-9-parav@nvidia.com>
-User-Agent: Notmuch/0.37 (https://notmuchmail.org)
-Date: Thu, 30 Mar 2023 11:17:04 +0200
-Message-ID: <87tty2fvjj.fsf@redhat.com>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Vf-Qqaa_1680178247;
+Message-ID: <fd90ee25-710e-a3d1-9204-a5cc8283b3bf@linux.alibaba.com>
+Date: Thu, 30 Mar 2023 20:10:45 +0800
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain
-Subject: [virtio-dev] Re: [PATCH v10 8/8] virtio-net: Describe RSS using rss rq id
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Cornelia Huck <cohuck@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230228061309-mutt-send-email-mst@kernel.org>
+ <25231225-59c8-91b0-e0dd-3dab8aa8164b@linux.alibaba.com>
+ <20230308093311-mutt-send-email-mst@kernel.org>
+ <c334a082-4b78-c7ea-e04a-6436f4965516@linux.alibaba.com>
+ <20230309142612-mutt-send-email-mst@kernel.org>
+ <021eeb40-aab1-07b9-cfe7-9dd61a32e0b3@linux.alibaba.com>
+ <20230315074633-mutt-send-email-mst@kernel.org>
+ <4b14043c-6059-1d26-060e-7dc653c4f401@linux.alibaba.com>
+ <20230315094102-mutt-send-email-mst@kernel.org>
+ <20230316131726.GA20524@h68b04307.sqa.eu95>
+ <20230320154456-mutt-send-email-mst@kernel.org>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <20230320154456-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re:
+ [virtio-dev] Re: [PATCH v9] virtio-net: support inner header hash
 
-On Thu, Mar 30 2023, Parav Pandit <parav@nvidia.com> wrote:
 
-> The content of indirection table and unclassified_queue which are
-> based on math calculation historically. To better describe this, to
-> avoid intermixing array index with virtqueue index and to use virtqueue
-> number
+
+在 2023/3/21 上午3:45, Michael S. Tsirkin 写道:
+> On Thu, Mar 16, 2023 at 09:17:26PM +0800, Heng Qi wrote:
+>> On Wed, Mar 15, 2023 at 10:57:40AM -0400, Michael S. Tsirkin wrote:
+>>> On Wed, Mar 15, 2023 at 08:55:45PM +0800, Heng Qi wrote:
+>>>>
+>>>> 在 2023/3/15 下午7:58, Michael S. Tsirkin 写道:
+>>>>> On Sat, Mar 11, 2023 at 11:23:08AM +0800, Heng Qi wrote:
+>>>>>>
+>>>>>> 在 2023/3/10 上午3:36, Michael S. Tsirkin 写道:
+>>>>>>> On Thu, Mar 09, 2023 at 12:55:02PM +0800, Heng Qi wrote:
+>>>>>>>> 在 2023/3/8 下午10:39, Michael S. Tsirkin 写道:
+>>>>>>>>> On Wed, Mar 01, 2023 at 10:56:31AM +0800, Heng Qi wrote:
+>>>>>>>>>> 在 2023/2/28 下午7:16, Michael S. Tsirkin 写道:
+>>>>>>>>>>> On Sat, Feb 18, 2023 at 10:37:15PM +0800, Heng Qi wrote:
+>>>>>>>>>>>> If the tunnel is used to encapsulate the packets, the hash calculated
+>>>>>>>>>>>> using the outer header of the receive packets is always fixed for the
+>>>>>>>>>>>> same flow packets, i.e. they will be steered to the same receive queue.
+>>>>>>>>>>> Wait a second. How is this true? Does not everyone stick the
+>>>>>>>>>>> inner header hash in the outer source port to solve this?
+>>>>>>>>>> Yes, you are right. That's what we did before the inner header hash, but it
+>>>>>>>>>> has a performance penalty, which I'll explain below.
+>>>>>>>>>>
+>>>>>>>>>>> For example geneve spec says:
+>>>>>>>>>>>
+>>>>>>>>>>>         it is necessary for entropy from encapsulated packets to be
+>>>>>>>>>>>         exposed in the tunnel header.  The most common technique for this is
+>>>>>>>>>>>         to use the UDP source port
+>>>>>>>>>> The end point of the tunnel called the gateway (with DPDK on top of it).
+>>>>>>>>>>
+>>>>>>>>>> 1. When there is no inner header hash, entropy can be inserted into the udp
+>>>>>>>>>> src port of the outer header of the tunnel,
+>>>>>>>>>> and then the tunnel packet is handed over to the host. The host needs to
+>>>>>>>>>> take out a part of the CPUs to parse the outer headers (but not drop them)
+>>>>>>>>>> to calculate the inner hash for the inner payloads,
+>>>>>>>>>> and then use the inner
+>>>>>>>>>> hash to forward them to another part of the CPUs that are responsible for
+>>>>>>>>>> processing.
+>>>>>>>>> I don't get this part. Leave inner hashes to the guest inside the
+>>>>>>>>> tunnel, why is your host doing this?
+>>>>>> Let's simplify some details and take a fresh look at two different
+>>>>>> scenarios: VXLAN and GENEVE (Scenario1) and GRE (Scenario2).
+>>>>>>
+>>>>>> 1. In Scenario1, we can improve the processing performance of the same flow
+>>>>>> by implementing inner symmetric hashing.
+>>>>>>
+>>>>>> This is because even though client1 and client2 communicate bidirectionally
+>>>>>> through the same flow, their data may pass
+>>>>>>
+>>>>>> through and be encapsulated by different tunnels, resulting in the same flow
+>>>>>> being hashed to different queues and processed by different CPUs.
+>>>>>>
+>>>>>> To ensure consistency and optimized processing, we need to parse out the
+>>>>>> inner header and compute a symmetric hash on it using a special rss key.
+>>>>>>
+>>>>>> Sorry for not mentioning the inner symmetric hash before, in order to
+>>>>>> prevent the introduction of more concepts, but it is indeed a kind of inner
+>>>>>> hash.
+>>>>> If parts of a flow go through different tunnels won't this cause
+>>>>> reordering at the network level? Why is it so important to prevent it at
+>>>>> the nic then?  Or, since you are stressing symmetric hash, are you
+>>>>> talking about TX and RX side going through different tunnels?
+>>>> Yes, the directions client1->client2 and client2->client1 may go through
+>>>> different tunnels.
+>>>> Using inner symmetric hashing can satisfy the same CPU to process two
+>>>> directions of the same flow to improve performance.
+>>> Well sure but ... are you just doing forwarding or inner processing too?
+>> When there is an inner hash, there is no forwarding anymore.
+>>
+>>> If forwarding why do you care about matching TX and RX queues? If e2e
+>> In fact, we are just matching on the same rx queue. The network topology
+>> is roughly as follows. The processing host will receive the packets
+>> sent from client1 and client2 respectively, then make some action judgments,
+>> and return them to client2 and client1 respectively.
+>>
+>> client1                   client2
+>>     |                         |
+>>     |      __________         |
+>>     +----->| tunnel |<--------+
+>>            |--------|
+>>               |  |
+>>               |  |
+>>               |  |
+>>               v  v
+>>         +-----------------+
+>>         | processing host |
+>>         +-----------------+
+>>
+>> Thanks.
+> monotoring host would be a better term
+
+Sure.
+
+I'm so sorry I didn't realize I missed this until I checked my emails. 😮 :(
+
+
 >
-> introduce a field rq_handle (receive queue handle) and refer them
-> to describe unclassified_queue and indirection_table fields.
-
-This description is a bit confusing (and you renamed rq_handle as well.)
-Does
-
-"The content of the indirection table and unclassified_queue were
-originally described based on mathematical operations. In order to make
-it easier to understand and to avoid intermixing the array index with
-the virtqueue number, introduce a structure rss_rq_id (RSS receive queue
-ID) and use it to describe the unclassified_queue and indirection_table
-fields."
-
-capture the intent correctly?
-
->
-> As part of it, have the example that uses non zero virtqueue
-
-"have the example use a non-zero..." ?
-
-> number which helps to have better mapping between receiveX
-> object with virtqueue number and the actual value in the
-> indirection table.
->
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
->
-> ---
-> changelog:
-> v8->v9:
-> - reword rss_rq_id and unclassified_packets description
-> - use article
-> - use 'vq number' instead of 'virtqueue number'
-> v4->v5:
-> - change subject to reflect rss_rq_id
-> - fixed accidental removal of "unclassifed packets".
-> - simplfied text around indirection_table mask to use the term
->   destination receive virtqueue. This aligns with next line about queue
->   reset.
-> - removed rss_rq_id references as indirection table and
->   unclassified_queue data type is self explanatory
-> v3->v4:
-> - renamed rq_handle to rss_rq_id
-> - moved rss_rq_id definition close to its usage in rss_config struct
-> v2->v3:
-> - moved rq_handle definition before using it
-> - removed duplicate example as rq_handle is now described first
-> v0->v1:
-> - new patch suggested by Michael Tsirkin
-> ---
->  device-types/net/description.tex | 27 ++++++++++++++++++++-------
->  1 file changed, 20 insertions(+), 7 deletions(-)
->
-> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-> index 435c1fc..c64335d 100644
-> --- a/device-types/net/description.tex
-> +++ b/device-types/net/description.tex
-> @@ -1423,11 +1423,16 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  
->  Driver sends a VIRTIO_NET_CTRL_MQ_RSS_CONFIG command using the following format for \field{command-specific-data}:
->  \begin{lstlisting}
-> +struct rss_rq_id {
-> +   le16 vqn_1_16: 15; /* Bits 1 to 16 of the vq number */
-> +   le16 reserved: 1; /* Set to zero */
-> +};
-> +
->  struct virtio_net_rss_config {
->      le32 hash_types;
->      le16 indirection_table_mask;
-> -    le16 unclassified_queue;
-> -    le16 indirection_table[indirection_table_length];
-> +    struct rss_rq_id unclassified_queue;
-> +    struct rss_rq_id indirection_table[indirection_table_length];
->      le16 max_tx_vq;
->      u8 hash_key_length;
->      u8 hash_key_data[hash_key_length];
-> @@ -1442,10 +1447,15 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  \field{indirection_table} array.
->  Number of entries in \field{indirection_table} is (\field{indirection_table_mask} + 1).
->  
-> -Field \field{unclassified_queue} contains the 0-based index of
-> -the receive virtqueue to place unclassified packets in. Index 0 corresponds to receiveq1.
-> +\field{rss_rq_id} is a receive virtqueue id. \field{vqn_1_16}
-> +consists of bits 1 to 16 of a vq number. For example, a
-> +\field{vqn_1_16} value of 3 corresponds to vq number 6,
-> +which maps to receiveq4.
-> +
-> +Field \field{unclassified_queue} contains the receive virtqueue
-> +in which to place unclassified packets.
->  
-> -Field \field{indirection_table} contains an array of 0-based indices of receive virtqueues. Index 0 corresponds to receiveq1.
-> +Field \field{indirection_table} is an array of receive virtqueues.
-
-"an array of receive virtqueues identified via their rss_rq_id" ?
-
->  
->  A driver sets \field{max_tx_vq} to inform a device how many transmit virtqueues it may use (transmitq1\ldots transmitq \field{max_tx_vq}).
->  
-> @@ -1455,7 +1465,8 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  
->  A driver MUST NOT send the VIRTIO_NET_CTRL_MQ_RSS_CONFIG command if the feature VIRTIO_NET_F_RSS has not been negotiated.
->  
-> -A driver MUST fill the \field{indirection_table} array only with indices of enabled queues. Index 0 corresponds to receiveq1.
-> +A driver MUST fill the \field{indirection_table} array only with
-> +enabled receive virtqueues.
-
-"only with rss_rq_id references to enabled receive virtqueues" ?
-
->  
->  The number of entries in \field{indirection_table} (\field{indirection_table_mask} + 1) MUST be a power of two.
->  
-> @@ -1468,7 +1479,9 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  \begin{itemize}
->  \item Calculate the hash of the packet as defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets}.
->  \item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure.
-> -\item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq.
-> +\item Apply \field{indirection_table_mask} to the calculated hash
-> +and use the result as the index in the indirection table to get
-> +the destination receive virtqueue.
-
-Ok, you remove the line here anyway, so please just ignore my suggestion
-for the previous patch.
-
->  \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
->  \end{itemize}
+>>> processing can't you just store the incoming hash in the flow and reuse
+>>> on TX? This is what Linux is doing...
+>>>
+>>>
+>>>
+>>>>>
+>>>>>> 2. In Scenario2 with GRE, the lack of outer transport headers means that
+>>>>>> flows between multiple communication pairs encapsulated by the same tunnel
+>>>>>>
+>>>>>> will all be hashed to the same queue. To address this, we need to implement
+>>>>>> inner hashing to improve the performance of RSS. By parsing and calculating
+>>>>>>
+>>>>>> the inner hash, different flows can be hashed to different queues.
+>>>>>>
+>>>>>> Thanks.
+>>>>>>
+>>>>>>
+>>>>> Well 2 is at least inexact, there's flowID there. It's just 8 bit
+>>>> We use the most basic GRE header fields (not NVGRE), not even optional
+>>>> fields.
+>>>> There is also no flow id in the GRE header, should you be referring to
+>>>> NVGRE?
+>>>>
+>>>> Thanks.
+>>>>
+>>>>> so not sufficient if there are more than 512 queues. Still 512 queues
+>>>>> is quite a lot. Are you trying to solve for configurations with
+>>>>> more than 512 queues then?
+>>>>>
+>>>>>
+>>>>>>>> Assuming that the same flow includes a unidirectional flow a->b, or a
+>>>>>>>> bidirectional flow a->b and b->a,
+>>>>>>>> such flow may be out of order when processed by the gateway(DPDK):
+>>>>>>>>
+>>>>>>>> 1. In unidirectional mode, if the same flow is switched to another gateway
+>>>>>>>> for some reason, resulting in different outer IP address,
+>>>>>>>>        then this flow may be processed by different CPUs after reaching the
+>>>>>>>> host if there is no inner hash. So after the host receives the
+>>>>>>>>        flow, first use the forwarding CPUs to parse the inner hash, and then
+>>>>>>>> use the hash to ensure that the flow is processed by the
+>>>>>>>>        same CPU.
+>>>>>>>> 2. In bidirectional mode, a->b flow may go to gateway 1, and b->a flow may
+>>>>>>>> go to gateway 2. In order to ensure that the same flow is
+>>>>>>>>        processed by the same CPU, we still need the forwarding CPUs to parse
+>>>>>>>> the real inner hash(here, the hash key needs to be replaced with a symmetric
+>>>>>>>> hash key).
+>>>>>>> Oh intersting. What are those gateways, how come there's expectation
+>>>>>>> that you can change their addresses and topology
+>>>>>>> completely seamlessly without any reordering whatsoever?
+>>>>>>> Isn't network topology change kind of guaranteed to change ordering
+>>>>>>> sometimes?
+>>>>>>>
+>>>>>>>
+>>>>>>>>>> 1). During this process, the CPUs on the host is divided into two parts, one
+>>>>>>>>>> part is used as a forwarding node to parse the outer header,
+>>>>>>>>>>          and the CPU utilization is low. Another part handles packets.
+>>>>>>>>> Some overhead is clearly involved in *sending* packets -
+>>>>>>>>> to calculate the hash and stick it in the port number.
+>>>>>>>>> This is, however, a separate problem and if you want to
+>>>>>>>>> solve it then my suggestion would be to teach the *transmit*
+>>>>>>>>> side about GRE offloads, so it can fill the source port in the card.
+>>>>>>>>>
+>>>>>>>>>> 2). The entropy of the source udp src port is not enough, that is, the queue
+>>>>>>>>>> is not widely distributed.
+>>>>>>>>> how isn't it enough? 16 bit is enough to cover all vqs ...
+>>>>>>>> A 5-tuple brings more entropy than a single port, doesn't it?
+>>>>>>> But you don't need more for RSS, the indirection table is not
+>>>>>>> that large.
+>>>>>>>
+>>>>>>>> In fact, the
+>>>>>>>> inner hash of the physical network card used by
+>>>>>>>> the business team is indeed better than the udp port number of the outer
+>>>>>>>> header we modify now, but they did not give me the data.
+>>>>>>> Admittedly, out hash value is 32 bit.
+>>>>>>>
+>>>>>>>>>> 2. When there is an inner header hash, the gateway will directly help parse
+>>>>>>>>>> the outer header, and use the inner 5 tuples to calculate the inner hash.
+>>>>>>>>>> The tunneled packet is then handed over to the host.
+>>>>>>>>>> 1) All the CPUs of the host are used to process data packets, and there is
+>>>>>>>>>> no need to use some CPUs to forward and parse the outer header.
+>>>>>>>>> You really have to parse the outer header anyway,
+>>>>>>>>> otherwise there's no tunneling.
+>>>>>>>>> Unless you want to teach virtio to implement tunneling
+>>>>>>>>> in hardware, which is something I'd find it easier to
+>>>>>>>>> get behind.
+>>>>>>>> There is no need to parse the outer header twice, because we use shared
+>>>>>>>> memory.
+>>>>>>> shared with what? you need the outer header to identify the tunnel.
+>>>>>>>
+>>>>>>>>>> 2) The entropy of the original quintuple is sufficient, and the queue is
+>>>>>>>>>> widely distributed.
+>>>>>>>>> It's exactly the same entropy, why would it be better? In fact you
+>>>>>>>>> are taking out the outer hash entropy making things worse.
+>>>>>>>> I don't get the point, why the entropy of the inner 5-tuple and the outer
+>>>>>>>> tunnel header is the same,
+>>>>>>>> multiple streams have the same outer header.
+>>>>>>>>
+>>>>>>>> Thanks.
+>>>>>>> well our hash is 32 bit. source port is just 16 bit.
+>>>>>>> so yes it's more entropy but RSS can't use more than 16 bit.
+>>>>>>> why do you need so many? you have more than 64k CPUs to offload to?
+>>>>>>>
+>>>>>>>
+>>>>>>>>>> Thanks.
+>>>>>>>>>>> same goes for vxlan did not check further.
+>>>>>>>>>>>
+>>>>>>>>>>> so what is the problem?  and which tunnel types actually suffer from the
+>>>>>>>>>>> problem?
+>>>>>>>>>>>
+>>>>>>>>>> This publicly archived list offers a means to provide input to the
+>>>>>>>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>>>>>>>
+>>>>>>>>>> In order to verify user consent to the Feedback License terms and
+>>>>>>>>>> to minimize spam in the list archive, subscription is required
+>>>>>>>>>> before posting.
+>>>>>>>>>>
+>>>>>>>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>>>>>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>>>>>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>>>>>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>>>>>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>>>>>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>>>>>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>>>>>>>> Join OASIS: https://www.oasis-open.org/join/
+>>>>>>>>> ---------------------------------------------------------------------
+>>>>>>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>>>>>>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>>>>> This publicly archived list offers a means to provide input to the
+>>>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>>>
+>>>>>> In order to verify user consent to the Feedback License terms and
+>>>>>> to minimize spam in the list archive, subscription is required
+>>>>>> before posting.
+>>>>>>
+>>>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>>>> Join OASIS: https://www.oasis-open.org/join/
+>>>>> This publicly archived list offers a means to provide input to the
+>>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>>
+>>>>> In order to verify user consent to the Feedback License terms and
+>>>>> to minimize spam in the list archive, subscription is required
+>>>>> before posting.
+>>>>>
+>>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>>> Join OASIS: https://www.oasis-open.org/join/
 
 
 ---------------------------------------------------------------------
