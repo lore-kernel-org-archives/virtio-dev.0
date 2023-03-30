@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11863-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11864-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24A09C7619A
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9C196C7619A
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5ED613DF2D
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7E7DF4259D
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 58EC098658E
+	by lists.oasis-open.org (Postfix) with ESMTP id DDFC898661F
 	for <virtio-dev@archiver.kernel.org>; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4C15298656B; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
+	id C32219867CE; Thu, 30 Mar 2023 22:59:31 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,265 +24,278 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3909F986563;
-	Thu, 30 Mar 2023 22:59:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C868998658D;
+	Thu, 30 Mar 2023 22:59:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a5+GOaxmhwgS2Z6dI5bkgZDS75K7Ge/lcmkh4QYK+QnFjBk/v2nheFXo6UgU/mbnFaGzIK7MTcM1cFQAvWRlmD5uGEom4oEOJp2g9ragYfU1D/zHR6qZvUNGPXebDJn+Rl/bstbDqx+WXvZr8PH88sYzovH1lRkYgew1y2JoLLXJchKzbWz4quY1KbY5sNGuPcnWcvTbTcqOrWYLDL3VeSuLfybfZeuaNDJT9cA4ijhOey3D3aGA1k1bPoehLg0R5acrnvQHDQ+IeIxNhsnzI4x/FcUsDKpU5V1VUvB3Sja56HLNEz9bEOWaXv+2bR1S57wZ1IC8Sx0UeA76uA0Ijg==
+ b=Sj2mSUraaJTNx3CkDgbGOTVdlAU2T2QzLPUaw6coFB4aA56hpxG2PjtSkmCA357XEBSBqLO5UuliDDHvV2tuGKW9ifUoGypzrWRpeYMUeyQFq8G0K5pmEBzhaL4kGZE2SVp5Rl0tyXKkF702jiWNQTiX2dY5rcsOAId2rWycEHwgBSEPMdCooab5fX1Lmv2VXh46HJAlSGxxuMn4J7yRlJDsuGogWc92NJaw/+ZTEOTPZ9eHxqwsOCKgYFq79eB5ycOA3PkKKHLjmkIkkE1A+za9M/uSHzxMnICRBX5JSNHBPXPyYXQQghZ5Tm/pKMli5h9Jf1jEdk8kPbgi88/E9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rDHmUVljLgtm8ZwkzV/6Rtvki8EKzLmQJq0rcbu+prk=;
- b=X+g9sBjUPqWEB87hr2lBIYuSmKihqz5Ac5Y+jmsA215gE9tziwA2iApupZprBa3xr3p1sDRzrBhCSrGqSD51dEE2MkSuVe00XfZ6S0qDiG4+RNg48bGnbVxg9fNooWF+PAMGJOxwAImeUKh21/UqDG997H80PXC+6b0dkiA0MiwP6XW20KM4zfgTADvKe+15ti7fvV9uNKbBPqXDqCCkEQ96ygxxlTgh3p+bYzcmTnGMa+4svMfeDJ0skq6Ea8uZU03tEnO0mTbhIFSH+iri4uSGnMLje5AcXfNnBh36GFwWZAhqHaaZNoqV2QLfwizJ5W4T+28jvz4HvW//3sLg5g==
+ bh=X8ZCiiY6OxxGAoj6bGL6tkweMKigcRibdvh6ExyQd4o=;
+ b=SdigsWfKB+ne9BAeIzZkqahdQ+LrlXimkQct3rMkw+dteVNok0QyDRq7PB2TsopyIsHGaJWo505nqNLywaNlG1bzW/s1SgPvEXtLrzBruQtvNGknk1Zm6TpRh1iUjmBzTEJDssa7LG2SyO/+s4cOyBa43WwOIKEIg+j+iWdixJdN5ZIqD3hX/QkGEuUFgXP22UYEHPNmv2R2eBUmmxTWDYFP/RBeruZHvXXwxTvR7+LsYOUSpOfMlPNnyus+zLiRfpzl8YaY3q1ESWeKLZTHCELGdIuzEzRVk7l2W5vl5iauWXhjy3Z30brf6YJy9E5YPDoKn4hoVjiMNyzwDNArhg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
 CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
-	<parav@nvidia.com>
-Date: Fri, 31 Mar 2023 01:58:23 +0300
-Message-ID: <20230330225834.506969-1-parav@nvidia.com>
+	<parav@nvidia.com>, Satananda Burla <sburla@marvell.com>
+Date: Fri, 31 Mar 2023 01:58:27 +0300
+Message-ID: <20230330225834.506969-5-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20230330225834.506969-1-parav@nvidia.com>
+References: <20230330225834.506969-1-parav@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.126.231.37]
 X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT017:EE_|PH7PR12MB6465:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35eca08b-54ba-4bdb-3fc1-08db317266f1
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT114:EE_|BY5PR12MB4869:EE_
+X-MS-Office365-Filtering-Correlation-Id: 175cd3c3-eab3-4c31-fc27-08db31726777
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	s9w/BMexE9Szcp8e2L3Bq9vKHMiHBH6HxZbZ9STMyeDfjnwNjjrjy4XOY+aIJK1wiA/dtOzpb0d5oTT+Xg+TZ2i6hCLsbxcYNIDnss4llCxP2j4yyhRhcLU40lZiJPGr2q9UhAqhFeca+9FMpdDuzkd2V7hQt6yIrrxGAc/e72hFI0XnmN7799Ht9AHZdOSlAcDL0tnRgEnJI9olls07Iy6yVRTIxOZlm4bK/TpyZcY7TsZraZllg+8KR6Gcj5+LPi4Cn61fnVWWt0+9l/cQGJ3Ktx73T9P+gR0rK9sViV0roQykichFTH6fvSwL3P3vcyw2sX6rn7uHRXmphBqxN42kVtYN5J+cNJbrRNXpxJu+1Izt1j0f/Mjd4XhEY1Xe3Xu3Qd0KZhKnA2RkCEAyznBO8WdYybc6Jj2TA/MOyXegNcfyDDy2xpIlQ6ePnKQaCCKAoRBP+NEYrQQrbOAQyXIINBK/IRMjmbb3Ivj/JaGxMrTADRaO08yi3usoGHP2bFW9TOmSEfEobKatOvx4C9FpehvFxRQA7j58W08/qJ6KWtN3Cc1mxGOAusZTfc5QpWoLsT3MbZuM4w0owBywGbpFwvUdy1KBkV+H9ZinM3bsqtjR4WI2NyX8XfRikAWmbCcVg9IszAFy15VUlefQ0YOdZ7UrqnICJpJ60p32sshoUnRV4PqrRHQOANWATrq40G4ghjRUcPxjUFTBPxaieqSK5SR1V7ocX2uqM6zT74VXHqbu19O3RewO/jmVzhmmlhXmdpTfIZ9Pk1VIWJY9qDP13EymXA6VYRRoV2ruPrE=
+	JHZ5RotojNOundutc0PaxR89C0zG457cLLInI7ntb3qEh7Ih7IJE5t9afMomZcs0Cod8RZsO858wrwilXsUBViCakMWYeSrzZqVsIT3haB5LQc60JqPivydm5OIpnPALEvRJYAt1MyZzDzkc02SPcbsspn/BxvhQ1Np8R7Syw7ZEYZlAoPwa4KT2aJ3G+bIkd83nl5APZMzuAKrNBBjfIL3DSQz5gVigD+I4x3aYajJmuaaCPu0t1onDIPSiqA+zSiB1MR5f1VHoI1OL3Lk7wI3Ep+cBi/qm+dexuCbreMjuqM5Z03jVml9WtHqEKOaDPKTVUQxlX5ZdNNBqurqX2ZXCmyayjq0ETKQR/pUP68wWNzU21FR9slTUZFSTEETvXpV5JL5n0FV8/bNQf4vY0azvIXOno//P6UUZwZgH6FnP/QLEXZwsaz1XNueJZ6fzK+CRsxddPNjoviAKVbzmVG1zOgMXSsHsMtw68vXB/HLEoRN87aFb3J+2z+kTuWlQMrVeuucpFVuCwzmTtyDI8p48faA2Vs+spLKFIIrnMeYHSh4PZyPI7st+zJcsVwAi+4iHfWYZhlTB5jb5RmsWvzJYElFixnlJiMg9GpiDgQ6CGyg3kYk1xPJ+fOf8c9BUZ7jDZ9rNeV0yi1jGkoDtHOepH+bB7wZN66HoYkIaeeM8FCoxNDy668YCuJL2bOBvRvKbxfy+hSdqR5YRUub2X99XdUa/+JJkzgy+hJAQ8J9KwYFuBYu+LfwKpFzzsIym
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(396003)(346002)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(6666004)(107886003)(478600001)(1076003)(36756003)(426003)(83380400001)(86362001)(70206006)(5660300002)(2616005)(186003)(54906003)(40480700001)(16526019)(2906002)(7636003)(316002)(36860700001)(4326008)(8676002)(110136005)(41300700001)(34020700004)(82310400005)(336012)(82740400003)(8936002)(40460700003)(47076005)(356005)(70586007)(26005);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(136003)(376002)(346002)(451199021)(46966006)(36840700001)(8676002)(8936002)(41300700001)(110136005)(5660300002)(82740400003)(7636003)(356005)(86362001)(34020700004)(40480700001)(6666004)(70206006)(4326008)(336012)(54906003)(70586007)(316002)(426003)(2616005)(36756003)(47076005)(36860700001)(83380400001)(16526019)(186003)(478600001)(82310400005)(1076003)(2906002)(26005)(30864003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 22:59:22.4457
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 22:59:23.3444
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35eca08b-54ba-4bdb-3fc1-08db317266f1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 175cd3c3-eab3-4c31-fc27-08db31726777
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT114.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6465
-Subject: [virtio-dev] [PATCH 00/11] Introduce transitional mmr pci device
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4869
+Subject: [virtio-dev] [PATCH 04/11] transport-pci: Rename and move legacy PCI Device layout section
 
-Overview:
----------
-The Transitional MMR device is a variant of the transitional PCI device.
-It has its own small Device ID range. It does not have I/O
-region BAR; instead it exposes legacy configuration and device
-specific registers at an offset in the memory region BAR.
+Current 'Legacy Interfaces: A Note on PCI Device Layout' explains virtio
+legacy registers which consist of common configuration structure and
+device specific registers. It has little to do with the existing
+PCI Device layout section.
 
-Such transitional MMR devices will be used at the scale of
-thousands of devices using PCI SR-IOV and/or future scalable
-virtualization technology to provide backward
-compatibility (for legacy devices) and also future
-compatibility with new features.
+For example, non transitional device's common configuration layout is
+described in 'Common configuration structure layout' section outside of
+'PCI Device Layout' section.
 
-Usecase:
---------
-1. A hypervisor/system needs to provide transitional
-   virtio devices to the guest VM at scale of thousands,
-   typically, one to eight devices per VM.
+Hence, to keep Legacy common configuration registers section consistent
+with 1.x, rename and move it adjacent to 1.x common configuration
+structure.
 
-2. A hypervisor/system needs to provide such devices using a
-   vendor agnostic driver in the hypervisor system.
+Reviewed-by: Satananda Burla <sburla@marvell.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ conformance.tex   |   2 +-
+ transport-pci.tex | 162 +++++++++++++++++++++++-----------------------
+ 2 files changed, 83 insertions(+), 81 deletions(-)
 
-3. A hypervisor system prefers to have single stack regardless of
-   virtio device type (net/blk) and be future compatible with a
-   single vfio stack using SR-IOV or other scalable device
-   virtualization technology to map PCI devices to the guest VM.
-   (as transitional or otherwise)
-
-Motivation/Background:
-----------------------
-The existing transitional PCI device is missing support for
-PCI SR-IOV based devices. Currently it does not work beyond
-PCI PF, or as software emulated device in reality. It currently
-has below cited system level limitations:
-
-[a] PCIe spec citation:
-VFs do not support I/O Space and thus VF BARs shall not
-indicate I/O Space.
-
-[b] cpu arch citiation:
-Intel 64 and IA-32 Architectures Software Developer’s Manual:
-The processor’s I/O address space is separate and distinct from
-the physical-memory address space. The I/O address space consists
-of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
-
-[c] PCIe spec citation:
-If a bridge implements an I/O address range,...I/O address range
-will be aligned to a 4 KB boundary.
-
-[d] I/O region accesses at PCI system level is slow as they are non-posted
-operations in PCIe fabric.
-
-The usecase requirements and limitations above can be solved by
-extending the transitional device, mapping legacy and device
-specific configuration registers in a memory PCI BAR instead
-of using non composable I/O region.
-
-Please review.
-
-Patch summary:
---------------
-patch 1 to 5 prepares the spec
-patch 6 to 11 defines transitional mmr device
-
-patch-1 uses lower case alphabets to name device id
-patch-2 move transitional device id in legay section along with
-        revision id
-patch-3 splits legacy feature bits description from device id
-patch-4 rename and moves virtio config registers next to 1.x
-        registers section
-patch-5 Adds missing helper verb in terminology definitions
-patch-6 introduces transitional mmr device
-patch-7 introduces transitional mmr device pci device ids
-patch-8 introduces virtio extended pci capability
-patch-9 describes new pci capability to locate legacy mmr
-        registers
-patch-10 extended usage of driver notification capability for
-         the transitional mmr device
-patch-11 adds conformance section of the transitional mmr device
-
-This design and details further described below.
-
-Design:
--------
-Below picture captures the main small difference between current
-transitional PCI SR-IOV VF and transitional MMR SR-IOV VF.
-
-+------------------+ +--------------------+ +--------------------+
-|virtio 1.x        | |Transitional        | |Transitional        |
-|SRIOV VF          | |SRIOV VF            | |MMR SRIOV VF        |
-|                  | |                    | |                    |
-++---------------+ | ++---------------+   | ++---------------+   |
-||dev_id =       | | ||dev_id =       |   | ||dev_id =       |   |
-||{0x1040-0x106C}| | ||{0x1000-0x103f}|   | ||{0x10f9-0x10ff}|   |
-|+---------------+ | |+---------------+   | |+---------------+   |
-|                  | |                    | |                    |
-|+------------+    | |+------------+      | |+-----------------+ |
-||Memory BAR  |    | ||Memory BAR  |      | ||Memory BAR       | |
-|+------------+    | |+------------+      | ||                 | |
-|                  | |                    | || +--------------+| |
-|                  | |+-----------------+ | || |legacy virtio || |
-|                  | ||IOBAR impossible | | || |+ dev cfg     || |
-|                  | |+-----------------+ | || |registers     || |
-|                  | |                    | || +--------------+| |
-|                  | |                    | |+-----------------+ |
-+------------------+ +--------------------+ +--------------------+
-
-Here transitional MMR SR-IOV VF has legacy configuration and
-legacy device specific registers located at an offset in the memory
-region BAR.
-
-A memory region can be dedicated at BAR0 or it can be in an
-existing BAR, allowing flexibility when implementing support
-in a hardware device.
-
-Transitional MMR SR-IOV VFs use a distinct device ID range to that
-of existing virtio SR-IOV VFs to allow flexibility in driver
-binding.
-
-A more zoom-in version of transitional MMR SR-IOV device shows
-that the location of the legacy registers are discovered by the
-driver using a new capability.
-
-+------------------------------+
-|Transitional                  |
-|MMR SRIOV VF                  |
-|                              |
-++---------------+             |
-||dev_id =       |             |
-||{0x10f9-0x10ff}|             |
-|+---------------+             |
-|                              |
-++--------------------+        |
-|| PCIe ext cap = 0xB |        |
-|| cfg_type = 10      |        |
-|| offset   = 0x1000  |        |
-|| bar      = N {0..5}|        |
-|+--|-----------------+        |
-|   |                          |
-|   |                          |
-|   |    +-------------------+ |
-|   |    | Memory BAR = A    | |
-|   |    |                   | |
-|   +------>+--------------+ | |
-|        |  |legacy virtio | | |
-|        |  |+ dev cfg     | | |
-|        |  |registers     | | |
-|        |  +--------------+ | |
-|        +-----------------+ | |
-+------------------------------+
-
-Software usage:
----------------
-Transitional MMR device can be used by multiple ways.
-
-1. The most common way to use and map to the guest VM is by
-using vfio driver framework in Linux kernel.
-
-                +----------------------+
-                |pci_dev_id = 0x100X   |
-+---------------|pci_rev_id = 0x0      |-----+
-|vfio device    |BAR0 = I/O region     |     |
-|               |Other attributes      |     |
-|               +----------------------+     |
-|                                            |
-+   +--------------+     +-----------------+ |
-|   |I/O to memory |     | Other vfio      | |
-|   |rd/wr mapper  |     | functionalities | |
-|   +--------------+     +-----------------+ |
-|                                            |
-+-------------------+------------------------+
-                    |
-       +------------+-----------------+
-       |         Transitional         |
-       |         MMR SRIOV VF         |
-       +------------------------------+
-
-2. Virtio pci driver to bind to the listed device id and
-   use it as native device in the host.
-
-3. Use it in a light weight hypervisor to run bare-metal OS.
-
-Parav Pandit (11):
-  transport-pci: Use lowecase alphabets
-  transport-pci: Move transitional device id to legacy section
-  transport-pci: Split notes of PCI Device Layout
-  transport-pci: Rename and move legacy PCI Device layout section
-  introduction: Add missing helping verb
-  introduction: Introduce transitional MMR interface
-  transport-pci: Introduce transitional MMR device id
-  transport-pci: Introduce virtio extended capability
-  transport-pci: Describe PCI MMR dev config registers
-  transport-pci: Use driver notification PCI capability
-  conformance: Add transitional MMR interface conformance
-
- conformance.tex      |  11 +-
- introduction.tex     |  34 +++-
- tmmr-conformance.tex |  27 +++
- transport-pci.tex    | 405 ++++++++++++++++++++++++++++++-------------
- 4 files changed, 354 insertions(+), 123 deletions(-)
- create mode 100644 tmmr-conformance.tex
-
+diff --git a/conformance.tex b/conformance.tex
+index 4f724c2..ccbc9bf 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -262,7 +262,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
+ \item Section \ref{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
+-\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
++\item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities / Common configuration structure layout / Legacy Interfaces: A Note on Configuration Registers}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities / Legacy Interface: A Note on Feature Bits}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration / Legacy Interface: A Note on Virtqueue Configuration}
+diff --git a/transport-pci.tex b/transport-pci.tex
+index 65d9748..ee11ba5 100644
+--- a/transport-pci.tex
++++ b/transport-pci.tex
+@@ -497,6 +497,88 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+ were used before the queue reset.
+ (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+ 
++\paragraph{Legacy Interfaces: A Note on Configuration Registers}
++\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities / Common configuration structure layout / Legacy Interfaces: A Note on Configuration Registers}
++
++Transitional devices MUST present part of configuration
++registers in a legacy configuration structure in BAR0 in the first I/O
++region of the PCI device, as documented below.
++When using the legacy interface, transitional drivers
++MUST use the legacy configuration structure in BAR0 in the first
++I/O region of the PCI device, as documented below.
++
++When using the legacy interface the driver MAY access
++the device-specific configuration region using any width accesses, and
++a transitional device MUST present driver with the same results as
++when accessed using the ``natural'' access method (i.e.
++32-bit accesses for 32-bit fields, etc).
++
++Note that this is possible because while the virtio common configuration structure is PCI
++(i.e. little) endian, when using the legacy interface the device-specific
++configuration region is encoded in the native endian of the guest (where such distinction is
++applicable).
++
++When used through the legacy interface, the virtio common configuration structure looks as follows:
++
++\begin{tabularx}{\textwidth}{ |X||X|X|X|X|X|X|X|X| }
++\hline
++ Bits & 32 & 32 & 32 & 16 & 16 & 16 & 8 & 8 \\
++\hline
++ Read / Write & R & R+W & R+W & R & R+W & R+W & R+W & R \\
++\hline
++ Purpose & Device Features bits 0:31 & Driver Features bits 0:31 &
++  Queue Address & \field{queue_size} & \field{queue_select} & Queue Notify &
++  Device Status & ISR \newline Status \\
++\hline
++\end{tabularx}
++
++If MSI-X is enabled for the device, two additional fields
++immediately follow this header:
++
++\begin{tabular}{ |l||l|l| }
++\hline
++Bits       & 16             & 16     \\
++\hline
++Read/Write & R+W            & R+W    \\
++\hline
++Purpose (MSI-X) & \field{config_msix_vector}  & \field{queue_msix_vector} \\
++\hline
++\end{tabular}
++
++Note: When MSI-X capability is enabled, device-specific configuration starts at
++byte offset 24 in virtio common configuration structure. When MSI-X capability is not
++enabled, device-specific configuration starts at byte offset 20 in virtio
++header.  ie. once you enable MSI-X on the device, the other fields move.
++If you turn it off again, they move back!
++
++Any device-specific configuration space immediately follows
++these general headers:
++
++\begin{tabular}{|l||l|l|}
++\hline
++Bits & Device Specific & \multirow{3}{*}{\ldots} \\
++\cline{1-2}
++Read / Write & Device Specific & \\
++\cline{1-2}
++Purpose & Device Specific & \\
++\hline
++\end{tabular}
++
++When accessing the device-specific configuration space
++using the legacy interface, transitional
++drivers MUST access the device-specific configuration space
++at an offset immediately following the general headers.
++
++When using the legacy interface, transitional
++devices MUST present the device-specific configuration space
++if any at an offset immediately following the general headers.
++
++As legacy devices had no \field{config_generation} field,
++see \ref{sec:Basic Facilities of a Virtio Device / Device
++Configuration Space / Legacy Interface: Device Configuration
++Space}~\nameref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space} for workarounds.
++
++
+ \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ 
+ The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
+@@ -770,86 +852,6 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
+ specified by some other Virtio Structure PCI Capability
+ of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
+ 
+-\subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+-
+-Transitional devices MUST present part of configuration
+-registers in a legacy configuration structure in BAR0 in the first I/O
+-region of the PCI device, as documented below.
+-When using the legacy interface, transitional drivers
+-MUST use the legacy configuration structure in BAR0 in the first
+-I/O region of the PCI device, as documented below.
+-
+-When using the legacy interface the driver MAY access
+-the device-specific configuration region using any width accesses, and
+-a transitional device MUST present driver with the same results as
+-when accessed using the ``natural'' access method (i.e.
+-32-bit accesses for 32-bit fields, etc).
+-
+-Note that this is possible because while the virtio common configuration structure is PCI
+-(i.e. little) endian, when using the legacy interface the device-specific
+-configuration region is encoded in the native endian of the guest (where such distinction is
+-applicable).
+-
+-When used through the legacy interface, the virtio common configuration structure looks as follows:
+-
+-\begin{tabularx}{\textwidth}{ |X||X|X|X|X|X|X|X|X| }
+-\hline
+- Bits & 32 & 32 & 32 & 16 & 16 & 16 & 8 & 8 \\
+-\hline
+- Read / Write & R & R+W & R+W & R & R+W & R+W & R+W & R \\
+-\hline
+- Purpose & Device Features bits 0:31 & Driver Features bits 0:31 &
+-  Queue Address & \field{queue_size} & \field{queue_select} & Queue Notify &
+-  Device Status & ISR \newline Status \\
+-\hline
+-\end{tabularx}
+-
+-If MSI-X is enabled for the device, two additional fields
+-immediately follow this header:
+-
+-\begin{tabular}{ |l||l|l| }
+-\hline
+-Bits       & 16             & 16     \\
+-\hline
+-Read/Write & R+W            & R+W    \\
+-\hline
+-Purpose (MSI-X) & \field{config_msix_vector}  & \field{queue_msix_vector} \\
+-\hline
+-\end{tabular}
+-
+-Note: When MSI-X capability is enabled, device-specific configuration starts at
+-byte offset 24 in virtio common configuration structure. When MSI-X capability is not
+-enabled, device-specific configuration starts at byte offset 20 in virtio
+-header.  ie. once you enable MSI-X on the device, the other fields move.
+-If you turn it off again, they move back!
+-
+-Any device-specific configuration space immediately follows
+-these general headers:
+-
+-\begin{tabular}{|l||l|l|}
+-\hline
+-Bits & Device Specific & \multirow{3}{*}{\ldots} \\
+-\cline{1-2}
+-Read / Write & Device Specific & \\
+-\cline{1-2}
+-Purpose & Device Specific & \\
+-\hline
+-\end{tabular}
+-
+-When accessing the device-specific configuration space
+-using the legacy interface, transitional
+-drivers MUST access the device-specific configuration space
+-at an offset immediately following the general headers.
+-
+-When using the legacy interface, transitional
+-devices MUST present the device-specific configuration space
+-if any at an offset immediately following the general headers.
+-
+-As legacy devices had no \field{config_generation} field,
+-see \ref{sec:Basic Facilities of a Virtio Device / Device
+-Configuration Space / Legacy Interface: Device Configuration
+-Space}~\nameref{sec:Basic Facilities of a Virtio Device / Device Configuration Space / Legacy Interface: Device Configuration Space} for workarounds.
+-
+ \subsubsection{Legacy Interface: A Note on Feature Bits}
+ \label{sec:Virtio Transport Options / Virtio Over PCI Bus /
+ Virtio Structure PCI Capabilities / Legacy Interface: A Note on Feature Bits}
 -- 
 2.26.2
 
