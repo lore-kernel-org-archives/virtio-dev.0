@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11877-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11878-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CCFF5C6FD18
-	for <virtio-dev@archiver.kernel.org>; Fri, 31 Mar 2023 08:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D0764C6FD18
+	for <virtio-dev@archiver.kernel.org>; Fri, 31 Mar 2023 11:07:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DC5C32AC47
-	for <virtio-dev@archiver.kernel.org>; Fri, 31 Mar 2023 08:13:58 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id E51952A89A
+	for <virtio-dev@archiver.kernel.org>; Fri, 31 Mar 2023 11:07:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C1E68986574
-	for <virtio-dev@archiver.kernel.org>; Fri, 31 Mar 2023 08:13:58 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D4427986585
+	for <virtio-dev@archiver.kernel.org>; Fri, 31 Mar 2023 11:07:42 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id AEDAB986563; Fri, 31 Mar 2023 08:13:58 +0000 (UTC)
+	id C49AE986574; Fri, 31 Mar 2023 11:07:42 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,133 +24,114 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9DA55986565
-	for <virtio-dev@lists.oasis-open.org>; Fri, 31 Mar 2023 08:13:58 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B209998656B
+	for <virtio-dev@lists.oasis-open.org>; Fri, 31 Mar 2023 11:07:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 4scQPEMxNHWAcDaoGr730w-1
-From: Cornelia Huck <cohuck@redhat.com>
-To: Halil Pasic <pasic@linux.ibm.com>, Parav Pandit <parav@nvidia.com>
-Cc: mst@redhat.com, virtio-dev@lists.oasis-open.org, sgarzare@redhat.com,
- virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, Halil Pasic
- <pasic@linux.ibm.com>
-In-Reply-To: <20230330191114.77acd860.pasic@linux.ibm.com>
-Organization: Red Hat GmbH
-References: <20230329212341.465843-1-parav@nvidia.com>
- <20230330191114.77acd860.pasic@linux.ibm.com>
-User-Agent: Notmuch/0.37 (https://notmuchmail.org)
-Date: Fri, 31 Mar 2023 10:13:51 +0200
-Message-ID: <87jzyxcp8g.fsf@redhat.com>
+X-MC-Unique: Ob_IaeyNP6-zs4Ljcm8ZpQ-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680260855;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Tq1Je/laJy1Rz58WkjJL8KF40dT5JdTkE5HlvgwY9b0=;
+        b=LI+tdkFBWinLqpAb434JPwH2uZ2n8Rtyd1oROpx5nv5cA2MQBqwQir2tGerl5oqeo+
+         VtDRY1lOQN0D2cJvz0OBmqAO2QgoUWnT8RbVEDjXUu6h+22X3cgDCY/mdJUrA+saacec
+         j5l6q6MPt3eBITkThGTYb8sLpIW2TEfDuWMpZfAq/jvWY6fGHUIhMAeFbeKkL2GCWBSH
+         /nMeM9hK0w7mxsuNiJrORDVFKvj8aKLukAs8pY+uSgf1Z+nCdOQxMa0pi9s8zXYcXG5V
+         +1tdO+7VxzsdDCyBPoqL/xq6hLzXMG6Ss4aHE7PsVMsvVMn3JqsGyrFN2epQcU9FWE0q
+         L1kQ==
+X-Gm-Message-State: AO0yUKXgVgbqmPDDFBhOSfo9EX8KNJtbTr3t2Q6snKfT41oXT2Q7pPzY
+	z1cvxtDNq2N8Cc0WkXVB8Y2KUbBnkW4f8sTWNK9vvezNluJK8dk7zZVzLl5IJibfzcHHvCWygd9
+	QcxSe7hgrk/x42iqw48B1fRE6pNAy
+X-Received: by 2002:a05:600c:2312:b0:3ee:b3bf:5f7c with SMTP id 18-20020a05600c231200b003eeb3bf5f7cmr20415216wmo.23.1680260855138;
+        Fri, 31 Mar 2023 04:07:35 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+FRUQnoDPW97XnPGFYBij6SZ7HL/INHoKs2iyfchosuPEsMtGzbTsqLM0MmFSaUJSALmAIEw==
+X-Received: by 2002:a05:600c:2312:b0:3ee:b3bf:5f7c with SMTP id 18-20020a05600c231200b003eeb3bf5f7cmr20415204wmo.23.1680260854856;
+        Fri, 31 Mar 2023 04:07:34 -0700 (PDT)
+Date: Fri, 31 Mar 2023 07:07:29 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+	jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com,
+	nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com,
+	virtio@lists.oasis-open.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Max Gurtovoy <mgurtovoy@nvidia.com>
+Message-ID: <20230331070626-mutt-send-email-mst@kernel.org>
+References: <20230302190230-mutt-send-email-mst@kernel.org>
+ <20230303132840.GC2866370@fedora>
+ <20230303083213-mutt-send-email-mst@kernel.org>
+ <20230303202133.GA2901137@fedora>
+ <20230305043419-mutt-send-email-mst@kernel.org>
+ <20230306000302.GA244754@fedora>
+ <20230305191351-mutt-send-email-mst@kernel.org>
+ <20230306110340.GA35392@fedora>
+ <20230306133525-mutt-send-email-mst@kernel.org>
+ <20230306201759.GA78491@fedora>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+In-Reply-To: <20230306201759.GA78491@fedora>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain
-Subject: Re: [virtio-dev] [PATCH v10 0/8] Rename queue index to queue number
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] Re: [virtio] Re: [PATCH v10 04/10] admin: introduce virtio admin
+ virtqueues
 
-On Thu, Mar 30 2023, Halil Pasic <pasic@linux.ibm.com> wrote:
+On Mon, Mar 06, 2023 at 03:17:59PM -0500, Stefan Hajnoczi wrote:
+> On Mon, Mar 06, 2023 at 01:37:31PM -0500, Michael S. Tsirkin wrote:
+> > On Mon, Mar 06, 2023 at 06:03:40AM -0500, Stefan Hajnoczi wrote:
+> > > On Sun, Mar 05, 2023 at 07:18:24PM -0500, Michael S. Tsirkin wrote:
+> > > > On Sun, Mar 05, 2023 at 07:03:02PM -0500, Stefan Hajnoczi wrote:
+> > > > > On Sun, Mar 05, 2023 at 04:38:59AM -0500, Michael S. Tsirkin wrote:
+> > > > > > On Fri, Mar 03, 2023 at 03:21:33PM -0500, Stefan Hajnoczi wrote:
+> > > > > > > What happens if a command takes 1 second to complete, is the device
+> > > > > > > allowed to process the next command from the virtqueue during this time,
+> > > > > > > possibly completing it before the first command?
+> > > > > > > 
+> > > > > > > This requires additional clarification in the spec because "they are
+> > > > > > > processed by the device in the order in which they are queued" does not
+> > > > > > > explain whether commands block the virtqueue (in order completion) or
+> > > > > > > not (out of order completion).
+> > > > > > 
+> > > > > > Oh I begin to see. Hmm how does e.g. virtio scsi handle this?
+> > > > > 
+> > > > > virtio-scsi, virtio-blk, and NVMe requests may complete out of order.
+> > > > > Several may be processed by the device at the same time.
+> > > > 
+> > > > Let's say I submit a write followed by read - is read
+> > > > guaranteed to return an up to date info?
+> > > 
+> > > In general, no. The driver must wait for the write completion before
+> > > submitting the read if it wants consistency.
+> > > 
+> > > Stefan
+> > 
+> > I see.  I think it's a good design to follow then.
+> > 
+> > I'll just copy
+> > 	The driver queues requests to an arbitrary request queue, and
+> > 	they are used by the device on that same queue. It is the
+> > 	responsibility of the driver to ensure strict request ordering
+> > 	for commands placed on different queues, because they will be
+> > 	consumed with no order constraints.
+> > 
+> > replacing "request" with "admin".
+> 
+> That sounds like it's only about multi-queue because it says "... for
+> commands placed on different queues". What I mentioned about a write
+> followed by a read quest also applies within a single queue.
+> 
+> Can you clarify the semantics in the single queue case?
+> 
+> Stefan
 
-> On Thu, 30 Mar 2023 00:23:33 +0300
-> Parav Pandit <parav@nvidia.com> wrote:
->
->> 1. Currently, virtqueue is identified between driver and device
->> interchangeably using either number or index terminology.
->> 
->> 2. Between PCI and MMIO transport the queue size (depth) is
->> defined as queue_size and QueueNum respectively.
->> 
->> To avoid confusion and to have consistency, unify them to use Number.
->> 
->> Solution:
->> a. Use virtqueue number description, and rename MMIO register as QueueSize.
->
-> I'm in favor of replacing number with size where appropriate.
->
->> b. Replace virtqueue index with virtqueue number
->
-> I don't see the benefit of replacing virtqueue index with virtqueue
-> number.
->
-> Currently virtqueue number is only used in the parts that describe
-> notifications (Guest->Host), the rest of the spec uses virtqueue index.
->
-> I argue that using a different term in that context than in the rest
-> of the specification makes sense, because in the context of notifications
-> the virtqueue isn't always identified by its index.
->
-> More precisely: if VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated in the
-> context of notifications the virtqueue is identified by the
-> so called "queue_notify_data"; if VIRTIO_F_NOTIF_CONFIG_DATA has been
-> negotiated in the context of notifications the virtqueue is identified by
-> the virtqueue index (as usual, for example in queue_select, or in
-> the ccws).
->
-> As I've pointed out in my comment to patch 2, I believe replacing
-> virtqueue index with virtqueue number is detrimental to clarity.
->
-> Thus please find a counter-proposal below. If there is interest
-> I can make a series out of it, and prettify it. If I can't convince
-> you guys, then I will have to get used to vqn and virtqueue number.
+This will be addressed in the latest version.
+However, should not scsi and blk also adjust the wording
+to make it clear device does not guarantee consistency?
 
-I would generally prefer "index" as well, but there seemed to be a
-strong sentiment that we should go with "number"... so, what *is* the
-actual general sentiment? It's hard to say, but maybe most people are
-fine with either?
-
->
-> AFAIR the other problem with index was the RSS for virtio-net. But there
-> we are currently heading down a direction of introducing a new
-> abstraction. This approach avoids confusion around the term 'virtqueue
-> index' as much as it avoids confusion around the term 'virtqueue nuber'.
->
->
->> c. RSS area of virtio net has inherited some logic, describe it
->> using abstract rss_rq_id.
->
-> -------------------------8<--------------------------------------
-> From: Halil Pasic <pasic@linux.ibm.com>
-> Date: Thu, 30 Mar 2023 17:57:53 +0200
-> Subject: [PATCH 1/1] content: clarify how virtques are identified
->
-> Clarify how virtqueues are identified in the context of
-> available notifications and in the context of RSS for
-> virtio-net .
->
-> Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-> ---
->  content.tex                      | 15 ++++++++++-----
->  device-types/net/description.tex | 30 ++++++++++++++++++++++--------
->  transport-ccw.tex                |  2 +-
->  transport-pci.tex                |  7 ++++---
->  4 files changed, 37 insertions(+), 17 deletions(-)
-
-(...)
-
-> +struct rss_rq_id {
-> +   le16 value; /* virtqueue index divided by two */
-> +};
-> +
->  struct virtio_net_rss_config {
->      le32 hash_types;
->      le16 indirection_table_mask;
-> -    le16 unclassified_queue;
-> -    le16 indirection_table[indirection_table_length];
-> +    struct rss_rq_id unclassified_queue;
-> +    struct rss_rq_id indirection_table[indirection_table_length];
->      le16 max_tx_vq;
->      u8 hash_key_length;
->      u8 hash_key_data[hash_key_length];
->  };
->  \end{lstlisting}
-> +
-> +The type struct rss\_rq\_id is introduced to better distinguish receive queue
-> +ids form other integral fields.
-> +
-> +A receive queue id is only defined for receive queues, as the virtqueue index
-> +of the receive virtqueue divided by two (the virtqueue index of a receive
-> +queue is always even). For example receiveq4 is identified by the virtqueue
-> +index 6 and the receive queue id 3.
-
-FWIW, I think this is much easier to understand.
+-- 
+MST
 
 
 ---------------------------------------------------------------------
