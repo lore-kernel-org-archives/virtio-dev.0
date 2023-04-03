@@ -1,20 +1,17 @@
-Return-Path: <virtio-dev-return-11897-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11899-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38230C761A6
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 15:03:58 +0000 (UTC)
-Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id BAE661318C7
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 15:03:54 +0000 (UTC)
-Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AE82798640A
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 15:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3ED29C76188
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 15:05:27 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
-	by lists.oasis-open.org (Postfix) with QMQP
-	id A33219863DD; Mon,  3 Apr 2023 15:03:54 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A02332AC7D
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 15:05:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+	by host09.ws5.connectedcommunity.org (Postfix) with QMQP
+	id 7DB432A8C7; Mon,  3 Apr 2023 15:05:26 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,31 +21,31 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4135D9865A1
-	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Apr 2023 15:03:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4570298641D
+	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Apr 2023 15:03:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: __Y3hVceMUe2GgVPjFnkZQ-1
+X-MC-Unique: ml_yeMeUP3q9Rul1Hb9DSw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680534217;
+        d=1e100.net; s=20210112; t=1680534210;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jhxYRP0RK9D29CXVLY4oSlCxDzL6YZmprZKh3z15/ZE=;
-        b=kCl41+otNq6SDPaQtO67s0ByyRp0sdfxuKlbW54HQ9V6FqlbWWPx0zBINvfMNEA2Kk
-         orLf52u+J+XzA77cu6bZyP6YMBWQKzBCZn4uDDKP2GTt50P2y0zrYpPSIgoH2t5JXbFN
-         fiKk3DtSwBvdI3mlSJxiI8TNVtsHJ/R6nWhdTjC9rVHO9L+pBzB16GeuFtglk+4t6oPQ
-         R5SyMy9FeiMlm0OlN2ztq79UedQ5jbmSVswlusGoXsWWj4I+hwC/WORjFhOUxQU1PCs/
-         pmcJ8+n14PMHimGRUqlfV3RRHuf9+r93KowCBgAZ17uSKmnEPA1s38hLU3+FEMXGDchg
-         bRdA==
-X-Gm-Message-State: AAQBX9eiR9ZqHUD2Gy9SC01b6SFHRE7nAQb1VfZFDrgVqXcseXEirsJ2
-	vsK1G1IaPFPTfJ6JllSRHnBi6NOWMAnw4Ir/kGc77Pa7oG+AOvv/i+i39vpNaI0QMVhB1BFQKf5
-	9qGTPAPAPEtizO42u/j7poVR3Efq1NrAWPeDiR0v82g==
-X-Received: by 2002:a05:6402:2c6:b0:4fd:236f:7d4d with SMTP id b6-20020a05640202c600b004fd236f7d4dmr32411183edx.18.1680534216804;
-        Mon, 03 Apr 2023 08:03:36 -0700 (PDT)
-X-Google-Smtp-Source: AKy350b2psEm7VuH3YEtDIwhEGBZFB7dtX0QtcRNH96t61mTmX5KQWSMCpEzeI7L9yhNxGqa753dKA==
-X-Received: by 2002:a05:6402:2c6:b0:4fd:236f:7d4d with SMTP id b6-20020a05640202c600b004fd236f7d4dmr32411157edx.18.1680534216520;
-        Mon, 03 Apr 2023 08:03:36 -0700 (PDT)
-Date: Mon, 3 Apr 2023 11:03:29 -0400
+        bh=mSTVd0HcFpDHxA9WT+Q1itFzbfHXE5uYC/EXjxJrbsY=;
+        b=obajpUfSsEN7kFp0kFJ7PWcy18fTKfra309WcRUVYJpjK6MxyxW5Reap+4LDF1gvin
+         AKZVW7bd3aagyL/Qy1oIGZ7Aux2AfOo0rpOYzCYRcKKcrZHLM/cW2yh8Bczt604utIYN
+         WrHzGSUAVk3/hRJro6tzz09wluVCQ8Q2Ac3L/wzMtoJwkvHqtZ8oNfNa6PEhpY/eRLkB
+         koWDoQdyvmAprxQTVko6My0mKJG5ywiQaW+askM/qvv1c7xiwOzrew2JmY+vphSzfbGd
+         5gQuykF5qbT3SF0+6jR1uVki44SI8DqQ3QX1J8JuTJj0PD/bFcoFswmUpjPdqnV+z0sF
+         HJRg==
+X-Gm-Message-State: AAQBX9dnicoWjgnxmvdN6gauTNkf/a8CsNKaRJZVG8z7Ea5AKkQX0j0P
+	cmoZyxbuK3L1Eb/IP+ItVeTnBzLjRI67EANmi1kiEXc+l/CPb2uKj4llpuI3FpAknjPbrLDzp4M
+	W1ZvtjQ5P9SgdBthPl5clt8TAWqH0
+X-Received: by 2002:a17:906:68c5:b0:932:748b:196e with SMTP id y5-20020a17090668c500b00932748b196emr35278561ejr.45.1680534209807;
+        Mon, 03 Apr 2023 08:03:29 -0700 (PDT)
+X-Google-Smtp-Source: AKy350az2H9ne7GLv7Z/By/XhlarUj4vtnsyeDjtfaHbvu9BqBvz54OkgBNuE+7c6v62q2cZmjwg3A==
+X-Received: by 2002:a17:906:68c5:b0:932:748b:196e with SMTP id y5-20020a17090668c500b00932748b196emr35278534ejr.45.1680534209404;
+        Mon, 03 Apr 2023 08:03:29 -0700 (PDT)
+Date: Mon, 3 Apr 2023 11:03:23 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
 	jasowang@redhat.com, mst@redhat.com, cohuck@redhat.com,
@@ -58,7 +55,7 @@ Cc: virtio@lists.oasis-open.org, Jiri Pirko <jiri@nvidia.com>,
 	Zhu Lingshan <lingshan.zhu@intel.com>, pasic@linux.ibm.com,
 	Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>,
 	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <fbf6f659974884f7430ec7ef68028305d7acee0c.1680533760.git.mst@redhat.com>
+Message-ID: <9cbecf20548a7adf4d97d07b17e40eb3c1c50209.1680533760.git.mst@redhat.com>
 References: <cover.1680533760.git.mst@redhat.com>
 MIME-Version: 1.0
 In-Reply-To: <cover.1680533760.git.mst@redhat.com>
@@ -68,90 +65,152 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] [PATCH v11 05/10] pci: add admin vq registers to virtio over pci
+Subject: [virtio-dev] [PATCH v11 04/10] admin: introduce virtio admin virtqueues
 
-Add new registers to the PCI common configuration structure.
+The admin virtqueues will be the first interface used to issue admin commands.
 
-These registers will be used for querying the indices of the admin
-virtqueues of the owner device. To configure, reset or enable the admin
-virtqueues, the driver should follow existing queue configuration/setup
-sequence.
+Currently the virtio specification defines control virtqueue to manipulate
+features and configuration of the device it operates on:
+virtio-net, virtio-scsi, etc all have existing control virtqueues. However,
+control virtqueue commands are device type specific, which makes it very
+difficult to extend for device agnostic commands.
+
+Keeping the device-specific virtqueue separate from the admin virtqueue
+is simpler and has fewer potential problems. I don't think creating
+common infrastructure for device-specific control virtqueues across
+device types worthwhile or within the scope of this patch series.
+
+To support this requirement in a more generic way, this patch introduces
+a new admin virtqueue interface.
+The admin virtqueue can be seen as the virtqueue analog to a transport.
+The admin queue thus does nothing device type-specific (net, scsi, etc)
+and instead focuses on transporting the admin commands.
+
+We also support more than one admin virtqueue, for QoS and
+scalability requirements.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
 ---
+explain ordering of commands as suggested by Stefan
 dropped Max's S.O.B
-make queue_num not 0 based
+reword commit log as suggested by David
+minor wording fixes suggested by David
 ---
- content.tex | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+ admin.tex   | 75 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ content.tex |  7 +++--
+ 2 files changed, 80 insertions(+), 2 deletions(-)
 
+diff --git a/admin.tex b/admin.tex
+index c869a1a..f201bcd 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -182,3 +182,78 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \field{command_specific_data} and \field{command_specific_result}
+ depends on these structures and is described separately or is
+ implicit in the structure description.
++
++\section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
++
++An administration virtqueue of an owner device is used to submit
++group administration commands. An owner device can have more
++than one administration virtqueue.
++
++If VIRTIO_F_ADMIN_VQ has been negotiated, an owner device exposes one
++or more adminstration virtqueues. The number and locations of the
++administration virtqueues are exposed by the owner device in a transport
++specific manner.
++
++The driver queues requests to an arbitrary administration
++virtqueue, and they are used by the device on that same
++virtqueue. It is the responsibility of the driver to ensure
++strict request ordering for commands, because they will be
++consumed with no order constraints.  For example, if consistency
++is required then the driver can wait for the processing of a
++first command by the device to be completed before submitting
++another command depending on the first one.
++
++Administration virtqueues are used as follows:
++\begin{itemize}
++\item The driver submits the command using the \field{struct virtio_admin_cmd}
++structure using a buffer consisting of two parts: a device-readable one followed by a
++device-writable one.
++\item the device-readable part includes fields from \field{opcode}
++through \field{command_specific_data}.
++\item the device-writeable buffer includes fields from \field{status}
++through \field{command_specific_result} inclusive.
++\end{itemize}
++
++For each command, this specification describes a distinct
++format structure used for \field{command_specific_data} and
++\field{command_specific_result}, the length of these fields
++depends on the command.
++
++However, to ensure forward compatibility
++\begin{itemize}
++\item drivers are allowed to submit buffers that are longer
++than the device expects
++(that is, longer than the length of
++\field{opcode} through \field{command_specific_data}).
++This allows the driver to maintain
++a single format structure even if some structure fields are
++unused by the device.
++\item drivers are allowed to submit buffers that are shorter
++than what the device expects
++(that is, shorter than the length of \field{status} through
++\field{command_specific_result}). This allows the device to maintain
++a single format structure even if some structure fields are
++unused by the driver.
++\end{itemize}
++
++The device compares the length of each part (device-readable and
++device-writeable) of the buffer as submitted by driver to what it
++expects and then silently truncates the structures to either the
++length submitted by the driver, or the length described in this
++specification, whichever is shorter.  The device silently ignores
++any data falling outside the shorter of the two lengths. Any
++missing fields are interpreted as set to zero.
++
++Similarly, the driver compares the used buffer length
++of the buffer to what it expects and then silently
++truncates the structure to the used buffer length.
++The driver silently ignores any data falling outside
++the used buffer length reported by the device.  Any missing
++fields are interpreted as set to zero.
++
++This simplifies driver and device implementations since the
++driver/device can simply maintain a single large structure (such
++as a C structure) for a command and its result. As new versions
++of the specification are designed, new fields can be added to the
++tail of a structure, with the driver/device using the full
++structure without concern for versioning.
 diff --git a/content.tex b/content.tex
-index 2eb15fa..5057df2 100644
+index 04592fb..2eb15fa 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -948,6 +948,10 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-         le64 queue_device;              /* read-write */
-         le16 queue_notify_data;         /* read-only for driver */
-         le16 queue_reset;               /* read-write */
-+
-+        /* About the administration virtqueue. */
-+        le16 admin_queue_index;         /* read-only for driver */
-+        le16 admin_queue_num;         /* read-only for driver */
- };
- \end{lstlisting}
+@@ -99,10 +99,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
+ \begin{description}
+ \item[0 to 23, and 50 to 127] Feature bits for the specific device type
  
-@@ -1033,6 +1037,19 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
-         This field exists only if VIRTIO_F_RING_RESET has been
-         negotiated. (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+-\item[24 to 40] Feature bits reserved for extensions to the queue and
++\item[24 to 41] Feature bits reserved for extensions to the queue and
+   feature negotiation mechanisms
  
-+\item[\field{admin_queue_index}]
-+        The device uses this to report the index of the first administration virtqueue.
-+        This field is valid only if VIRTIO_F_ADMIN_VQ has been negotiated.
-+\item[\field{admin_queue_num}]
-+	The device uses this to report the number of the
-+	supported administration virtqueues.
-+	Virtqueues with index
-+	between \field{admin_queue_index} and (\field{admin_queue_index} +
-+	\field{admin_queue_num} - 1) inclusive serve as administration
-+	virtqueues.
-+	The value 0 indicates no supported administration virtqueues.
-+	This field is valid only if VIRTIO_F_ADMIN_VQ has been
-+	negotiated.
+-\item[41 to 49, and 128 and above] Feature bits reserved for future extensions.
++\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
  \end{description}
  
- \devicenormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
-@@ -1119,6 +1136,14 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
- were used before the queue reset.
- (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}).
+ \begin{note}
+@@ -7684,6 +7684,9 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+   that the driver can reset a queue individually.
+   See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}.
  
-+If VIRTIO_F_ADMIN_VQ has been negotiated, and if the driver
-+configures any administration virtqueues, the driver MUST
-+configure the administration virtqueues using the index
-+in the range \field{admin_queue_index} to
-+\field{admin_queue_index} + \field{admin_queue_num} - 1 inclusive.
-+The driver MAY configure less administration virtqueues than
-+supported by the device.
++  \item[VIRTIO_F_ADMIN_VQ(41)] This feature indicates that the device exposes one or more
++  administration virtqueues.
 +
- \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
- 
- The notification location is found using the VIRTIO_PCI_CAP_NOTIFY_CFG
-@@ -7686,6 +7711,15 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
- 
-   \item[VIRTIO_F_ADMIN_VQ(41)] This feature indicates that the device exposes one or more
-   administration virtqueues.
-+  At the moment this feature is only supported for devices using
-+  \ref{sec:Virtio Transport Options / Virtio Over PCI
-+	  Bus}~\nameref{sec:Virtio Transport Options / Virtio Over PCI Bus}
-+	  as the transport and is reserved for future use for
-+	  devices using other transports (see
-+	  \ref{drivernormative:Basic Facilities of a Virtio Device / Feature Bits}
-+	and
-+	\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
-+	handling features reserved for future use.
- 
  \end{description}
  
+ \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
 -- 
 MST
 
