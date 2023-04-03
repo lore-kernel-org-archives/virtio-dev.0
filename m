@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11931-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11932-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9A33BC76196
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 20:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1B98AC76196
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 20:27:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id EC9AB2AC49
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 20:25:10 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6A7792AC55
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 20:27:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DA6909863ED
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 20:25:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 614CF98641D
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 20:27:41 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CDB809863E5; Mon,  3 Apr 2023 20:25:10 +0000 (UTC)
+	id 4B0369843C6; Mon,  3 Apr 2023 20:27:41 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,44 +24,36 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B877A9863E4;
-	Mon,  3 Apr 2023 20:25:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2A3DD9863E4;
+	Mon,  3 Apr 2023 20:27:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UqyPoi12Ol4ooDQRK3k7nGQWU27AHbufUhRQXZyjRxB2jyc+pWC8ZnN6yz9DkX1lGtNKaxyvanBqSyp73K5jmVtkMUm0prurd29AtFfDxv5fUOdNeszt/dEGkcGA4P4DuDTK4wNHE/9xSQc59ykBOCwoL4vps7ctbCDybMkxuTqHOD36Q4OVPmwSwMCEZ6B63O0CaGvfRxRK3Zk/05SnH1hKSH7KrCan7J3Q3LnoGd7T+hiCg8oN8xvFc5+04GvoHH6kLR+DnZDScQCqz2B6DgrtPNgnzYBR366aXGhGjCC2aUDAxfmsUIPc+jURXsZQG2shjqmMKGF6iHQxGC0i9Q==
+ b=FLVIcCzmR0pzzgyw8hEngq6wYHGdacYBcR2O/4YRQRAa8orStB7uhnd4InAUWxytQTQCChbOVkZFpJvG++Qx7WnFM1IZBPjoLAdrP/WxJaPMg63D2aMy4ki31gQqMRI2V1sTKQoNRELHDEvKMS3lhqr3jCRMHAwessLPa68lRV3u8LaLJvfGRgnjSGbQG35k/mJYkSzZEJQkrETUSUDh7wHTZOlxdiWv4ksPsvSFBAc5e58VvfuocF5mCYYqI6GeJeK5eN6qlqZm55wYsBEGjjzwLc40PBel5OrU/Im40hlh9LskUtMMCU6FWUupefOPSubnGAjBg1YjPdtVAQA1CQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xBYfN/eJhNnVOnezwA59VV2PEcL8gEX9HBnHd27xw2k=;
- b=Up6LiwWLQeAJTHIxmhQFhL1RZvZYQ/XN2DEmDQi2ZSyskqZWH3stolF2/Qndh/vK3BaQfZHtg+GTJZFWmfJjk+FtRv6pJuSDb55iiX6An54D5PajUhPabO8BQG8afCmgn3VKQNSK0h/bkHtZLbL4W/sekUa/mBQhyRm/LG/K4BLEkR0dOrJbAILFGqA8Vx/cYEDlXoui9+ICBtnGG+h091OWtZkSWJnkmTLzG2298y71oWnsYQASJBktyYxJyLtKCmw+KH9RYStxhIiRxRT3kb1hRxh9XNAY1M4PV4DAOlUKA1Ay6R/cZr/UR+hvmmSwBS9RfylYfzap4aWeImEbQw==
+ bh=wsetv/y9AGsDeAxVOpZIBPg0proNZ64dvEm7DzUTSsU=;
+ b=hg1RsNo14khcxSxI67NwVKTA0wvqJtwyh1FBT5XMZwJCy7sE/9rIRFUHQkrkPH/U08aNUmyqz/fgZPHBxUXfjp8wb2Z49a8Ny6x//fXk9kW8aVL4fw1jp/372HlgAwVsK1Mw4ScbLbpEyJRqB5o5/ty0tFeZWtgR2xbWs2EWMB4z7TgQbUzjKFiQRlPWi6R6Fzeps+pDgRItBU0FkIeYZvQ3G7MwkEIBOxByR/4HiK0NjLUCOcVkx1dVqgJTxLgHvKZs3EtH0806DUX+4K33pvVkSRpkfeSxdjjEb1cMIiISzjGlvaqqpzcLK2MTZ3b4G9C6i54jQrLnf02tmp7INA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
+To: Stefan Hajnoczi <stefanha@redhat.com>
+CC: "mst@redhat.com" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
 	Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [virtio-comment] Re: [PATCH 00/11] Introduce transitional mmr
- pci device
-Thread-Index:
- AQHZY1tF5ObSeHDFk0eWHj0gIzL7fK8UdveAgAD15oCABER6gIAAAE0wgAADeYCAAAA9cIAABE+AgAAAS7CAAB9nAIAAA6IAgAAJMICAAB3xwA==
-Date: Mon, 3 Apr 2023 20:25:02 +0000
+Thread-Topic: [virtio-comment] [PATCH 00/11] Introduce transitional mmr pci
+ device
+Thread-Index: AQHZY1tF5ObSeHDFk0eWHj0gIzL7fK8ZryCAgABed4D//+uJAIAAFP9w
+Date: Mon, 3 Apr 2023 20:27:28 +0000
 Message-ID:
- <PH0PR12MB54815AFE1FE7E1D2AAABBAF4DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230331024500-mutt-send-email-mst@kernel.org>
- <0dcd9907-4bb0-ef0d-678d-5bc8f0ded9ec@nvidia.com>
- <20230403105050-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481D50080A3A7C5F81E3F62DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230403110320-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481EC65708410304D9C1EA3DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230403111735-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54813E4193BC32775BDB2019DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230403130950-mutt-send-email-mst@kernel.org>
- <24e5437e-d6bd-d65c-9ec2-699277a113a3@nvidia.com>
- <20230403135446-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230403135446-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54819A725015CC49952D3CC3DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230330225834.506969-1-parav@nvidia.com>
+ <20230403144523.GC302168@fedora>
+ <46a0db06-f922-2a8a-acf0-cf7e453a2945@nvidia.com>
+ <20230403191014.GA350467@fedora>
+In-Reply-To: <20230403191014.GA350467@fedora>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -69,150 +61,88 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|MW4PR12MB6779:EE_
-x-ms-office365-filtering-correlation-id: 0ceb8f7b-1fea-46e1-f85d-08db34818159
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH8PR12MB6698:EE_
+x-ms-office365-filtering-correlation-id: 2f021e9f-d318-4650-89cc-08db3481d86b
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- 99l+eSVPDWMOd8ca0cS6SdVuJFpUTQKmrN5MC+MYhXcJ10Dk+NOLmWbZi2PVtqmOZm4fkfvBnk62BxpY6ZruDhIGx5+MwyC6weTAKndGKQdI0ThvaCrW65JLL7aaX+UraUzIJaCPU56YrOHYh9vKHX9EXifLGRE4gAfGz0liK7AXy+zEdfE2tuk2SteXZbs4ICZIV52DAsN57ukgZLS3s9Puvd7sQfHH4aSWUtRpQwNb+SrG2gpkK2z5cQTE/EAx74O+MMIM9Zpbh/Ff+vEmWta/ZhGrAXdvnoq8Fwi9iEZEMBT2h5hi1mdxP/vIuEGVaZH4nK3wihtDIfuV4YDNrkePUe8o0EG8GEjpb81Q1qVfTpyMXYlalpXmZZ80gsmhrrGbNhALCvoJ35bz+oZUj3srOJPeFWCBFeBK+f8yNLuld/Y87VA2GNLErXqUlsTRfFL6pkc03vMhjYjmNO71vdH9BU/JnXYmC+SzwugGidF+fRAbhyDTUClr9oKFJthGXu4H3fEde5d65yA8rokAhPNntFTwhNBNStgzRKCgVo8hsDwW3yFrtDgWIzjJn+R8HK8PSCQ+pxWq8pBwVObWXQ4l+to9WJTHrEDnLVjNGjxNVDaADkzvthOiEMpkZJ2P
+ pUs0kJBSKFkNuhFnPJfmy7YllUPv8uw5ld5Vw23nnDFpW4HR1t4xFqwzXQNMY76xNTICLp84eJRH1pB9VCHZJm8fK4dJI1pi0fd1ncdv/xDr/6A623IlIn43QYXDg4AYY4X9XPVfE3FWaFPHQg6Ni+F5KZ7uDp36ThaT3a+uplj/5fdsoz1PXTJtc5WSESnAvWuaURDtlMZuR0GqoaJ8czK7tCFEwCYZExtH6qZVpjqRtDuvvnQTcwpx3c/krjSPTz29G3B93ab5/VSh7vNIuFa1OBUfBeSQqQrhv9ewyYj98ctJ1RlJL1wy5e/MiBCKV0siZnqD2dlkkolG7x4pRTTF+UhwMuyYpqlKu/DU0RQ5CchZiAf80gl26Stdoki3WAJ6Pv1exkfIq2r1u7SyR5LsLQmOawXdNdKAU+VRXMIqp+LOrHQ63cyNQ83dXBLghuwGdA2Q2UT6zjiowT5ODwOhUARy424lbtireVzgmipWUVsBjB/rk4xVClxg6nI/CLA+U5nsVvih4qh2/wPDzJvCWnL+mhh11GyuoYIK1V3Znfj41aa8tjUWTVlwswE0al07feNYbn3Ptrje8MqNt2GNy+4QOVi9S1RWByMYPR5KkWOy5OQAtmdFARkuPWWL
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(366004)(396003)(136003)(451199021)(66476007)(8676002)(316002)(8936002)(41300700001)(2906002)(66556008)(52536014)(5660300002)(54906003)(76116006)(66946007)(6916009)(66446008)(64756008)(4326008)(478600001)(71200400001)(83380400001)(7696005)(107886003)(9686003)(6506007)(26005)(55016003)(186003)(122000001)(33656002)(38070700005)(86362001)(38100700002);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(451199021)(8936002)(8676002)(66446008)(64756008)(66946007)(5660300002)(66556008)(76116006)(66476007)(4326008)(55016003)(107886003)(186003)(54906003)(71200400001)(52536014)(41300700001)(6916009)(38100700002)(33656002)(4744005)(2906002)(7696005)(316002)(122000001)(38070700005)(478600001)(86362001)(83380400001)(26005)(6506007)(9686003);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?AOtl+kSMqgvbL4YsMz0sjIAXs0lDAiqIug430kuyiSpMQ+harn1XLu5uYynY?=
- =?us-ascii?Q?OTHG+kSJGpYy+31emhF+Gn6GLfFn/e4k/6r20sMBlBb1Np5qMBHq+0FPlQuU?=
- =?us-ascii?Q?8vGKHqoLpdtix9XO8uQyuodOKbXplyL/1IWl48pjes6yPxPRHHAfAQFGQ7CX?=
- =?us-ascii?Q?IAKV16HJZ7Bvm8QiJjC4zTEyCEmxbj6iuzN3trKjFeNZgrYJ6rW2P89LiJqG?=
- =?us-ascii?Q?lXzJVs6m70etpj2R/3xVGGTLQa4Npu1UJf6g3cazjHkqG5WWU0ALTz34WBde?=
- =?us-ascii?Q?TZvqwKHZHfPggWqJxLKM0jr8YovN5D7LbZu4/c0EtTzOlRsOpLhcfoBrhsY9?=
- =?us-ascii?Q?9K6V9BtBJ5KbQNcZ0D3Lv2qnw45nrkl9vZtDOfylzUZAb6ohTd0qeouXuwqb?=
- =?us-ascii?Q?whl8Keyprvc5VdLo4Vug7sIIwTcE4mMhLhLs4y9wc5Rk/6mS5/X94ogsz0gx?=
- =?us-ascii?Q?Edh9QFwsZOt5ZsAzGaGCWuWrmVA5MicF12L47CWauidfIHkd+ZWMTa4ZXstL?=
- =?us-ascii?Q?QroqeaP4iPPtDrW3rLIIkR69/vgM10Vl93NeOIoAXwfdjkCa3vF4j5+c+xtI?=
- =?us-ascii?Q?550VZ/RmN2twe8OZCYAlWXblYgO4AfJEb0a/1MzjN+7/7FLJ8+enohEPxgA/?=
- =?us-ascii?Q?wHq/5xHVKZ0Ev7eK4a4TZmg60nVgJhbxJ4B7N/LbLL++MfYsAAkPnlRscPZH?=
- =?us-ascii?Q?sg6hsb109YoHN6ZgMNRqbCWVdCOSQJLXEAKXf9qijBDOq0+CQTvx9YMk4hWW?=
- =?us-ascii?Q?hhYvn9HzUeK9khbX5Y1JljAlhsH64JJ2Z/Vpko5Z/ytP2yzUbTuL1ts4m9AX?=
- =?us-ascii?Q?JtpuNo2zvX0wfdkdxzjRgvf39P3LHuL8O8D9KRs5NVcAB8V4kL6D67JA4IoY?=
- =?us-ascii?Q?1YWwz4baVPkzMqBa9p3LxyDRAvwnvUR8oPHJ9z5+VC5sNshmUSp6s3lN9RiK?=
- =?us-ascii?Q?4rDcYN6d4lKjvZFpljUzqSMotcZBds+w4u9g7EwT2Po+/wO44ZF1wu3tH9uf?=
- =?us-ascii?Q?PST+CJw02dCvROKuGl6KI5+fz9VXRfnx2gNEoeczM64Jk46Ck8eU830UR301?=
- =?us-ascii?Q?wsJYDo2KtXoUQytWNC+7xtl508dByirhzgZ/QSjCm9YdkQeMDkgYFOGv4Lfy?=
- =?us-ascii?Q?Z8RQM6WMx+KYUaBkIzBwhIdozknOJ1ZcwiwRcKaC64lLC8X4kAhj1teO/DsJ?=
- =?us-ascii?Q?dtkdHC5Sr/jFwvZlytSBOLMK1DRVn6n5BO4BSOr09HM8pA7x/nX+efVDR+Yo?=
- =?us-ascii?Q?8gTRtPqyaQkzdU2edoakOEwwomAE0EddlsKBSZBiNwb3g/L0/K38gtICal4v?=
- =?us-ascii?Q?whXHs1STSFje5G1V59F7QCl12yDbhsxe6+ijB6N0Z3jkJ1k0cYpc1tJ/dp5v?=
- =?us-ascii?Q?bf3BJVG3X7vgzDYcC/W/IdmHEeRYy9d2COwB3sxApweh3tq9Mv4lWl000PaG?=
- =?us-ascii?Q?sCX7LNo8dqf/7lZ9IfN1wQkixf/NnxhzQCKf8uruRQjrnMKH0iNYNjRXn4lo?=
- =?us-ascii?Q?bYIR7eK23xf9poxlgzCwkCu0ofKO95WL5ihH/bsgabBXYrhvip+y8oLRiaBM?=
- =?us-ascii?Q?eHAbD1gTR2GVIJ5JCII=3D?=
+ =?us-ascii?Q?cFRrsJj0oHbxKUSQn6Em0ZlWgXz5XSouJlLWn/u7CmDesb8c38eJY4mBv11X?=
+ =?us-ascii?Q?0CdPxzefk3s6rJbdDTVbXSwmBGAGVItekW37qLpgHAKLVvMg6tyiZPRF1Cxe?=
+ =?us-ascii?Q?80HinrRINlVC1y8WDTiWzQ64Hnq8SvL9ZSnA7ssA64uivMQtUU0uu1Gf1cwU?=
+ =?us-ascii?Q?3ohlSICWq9rU4TLYrG0NaH4qq/MErmDZy69+yxEem9jaFPx1ZL7Gl8cwX7cU?=
+ =?us-ascii?Q?dDRbC/QpEqyOgJiTB9N+M/gcw7iVUTPU6bcu+fk6k+sUCxnZmCLmUzRPs+Vk?=
+ =?us-ascii?Q?md1I7OXseYXHqG0SGS9psW0CNMYzkjULlWaNQV5BRzfoen7ryz7MGlzpF/Xn?=
+ =?us-ascii?Q?HvNUXOXUVByeHszaXU/btk/oOMmXWlY0qQ4Cakp7ZDovM7FmAs/EqgIDKAA1?=
+ =?us-ascii?Q?+n1X3R3cwG5MDAtwqoXiKOSjvF9EWLL9lKPn9BiuCJmD1aAzPhqmZKLtS/Ke?=
+ =?us-ascii?Q?sb9d1t5D6824Zcio7HvV8u9xWKTDgipKBqpsVkmkL/oHUs9zBOz1/LLTbAup?=
+ =?us-ascii?Q?UvAaTkZ4mG8g9lO9KutKZOBTQlaoNxJoEyU/RiNX8Wr7jUmzQ4qfGBclvGSX?=
+ =?us-ascii?Q?a3IqUz7+0buMxc98dqn+X7fWO8ArimOPK6/WEv6D2ylfCBSXMhY3Kzt6dCxF?=
+ =?us-ascii?Q?zmF8WNXAWPQEr9ON5b0MO1q+YLE7t2zRmiR55FvQdvRyAaIAhAYSsTpKABHA?=
+ =?us-ascii?Q?/DtXb4bD1Mqd5C8zdSdtp5bMq6hoal1orPYyo9jJaUrjSWhcOD8+T0B7DxMl?=
+ =?us-ascii?Q?RaENlwWSM0S0H1aURSd1Pl82Q/HU4AoQj1CKmVSws9HytFF0K+tsyKn7PsPT?=
+ =?us-ascii?Q?axu+mnKbniqMXou/NZJBGTE0fPnBbAxZI0tC69HT+lhSEbpDZhXSEUFgA/SS?=
+ =?us-ascii?Q?Rhk+B0icP563uC15H9EhEvXCQPZKnvEBYUNyAtfrkp9hYrN4E5F4VzpZWh+q?=
+ =?us-ascii?Q?VujVsJQwrudBmGMW2jRnxzZFmLK1izuYMzCo8n4aioL0qmEwdO4TqULH/xJ+?=
+ =?us-ascii?Q?J4McwgEaAIrCiR3b25hN4mKdyS1Yy2UhazdVr8kIS8+sXbHdiSCeJ3+sDZz7?=
+ =?us-ascii?Q?8Bzkwtyt6611Di8CPW5BRdi7CmeYGYvtCbhk1dcCDmJMegZQ5hi4q884umIG?=
+ =?us-ascii?Q?RYrUpw/hGbOC0x0mu1MjxG92FE3mO8JiTac6UX3uRpgsxrHXxXHXikNxFpVg?=
+ =?us-ascii?Q?Kirqywt1DGjVz91PubortA+9OzJ1i6DKdENETWUHZz6icziK4r1mJPSE3Jl1?=
+ =?us-ascii?Q?u2zVdw2ByHEIJ6QdZztxjDinjFsGqiiQgg3+GGehkId3gePPMqO/0lWkwyZL?=
+ =?us-ascii?Q?ZjO9xw1GnW26tqVfnMI0bDI9C0Ss/Loy1rhAcuKkM20fi/iQUg+KU0SMKDUa?=
+ =?us-ascii?Q?m+Goj/PN2gGZaxvwyCsWmGF3H3XHPEho30VZiNwzveIS3YMvuRSVxucdJOcR?=
+ =?us-ascii?Q?xKUH4Pv8ezKEWG7gnOplbMKH0NRPUmLYYbUTbLypW7EkD9CFeatvJ5VkLH3P?=
+ =?us-ascii?Q?jr3hhENxoCDtdW2J7fStXfofxJlG5yOnGrEvczxKTQrWkZEAqDY3D7plD+ko?=
+ =?us-ascii?Q?KxIvIX2PMw5eYDeKysY=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ceb8f7b-1fea-46e1-f85d-08db34818159
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Apr 2023 20:25:02.8334
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f021e9f-d318-4650-89cc-08db3481d86b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Apr 2023 20:27:28.9083
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IG+0icIJ56BzcfKJrc3tWl931V8XvcwS1IOAVGX9Y2EGZ9+sMiUEXzL2BfSDF1AcPIrpLr5GaztJNjnpqQctSg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6779
-Subject: [virtio-dev] RE: [virtio-comment] Re: [PATCH 00/11] Introduce transitional mmr pci
+X-MS-Exchange-CrossTenant-userprincipalname: UPT56uiZCzaDHp8ZuYwZ5ZJS05F7jSMtNxKmwlJKBeYt0Ee6ozoUETl2brbCeqTYak635yKdMCrB7Tujp24dPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6698
+Subject: [virtio-dev] RE: [virtio-comment] [PATCH 00/11] Introduce transitional mmr pci
  device
 
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Monday, April 3, 2023 2:02 PM
+> From: Stefan Hajnoczi <stefanha@redhat.com>
+> Sent: Monday, April 3, 2023 3:10 PM
 
-> > Because vqs involve DMA operations.
-> > It is left to the device implementation to do it, but a generic wisdom
-> > is not implement such slow work in the data path engines.
-> > So such register access vqs can/may be through firmware.
-> > Hence it can involve a lot higher latency.
+
+> Maybe call it "Memory-mapped Transitional"? That name would be easier to
+> understand.
+>
+Sounds fine to me.
+=20
+> > > Modern devices were added to Linux in 2014 and support SR-IOV.
+> >
+> > > Why is it
+> > > important to support Transitional (which really means Legacy
+> > > devices, otherwise Modern devices would be sufficient)?
+> > >
+> > To support guest VMs which only understand legacy devices and
+> > unfortunately they are still in much wider use by the users.
 >=20
-> Then that wisdom is wrong? tens of microseconds is not workable even for
-> ethtool operations, you are killing boot time.
->=20
-Huh.
-What ethtool latencies have you experienced? Number?
+> I wonder which guest software without Modern VIRTIO support will still be
+> supported by the time Transitional MMR software and hardware becomes
+> available. Are you aiming for particular guest software versions?
 
-> I frankly don't know, if device vendors are going to interpret "DMA" as "=
-can
-> take insane time" then maybe we need to scrap the whole admin vq idea and
-> make it all memory mapped like Jason wanted, so as not to lead them into
-> temptation?
-
-DMA happens for all types of devices for control and data path.
-Can you point to any existing industry specification and real implementatio=
-n that highlights such timing requirements.
-This will be useful to understand where these requirements come from.
-
-Multiple device implementors do not see memory mapped registers as way forw=
-ard.
-Discussed many times.
-There is no point in going that dead end.
-
-> Let me try again.
->=20
-> Modern host binds to modern interface. It can use the PF normally.
-> Legacy guest IOBAR accesses to VF are translated to transport vq accesses=
-.
->=20
-I understand this part.
-Transport VQ is on the PF, right? (Nothing but AQ, right?)
-
-It can work in VF case with trade-off compared to memory mapped registers.
-A lightweight hypervisor cannot benefit from this which wants to utilize th=
-is for transitional PF too.
-So providing both the options is useful.
-
-Again, I want to emphasize that register read/write over tvq has merits wit=
-h trade-off.
-And so the mmr has merits with trade-off too.
-
-Better to list them and proceed forward.
-
-Method-1: VF's register read/write via PF based transport VQ
-Pros:
-a. Light weight registers implementation in device for new memory region wi=
-ndow
-
-Cons:
-a. Higher DMA read/write latency
-b. Device requires synchronization between non legacy memory mapped registe=
-rs and legacy regs access via tvq
-c. Can only work with the VF. Cannot work for thin hypervisor, which can ma=
-p transitional PF to bare metal OS
-(also listed in cover letter)
-
-Method-2: VF's register read/write via MMR (current proposal)
-Pros:
-a. Device utilizes the same legacy and non-legacy registers.
-b. an order of magnitude lower latency due to avoidance of DMA on register =
-accesses
-(Important but not critical)
-
-> > No. Interrupt latency is in usec range.
-> > The major latency contributors in msec range can arise from the device =
-side.
->=20
-> So you are saying there are devices out there already with this MMR hack
-> baked in, and in hardware not firmware, so it works reasonably?
-It is better to not assert a solution a "hack", when you are still trying t=
-o understand the trade-offs of multiple solutions and when you are yet to f=
-ully review all requirements.
-(and when solution is also based on an offline feedback from you!)
-
-No. I didn't say that device is out there.
-However, large part of the proposed changes is done based on real devices (=
-and not limited to virtio).
-
-Regarding tvq, I have some idea on how to improve the register read/writes =
-so that its optimal for devices to implement.
+Transitional MMR hardware is available almost now.
+Transitional MMR software is also WIP to be available as soon as we ratify =
+the spec via tvq or via mmr or both.
+This will be support the guest sw version such as 2.6.32.754 kernel.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
