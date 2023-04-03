@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11924-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11925-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5DCBC76196
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 17:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 63866C761A6
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 18:02:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 02DE42AC45
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 17:53:12 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8EDD12AF9E
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 18:02:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E56BA9863E5
-	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 17:53:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 81090986418
+	for <virtio-dev@archiver.kernel.org>; Mon,  3 Apr 2023 18:02:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D04379863DE; Mon,  3 Apr 2023 17:53:11 +0000 (UTC)
+	id 754909863E6; Mon,  3 Apr 2023 18:02:36 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,642 +24,209 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0F7F9863DF
-	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Apr 2023 17:53:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 62A599863EF
+	for <virtio-dev@lists.oasis-open.org>; Mon,  3 Apr 2023 18:02:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: _lbWI9kbOSCv9QU4OOATGg-1
+X-MC-Unique: hl-fPA5wO0aDPI-kCWqyYw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680544388;
+        d=1e100.net; s=20210112; t=1680544951;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PMAlJi0Hr3ovQOxne2drqs1psGbdEYet2SIzbR2h35s=;
-        b=t2nQ/yNj89wcJGF2G9FajVqttwuyhQCh5qewy1tOskVR5yBsb/QFnzpYDFKEy1KuzG
-         UtbygvUo6+jZG35VGrPX5HFzKWXqqk2Y5nOPF+UFaHYqb0cBCwumg3iy4wpOIpjJ/g6f
-         9xzWsti+dmLDIHboTpo0NV4Rj0i95TSA93kO7wKcy7gPy6jrNLnTgV0jD9jgz2/epfNa
-         NliXD5Xolp7vd+KXUBqFfBeIjgy/CvPKA4EcSAqndsslD0elYzjLeJNzSlcYYaYgyso/
-         e1rgaP+UA9mw1S2HxkjjOPQE+J2c2cZkK/aYMx2eETvLKme8ZvKwEyKearcJIQhqDcIM
-         b01Q==
-X-Gm-Message-State: AAQBX9dh6DO/HFNymWBS6AqjZRvTYj7eYglpvFqvtAw+/PFNeNvo+Mms
-	LnpeYY6MIn1NyWZYEBVasIG7zgzyWzy660mre2uYyS6r2sd1BWUgL1uUNX9h6J0yTLOsObTxv9M
-	N90XxyAQsvo9w7COIwAYmF2KA0vO/
-X-Received: by 2002:a05:6402:1203:b0:4fb:9b54:ccb8 with SMTP id c3-20020a056402120300b004fb9b54ccb8mr62717edw.21.1680544387856;
-        Mon, 03 Apr 2023 10:53:07 -0700 (PDT)
-X-Google-Smtp-Source: AKy350b1eVgnf4F0bTnTY2KVSY4WdJoLmNm8T5G/vP0WGe3YgsfJPFrlwmMAKLQrWuEm4APirK7r8A==
-X-Received: by 2002:a05:6402:1203:b0:4fb:9b54:ccb8 with SMTP id c3-20020a056402120300b004fb9b54ccb8mr62696edw.21.1680544387431;
-        Mon, 03 Apr 2023 10:53:07 -0700 (PDT)
-Date: Mon, 3 Apr 2023 13:53:01 -0400
+        bh=XXnA+XhjI5YHqpSg3T6IBJ3M3uIHPGg2616D8CrCKmU=;
+        b=fj5kJH5ofzHKBPf1z/odoaqhgZO60kdoqZ8XvnJoa92pStaZWsiuiSNMQIT6t+OY8o
+         5HC3x5DzAyETv13YK7mb94zEHNIjpDM/nRVMFbsdcsI8gN7OwXyde15IVySAo9JvoeGe
+         q74MKXMd/FIQLpJw4q82E4wUvk52aOTw1F2EEYDWpjVfXrC7IkpYmZRpXGJBrQNkjdVA
+         fXicVrAFnVM4d5vFhIV21JzKQf9vVCTAl7Ke6e32ZPvKi+iH1oqdfebwORwymEal2vF3
+         PAZrYW7jc8H4yo0GZV3KVy5ErtAk1EfnWSCeHIbqJ8y8oQ0laSmin29qCsxAqv3Sfdjt
+         nCyA==
+X-Gm-Message-State: AAQBX9ftJ2hNbB2fW87tTAAWjp3SHYVHm+H75ZSa/m4OqscZuMy7VtJb
+	i2IOBt5Tqv1olM10Li15+otGqRsXGZc/b33vSvkZ1aspFC8DRzF4olg6rD3bwjzfariiMe3EacM
+	Tl1Ly8QDfYChvDNLI3/UH/8Dhj0fs
+X-Received: by 2002:a17:906:a24f:b0:931:bc69:8f94 with SMTP id bi15-20020a170906a24f00b00931bc698f94mr36362483ejb.45.1680544951302;
+        Mon, 03 Apr 2023 11:02:31 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZCmsS7QQTFUicAsdegONxDV9id2VoIK5TrDwqim/Dn6089xkdcETKi57CGVZAty/DKmrx8/g==
+X-Received: by 2002:a17:906:a24f:b0:931:bc69:8f94 with SMTP id bi15-20020a170906a24f00b00931bc698f94mr36362462ejb.45.1680544950956;
+        Mon, 03 Apr 2023 11:02:30 -0700 (PDT)
+Date: Mon, 3 Apr 2023 14:02:25 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-Cc: Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Stefan Hajnoczi <stefanha@gmail.com>,
-	Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>,
-	virtio-dev@lists.oasis-open.org,
-	virtualization@lists.linux-foundation.org
-Message-ID: <20230403135001-mutt-send-email-mst@kernel.org>
-References: <20230330214953.1088216-1-dmitry.fomichev@wdc.com>
- <20230330214953.1088216-2-dmitry.fomichev@wdc.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Message-ID: <20230403135446-mutt-send-email-mst@kernel.org>
+References: <20230331024500-mutt-send-email-mst@kernel.org>
+ <0dcd9907-4bb0-ef0d-678d-5bc8f0ded9ec@nvidia.com>
+ <20230403105050-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D50080A3A7C5F81E3F62DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230403110320-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481EC65708410304D9C1EA3DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230403111735-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54813E4193BC32775BDB2019DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230403130950-mutt-send-email-mst@kernel.org>
+ <24e5437e-d6bd-d65c-9ec2-699277a113a3@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230330214953.1088216-2-dmitry.fomichev@wdc.com>
+In-Reply-To: <24e5437e-d6bd-d65c-9ec2-699277a113a3@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: Re: [virtio-dev] [PATCH v2 1/2] virtio-blk: migrate to the latest
- patchset version
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 00/11] Introduce transitional mmr
+ pci device
 
-On Thu, Mar 30, 2023 at 05:49:52PM -0400, Dmitry Fomichev wrote:
-> The merged patch series to support zoned block devices in virtio-blk
-> is not the most up to date version. The merged patch can be found at
+On Mon, Apr 03, 2023 at 01:29:32PM -0400, Parav Pandit wrote:
 > 
-> https://lore.kernel.org/linux-block/20221016034127.330942-3-dmitry.fomichev@wdc.com/
 > 
-> , but the latest and reviewed version is
-> 
-> https://lore.kernel.org/linux-block/20221110053952.3378990-3-dmitry.fomichev@wdc.com/
+> On 4/3/2023 1:16 PM, Michael S. Tsirkin wrote:
+> > On Mon, Apr 03, 2023 at 03:36:25PM +0000, Parav Pandit wrote:
+> > > 
+> > > 
+> > > > From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
+> > > > open.org> On Behalf Of Michael S. Tsirkin
+> > > 
+> > > > > Transport vq for legacy MMR purpose seems fine with its latency and DMA
+> > > > overheads.
+> > > > > Your question was about "scalability".
+> > > > > After your latest response, I am unclear what "scalability" means.
+> > > > > Do you mean saving the register space in the PCI device?
+> > > > 
+> > > > yes that's how you used scalability in the past.
+> > > > 
+> > > Ok. I am aligned.
+> > > > > If yes, than, no for legacy guests for scalability it is not required, because the
+> > > > legacy register is subset of 1.x.
+> > > > 
+> > > > Weird.  what does guest being legacy have to do with a wish to save registers
+> > > > on the host hardware?
+> > > Because legacy has subset of the registers of 1.x. So no new registers additional expected on legacy side.
+> > > 
+> > > > You don't have so many legacy guests as modern
+> > > > guests? Why?
+> > > > 
+> > > This isn't true.
+> > > 
+> > > There is a trade-off, upto certain N, MMR based register access is fine.
+> > > This is because 1.x is exposing super set of registers of legacy.
+> > > Beyond a certain point device will have difficulty in doing MMR for legacy and 1.x.
+> > > At that point, legacy over tvq can be better scale but with lot higher latency order of magnitude higher compare to MMR.
+> > > If tvq being the only transport for these registers access, it would hurt at lower scale too, due the primary nature of non_register access.
+> > > And scale is relative from device to device.
+> > 
+> > Wow! Why an order of magnitide?
+> > 
+> Because vqs involve DMA operations.
+> It is left to the device implementation to do it, but a generic wisdom is
+> not implement such slow work in the data path engines.
+> So such register access vqs can/may be through firmware.
+> Hence it can involve a lot higher latency.
 
-What happened here is that it was not sent to correct people or lists.
+Then that wisdom is wrong? tens of microseconds is not workable even for
+ethtool operations, you are killing boot time.
 
-v2 happened to draw my attention by chance, I missed the
-interface change and I did not see later ones and merged v2.
-
-To: Jens Axboe <axboe@kernel.dk>,
-	linux-block@vger.kernel.org,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Stefan Hajnoczi <stefanha@gmail.com>,
-	Hannes Reinecke <hare@suse.de>, Sam Li <faithilikerun@gmail.com>
-Cc: virtio-dev@lists.oasis-open.org,
-	Dmitry Fomichev <dmitry.fomichev@wdc.com>
-
-while:
-
-$ ./scripts/get_maintainer.pl -f drivers/block/virtio_blk.c
-"Michael S. Tsirkin" <mst@redhat.com> (maintainer:VIRTIO CORE AND NET DRIVERS)
-Jason Wang <jasowang@redhat.com> (maintainer:VIRTIO CORE AND NET DRIVERS)
-Paolo Bonzini <pbonzini@redhat.com> (reviewer:VIRTIO BLOCK AND SCSI DRIVERS)
-Stefan Hajnoczi <stefanha@redhat.com> (reviewer:VIRTIO BLOCK AND SCSI DRIVERS)
-Jens Axboe <axboe@kernel.dk> (maintainer:BLOCK LAYER)
-virtualization@lists.linux-foundation.org (open list:VIRTIO CORE AND NET DRIVERS)
-linux-block@vger.kernel.org (open list:BLOCK LAYER)
-linux-kernel@vger.kernel.org (open list)
+I frankly don't know, if device vendors are going to interpret
+"DMA" as "can take insane time" then maybe we need to scrap
+the whole admin vq idea and make it all memory mapped like
+Jason wanted, so as not to lead them into temptation?
 
 
+> > > > > 
+> > > > > > > > And presumably it can all be done in firmware ...
+> > > > > > > > Is there actual hardware that can't implement transport vq but
+> > > > > > > > is going to implement the mmr spec?
+> > > > > > > > 
+> > > > > > > Nvidia and Marvell DPUs implement MMR spec.
+> > > > > > 
+> > > > > > Hmm implement it in what sense exactly?
+> > > > > > 
+> > > > > Do not follow the question.
+> > > > > The proposed series will be implemented as PCI SR-IOV devices using MMR
+> > > > spec.
+> > > > > 
+> > > > > > > Transport VQ has very high latency and DMA overheads for 2 to 4
+> > > > > > > bytes
+> > > > > > read/write.
+> > > > > > 
+> > > > > > How many of these 2 byte accesses trigger from a typical guest?
+> > > > > > 
+> > > > > Mostly during the VM boot time. 20 to 40 registers read write access.
+> > > > 
+> > > > That is not a lot! How long does a DMA operation take then?
+> > > > 
+> > > > > > > And before discussing "why not that approach", lets finish
+> > > > > > > reviewing "this
+> > > > > > approach" first.
+> > > > > > 
+> > > > > > That's a weird way to put it. We don't want so many ways to do
+> > > > > > legacy if we can help it.
+> > > > > Sure, so lets finish the review of current proposal details.
+> > > > > At the moment
+> > > > > a. I don't see any visible gain of transport VQ other than device reset part I
+> > > > explained.
+> > > > 
+> > > > For example, we do not need a new range of device IDs and existing drivers can
+> > > > bind on the host.
+> > > > 
+> > > So, unlikely due to already discussed limitation of feature negotiation.
+> > > Existing transitional driver would also look for an IOBAR being second limitation.
+> > 
+> > Some confusion here.
+> Yes.
+> > If you have a transitional driver you do not need a legacy device.
+> > 
+> IF I understood your thoughts split in two emails,
+> 
+> Your point was "we dont need new range of device IDs for transitional TVQ
+> device because TVQ is new and its optional".
+> 
+> But this transitional TVQ device do not expose IOBAR expected by the
+> existing transitional device, failing the driver load.
+> 
+> Your idea is not very clear.
+
+Let me try again.
+
+Modern host binds to modern interface. It can use the PF normally.
+Legacy guest IOBAR accesses to VF are translated to transport vq
+accesses.
 
 
-> The differences between the two are mostly cleanups, but there is one
-> change that is very important in terms of compatibility with the
-> approved virtio-zbd specification.
-> 
-> Before it was approved, the OASIS virtio spec had a change in
-> VIRTIO_BLK_T_ZONE_APPEND request layout that is not reflected in the
-> current virtio-blk driver code. In the running code, the status is
-> the first byte of the in-header that is followed by some pad bytes
-> and the u64 that carries the sector at which the data has been written
-> to the zone back to the driver, aka the append sector.
-> 
-> This layout turned out to be problematic for implementing in QEMU and
-> the request status byte has been eventually made the last byte of the
-> in-header. The current code doesn't expect that and this causes the
-> append sector value always come as zero to the block layer. This needs
-> to be fixed ASAP.
-> 
-> Fixes: 95bfec41bd3d ("virtio-blk: add support for zoned block devices")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Dmitry Fomichev <dmitry.fomichev@wdc.com>
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-> ---
->  drivers/block/virtio_blk.c      | 238 +++++++++++++++++++++-----------
->  include/uapi/linux/virtio_blk.h |  18 +--
->  2 files changed, 166 insertions(+), 90 deletions(-)
-> 
-> diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-> index 2723eede6f21..4f0dbbb3d4a5 100644
-> --- a/drivers/block/virtio_blk.c
-> +++ b/drivers/block/virtio_blk.c
-> @@ -96,16 +96,14 @@ struct virtblk_req {
->  
->  		/*
->  		 * The zone append command has an extended in header.
-> -		 * The status field in zone_append_in_hdr must have
-> -		 * the same offset in virtblk_req as the non-zoned
-> -		 * status field above.
-> +		 * The status field in zone_append_in_hdr must always
-> +		 * be the last byte.
->  		 */
->  		struct {
-> +			__virtio64 sector;
->  			u8 status;
-> -			u8 reserved[7];
-> -			__le64 append_sector;
-> -		} zone_append_in_hdr;
-> -	};
-> +		} zone_append;
-> +	} in_hdr;
->  
->  	size_t in_hdr_len;
->  
-> @@ -154,7 +152,7 @@ static int virtblk_add_req(struct virtqueue *vq, struct virtblk_req *vbr)
->  			sgs[num_out + num_in++] = vbr->sg_table.sgl;
->  	}
->  
-> -	sg_init_one(&in_hdr, &vbr->status, vbr->in_hdr_len);
-> +	sg_init_one(&in_hdr, &vbr->in_hdr.status, vbr->in_hdr_len);
->  	sgs[num_out + num_in++] = &in_hdr;
->  
->  	return virtqueue_add_sgs(vq, sgs, num_out, num_in, vbr, GFP_ATOMIC);
-> @@ -242,11 +240,14 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
->  				      struct request *req,
->  				      struct virtblk_req *vbr)
->  {
-> -	size_t in_hdr_len = sizeof(vbr->status);
-> +	size_t in_hdr_len = sizeof(vbr->in_hdr.status);
->  	bool unmap = false;
->  	u32 type;
->  	u64 sector = 0;
->  
-> +	if (!IS_ENABLED(CONFIG_BLK_DEV_ZONED) && op_is_zone_mgmt(req_op(req)))
-> +		return BLK_STS_NOTSUPP;
-> +
->  	/* Set fields for all request types */
->  	vbr->out_hdr.ioprio = cpu_to_virtio32(vdev, req_get_ioprio(req));
->  
-> @@ -287,7 +288,7 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
->  	case REQ_OP_ZONE_APPEND:
->  		type = VIRTIO_BLK_T_ZONE_APPEND;
->  		sector = blk_rq_pos(req);
-> -		in_hdr_len = sizeof(vbr->zone_append_in_hdr);
-> +		in_hdr_len = sizeof(vbr->in_hdr.zone_append);
->  		break;
->  	case REQ_OP_ZONE_RESET:
->  		type = VIRTIO_BLK_T_ZONE_RESET;
-> @@ -297,7 +298,10 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
->  		type = VIRTIO_BLK_T_ZONE_RESET_ALL;
->  		break;
->  	case REQ_OP_DRV_IN:
-> -		/* Out header already filled in, nothing to do */
-> +		/*
-> +		 * Out header has already been prepared by the caller (virtblk_get_id()
-> +		 * or virtblk_submit_zone_report()), nothing to do here.
-> +		 */
->  		return 0;
->  	default:
->  		WARN_ON_ONCE(1);
-> @@ -318,16 +322,28 @@ static blk_status_t virtblk_setup_cmd(struct virtio_device *vdev,
->  	return 0;
->  }
->  
-> +/*
-> + * The status byte is always the last byte of the virtblk request
-> + * in-header. This helper fetches its value for all in-header formats
-> + * that are currently defined.
-> + */
-> +static inline u8 virtblk_vbr_status(struct virtblk_req *vbr)
-> +{
-> +	return *((u8 *)&vbr->in_hdr + vbr->in_hdr_len - 1);
-> +}
-> +
->  static inline void virtblk_request_done(struct request *req)
->  {
->  	struct virtblk_req *vbr = blk_mq_rq_to_pdu(req);
-> -	blk_status_t status = virtblk_result(vbr->status);
-> +	blk_status_t status = virtblk_result(virtblk_vbr_status(vbr));
-> +	struct virtio_blk *vblk = req->mq_hctx->queue->queuedata;
->  
->  	virtblk_unmap_data(req, vbr);
->  	virtblk_cleanup_cmd(req);
->  
->  	if (req_op(req) == REQ_OP_ZONE_APPEND)
-> -		req->__sector = le64_to_cpu(vbr->zone_append_in_hdr.append_sector);
-> +		req->__sector = virtio64_to_cpu(vblk->vdev,
-> +						vbr->in_hdr.zone_append.sector);
->  
->  	blk_mq_end_request(req, status);
->  }
-> @@ -355,7 +371,7 @@ static int virtblk_handle_req(struct virtio_blk_vq *vq,
->  
->  		if (likely(!blk_should_fake_timeout(req->q)) &&
->  		    !blk_mq_complete_request_remote(req) &&
-> -		    !blk_mq_add_to_batch(req, iob, vbr->status,
-> +		    !blk_mq_add_to_batch(req, iob, virtblk_vbr_status(vbr),
->  					 virtblk_complete_batch))
->  			virtblk_request_done(req);
->  		req_done++;
-> @@ -550,7 +566,6 @@ static void virtio_queue_rqs(struct request **rqlist)
->  #ifdef CONFIG_BLK_DEV_ZONED
->  static void *virtblk_alloc_report_buffer(struct virtio_blk *vblk,
->  					  unsigned int nr_zones,
-> -					  unsigned int zone_sectors,
->  					  size_t *buflen)
->  {
->  	struct request_queue *q = vblk->disk->queue;
-> @@ -558,7 +573,7 @@ static void *virtblk_alloc_report_buffer(struct virtio_blk *vblk,
->  	void *buf;
->  
->  	nr_zones = min_t(unsigned int, nr_zones,
-> -			 get_capacity(vblk->disk) >> ilog2(zone_sectors));
-> +			 get_capacity(vblk->disk) >> ilog2(vblk->zone_sectors));
->  
->  	bufsize = sizeof(struct virtio_blk_zone_report) +
->  		nr_zones * sizeof(struct virtio_blk_zone_descriptor);
-> @@ -592,7 +607,7 @@ static int virtblk_submit_zone_report(struct virtio_blk *vblk,
->  		return PTR_ERR(req);
->  
->  	vbr = blk_mq_rq_to_pdu(req);
-> -	vbr->in_hdr_len = sizeof(vbr->status);
-> +	vbr->in_hdr_len = sizeof(vbr->in_hdr.status);
->  	vbr->out_hdr.type = cpu_to_virtio32(vblk->vdev, VIRTIO_BLK_T_ZONE_REPORT);
->  	vbr->out_hdr.sector = cpu_to_virtio64(vblk->vdev, sector);
->  
-> @@ -601,7 +616,7 @@ static int virtblk_submit_zone_report(struct virtio_blk *vblk,
->  		goto out;
->  
->  	blk_execute_rq(req, false);
-> -	err = blk_status_to_errno(virtblk_result(vbr->status));
-> +	err = blk_status_to_errno(virtblk_result(vbr->in_hdr.status));
->  out:
->  	blk_mq_free_request(req);
->  	return err;
-> @@ -609,29 +624,72 @@ static int virtblk_submit_zone_report(struct virtio_blk *vblk,
->  
->  static int virtblk_parse_zone(struct virtio_blk *vblk,
->  			       struct virtio_blk_zone_descriptor *entry,
-> -			       unsigned int idx, unsigned int zone_sectors,
-> -			       report_zones_cb cb, void *data)
-> +			       unsigned int idx, report_zones_cb cb, void *data)
->  {
->  	struct blk_zone zone = { };
->  
-> -	if (entry->z_type != VIRTIO_BLK_ZT_SWR &&
-> -	    entry->z_type != VIRTIO_BLK_ZT_SWP &&
-> -	    entry->z_type != VIRTIO_BLK_ZT_CONV) {
-> -		dev_err(&vblk->vdev->dev, "invalid zone type %#x\n",
-> -			entry->z_type);
-> -		return -EINVAL;
-> +	zone.start = virtio64_to_cpu(vblk->vdev, entry->z_start);
-> +	if (zone.start + vblk->zone_sectors <= get_capacity(vblk->disk))
-> +		zone.len = vblk->zone_sectors;
-> +	else
-> +		zone.len = get_capacity(vblk->disk) - zone.start;
-> +	zone.capacity = virtio64_to_cpu(vblk->vdev, entry->z_cap);
-> +	zone.wp = virtio64_to_cpu(vblk->vdev, entry->z_wp);
-> +
-> +	switch (entry->z_type) {
-> +	case VIRTIO_BLK_ZT_SWR:
-> +		zone.type = BLK_ZONE_TYPE_SEQWRITE_REQ;
-> +		break;
-> +	case VIRTIO_BLK_ZT_SWP:
-> +		zone.type = BLK_ZONE_TYPE_SEQWRITE_PREF;
-> +		break;
-> +	case VIRTIO_BLK_ZT_CONV:
-> +		zone.type = BLK_ZONE_TYPE_CONVENTIONAL;
-> +		break;
-> +	default:
-> +		dev_err(&vblk->vdev->dev, "zone %llu: invalid type %#x\n",
-> +			zone.start, entry->z_type);
-> +		return -EIO;
->  	}
->  
-> -	zone.type = entry->z_type;
-> -	zone.cond = entry->z_state;
-> -	zone.len = zone_sectors;
-> -	zone.capacity = le64_to_cpu(entry->z_cap);
-> -	zone.start = le64_to_cpu(entry->z_start);
-> -	if (zone.cond == BLK_ZONE_COND_FULL)
-> +	switch (entry->z_state) {
-> +	case VIRTIO_BLK_ZS_EMPTY:
-> +		zone.cond = BLK_ZONE_COND_EMPTY;
-> +		break;
-> +	case VIRTIO_BLK_ZS_CLOSED:
-> +		zone.cond = BLK_ZONE_COND_CLOSED;
-> +		break;
-> +	case VIRTIO_BLK_ZS_FULL:
-> +		zone.cond = BLK_ZONE_COND_FULL;
->  		zone.wp = zone.start + zone.len;
-> -	else
-> -		zone.wp = le64_to_cpu(entry->z_wp);
-> +		break;
-> +	case VIRTIO_BLK_ZS_EOPEN:
-> +		zone.cond = BLK_ZONE_COND_EXP_OPEN;
-> +		break;
-> +	case VIRTIO_BLK_ZS_IOPEN:
-> +		zone.cond = BLK_ZONE_COND_IMP_OPEN;
-> +		break;
-> +	case VIRTIO_BLK_ZS_NOT_WP:
-> +		zone.cond = BLK_ZONE_COND_NOT_WP;
-> +		break;
-> +	case VIRTIO_BLK_ZS_RDONLY:
-> +		zone.cond = BLK_ZONE_COND_READONLY;
-> +		zone.wp = ULONG_MAX;
-> +		break;
-> +	case VIRTIO_BLK_ZS_OFFLINE:
-> +		zone.cond = BLK_ZONE_COND_OFFLINE;
-> +		zone.wp = ULONG_MAX;
-> +		break;
-> +	default:
-> +		dev_err(&vblk->vdev->dev, "zone %llu: invalid condition %#x\n",
-> +			zone.start, entry->z_state);
-> +		return -EIO;
-> +	}
->  
-> +	/*
-> +	 * The callback below checks the validity of the reported
-> +	 * entry data, no need to further validate it here.
-> +	 */
->  	return cb(&zone, idx, data);
->  }
->  
-> @@ -641,39 +699,47 @@ static int virtblk_report_zones(struct gendisk *disk, sector_t sector,
->  {
->  	struct virtio_blk *vblk = disk->private_data;
->  	struct virtio_blk_zone_report *report;
-> -	unsigned int zone_sectors = vblk->zone_sectors;
-> -	unsigned int nz, i;
-> -	int ret, zone_idx = 0;
-> +	unsigned long long nz, i;
->  	size_t buflen;
-> +	unsigned int zone_idx = 0;
-> +	int ret;
->  
->  	if (WARN_ON_ONCE(!vblk->zone_sectors))
->  		return -EOPNOTSUPP;
->  
-> -	report = virtblk_alloc_report_buffer(vblk, nr_zones,
-> -					     zone_sectors, &buflen);
-> +	report = virtblk_alloc_report_buffer(vblk, nr_zones, &buflen);
->  	if (!report)
->  		return -ENOMEM;
->  
-> +	mutex_lock(&vblk->vdev_mutex);
-> +
-> +	if (!vblk->vdev) {
-> +		ret = -ENXIO;
-> +		goto fail_report;
-> +	}
-> +
->  	while (zone_idx < nr_zones && sector < get_capacity(vblk->disk)) {
->  		memset(report, 0, buflen);
->  
->  		ret = virtblk_submit_zone_report(vblk, (char *)report,
->  						 buflen, sector);
-> -		if (ret) {
-> -			if (ret > 0)
-> -				ret = -EIO;
-> -			goto out_free;
-> -		}
-> -		nz = min((unsigned int)le64_to_cpu(report->nr_zones), nr_zones);
-> +		if (ret)
-> +			goto fail_report;
-> +
-> +		nz = min_t(u64, virtio64_to_cpu(vblk->vdev, report->nr_zones),
-> +			   nr_zones);
->  		if (!nz)
->  			break;
->  
->  		for (i = 0; i < nz && zone_idx < nr_zones; i++) {
->  			ret = virtblk_parse_zone(vblk, &report->zones[i],
-> -						 zone_idx, zone_sectors, cb, data);
-> +						 zone_idx, cb, data);
->  			if (ret)
-> -				goto out_free;
-> -			sector = le64_to_cpu(report->zones[i].z_start) + zone_sectors;
-> +				goto fail_report;
-> +
-> +			sector = virtio64_to_cpu(vblk->vdev,
-> +						 report->zones[i].z_start) +
-> +				 vblk->zone_sectors;
->  			zone_idx++;
->  		}
->  	}
-> @@ -682,7 +748,8 @@ static int virtblk_report_zones(struct gendisk *disk, sector_t sector,
->  		ret = zone_idx;
->  	else
->  		ret = -EINVAL;
-> -out_free:
-> +fail_report:
-> +	mutex_unlock(&vblk->vdev_mutex);
->  	kvfree(report);
->  	return ret;
->  }
-> @@ -691,20 +758,28 @@ static void virtblk_revalidate_zones(struct virtio_blk *vblk)
->  {
->  	u8 model;
->  
-> -	if (!vblk->zone_sectors)
-> -		return;
-> -
->  	virtio_cread(vblk->vdev, struct virtio_blk_config,
->  		     zoned.model, &model);
-> -	if (!blk_revalidate_disk_zones(vblk->disk, NULL))
-> -		set_capacity_and_notify(vblk->disk, 0);
-> +	switch (model) {
-> +	default:
-> +		dev_err(&vblk->vdev->dev, "unknown zone model %d\n", model);
-> +		fallthrough;
-> +	case VIRTIO_BLK_Z_NONE:
-> +	case VIRTIO_BLK_Z_HA:
-> +		disk_set_zoned(vblk->disk, BLK_ZONED_NONE);
-> +		return;
-> +	case VIRTIO_BLK_Z_HM:
-> +		WARN_ON_ONCE(!vblk->zone_sectors);
-> +		if (!blk_revalidate_disk_zones(vblk->disk, NULL))
-> +			set_capacity_and_notify(vblk->disk, 0);
-> +	}
->  }
->  
->  static int virtblk_probe_zoned_device(struct virtio_device *vdev,
->  				       struct virtio_blk *vblk,
->  				       struct request_queue *q)
->  {
-> -	u32 v;
-> +	u32 v, wg;
->  	u8 model;
->  	int ret;
->  
-> @@ -713,16 +788,11 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
->  
->  	switch (model) {
->  	case VIRTIO_BLK_Z_NONE:
-> +	case VIRTIO_BLK_Z_HA:
-> +		/* Present the host-aware device as non-zoned */
->  		return 0;
->  	case VIRTIO_BLK_Z_HM:
->  		break;
-> -	case VIRTIO_BLK_Z_HA:
-> -		/*
-> -		 * Present the host-aware device as a regular drive.
-> -		 * TODO It is possible to add an option to make it appear
-> -		 * in the system as a zoned drive.
-> -		 */
-> -		return 0;
->  	default:
->  		dev_err(&vdev->dev, "unsupported zone model %d\n", model);
->  		return -EINVAL;
-> @@ -735,32 +805,31 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
->  
->  	virtio_cread(vdev, struct virtio_blk_config,
->  		     zoned.max_open_zones, &v);
-> -	disk_set_max_open_zones(vblk->disk, le32_to_cpu(v));
-> -
-> -	dev_dbg(&vdev->dev, "max open zones = %u\n", le32_to_cpu(v));
-> +	disk_set_max_open_zones(vblk->disk, v);
-> +	dev_dbg(&vdev->dev, "max open zones = %u\n", v);
->  
->  	virtio_cread(vdev, struct virtio_blk_config,
->  		     zoned.max_active_zones, &v);
-> -	disk_set_max_active_zones(vblk->disk, le32_to_cpu(v));
-> -	dev_dbg(&vdev->dev, "max active zones = %u\n", le32_to_cpu(v));
-> +	disk_set_max_active_zones(vblk->disk, v);
-> +	dev_dbg(&vdev->dev, "max active zones = %u\n", v);
->  
->  	virtio_cread(vdev, struct virtio_blk_config,
-> -		     zoned.write_granularity, &v);
-> -	if (!v) {
-> +		     zoned.write_granularity, &wg);
-> +	if (!wg) {
->  		dev_warn(&vdev->dev, "zero write granularity reported\n");
->  		return -ENODEV;
->  	}
-> -	blk_queue_physical_block_size(q, le32_to_cpu(v));
-> -	blk_queue_io_min(q, le32_to_cpu(v));
-> +	blk_queue_physical_block_size(q, wg);
-> +	blk_queue_io_min(q, wg);
->  
-> -	dev_dbg(&vdev->dev, "write granularity = %u\n", le32_to_cpu(v));
-> +	dev_dbg(&vdev->dev, "write granularity = %u\n", wg);
->  
->  	/*
->  	 * virtio ZBD specification doesn't require zones to be a power of
->  	 * two sectors in size, but the code in this driver expects that.
->  	 */
-> -	virtio_cread(vdev, struct virtio_blk_config, zoned.zone_sectors, &v);
-> -	vblk->zone_sectors = le32_to_cpu(v);
-> +	virtio_cread(vdev, struct virtio_blk_config, zoned.zone_sectors,
-> +		     &vblk->zone_sectors);
->  	if (vblk->zone_sectors == 0 || !is_power_of_2(vblk->zone_sectors)) {
->  		dev_err(&vdev->dev,
->  			"zoned device with non power of two zone size %u\n",
-> @@ -783,8 +852,15 @@ static int virtblk_probe_zoned_device(struct virtio_device *vdev,
->  			dev_warn(&vdev->dev, "zero max_append_sectors reported\n");
->  			return -ENODEV;
->  		}
-> -		blk_queue_max_zone_append_sectors(q, le32_to_cpu(v));
-> -		dev_dbg(&vdev->dev, "max append sectors = %u\n", le32_to_cpu(v));
-> +		if ((v << SECTOR_SHIFT) < wg) {
-> +			dev_err(&vdev->dev,
-> +				"write granularity %u exceeds max_append_sectors %u limit\n",
-> +				wg, v);
-> +			return -ENODEV;
-> +		}
-> +
-> +		blk_queue_max_zone_append_sectors(q, v);
-> +		dev_dbg(&vdev->dev, "max append sectors = %u\n", v);
->  	}
->  
->  	return ret;
-> @@ -794,6 +870,7 @@ static inline bool virtblk_has_zoned_feature(struct virtio_device *vdev)
->  {
->  	return virtio_has_feature(vdev, VIRTIO_BLK_F_ZONED);
->  }
-> +
->  #else
->  
->  /*
-> @@ -801,9 +878,11 @@ static inline bool virtblk_has_zoned_feature(struct virtio_device *vdev)
->   * We only need to define a few symbols to avoid compilation errors.
->   */
->  #define virtblk_report_zones       NULL
-> +
->  static inline void virtblk_revalidate_zones(struct virtio_blk *vblk)
->  {
->  }
-> +
->  static inline int virtblk_probe_zoned_device(struct virtio_device *vdev,
->  			struct virtio_blk *vblk, struct request_queue *q)
->  {
-> @@ -831,7 +910,7 @@ static int virtblk_get_id(struct gendisk *disk, char *id_str)
->  		return PTR_ERR(req);
->  
->  	vbr = blk_mq_rq_to_pdu(req);
-> -	vbr->in_hdr_len = sizeof(vbr->status);
-> +	vbr->in_hdr_len = sizeof(vbr->in_hdr.status);
->  	vbr->out_hdr.type = cpu_to_virtio32(vblk->vdev, VIRTIO_BLK_T_GET_ID);
->  	vbr->out_hdr.sector = 0;
->  
-> @@ -840,7 +919,7 @@ static int virtblk_get_id(struct gendisk *disk, char *id_str)
->  		goto out;
->  
->  	blk_execute_rq(req, false);
-> -	err = blk_status_to_errno(virtblk_result(vbr->status));
-> +	err = blk_status_to_errno(virtblk_result(vbr->in_hdr.status));
->  out:
->  	blk_mq_free_request(req);
->  	return err;
-> @@ -1504,9 +1583,6 @@ static int virtblk_probe(struct virtio_device *vdev)
->  			goto out_cleanup_disk;
->  	}
->  
-> -	dev_info(&vdev->dev, "blk config size: %zu\n",
-> -		sizeof(struct virtio_blk_config));
-> -
->  	err = device_add_disk(&vdev->dev, vblk->disk, virtblk_attr_groups);
->  	if (err)
->  		goto out_cleanup_disk;
-> diff --git a/include/uapi/linux/virtio_blk.h b/include/uapi/linux/virtio_blk.h
-> index 5af2a0300bb9..3744e4da1b2a 100644
-> --- a/include/uapi/linux/virtio_blk.h
-> +++ b/include/uapi/linux/virtio_blk.h
-> @@ -140,11 +140,11 @@ struct virtio_blk_config {
->  
->  	/* Zoned block device characteristics (if VIRTIO_BLK_F_ZONED) */
->  	struct virtio_blk_zoned_characteristics {
-> -		__le32 zone_sectors;
-> -		__le32 max_open_zones;
-> -		__le32 max_active_zones;
-> -		__le32 max_append_sectors;
-> -		__le32 write_granularity;
-> +		__virtio32 zone_sectors;
-> +		__virtio32 max_open_zones;
-> +		__virtio32 max_active_zones;
-> +		__virtio32 max_append_sectors;
-> +		__virtio32 write_granularity;
->  		__u8 model;
->  		__u8 unused2[3];
->  	} zoned;
-> @@ -241,11 +241,11 @@ struct virtio_blk_outhdr {
->   */
->  struct virtio_blk_zone_descriptor {
->  	/* Zone capacity */
-> -	__le64 z_cap;
-> +	__virtio64 z_cap;
->  	/* The starting sector of the zone */
-> -	__le64 z_start;
-> +	__virtio64 z_start;
->  	/* Zone write pointer position in sectors */
-> -	__le64 z_wp;
-> +	__virtio64 z_wp;
->  	/* Zone type */
->  	__u8 z_type;
->  	/* Zone state */
-> @@ -254,7 +254,7 @@ struct virtio_blk_zone_descriptor {
->  };
->  
->  struct virtio_blk_zone_report {
-> -	__le64 nr_zones;
-> +	__virtio64 nr_zones;
->  	__u8 reserved[56];
->  	struct virtio_blk_zone_descriptor zones[];
->  };
-> -- 
-> 2.34.1
-> 
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
-> 
+
+
+
+
+> > 
+> > 
+> > > > > b. it can be a way with high latency, DMA overheads on the virtqueue for
+> > > > read/writes for small access.
+> > > > 
+> > > > numbers?
+> > > It depends on the implementation, but at minimum, writes and reads can pay order of magnitude higher in 10 msec range.
+> > 
+> > A single VQ roundtrip takes a minimum of 10 milliseconds? This is indeed
+> > completely unworkable for transport vq. Points:
+> > - even for memory mapped you have an access take 1 millisecond?
+> >    Extremely slow. Why?
+> > - Why is DMA 10x more expensive? I expect it to be 2x more expensive:
+> >    Normal read goes cpu -> device -> cpu, DMA does cpu -> device -> memory -> device -> cpu
+> > 
+> > Reason I am asking is because it is important for transport vq to have
+> > a workable design.
+> > 
+> > 
+> > But let me guess. Is there a chance that you are talking about an
+> > interrupt driven design? *That* is going to be slow though I don't think
+> > 10msec, more like 10usec. But I expect transport vq to typically
+> > work by (adaptive?) polling mostly avoiding interrupts.
+> > 
+> No. Interrupt latency is in usec range.
+> The major latency contributors in msec range can arise from the device side.
+
+So you are saying there are devices out there already with this MMR hack
+baked in, and in hardware not firmware, so it works reasonably?
+
+-- 
+MST
 
 
 ---------------------------------------------------------------------
