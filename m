@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11955-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11956-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 831C0C77B60
-	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7FE26C6FD1D
+	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:21:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 943B642BE7
-	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:14:01 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B64FC2B03A
+	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:21:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2D7AD986400
-	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:14:01 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 95D1298640C
+	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:21:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 148DB986622; Tue,  4 Apr 2023 07:14:01 +0000 (UTC)
+	id 7274B9863E4; Tue,  4 Apr 2023 07:21:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,92 +24,92 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E4CCB9865D5
-	for <virtio-dev@lists.oasis-open.org>; Tue,  4 Apr 2023 07:14:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5F3069863E6
+	for <virtio-dev@lists.oasis-open.org>; Tue,  4 Apr 2023 07:21:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: JSuwwt79P46jVYzumkaapg-1
+X-MC-Unique: 3UahRJZYNXG02W2nIqwxoA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680592437;
+        d=1e100.net; s=20210112; t=1680592861;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fYfdpUktbIgUdhvdEPnLE35dGDYkSRqGeOuXsFLfvrM=;
-        b=mfMnKsg+S9qkW6aSwdKCnKLMaxvWm+oywBYHCZsNpuM8tkAgjobpntv7rexxJB2gs9
-         6aUZbFiTeiFO/G9J7iO7Z4Mv25KZTUh/UIJIVMdDHA0eqBxrpiou0QfncG4Rw/SYxbh1
-         xagvuD9eQnDSBOFl/ReBAMtLdcXOcN1Sc7l0ibegO7PXcZnz42XAgya1t+vNmGjxf24I
-         y2YfKRM78I3Ab/8ovFQkWhc5ZdNr/fAv9+F0XybA3uFZa+ffH4wEX5lRylQKx8LrmvTb
-         X2RwErGzn2Xi7xfTCQswPQYFMY6nA6rliUXtaBpxSBSHc3LCmB4J39wmqsuCNs2Ur13g
-         7ziw==
-X-Gm-Message-State: AAQBX9ctwXKJ+sG/Nc7GZ+e1OESENVHsnyPKLIhe3FZ7OKuX79CBqebv
-	PMeWT9i24DAoAKPyNefCOLCWrIkbEUTshND7OOFdwmt5glp5zeh0APJi/OZoall8av397UslXyn
-	IijfMNlqUM26tkEyVEG4EY4UIs6Y2
-X-Received: by 2002:a17:907:b9ca:b0:933:4556:d1cd with SMTP id xa10-20020a170907b9ca00b009334556d1cdmr1552130ejc.33.1680592437720;
-        Tue, 04 Apr 2023 00:13:57 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Y4WBBiI5RXqWOlX740OJdMHzwObGfT0D0ci20CM6bOjq5T45eli4YqOdUTX8Jn6DIEZcPzsQ==
-X-Received: by 2002:a17:907:b9ca:b0:933:4556:d1cd with SMTP id xa10-20020a170907b9ca00b009334556d1cdmr1552118ejc.33.1680592437482;
-        Tue, 04 Apr 2023 00:13:57 -0700 (PDT)
-Date: Tue, 4 Apr 2023 03:13:53 -0400
+        bh=zf46jMez8uLXGzDInvids57wIpOiPvE7GGH8QQCjI4I=;
+        b=38OFJTyMN9Z9cvRIfNwwrTKB0ItGphtooBPYD6D98vWhsO6WpA6XeNzjw+mdw3Sual
+         BORQN4Dv4TNWfj/9radjc1TGr/s4w5FOozoaGRNvfPaRNRiattJLsYSYwS0HqWhgNqh4
+         GOWEfZS3BlWpMwbPXTCSDgmcsmumo2tTMeVkWN56un7NqsfnAbcL0fiHf+9KFi29YV6Q
+         cr6+90BKj0i2BZs2ah2Ai6XYwvWtvjKtueB+/JyCDxL/WZ7V+dLu6o7UU4OFvmDFPFka
+         8KccXSAXOnKPchu3apJEFK8n/YEGab653JGnC9g28VmbLam9v+BpbSUF/VvscDirjB9L
+         78Lg==
+X-Gm-Message-State: AAQBX9cF/HqASPII3Oj3j2sYjReGbASqZBqqD4DTaE7WxOgobF4C5hAx
+	uB4iR9UMTSNBEYiDqPAz8936YPB+3oj2qgGJ9yxJyw7x6jmBQOPfPQwyQRC4rPx4lY0RDROAyNf
+	2z5HmKgXs3WddJw0AxBStnmovlaNX
+X-Received: by 2002:a17:906:95c2:b0:8b0:f277:5cde with SMTP id n2-20020a17090695c200b008b0f2775cdemr1065729ejy.32.1680592861280;
+        Tue, 04 Apr 2023 00:21:01 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YuAbADbrj4d8R6WM/8UZ9vjXbMPjLUO8FltLtEMgrfV4h2819irIQgC2vy34hqg8j4U+kXYA==
+X-Received: by 2002:a17:906:95c2:b0:8b0:f277:5cde with SMTP id n2-20020a17090695c200b008b0f2775cdemr1065720ejy.32.1680592860961;
+        Tue, 04 Apr 2023 00:21:00 -0700 (PDT)
+Date: Tue, 4 Apr 2023 03:20:56 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: Halil Pasic <pasic@linux.ibm.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"sgarzare@redhat.com" <sgarzare@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230404030859-mutt-send-email-mst@kernel.org>
-References: <20230329212341.465843-1-parav@nvidia.com>
- <20230330191114.77acd860.pasic@linux.ibm.com>
- <PH0PR12MB548165C4B11375F8C7EE7AD1DC8E9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230404033622.4b749f89.pasic@linux.ibm.com>
- <d62d2090-de0d-0ea6-5c85-ecf19ae828c7@nvidia.com>
+Cc: virtio-dev@lists.oasis-open.org, pasic@linux.ibm.com, cohuck@redhat.com,
+	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com,
+	Max Gurtovoy <mgurtovoy@nvidia.com>
+Message-ID: <20230404031723-mutt-send-email-mst@kernel.org>
+References: <20230324013534.280820-1-parav@nvidia.com>
+ <20230324013534.280820-4-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <d62d2090-de0d-0ea6-5c85-ecf19ae828c7@nvidia.com>
+In-Reply-To: <20230324013534.280820-4-parav@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: Re: [virtio-dev] [PATCH v10 0/8] Rename queue index to queue number
+Subject: [virtio-dev] Re: [PATCH 3/3] transport-pci: Improve queue msix vector register
+ desc
 
-On Mon, Apr 03, 2023 at 10:57:35PM -0400, Parav Pandit wrote:
-> I see few options.
+On Fri, Mar 24, 2023 at 04:35:34AM +0300, Parav Pandit wrote:
+> queue_msix_vector register is for receiving interrupts from the device
+> for the virtqueue.
 > 
-> Option_1:
-> 1. I will send v12 of this series to use index all the places instead of
-> number.
-> 2. driver notification structure vqn to rename to vq_notify_id.
-> (after merging this series as follow up cleanup).
-
-We can pretend that vqn means "VQ Notification".  Backronims are fun.
-In fact it is not always a vq index, sometimes it's a different value.
-So maybe keeping vqn there makes sense.
-
-
-> 3. Once interrupt moderation series is merged, rename vqn to vq_index.
-> (really vqn reads better even though history say vq index).
-> Because votes is completed and voting period ended for the important
-> feature.
-
-It's ongoing but sure, we can do a fix up on top.
-
-> 4. Michael send v12 with index.
-
-Of AQ? Sure.
-
-> Option_2:
-> 1. Continue with the v11 of this series as vq number.
-> 2. Continue with interrupt moderation series voted
-> 3. Continue with Michael's work of AQ
-> 4. Will do #2 of option_1.
+> "for MSI-X" is confusing term.
 > 
-> Please decide at earliest.
->
+> Also it is the register that driver "writes" to, similar to
+> many other registers such as queue_desc, queue_driver etc.
+> 
+> Hence, replace the verb from use to write.
+> 
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+> ---
+>  transport-pci.tex | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/transport-pci.tex b/transport-pci.tex
+> index 1bc89b4..9d492d5 100644
+> --- a/transport-pci.tex
+> +++ b/transport-pci.tex
+> @@ -367,7 +367,8 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>          A 0 means the queue is unavailable.
+>  
+>  \item[\field{queue_msix_vector}]
+> -        The driver uses this to specify the queue vector for MSI-X.
+> +        The driver writes an MSI-X vector number for receiving
+> +        virtqueue interrupts.
 
-It looks like the sentiment is now going more option 1.
-If you like post v12 and we'll see which gets more acks.
+Ok but "receiving" is confusing here. And the verb writes seems
+to ask for direction, look at queue_desc as an example.
 
--- 
-MST
+Following that example:
+
+	The driver writes the MSI-X vector number used for virtqueue interrupts here.
+
+would you agree?
+
+
+
+>  \item[\field{queue_enable}]
+>          The driver uses this to selectively prevent the device from executing requests from this virtqueue.
+> -- 
+> 2.26.2
 
 
 ---------------------------------------------------------------------
