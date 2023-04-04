@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11960-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-11961-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EEF80C6FD1D
-	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4E23C761AF
+	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 08:10:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4A6822B038
-	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:55:00 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id F381D2A894
+	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 08:10:30 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 32C009863ED
-	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 07:55:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E929398640E
+	for <virtio-dev@archiver.kernel.org>; Tue,  4 Apr 2023 08:10:30 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 15AAF9863E4; Tue,  4 Apr 2023 07:55:00 +0000 (UTC)
+	id DD89D9863E4; Tue,  4 Apr 2023 08:10:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,54 +24,54 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0113A9863E5
-	for <virtio-dev@lists.oasis-open.org>; Tue,  4 Apr 2023 07:55:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CE29E9863E5
+	for <virtio-dev@lists.oasis-open.org>; Tue,  4 Apr 2023 08:10:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: wk-BJ8bUPxaMHPCdo5X7NQ-1
+X-MC-Unique: VOBLJhnkNOqoO-LQXuSuoA-1
 From: Cornelia Huck <cohuck@redhat.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>, Parav Pandit <parav@nvidia.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
- shahafs@nvidia.com, Satananda Burla <sburla@marvell.com>
-In-Reply-To: <20230404032922-mutt-send-email-mst@kernel.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ jasowang@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
+ nrupal.jani@intel.com, Piotr.Uminski@intel.com, hang.yuan@intel.com,
+ virtio@lists.oasis-open.org, Jiri Pirko <jiri@nvidia.com>, Zhu Lingshan
+ <lingshan.zhu@intel.com>, pasic@linux.ibm.com, Shahaf Shuler
+ <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>, Max Gurtovoy
+ <mgurtovoy@nvidia.com>
+In-Reply-To: <20230403133022-mutt-send-email-mst@kernel.org>
 Organization: Red Hat GmbH
-References: <20230330225834.506969-1-parav@nvidia.com>
- <20230330225834.506969-9-parav@nvidia.com>
- <20230404032922-mutt-send-email-mst@kernel.org>
+References: <cover.1680533760.git.mst@redhat.com>
+ <87pm8kly33.fsf@redhat.com>
+ <20230403133022-mutt-send-email-mst@kernel.org>
 User-Agent: Notmuch/0.37 (https://notmuchmail.org)
-Date: Tue, 04 Apr 2023 09:54:55 +0200
-Message-ID: <87jzysjd4g.fsf@redhat.com>
+Date: Tue, 04 Apr 2023 10:10:10 +0200
+Message-ID: <87h6twjcf1.fsf@redhat.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain
-Subject: [virtio-dev] Re: [PATCH 08/11] transport-pci: Introduce virtio extended capability
+Subject: [virtio-dev] Re: [PATCH v11 00/10] Introduce device group and device management
 
-On Tue, Apr 04 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Mon, Apr 03 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> On Fri, Mar 31, 2023 at 01:58:31AM +0300, Parav Pandit wrote:
->> PCI device configuration space for capabilities is limited to only 192
->> bytes shared by many PCI capabilities of generic PCI device and virtio
->> specific.
+> On Mon, Apr 03, 2023 at 06:39:12PM +0200, Cornelia Huck wrote:
+>> On Mon, Apr 03 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 >> 
->> Hence, introduce virtio extended capability that uses PCI Express
->> extended capability.
->> Subsequent patch uses this virtio extended capability.
+>> > Change log:
+>> >
+>> > since v10:
+>> > 	addressed lots of comments by Jiri, Stefan. Cornelia, Lngshan, Parav, Max
+>> > 	Cornelia, do you want to pick up 10/10 separately?
 >> 
->> Co-developed-by: Satananda Burla <sburla@marvell.com>
+>> I'm not sure that makes sense -- if we refactor to introduce a patch
+>> that deals with all of the currently unimplemented features (and respin
+>> this series with the patch that lists the admin vq as unsupported on
+>> top) we could do that, but I don't think it's worth the effort.
 >
-> What does it "Co-developed-by" mean exactly that Signed-off-by
-> does not?
+> My concern is that people are already kind of familiar with the
+> patchset, reshuffling for no end result will cause everyone to re-read.
 
-AIUI, "Co-developed-by:" is more akin to a second "Author:", i.e. to
-give attribution. (Linux kernel rules actually state that any
-"Co-developed-by:" must be followed by a "Signed-off-by:" for that
-author, but we don't really do DCO here, the S-o-b is more of a
-convention.)
-
->
->
->> Signed-off-by: Parav Pandit <parav@nvidia.com>
+Yeah, let's just have 10/10 walk along with the rest.
 
 
 ---------------------------------------------------------------------
