@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-11999-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12000-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5E3BC76188
-	for <virtio-dev@archiver.kernel.org>; Wed,  5 Apr 2023 01:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A1F56C7619A
+	for <virtio-dev@archiver.kernel.org>; Wed,  5 Apr 2023 05:10:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1311B76043
-	for <virtio-dev@archiver.kernel.org>; Wed,  5 Apr 2023 01:08:28 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B4D5C2A88E
+	for <virtio-dev@archiver.kernel.org>; Wed,  5 Apr 2023 05:10:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0651698672C
-	for <virtio-dev@archiver.kernel.org>; Wed,  5 Apr 2023 01:08:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 67E489865BD
+	for <virtio-dev@archiver.kernel.org>; Wed,  5 Apr 2023 05:10:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id EF13D9865D7; Wed,  5 Apr 2023 01:08:27 +0000 (UTC)
+	id 55DD0983DE1; Wed,  5 Apr 2023 05:10:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,96 +24,103 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CB16198662B;
-	Wed,  5 Apr 2023 01:08:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 36C1598666B
+	for <virtio-dev@lists.oasis-open.org>; Wed,  5 Apr 2023 05:10:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kQv1JlA8FyhZLOuu/ZjB8TMKl/9ouXGP0pBFu4xGvO0AE9JUjkmdK7F2guaiypjoNkQA9yfol87te0KsOsfTyosHNDOCe/OU9z0l3HN595S5syAqyoByfY6PhteEW8XDpvNbYK5O/qNL3P0n3HgYxUlFKcnu0q/JGvc8AUzGvOSNK6G6D695+ch3iZIinF/6E+FnVqyGBpFYXCHyF1RHjDmz9Kmc8ldS1zlaevu52TwOveMZYzbJb2cxxC8sh/U92FngXbDnteq8YOIV5Ky39+VReWjQVTM9J1cP4G5N6+/o/LaQLC+mSQCm+wOoM8/QjjaXWBmgD2pPn8JUUfDQNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P5llxrsT/P25e98ThXNFtJfuZkECTmlcogp2oQF+P5M=;
- b=B4EzmhMcA/HP/mjqKR+aawgUIepHpQgKMJKxASKCEBZYMj+Tg3oE4bK8SyQbK1yIat0zxOJLhjb53dqTjNds7k7dRqvD2CJGrd0+LHmj9M+XJA80Eq1nTKkg6LAz5FDMSSrV2QcvRYTjq217xEUKcKeBEzR2cEnGds/5ff1oSPsRbfXaTinVJLEVoJr2vIX7a0HFLGqovq7RBt5nnqNCMwZHcPHOn2AA39xN7O+VOJfa9cql2Yyv71dKwWEfsY5T1jZi2KyJ9r7lJIMq7D+pp5tRzd0lkwQSUSNULeXHlqJOkoh3iYejBPOAfB+oDjK8pydx41vSvdGW1lPPTN3Y0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-From: Parav Pandit <parav@nvidia.com>
-To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
-CC: <sgarzare@redhat.com>, <pasic@linux.ibm.com>,
-	<virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
-	<parav@nvidia.com>
-Date: Wed, 5 Apr 2023 04:06:56 +0300
-Message-ID: <20230405010657.612529-10-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230405010657.612529-1-parav@nvidia.com>
-References: <20230405010657.612529-1-parav@nvidia.com>
+X-MC-Unique: IyzgypKtNP-hfQIoQfaxvg-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680671435;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gDaXPugbO4ssbTj+DknnyCXmE0fPbNV5AsIwqAIam5w=;
+        b=vnKXbtqAIv/y8UCqKlA120c6kVjuVOB9t8KaClYrMT55wqJXogkGDJNCxpdzP+JssV
+         lxfruVWr8wVfDnurukzXj2DhFJOsZkQ8qhv2ZlnWVMV9kyT/g3ltL4sfmCIgpqPK6DND
+         e0aTIBD9OFAwxVo5U+L//9tnefegbg5HE/ZYj1GzewzKLI1U8PCu+d8lfYb5Z3np4QAg
+         9bYRTSeTlEEv8CEaSWFiXonegzP7SZtK9THGSSFntckeo/CAUBh3U89qFVCq44NRyGq8
+         mscJZBQxF5RavOX86lmYu2RRUeACGxqR3UXsRvC3jCPlKeilSM03o1XLa8uAbnKzaPA0
+         U8Bg==
+X-Gm-Message-State: AAQBX9c1HzZbH1yvnF9Z2Xe9Js8aM+FVLTN1pHi5uHjR9qRAoukLMdM4
+	EwhkmFVie3nZCkFrfJi9FOhe85lm4kaFg7lD0MEJ1QVJetgW2PgPaikNQ2+gEmDz5QcQ19aDjrS
+	VUgxl/BLr0C7J+PCUzaMIoRtxL7y8
+X-Received: by 2002:a17:906:6c86:b0:932:e141:29c7 with SMTP id s6-20020a1709066c8600b00932e14129c7mr1545553ejr.19.1680671435286;
+        Tue, 04 Apr 2023 22:10:35 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aC9kNarE45p5JPnZmYzFxZrDwFttWhBwp59QkEvl4p5nCqciqq4Gm/7fjCNlm1yf/KBwbfMA==
+X-Received: by 2002:a17:906:6c86:b0:932:e141:29c7 with SMTP id s6-20020a1709066c8600b00932e14129c7mr1545537ejr.19.1680671434940;
+        Tue, 04 Apr 2023 22:10:34 -0700 (PDT)
+Date: Wed, 5 Apr 2023 01:10:30 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>,
+	Satananda Burla <sburla@marvell.com>
+Message-ID: <20230405010807-mutt-send-email-mst@kernel.org>
+References: <20230330225834.506969-1-parav@nvidia.com>
+ <20230330225834.506969-9-parav@nvidia.com>
+ <20230404032922-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548157060FCDB5B38CA63C8ADC939@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT093:EE_|PH7PR12MB6588:EE_
-X-MS-Office365-Filtering-Correlation-Id: 30f66f82-a661-413e-5b51-08db35722197
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	HS6HHTRLTFC9LHXOwP8sMXfxbFbJi7TVXtU4L0QLGtMPUAij/c7r9ctz9LtF1YTYck+wro+XtW6nLzW25TcsRnlvX3/mdwuoPD6UCMHT6nCXcRpM+NngaFKIOO7Jxa8Do7IlPL7WHQVQB8XHqiK3Ur26+qGAyflLvjKBUmwMHoLM+yo6t7YJZVBszZ4+qtoSmvOS8Rn/2Wx8m1higz6kTvsgflml64acvRkg2VBFhbjtHYfdmbEBe3B6bCK5zDwwwtA5H0YD+JQnNvTanPOJtUBwsY21iSltnpcItRt2a5wc0eGoSb9STVuwqdBlQgKMOdDanFT0M1H3qn/fMJD7YzjQEN2/eaQtf6J/hEiLnbAa2mu5lc9M6Mh7KOG88z6/0xrt5vglX8u20LWfQKgRj4Mel7Vgfbebkkui0Zj8mj0Y45YwdUl6nF7IkwjUiis1XLmpy6MwnMBxdaoMklwAWwgZp6f4SCuepXZ7QMD2nyBXhhr4+naPJ26laODQutNJotZa+T8zIhmiwNOhbWkpJvPT10g8FhjrLUca0eZLhkoxmAxMouEjDAFkOh90/q6nNAIHHx+1ZFpUWO1WQBqkZiEbPLwDbfF6WYBbti7XPgjPXZDrRXhC08PzdN5TUXTJaNLneDQrqVhOFwjDf5mygxyncUspSGTeiwYzjgcWVbIyP45HKyCC37hLz9BHobQbbsg+BkyuJm/oN2hcESzPRWmy0x3akQWlKTTCZHKiBVJu+XT3nf5lY2AD4hNRLVsL/AVu+ZHS2YtcbuEEBSNr5qwf087Sx6/oy+Z5+6upEuA=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(346002)(136003)(39860400002)(451199021)(40470700004)(36840700001)(46966006)(16526019)(40460700003)(54906003)(83380400001)(26005)(107886003)(8936002)(1076003)(966005)(47076005)(186003)(2616005)(5660300002)(4326008)(36860700001)(426003)(70206006)(70586007)(336012)(8676002)(41300700001)(478600001)(40480700001)(6666004)(36756003)(316002)(2906002)(110136005)(356005)(7636003)(86362001)(82310400005)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 01:07:30.7762
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30f66f82-a661-413e-5b51-08db35722197
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT093.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6588
-Subject: [virtio-dev] [PATCH v12 09/10] virtio-net: Avoid duplicate receive queue example
+In-Reply-To: <PH0PR12MB548157060FCDB5B38CA63C8ADC939@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] Re: [PATCH 08/11] transport-pci: Introduce virtio extended capability
 
-Receive queue number/index example is duplicate which is already defined
-in the Setting RSS parameters section.
+On Tue, Apr 04, 2023 at 09:18:53PM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Tuesday, April 4, 2023 3:35 AM
+> 
+> > > +Virtio extended PCI Express capability structure defines the location
+> > > +of certain virtio device configuration related structures using PCI
+> > > +Express extended capability. Virtio extended PCI Express capability
+> > > +structure uses PCI Express vendor specific extended capability
+> > > +(VSEC). It has a below
+> > 
+> > a layout below, or the following layout
+> > 
+> Yes. somehow it got trimmed.
+> Will fix it.
+> 
+> > > +layout:
+> > > +
+> > > +\begin{lstlisting}
+> > > +struct pcie_ext_cap {
+> > > +        le16 cap_vendor_id; /* Generic PCI field: 0xB */
+> > > +        le16 cap_version : 2; /* Generic PCI field: 0 */
+> > > +        le16 next_cap_offset : 14; /* Generic PCI field: next cap or
+> > > +0 */ };
+> > > +
+> > > +struct virtio_pcie_ext_cap {
+> > > +        struct pcie_ext_cap pcie_ecap;
+> > > +        u8 cfg_type; /* Identifies the structure. */
+> > > +        u8 bar; /* Index of the BAR where its located */
+> > > +        u8 id; /* Multiple capabilities of the same type */
+> > > +        u8 zero_padding[1];
+> > > +        le64 offset; /* Offset with the bar */
+> > > +        le64 length; /* Length of the structure, in bytes. */
+> > > +        u8 data[]; /* Optional variable length data */
+> > 
+> > Maybe le64 data[], for alignment?
+> > 
+> It gets harder to decode (typecasting ..) if its string with le64 data type.
 
-Hence, avoid such duplicate example and prepare it for the subsequent
-patch to describe using receive queue handle.
+In what language? In C you have to cast anyway, string is char *, often
+signed, not u8.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- device-types/net/description.tex | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> I will extend the comment, 
+> 
+> +        u8 data[]; /* Optional variable length data, must be aligned to 8 bytes */
 
-diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-index d7c8b1b..435c1fc 100644
---- a/device-types/net/description.tex
-+++ b/device-types/net/description.tex
-@@ -1467,8 +1467,8 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- The device MUST determine the destination queue for a network packet as follows:
- \begin{itemize}
- \item Calculate the hash of the packet as defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets}.
--\item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure (value of 0 corresponds to receiveq1).
--\item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq (value of 0 corresponds to receiveq1).
-+\item If the device did not calculate the hash for the specific packet, the device directs the packet to the receiveq specified by \field{unclassified_queue} of virtio_net_rss_config structure.
-+\item Apply \field{indirection_table_mask} to the calculated hash and use the result as the index in the indirection table to get 0-based number of destination receiveq.
- \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
- \end{itemize}
- 
+I'd keep it le64 or u64, it is highly unlikely we'll pass strings through
+this interface anyway.
+
 -- 
-2.26.2
+MST
 
 
 ---------------------------------------------------------------------
