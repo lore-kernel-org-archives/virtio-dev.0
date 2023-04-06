@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12042-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12043-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 79BDBC7618D
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Apr 2023 07:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 41E83C76196
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Apr 2023 07:20:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D0DBB721E9
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Apr 2023 07:18:46 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 94CB92ACFE
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Apr 2023 07:20:22 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C9D329865CF
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Apr 2023 07:18:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 89CD49865D1
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Apr 2023 07:20:22 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BEB4B9865BD; Thu,  6 Apr 2023 07:18:46 +0000 (UTC)
+	id 7CBEE9865BA; Thu,  6 Apr 2023 07:20:22 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,18 +24,18 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A8B319865B8;
-	Thu,  6 Apr 2023 07:18:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D5A4E9865B8;
+	Thu,  6 Apr 2023 07:18:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="341398158"
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="428954289"
 X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
-   d="scan'208";a="341398158"
+   d="scan'208";a="428954289"
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="756281807"
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="687032431"
 X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
-   d="scan'208";a="756281807"
-Message-ID: <adebe43e-2aea-6056-5a25-b5a3d2c1916f@linux.intel.com>
-Date: Thu, 6 Apr 2023 15:18:29 +0800
+   d="scan'208";a="687032431"
+Message-ID: <65614a0a-c5ba-f98f-4aa3-a214537d6636@linux.intel.com>
+Date: Thu, 6 Apr 2023 15:18:50 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Firefox/102.0 Thunderbird/102.9.1
@@ -50,13 +50,12 @@ Cc: virtio@lists.oasis-open.org, Jiri Pirko <jiri@nvidia.com>,
  Shahaf Shuler <shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>,
  Max Gurtovoy <mgurtovoy@nvidia.com>
 References: <cover.1680533760.git.mst@redhat.com>
- <aa6e3f39c4db34f3cf50a650cffeb0180d89e616.1680533760.git.mst@redhat.com>
+ <71c1c5f86e19651585426160fc4cc15dc2da6ee6.1680533760.git.mst@redhat.com>
 From: Zhu Lingshan <lingshan.zhu@linux.intel.com>
-In-Reply-To: <aa6e3f39c4db34f3cf50a650cffeb0180d89e616.1680533760.git.mst@redhat.com>
+In-Reply-To: <71c1c5f86e19651585426160fc4cc15dc2da6ee6.1680533760.git.mst@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH v11 06/10] mmio: document ADMIN_VQ as
- reserved
+Subject: Re: [virtio-dev] [PATCH v11 07/10] ccw: document ADMIN_VQ as reserved
 
 
 
@@ -68,24 +67,26 @@ On 4/3/2023 11:03 PM, Michael S. Tsirkin wrote:
 > We already say it's reserved in a central place, but it
 > does not hurt to remind implementers to mask it.
 >
+> Note: there are more features to add to this list.
+> Will be done later with a patch on top.
+>
 > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
 > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 > ---
 >   content.tex | 12 ++++++++++++
 >   1 file changed, 12 insertions(+)
 >
 > diff --git a/content.tex b/content.tex
-> index 5057df2..f7446bf 100644
+> index f7446bf..1213d48 100644
 > --- a/content.tex
 > +++ b/content.tex
-> @@ -2364,6 +2364,18 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+> @@ -2978,6 +2978,18 @@ \subsubsection{Resetting Devices}\label{sec:Virtio Transport Options / Virtio ov
+>   MAY also choose to verify reset completion by reading \field{device status} via
+>   CCW_CMD_READ_STATUS and checking whether it is 0 afterwards.
 >   
->   Notification mechanisms did not change.
->   
-> +\subsection{Features reserved for future use}\label{sec:Virtio Transport Options / Virtio Over MMIO / Features reserved for future use}
+> +\subsection{Features reserved for future use}\label{sec:Virtio Transport Options / Virtio over channel I/O / Features reserved for future use}
 > +
-> +At this time, devices and drivers utilizing Virtio Over MMIO
+> +At this time, devices and drivers utilizing Virtio over channel I/O
 > +do not support the following features:
 > +\begin{itemize}
 > +
@@ -95,9 +96,9 @@ On 4/3/2023 11:03 PM, Michael S. Tsirkin wrote:
 > +
 > +These features are reserved for future use.
 > +
->   \section{Virtio Over Channel I/O}\label{sec:Virtio Transport Options / Virtio Over Channel I/O}
+>   \chapter{Device Types}\label{sec:Device Types}
 >   
->   S/390 based virtual machines support neither PCI nor MMIO, so a
+>   On top of the queues, config space and feature negotiation facilities
 Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
 
 ---------------------------------------------------------------------
