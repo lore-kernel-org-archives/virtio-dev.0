@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12049-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12050-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 289F2C761A6
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 03:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9F7C8C77B6E
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 07:35:25 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id E262B33593
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 03:24:04 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A88383309A
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 07:35:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C9BE99865E1
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 03:24:04 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3C74D986602
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 07:35:23 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id B406F986371; Fri,  7 Apr 2023 03:24:04 +0000 (UTC)
+	id B014C9865DD; Fri,  7 Apr 2023 07:35:22 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,122 +24,92 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9C3C09865D7;
-	Fri,  7 Apr 2023 03:24:03 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 223D39865D9
+	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Apr 2023 07:34:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0VfV9FLc_1680837834;
-Message-ID: <1680837735.392044-2-xuanzhuo@linux.alibaba.com>
-Date: Fri, 7 Apr 2023 11:22:15 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Wen Gu <guwen@linux.alibaba.com>,
- Halil Pasic <pasic@linux.ibm.com>,
- virtio-comment@lists.oasis-open.org,
- hans@linux.alibaba.com,
- herongguang@linux.alibaba.com,
- zmlcc@linux.alibaba.com,
- dust.li@linux.alibaba.com,
- tonylu@linux.alibaba.com,
- zhenzao@linux.alibaba.com,
- helinguo@linux.alibaba.com,
- gerry@linux.alibaba.com,
- cohuck@redhat.com,
- jasowang@redhat.com,
- Jan Kiszka <jan.kiszka@siemens.com>,
- kgraul@linux.ibm.com,
- wenjia@linux.ibm.com,
- jaka@linux.ibm.com,
- hca@linux.ibm.com,
- twinkler@linux.ibm.com,
- raspl@linux.ibm.com,
- virtio-dev@lists.oasis-open.org,
- Alexandra Winter <wintera@linux.ibm.com>
-References: <20230209033056.96657-1-xuanzhuo@linux.alibaba.com>
- <20230209033056.96657-2-xuanzhuo@linux.alibaba.com>
- <20230323154656.7f036d52.pasic@linux.ibm.com>
- <ff9b28a1-e0ee-f082-1f40-f3e149c9403e@linux.alibaba.com>
- <7a9ebec0-5e87-b80f-4f2c-c4db7ae4fe84@linux.ibm.com>
- <20230405084632-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230405084632-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [virtio-comment] [PATCH v3 1/1] virtio-ism: introduce new device virtio-ism
+X-MC-Unique: mzAcZEpOMNyO7_OoKT_9Cw-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680852857;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dupmBcvSmkSTRYUDCDXAG5jfB3RiU20fR+rd9Zpsmao=;
+        b=lQ8x1RHSO5hfkATPuQNJG10GXUDT86MOL/wH9PeII9shRQj7gbUQ5EgigB9QPlW+WP
+         ixHzjGAjCkwWr6cPuS813/Aq5PN6Nv8B1tdDbRv7AyeDHBpJFCIe6/BIe7S20rtPG2N8
+         nvzejpxSReQ+ARHWteO/vXB/PAA+nSL1enaB9HCPXfwJlhlumZ0q9jN8+NK/4bqljag8
+         XD4N4jlsYALIXzpfpkP1Ptc/6xM6CWOZW1dTzWj/+xBhFQdQczbj+CWi0N2MfRFsykDL
+         TPUWMdNXgO2HbDXvox3N2tSP9F6V2IrzV7MGALGlY/mi3kaBCxWB8JEqD+8+ZW7fLd1p
+         NPUw==
+X-Gm-Message-State: AAQBX9dzitc18+TzPhz5Fp68YpadHYUxbiqSSICatYncE4xf7OGh38uS
+	QfRLwBgj1buY7XyCbtMZ9qdlL0kpwlGxx3PSORNZ4xlXijcg7zlTpT7mnWmOVpUhSCFRbfZeL+F
+	fdFbOZFBtUQCQmFUcN/Iosbl16bvs
+X-Received: by 2002:a1c:770d:0:b0:3ef:f26b:a187 with SMTP id t13-20020a1c770d000000b003eff26ba187mr633077wmi.0.1680852857818;
+        Fri, 07 Apr 2023 00:34:17 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bWdGEDPjc77jkaXox3gDdIAxFZmmJCPU3A/nsFrjWjULtcx/fljhL95gXfO4nuqCqW0m9qbQ==
+X-Received: by 2002:a1c:770d:0:b0:3ef:f26b:a187 with SMTP id t13-20020a1c770d000000b003eff26ba187mr633057wmi.0.1680852857525;
+        Fri, 07 Apr 2023 00:34:17 -0700 (PDT)
+Date: Fri, 7 Apr 2023 03:34:12 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: Zhu Lingshan <lingshan.zhu@linux.intel.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"sgarzare@redhat.com" <sgarzare@redhat.com>,
+	"stefanha@redhat.com" <stefanha@redhat.com>,
+	"nrupal.jani@intel.com" <nrupal.jani@intel.com>,
+	"Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+	"hang.yuan@intel.com" <hang.yuan@intel.com>,
+	"virtio@lists.oasis-open.org" <virtio@lists.oasis-open.org>,
+	Jiri Pirko <jiri@nvidia.com>, Zhu Lingshan <lingshan.zhu@intel.com>,
+	"pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+	Shahaf Shuler <shahafs@nvidia.com>,
+	Max Gurtovoy <mgurtovoy@nvidia.com>
+Message-ID: <20230407032731-mutt-send-email-mst@kernel.org>
+References: <cover.1680533760.git.mst@redhat.com>
+ <84cf421ad95111b37cddb52b2a7bf625b7955ae6.1680533760.git.mst@redhat.com>
+ <0149d88a-196b-0bdc-32b4-1e01eb562310@linux.intel.com>
+ <PH0PR12MB548174BC1333E7107B731108DC919@PH0PR12MB5481.namprd12.prod.outlook.com>
+MIME-Version: 1.0
+In-Reply-To: <PH0PR12MB548174BC1333E7107B731108DC919@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [virtio-dev] [PATCH v11 08/10] admin: command list discovery
 
-On Wed, 5 Apr 2023 08:52:14 -0400, "Michael S. Tsirkin" <mst@redhat.com> wr=
-ote:
-> On Wed, Apr 05, 2023 at 02:39:53PM +0200, Alexandra Winter wrote:
-> >
-> >
-> > On 24.03.23 05:03, Wen Gu wrote:
-> > >
-> > >
-> > > On 2023/3/23 22:46, Halil Pasic wrote:
-> > >
-> > >> On Thu,=C2=A0 9 Feb 2023 11:30:56 +0800
-> > >> Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > >>
-> >
-> > ...
-> >
-> > >
-> > >> To get back to the things proposed here: the cdid is IMHO
-> > >> a nice thing, and is functionally corresponding to the
-> > >> (S)EID. But it is 16 byte wide, and I have no idea how
-> > >> is it supposed to be used in the CLC handshake.
-> > >>
-> > >
-> > > CLC handshake carry one SEID for all the SMC-D device. Considering
-> > > coexistence with ISM, I am not sure whether we can change or increase
-> > > the SEID.. cc Alexandra
-> > >
-> > > Thanks!
-> > > Wen Gu
-> >
-> > As mentioned by others, discussions are ongoing.
-> > It would be great, if we can agree on a way to use the existing CLC han=
-dshake
-> > for SMC-D via virtio-ism and ism-loopback.
-> > In that case SEID needs to be unique per hardware instance, cannot be i=
-ncreased and
-> > can only be changed for x86 in a non-colliding way.
-> >
-> > An alternative would be to define new a SMC-D(?) protocol variant/versi=
-on, where we
-> > are free to define new fields (e.g. UUIDs).
-> >
-> > Alexandra
->
-> Problem with tying to hardware is that it is blocking
-> migration (which is a challenge with ism anyway, but still).
+On Thu, Apr 06, 2023 at 02:05:07PM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Zhu Lingshan <lingshan.zhu@linux.intel.com>
+> > Sent: Thursday, April 6, 2023 3:20 AM
+> 
+> I have a dumb question.
+> Zhu responded to these patches.
+> Some patches have prefix appended as "virtio", some has "virtio-dev", and some have "virtio-comment".
+> Whichever tool is adding it prefix, why it cannot keep the simple consistency?
+> 
+> Do we need to ask OASIS about it?
+> 
 
+Guess: are you using gmail?  Each list adds its own prefix.  Which is
+admittedly a bad idea but there you are, OASIS outsources this and can't
+change it. Adding a footer is an even worse idea but they won't change
+this either.
 
-We don't want to support migration. At least we don't want to support it fo=
-r the
-time being. Because there are indeed many problems. I think Migration is not
-necessary for a new Virtio device.
+So if you are subscribed to multiple lists you are getting
+multiple copies, which is handy if each list goes to its
+own folder. However, gmail is unusual in that it deduplicates
+email discarding all copies but one. There are work-arounds
+with filters but the end result in any case will be that
+you will get one of the copies, selected at random.
+As they have different prefixes and footers added, there you go,
+a mix of different prefixes in a single thread.
 
-Thanks.
+-- 
+MST
 
-
->
->
-> > >
-> > >> If this is really supposed to work with SMC and not just take
-> > >> inspiration from it, I would like some insight from our
-> > >> SMC experts (they are already on copy).
-> > >>
-> > >> Regards,
-> > >> Halil
-> > >>
-> > >> ---------------------------------------------------------------------
-> > >> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > >> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
