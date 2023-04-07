@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12054-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12055-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3781CC6FD1D
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 09:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 006BEC6FD1D
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 09:35:25 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5EA792B142
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 09:17:28 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4860133593
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 09:35:25 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 44CB69865DE
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 09:17:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 38ED99865E9
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Apr 2023 09:35:25 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 2F587983F7B; Fri,  7 Apr 2023 09:17:28 +0000 (UTC)
+	id 2FB1A9865DA; Fri,  7 Apr 2023 09:35:25 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,217 +24,298 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1FC029865D7
-	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Apr 2023 09:17:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1E1009865D7
+	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Apr 2023 09:35:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: dT2DLIuLOreY-S9vVaPH_Q-1
+X-MC-Unique: rwApV4b9PcWE6czJKt_H5w-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680859044;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gWiuFC1C7I6AehfZZEVipgn+kSzLGTWf1hml4xNu5oo=;
-        b=dU05xVr/VBlzHFu3vD77iqIzd0PuxKmfZA9SfDh3cGdOCqpPRgJr8LZWAUOnwydHbD
-         TmGsdFaTTQvRk2H/YOVrJ48fodRm8631vlceYnf2DuTVdTFh/w0TcRIfyNZzqBu9woVV
-         K3KaDm9usXOeJO7bCrd2SDQlqzHyiJp0byz2sXFJOyI6D77oPqNRthy4kmmg5CtQKygp
-         rkc7oxk60gYar+miCo6w1ETK64rIS7MVBWfjlC1/qixOVBTy4Uidd2XmhDj6g536uzCj
-         R/090iYCp+PU5FMgBR5BQCfx3pV/rWkY67W9rW4SGZ7XcvuEWOu7WOgJwa9140kDDFrY
-         uVZQ==
-X-Gm-Message-State: AAQBX9ey/gB/anfp6d+zykONqf/YBt1qWF6faE+u3wXJiVl1E5Wy36ox
-	FODoswQ4SlS6++eMw2JKAUFkxHVPFwYH9qMpP3ut7Kra7oK/NRqXPfvSGRdO8HNKMNhtTQQjte2
-	ufGFFZnfqAOuyC3lyxl03UjOsD7Qw
-X-Received: by 2002:a5d:6a82:0:b0:2ce:a758:d6fb with SMTP id s2-20020a5d6a82000000b002cea758d6fbmr1065718wru.1.1680859044259;
-        Fri, 07 Apr 2023 02:17:24 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YSXRD7z5Oh5UJYdXAV4merOcc4WDVqsEX5DbQqsRaIdkwB/qynJwhVftQEmkyQmxsKo3E/LA==
-X-Received: by 2002:a5d:6a82:0:b0:2ce:a758:d6fb with SMTP id s2-20020a5d6a82000000b002cea758d6fbmr1065702wru.1.1680859043937;
-        Fri, 07 Apr 2023 02:17:23 -0700 (PDT)
-Date: Fri, 7 Apr 2023 05:17:20 -0400
+        d=1e100.net; s=20210112; t=1680860116;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HUN1QxS8tngtPGiwDND0RNmvzXdFQesGZi6MV+0SUao=;
+        b=4Sa0Dc2C0lwVnqdhDofD0jpalCwBmdc1mwyWs6h+msLywqbeyEG4vfmFZFdpKHU3Sw
+         WW83/tzAFsSVuGPDNy+DsldZLeuhvlmwlXGPBF/KzYCen7H/F6mFTkRHqFoJzMnyqwFf
+         Vuk7+RUt0K8Ou8DD4mM95Fd+MUn7Tnxw6CNICE+7hBKg3lzVgqZvfkg8iapLrhfRhXzb
+         4gmWx7rgqKROsiaYleJzAFC8ObPUYoeSRX+P06ONzYQPbGTyzoWFS7L9v9PMRumfQQ4g
+         JZbQpvyTXHiNZI629ETCIMubhsmI1cZXmyXwNAB1v9Q4sVGxEN83/mXFM2j2fw6qc6px
+         Eo6Q==
+X-Gm-Message-State: AAQBX9cYOstd/1g3bvXzrOWr9dkoUe4+TnqHUL6sXUMrSccECIHy68bC
+	PgmaCgD1+xxsZZnrYAxyMCNCndy0og2J/Jmd9qEaByB/I2pddIeVLKi79Cbe0qAZA3p4CPy7/cc
+	1VxHRyDUM+OD4Uyl8joDM3UMBJ/25
+X-Received: by 2002:adf:e2c4:0:b0:2e4:cc81:8a80 with SMTP id d4-20020adfe2c4000000b002e4cc818a80mr1325898wrj.26.1680860115871;
+        Fri, 07 Apr 2023 02:35:15 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aD09p0fL8K8Ou+8awVWNiv+AkNFRFsDFAxCueSyZd7a8mgSSiGgeKcvj20FMXvTlcq3j66bg==
+X-Received: by 2002:adf:e2c4:0:b0:2e4:cc81:8a80 with SMTP id d4-20020adfe2c4000000b002e4cc818a80mr1325882wrj.26.1680860115514;
+        Fri, 07 Apr 2023 02:35:15 -0700 (PDT)
+Date: Fri, 7 Apr 2023 05:35:12 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
-	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com,
-	Satananda Burla <sburla@marvell.com>
-Message-ID: <20230407045541-mutt-send-email-mst@kernel.org>
-References: <20230330225834.506969-1-parav@nvidia.com>
- <20230330225834.506969-7-parav@nvidia.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Message-ID: <20230407051748-mutt-send-email-mst@kernel.org>
+References: <20230403110320-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481EC65708410304D9C1EA3DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230403111735-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54813E4193BC32775BDB2019DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230403130950-mutt-send-email-mst@kernel.org>
+ <24e5437e-d6bd-d65c-9ec2-699277a113a3@nvidia.com>
+ <20230403135446-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54815AFE1FE7E1D2AAABBAF4DC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230403163730-mutt-send-email-mst@kernel.org>
+ <25d15176-042a-f579-0b59-d08f7eb7eafb@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230330225834.506969-7-parav@nvidia.com>
+In-Reply-To: <25d15176-042a-f579-0b59-d08f7eb7eafb@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH 06/11] introduction: Introduce transitional MMR interface
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 00/11] Introduce transitional mmr
+ pci device
 
-On Fri, Mar 31, 2023 at 01:58:29AM +0300, Parav Pandit wrote:
-> Introduce terminology for the transitional MMR device and transitional
-> MMR driver.
+On Mon, Apr 03, 2023 at 06:00:13PM -0400, Parav Pandit wrote:
 > 
-> Add description of the transitional MMR device. It is a PCI
-> device that implements legacy virtio common configuration registers
-> followed by legacy device specific registers in a memory region at
-> an offset.
 > 
-> This enables hypervisor such as vfio driver to emulate
-> I/O region towards the guest at BAR0. By doing so VFIO driver can
-> translate read/write accesses on I/O region from the guest
-> to the device memory region.
+> On 4/3/2023 5:04 PM, Michael S. Tsirkin wrote:
+> > On Mon, Apr 03, 2023 at 08:25:02PM +0000, Parav Pandit wrote:
+> > > 
+> > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > Sent: Monday, April 3, 2023 2:02 PM
+> > > 
+> > > > > Because vqs involve DMA operations.
+> > > > > It is left to the device implementation to do it, but a generic wisdom
+> > > > > is not implement such slow work in the data path engines.
+> > > > > So such register access vqs can/may be through firmware.
+> > > > > Hence it can involve a lot higher latency.
+> > > > 
+> > > > Then that wisdom is wrong? tens of microseconds is not workable even for
+> > > > ethtool operations, you are killing boot time.
+> > > > 
+> > > Huh.
+> > > What ethtool latencies have you experienced? Number?
+> > 
+> > I know an order of tens of eth calls happens during boot.
+> > If as you said each takes tens of ms then we are talking close to a second.
+> > That is measureable.
+> I said it can take, doesn't have to be always same for all the commands.
+> Better to work with real numbers. :)
 > 
-> High level comparison of 1.x, transitional & transitional MMR
-> sriov vf device:
+> Let me take an example to walk through.
 > 
-> +------------------+ +--------------------+ +--------------------+
-> |virtio 1.x        | |Transitional        | |Transitional        |
-> |SRIOV VF          | |SRIOV VF            | |MMR SRIOV VF        |
-> |                  | |                    | |                    |
-> ++---------------+ | ++---------------+   | ++---------------+   |
-> ||dev_id =       | | ||dev_id =       |   | ||dev_id =       |   |
-> ||{0x1040-0x106C}| | ||{0x1000-0x103f}|   | ||{0x10f9-0x10ff}|   |
-> |+---------------+ | |+---------------+   | |+---------------+   |
-> |                  | |                    | |                    |
-> |+------------+    | |+------------+      | |+-----------------+ |
-> ||Memory BAR  |    | ||Memory BAR  |      | ||Memory BAR       | |
-> |+------------+    | |+------------+      | ||                 | |
-> |                  | |                    | || +--------------+| |
-> |                  | |+-----------------+ | || |legacy virtio || |
-> |                  | ||IOBAR impossible | | || |+ dev cfg     || |
-> |                  | |+-----------------+ | || |registers     || |
-> |                  | |                    | || +--------------+| |
-> |                  | |                    | |+-----------------+ |
-> +------------------+ +--------------------+ +--------------------+
+> If a cvq or aq command takes 0.5msec, total of 100 such commands will take
+> 50msec.
 > 
-> Motivation and background:
-> PCIe and system limitations:
-> 1. PCIe VFs do not support IOBAR cited at [1].
+> Once a while if two of commands say take 5msec, will result in 50 -> 60
+> msec.
+
+Not too bad. then it seems it should not be a problem to tunnel config
+over AQ then?
+
+
 > 
-> Perhaps the PCIe spec could be extended, however it would be only
-> useful for virtio transitional devices. Even if such an extension
-> is present, there are other system limitations described below in (2)
-> and (3).
+> > OK then. Then if it is a dead end then it looks weird to add a whole new
+> > config space as memory mapped.
+> > 
+> I am aligned with you to not add any new register as memory mapped for 1.x.
+> Or access through device own's tvq is fine if such q can be initialized
+> before during device reset (init) phase.
 > 
-> 2. cpu io port space limit and fragmentation
-> x86_64 is limited to only 64K worth of IO port space at [2],
-> which is shared with many other onboard system peripherals which
-> are behind PCIe bridge; such I/O region also needs to be aligned
-> to 4KB at PCIe bridge level cited at [3]. This can lead to a I/O space
-> fragmentation. Due to this fragmentation and alignment need,
-> actual usable range is small.
+> I explained that legacy registers are sub-set of existing 1.x.
+> They should not consume extra memory.
 > 
-> 3. IO space access of PCI device is done through non-posted message
->  which requires higher completion time in the PCIe fabric for
-> round trip travel.
+> Lets walk through the merits and negatives of both to conclude.
 > 
-> [1] PCIe spec citation:
-> VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
+> > > > Let me try again.
 > 
-> [2] cpu arch citiation:
-> Intel 64 and IA-32 Architectures Software Developer’s Manual
-> The processor’s I/O address space is separate and distinct from
-> the physical-memory address space. The I/O address space consists
-> of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
+> > If hardware vendors do not want to bear the costs of registers then they
+> > will not implement devices with registers, and then the whole thing will
+> > become yet another legacy thing we need to support. If legacy emulation
+> > without IO is useful, then can we not find a way to do it that will
+> > survive the test of time?
+> legacy_register_transport_vq for VF can be a option, but not for PF
+> emulation.
+
+OK. Do we really care? Are you guys selling lots of high end cards
+without SRIOV that it matters?
+
+> More below.
 > 
-> [3] PCIe spec citation:
-> If a bridge implements an I/O address range,...I/O address range
-> will be aligned to a 4 KB boundary.
+> > 
+> > > Again, I want to emphasize that register read/write over tvq has merits with trade-off.
+> > > And so the mmr has merits with trade-off too.
+> > > 
+> > > Better to list them and proceed forward.
+> > > 
+> > > Method-1: VF's register read/write via PF based transport VQ
+> > > Pros:
+> > > a. Light weight registers implementation in device for new memory region window
+> > 
+> > Is that all? I mentioned more.
+> > 
+> b. device reset is more optimal with transport VQ
+> c. a hypervisor may want to check (but not necessary) register content
+> d. Some unknown guest VM driver which modifies mac address and still expect
+> atomicity can benefit if hypervisor wants to do extra checks
+
+It's not hard to be more specific.
+Old Linux kernels are like this, this was fixed with:
+
+commit 7e58d5aea8abb993983a3f3088fd4a3f06180a1c
+Author: Amos Kong <akong@redhat.com>
+Date:   Mon Jan 21 01:17:23 2013 +0000
+
+Currently we write MAC address to pci config space byte by byte,
+this means that we have an intermediate step where mac is wrong.
+This patch introduced a new control command to set MAC address,
+it's atomic.
+
+about 10 years ago.
+
+
+> > > Cons:
+> > > a. Higher DMA read/write latency
+> > > b. Device requires synchronization between non legacy memory mapped registers and legacy regs access via tvq
+> > 
+> > Same as a separate mmemory bar really.  Just don't do it. Either access
+> > legacy or non legacy.
+> > 
+> It is really not same to treat them equally as tvq encapsulation is
+> different, and hw wouldn't prefer to treat them equally like regular memory
+> writes.
+
+
+I think yoiu missunderstand what I said. You listed a problem:
+the same device can be accessed through both
+a modern and a legacy interface.
+I said that it is not a problem at all, there is no reason
+to use both.
+
+> Transitional device exposed by hypervisor contains both legacy I/O bar and
+> also the memory mapped registers. So a guest vm can access both.
+
+But it must not, and some devices break if you do.
+
+
+> > > c. Can only work with the VF. Cannot work for thin hypervisor, which can map transitional PF to bare metal OS
+> > > (also listed in cover letter)
+> > 
+> > Is that a significant limitation? Why?
+> It is a functional limitation for the PF, as PF has no parent.
+> and PF can also utilize memory BAR.
+
+Yes it's a limitation, I just don't see why we care.
+
+> > 
+> > > Method-2: VF's register read/write via MMR (current proposal)
+> > > Pros:
+> > > a. Device utilizes the same legacy and non-legacy registers.
+> > 
+> > > b. an order of magnitude lower latency due to avoidance of DMA on register accesses
+> > > (Important but not critical)
+> > 
+> > And no cons? Even if you could not see them yourself did I fail to express myself to such
+> > an extent?
+> > 
+> Method-1 pros covered the advantage of it over method-2, but yes worth to
+> list here for completeness.
 > 
-> Co-developed-by: Satananda Burla <sburla@marvell.com>
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> ---
->  introduction.tex | 30 ++++++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
+> Cons:
+> requires creating new memory region window in the device for configuration
+> access
+
+Parav please take a look at the discussion so far as collect more cons
+that were mentioned for the proposal, I definitely listed some and I
+don't really want to repeat myself.  I expect a proposal to be balanced,
+not a sales pitch.
+
+
+> > > > > No. Interrupt latency is in usec range.
+> > > > > The major latency contributors in msec range can arise from the device side.
+> > > > 
+> > > > So you are saying there are devices out there already with this MMR hack
+> > > > baked in, and in hardware not firmware, so it works reasonably?
+> > > It is better to not assert a solution a "hack",
+> > 
+> > Sorry if that sounded offensive.  a hack is not necessary a bad thing.
+> > It's a quick solution to a very local problem, though.
+> > 
+> It is a solution because device can do at near to zero extra memory for
+> existing registers.
+> Anyways, we have better technical details to resolve. :)
+> Lets focus on it.
 > 
-> diff --git a/introduction.tex b/introduction.tex
-> index e8b34e3..9a0f96a 100644
-> --- a/introduction.tex
-> +++ b/introduction.tex
-> @@ -161,6 +161,20 @@ \subsection{Legacy Interface: Terminology}\label{intro:Legacy
->    have a need for backwards compatibility!
->  \end{note}
->  
-> +\begin{description}
-> +\item[Transitional MMR Device]
-> +       is a PCI device which exposes legacy virtio configuration
-> +       registers followed by legacy device configuration registers as
-> +       memory mapped registers (MMR) at an offset in a memory region
-> +       BAR, has no I/O region BAR,
+> > Yes motivation is one of the things I'm trying to work out here.
+> > It does however not help that it's an 11 patch strong patchset
+> > adding 500 lines of text for what is supposedly a small change.
+> > 
+> Many of the patches are rework and incorrect to attribute to the specific
+> feature.
+> 
+> Like others it could have been one giant patch... but we see value in
+> smaller patches..
+> 
+> Using tvq is even bigger change than this.
 
-in fact, most of existing pci interface can be in either IO or memory bar,
-I don't think we specify that it's in a memory bar in the spec.
-For example IIRC qemu has a flag that uses IO for signalling
-kicks for modern VQs, this is slightly faster on some architectures.
+The main thing is that there's no new ID so the PF device itself will
+stay usable with existing drivers.
 
+> So we shouldn't be afraid of
+> making transitional device actually work using it with larger spec patch.
+> 
+> > > Regarding tvq, I have some idea on how to improve the register read/writes so that its optimal for devices to implement.
+> > 
+> > Sounds useful, and maybe if tvq addresses legacy need then focus on
+> > that?
+> > 
+> 
+> tvq specific for legacy register access make sense.
+> Some generic tvq is abstract and dont see any relation here.
+> 
+> So better to name it as legacy_reg_transport_vq (lrt_vq).
 
-> having its own PCI Device ID range,
-> +       and follows the rest of the functionalities
+Again this assumes tvq will be rewritten on top of AQ.
+I guess legacy can then become a new type of AQ command?
 
-
-this setence isn't grammatical.
-not sure what exactly you are trying to say here, can not
-help you rewrite.
-
-> of the transitional device.
-
-a transitional device probably.
-
-> +\end{description}
-> +
-> +\begin{description}
-> +\item[Transitional MMR Driver]
-> +       is a PCI device driver that supports the Transitional MMR device.
-> +\end{description}
-> +
->  Devices or drivers with no legacy compatibility are referred to as
->  non-transitional devices and drivers, respectively.
->  
-> @@ -174,6 +188,22 @@ \subsection{Transition from earlier specification drafts}\label{sec:Transition f
->  sections tagged "Legacy Interface" in the section title.
->  These highlight the changes made since the earlier drafts.
->  
-> +\subsection{Transitional MMR interface: specification drafts}\label{sec:Transitional MMR interface: specification drafts}
-> +
-> +The transitional MMR device and driver differs from the
-> +transitional device and driver respectively in few areas. Such
-
-a few
-
-> +differences are contained in sections named
-> +'Transitional MMR interface', like this one. When no differences
-> +are mentioned explicitly, the transitional MMR device and driver
-> +follow exactly the same functionalities as that of the
-> +transitional device and driver respectively.
-
-Ugh, we called these transitional because they were there for
-the transition period :)
-
-The thing that I feel you miss here is that
-transitional driver using transitional device MUST NOT
-use the legacy interface.
-
-The new thing with this MMR is that it's a memory mapped
-access to legacy registers.
-
-
-Going back to my idea of just adding legacy MMR capability to existing
-modern and transitional devices, as opposed to a completely new type of
-device, we would basically have a modern driver access the new
-capability, and forward accesses from a legacy driver to there.
-So "memory mapped legacy interface" would be a better name I think.
+And maybe you want a memory mapped register for AQ commands? I know
+Jason really wanted that.
 
 
 
+> How about having below format?
+> 
+> /* Format of 16B descriptors for lrt_vq
+>  * lrt_vq = legacy register tranport vq.
+>  */
+> struct legacy_reg_req_vf {
+> 	union {
+> 		struct {
+> 			le32 reg_wr_data;
+> 			le32 reserved;
+> 		} write;
+> 		struct {
+> 			le64 reg_read_addr;
+> 		};
+> 	};
+> 	le8 rd_wr : 1;	/* rd=0, wr=1 */
+> 	le8 reg_byte_offset : 7;
+> 	le8 req_tag;	/* unique request tag on this vq */
+> 	le16 vf_num;
+> 
+> 	le16 flags; /* new flag below */
+>         le16 next;
+> };
+> 
+> #define VIRTQ_DESC_F_Q_DEFINED 8
+> /* Content of the VQ descriptor other than flags field is VQ
+>  * specific and defined by the VQ type.
+>  */
 
-> +
-> +\begin{note}
-> +Transitional MMR interface is only required to support backward
-> +compatibility. It should not be implemented unless there is a need
-> +for the backward compatibility.
-> +\end{note}
-> +
->  \section{Structure Specifications}\label{sec:Structure Specifications}
->  
->  Many device and driver in-memory structure layouts are documented using
-> -- 
-> 2.26.2
+Any way to allow accesses of arbitrary length?
+
+-- 
+MST
 
 
 ---------------------------------------------------------------------
