@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12083-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12084-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2052FC76196
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Apr 2023 10:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A7ECDC77B61
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Apr 2023 10:06:57 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C10AD2AC5A
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Apr 2023 10:05:27 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id E41EC2B01A
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Apr 2023 10:06:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 53EAC98660D
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Apr 2023 10:05:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DA52698638E
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Apr 2023 10:06:56 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BF6A798636D; Mon, 10 Apr 2023 10:05:26 +0000 (UTC)
+	id CF1D79862A5; Mon, 10 Apr 2023 10:06:56 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,131 +24,123 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 692B8986321
-	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Apr 2023 10:04:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BFE1D98631E
+	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Apr 2023 10:06:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 9kD0_81wOvKdOVfWTa1MSg-1
+X-MC-Unique: _2-E7JnaP7Sn2fTlUP5jlg-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681121048;
+        d=1e100.net; s=20210112; t=1681121213;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jtEbMCwMnkI2VdNhYUQPmDl2IgpBxhJ69FS4TtXZ9j8=;
-        b=6RCnacZK7sGUCVMR9fZ+biQrWzg/IvrrzUughLhqSzZqjknKvGPB4rzQpt/Q0PBqE+
-         g9TD+iqSrenGxDlpUGg7gV/KM6j+OmKvI7Ur+S1FHY6DjqGfbfWSQc8qoB8f9mcTM5G4
-         +wKNcXpH47oHs9fBZ77X3BSuMlV2jMQm6g6re0ec+fSGf9cKVbW+ITqsTrC6rEHJRehK
-         dgDrjlX+CjLS8cnc/ma5qYw1QCyrDXo1y9QhuUx0Vc/tqyVG8qQ5g9bpAKGswHP53Yp+
-         mazf0el3yDAEKByg/8lfcILnIy0CDKA5480lhqK6hlc42uUmpWxVlGp48GB1k/nA+Seu
-         iXtA==
-X-Gm-Message-State: AAQBX9cZ8twHHr3lXp0axxdzRq/qtkvF5cTs4kK2/LhXX2G7eI0PjQgK
-	x55NcRTKHry+bKvBbnVM4S+9OAoTjfHNitHQl+RlCgCySwPaMg6Mb5hBiVXm6nc/hO0Bo8MVrdg
-	4OfjaHNXzwPdpvQQ1mRS80WhBf/2v
-X-Received: by 2002:a1c:f219:0:b0:3ea:d620:57a7 with SMTP id s25-20020a1cf219000000b003ead62057a7mr7219781wmc.8.1681121048101;
-        Mon, 10 Apr 2023 03:04:08 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZPXmVZcVyMjFIOdnBtpKQoncHXttB5viMKOgSDbZnlDMH3eTAQE0TsdoH+r0NwhQ+iWgTALw==
-X-Received: by 2002:a1c:f219:0:b0:3ea:d620:57a7 with SMTP id s25-20020a1cf219000000b003ead62057a7mr7219769wmc.8.1681121047811;
-        Mon, 10 Apr 2023 03:04:07 -0700 (PDT)
-Date: Mon, 10 Apr 2023 06:04:04 -0400
+        bh=SIuPh0Q7aaEGGPtMDp8rtCrHeHZutODr6kSvT7g9XWY=;
+        b=fwTQw5PanLkL5Kw3dlIU/yVzBIRTqe0ys8jPY8oALrf0pzlQru9QKl423lRM7aR/kZ
+         YheEFn+u5K/sDES8RwYKB6QLAorl23SGZJXXiarrCjTpCJFbdCnmg+GVzcCEDs+maJW4
+         t2rMZIOWJuGqI/l1B3bzs9VThaITzuW2oQfhFGvnS4D32wbdcsuBEp5if6p7qBGiZNrn
+         z60/QQHRxbjq1WacrXODm31Zg0iyVjKwieAFyzjmuVaTh3U6sFns2+3QmSkUHe4cfht/
+         fXTdNzTe52P5en4rO2X9d1lQIcryqb51M/MFd2uatX7VquXDvzmpAZsHCN1TdpYRXDF1
+         wt3g==
+X-Gm-Message-State: AAQBX9egpgCcoz9CQDTZzNfQGmcVu6LcYdP8QfGs6rwSMtWjBfUESM2j
+	1oVTlqVE2aeVYX4hN5qntjEayBAlpW7DxBBAhejSb2EtjBrZlm+dP9O9LrQYoh18fGraM+Xd6hD
+	nwBj09+nwE5s1lmStgJu3dsPdI2uf
+X-Received: by 2002:a7b:cd8f:0:b0:3ef:67fc:fef1 with SMTP id y15-20020a7bcd8f000000b003ef67fcfef1mr7367801wmj.26.1681121213672;
+        Mon, 10 Apr 2023 03:06:53 -0700 (PDT)
+X-Google-Smtp-Source: AKy350Z3hwEKUTi1MmJ6HRJ+Rkj89Kq0S+EultviAtUCSE5ycoOtzNa2wHaGq3Rap/lXfHzhxzkS+Q==
+X-Received: by 2002:a7b:cd8f:0:b0:3ef:67fc:fef1 with SMTP id y15-20020a7bcd8f000000b003ef67fcfef1mr7367786wmj.26.1681121213384;
+        Mon, 10 Apr 2023 03:06:53 -0700 (PDT)
+Date: Mon, 10 Apr 2023 06:06:49 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Jason Wang <jasowang@redhat.com>
 Cc: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org,
 	cohuck@redhat.com, virtio-comment@lists.oasis-open.org,
 	shahafs@nvidia.com, Satananda Burla <sburla@marvell.com>
-Message-ID: <20230410055947-mutt-send-email-mst@kernel.org>
+Message-ID: <20230410060417-mutt-send-email-mst@kernel.org>
 References: <20230330225834.506969-1-parav@nvidia.com>
- <20230330225834.506969-9-parav@nvidia.com>
- <CACGkMEtMOy4B-O-52ka+9P3OBQ_hs1KvdjWodNYg-XKLff+giw@mail.gmail.com>
- <20230410021619-mutt-send-email-mst@kernel.org>
- <CACGkMEsZXozY7iC7L3L9FC+o8dQGY9+Hhbag2Z-G-nxr9BvDdw@mail.gmail.com>
+ <20230330225834.506969-10-parav@nvidia.com>
+ <20230407043841-mutt-send-email-mst@kernel.org>
+ <CACGkMEtkOdwixxaRz2Pv9xP75vb13ncboX5XRs8NqFCUsS16aQ@mail.gmail.com>
+ <20230410020906-mutt-send-email-mst@kernel.org>
+ <CACGkMEtiROwuB+ECJqd13qdpMJSTMoDOzi1u_i85==42C0XSXw@mail.gmail.com>
+ <20230410023715-mutt-send-email-mst@kernel.org>
+ <CACGkMEs+E_OarQxP3NmLk3iSi7U0WgAn-m3b4eX7ULu1+v=sOw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEsZXozY7iC7L3L9FC+o8dQGY9+Hhbag2Z-G-nxr9BvDdw@mail.gmail.com>
+In-Reply-To: <CACGkMEs+E_OarQxP3NmLk3iSi7U0WgAn-m3b4eX7ULu1+v=sOw@mail.gmail.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] [PATCH 08/11] transport-pci: Introduce virtio
- extended capability
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
+ MMR dev config registers
 
-On Mon, Apr 10, 2023 at 03:16:46PM +0800, Jason Wang wrote:
-> On Mon, Apr 10, 2023 at 2:24 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Mon, Apr 10, 2023 at 03:20:52PM +0800, Jason Wang wrote:
+> On Mon, Apr 10, 2023 at 2:40 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> > On Mon, Apr 10, 2023 at 09:36:17AM +0800, Jason Wang wrote:
-> > > On Fri, Mar 31, 2023 at 7:00 AM Parav Pandit <parav@nvidia.com> wrote:
+> > On Mon, Apr 10, 2023 at 02:20:16PM +0800, Jason Wang wrote:
+> > > On Mon, Apr 10, 2023 at 2:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > > > >
-> > > > PCI device configuration space for capabilities is limited to only 192
-> > > > bytes shared by many PCI capabilities of generic PCI device and virtio
-> > > > specific.
+> > > > On Mon, Apr 10, 2023 at 09:33:32AM +0800, Jason Wang wrote:
+> > > > > This is fine for vDPA but not for virtio if the design can only work
+> > > > > for some specific setups (OSes/archs).
+> > > > >
+> > > > > Thanks
 > > > >
-> > > > Hence, introduce virtio extended capability that uses PCI Express
-> > > > extended capability.
-> > > > Subsequent patch uses this virtio extended capability.
-> > > >
-> > > > Co-developed-by: Satananda Burla <sburla@marvell.com>
-> > > > Signed-off-by: Parav Pandit <parav@nvidia.com>
+> > > > Well virtio legacy has a long history of documenting existing hacks :)
 > > >
-> > > Can you explain the differences compared to what I've used to propose?
+> > > Exactly, so the legacy behaviour is not (or can't be) defined by the
+> > > spec but the codes.
+> >
+> > I mean driver behaviour derives from the code but we do document it in
+> > the spec to help people build devices.
+> >
+> >
+> > > > But yes, VIRTIO_F_ORDER_PLATFORM has to be documented.
+> > > > And we have to decide what to do about ACCESS_PLATFORM since
+> > > > there's a security problem if device allows not acking it.
+> > > > Two options:
+> > > > - relax the rules a bit and say device will assume ACCESS_PLATFORM
+> > > >   is acked anyway
 > > >
-> > > https://www.mail-archive.com/virtio-dev@lists.oasis-open.org/msg08078.html
+> > > This will break legacy drivers which assume physical addresses.
+> >
+> > not that they are not already broken.
+> 
+> I may miss something, the whole point is to allow legacy drivers to
+> run otherwise a modern device is sufficient?
+
+yes and if legacy drivers don't work in a given setup then we
+should not worry.
+
+> >
+> > > > - a new flag that is insecure (so useful for sec but useless for dpdk) but optional
 > > >
-> > > This can save time for everybody.
+> > > This looks like a new "hack" for the legacy hacks.
+> >
+> > it's not just for legacy.
+> 
+> We have the ACCESS_PLATFORM feature bit, what is the useage for this new flag?
+
+
+ACCESS_PLATFORM is also a security boundary. so devices must fail
+negotiation if it's not there. this new one won't be.
+
+
+> >
+> > > And what about ORDER_PLATFORM, I don't think we can modify legacy drivers...
 > > >
 > > > Thanks
 > >
-> > BTW another advantage of extended capabilities is - these are actually
-> > cheaper to access from a VM than classic config space.
+> > You play some tricks with shadow VQ I guess.
 > 
-> Config space/BAR is allowed by both of the proposals or anything I missed?
-> 
-> >
-> >
-> > Several points
-> > - I don't like it that yours is 32 bit. We do not need 2 variants just
-> >   make it all 64 bit
-> 
-> That's fine.
-> 
-> > - We need to document that if driver does not scan extended capbilities it will not find them.
-> 
-> This is implicit since I remember we don't have such documentation for
-> pci capability, anything makes pcie special?
-
-yes - the fact that there are tons of existing drivers expecting
-everything in standard space.
-
-
-> >   And existing drivers do not scan them. So what is safe
-> >   to put there? vendor specific? extra access types?
-> 
-> For PASID at least, since it's a PCI-E feature, vendor specific should
-> be fine. Not sure about legacy MMIO then.
-> 
-> >   Can we make scanning these mandatory in future drivers? future devices?
-> >   I guess we can add a feature bit to flag that.
-> 
-> For PASID, it doesn't need this, otherwise we may duplicate transport
-> specific features.
-
-i don't get it. what does PASID have to do with it?
-A new feature will allow clean split at least:
-we make any new features and new devices that expect
-express capability depend on this new feature bit.
-
-> >   Is accessing these possible from bios?
-> 
-> Not at least for the two use cases now PASID or legacy MMIO.
-
-can't parse english here. what does this mean?
-
-
-> >
-> > So I like this one better as a basis - care reviewing it and adding
-> > stuff?
-> 
-> There are very few differences and I will have a look.
+> Do we really want to add a new feature in the virtio spec that can
+> only work with the datapath mediation?
 > 
 > Thanks
-> 
+
+As long as a feature is useful and can't be supported otherwise
+we are out of options. Keeping field practice things out of the
+spec helps no one.
+
 > >
 > > --
 > > MST
