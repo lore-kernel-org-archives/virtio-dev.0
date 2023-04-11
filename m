@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12152-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12153-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF8B5C7619A
-	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 20:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A4D3AC76196
+	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 21:05:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0D159676F3
-	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 20:17:14 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A6BC22AC69
+	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 21:05:29 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F28A69865FD
-	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 20:17:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4269C986697
+	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 21:05:29 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id E6BA1986193; Tue, 11 Apr 2023 20:17:13 +0000 (UTC)
+	id 9D34C986509; Tue, 11 Apr 2023 21:05:28 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,264 +24,207 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D1FEC9864B3;
-	Tue, 11 Apr 2023 20:17:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CE1819864B3;
+	Tue, 11 Apr 2023 21:03:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U/RHG0P8JbeVS76bM7iew+4VF0XMAtISeH4SBveK0qVqD7cZV2aYA2qsu1UWP0gHv4WGLAhqRsDeK+ffEz/PQwUsel+8P/GS7DrZFVdGfqsd89iiXMlVhMZbBVhzAKhnHM285Nje+unE6T5rSvvTmtA4QVzAhZPIwKp4WHA5RhPcIP3+xikG4xRLeOBbtZSJ3r1F6ggJRs0XGV2t2zpgVhaFF85cz28QJVhQMnTQ/5ZkcXEEjP30Jm03GJnDr6y5BLIfvbk5+vxN8LnBrz1ZonsjNZiUL55DjsiNem0D4FXobVdfy6UqlUvh8nPZWbjJ1tNvhXtRgqLmF6NQcrskxA==
+ b=HS3RAKpVyyZaQ1OBf+c8i7bx/6eOUbCB9iUfB57R7UaPLuzh0hOiCp0lRSDeXF1aSw510WrxqK7fVoRncDSLEGLfWtMqDgjeGxqlGMb7szlh98ThQw4i1YGbfM0/2Gz1y31LabbYV3LL6MiIVWvrHSu5qnJzUE5LJTgj8i+lGpH2DZsXSdJ+dCulqYh9Wub5HKbOHj7OvNuu9Kp52rWtbcAtp7IWJseKvyZkfL8ygUIXuRirg8bDukB9Nouz2wW4cd3LmEINg1LPYo8h+bKbUHo3VU7cMpnqViy3PyffgXWm9BIafbsHgMWyGN+8ocD8ceyV2EMgH/FB3WQ3oxFn0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eIdn1MuF/oNFR5yGZueg76nPW9g2RzzXnjfHsFtNNPU=;
- b=CpPv8N+Gr4ueReHgL61sbcu18rSILyImgF7rocxUot1nrfEDy8s4/csyDgcIlLPXv0ZqrsRYUkCipU7r0ynVMnl+3EBUpaBhzjcHyDcUk+aUoybnr4p4jlnZp676/DykZC0mp14mjNawGBwuem4tBWNIrektLLquy/f9Bh2MWTOAw7qOX/ig2krG4JSpcohek/AyHwl305dWv6Y7opROi8Z1PBMsaC4DCI4f4isDoSoFdvzTvoARQrla/ixxIzXNnYB3upSbzjt6upMpvq6eEx03y64GsCAGt7IgP1LEGhh+X+3/YYlzTUQTArT9XpJGYI/ijhv+bOgrAdChvHGN8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+ bh=DJkQCiUlakD6ZUKbEDPJadkvpmXWZXTCy68j1CYIC+M=;
+ b=RarJ6WQvGqZAq/H6ETckihCM7R3gHO8ywksWk8n4LIO0A1atFoQPMyoWXYWUMR/kscaukCGop+HrUppr3AuvXB7l8dE6FCdaqT6f1TXfX+0MoVgwq0CTzWlUvO0e15E0N8vAEEJd9UHAaBnt1GuAZmLPVl0TRqqTCY0nTbSjfDCsWblRcK9npD/yynL4d7st3fD9UsTFTz+GqWNwB88lIk0D+vvorAA2XmGVHL1TGhe51sHwnmO1Szh9yjleqSAUvvbrAadSQtsrjAbcJs+m/Z8W4G8KSeuePHQR06XMpfPBa0Wh8BXMtH8oIBCbWqNY8Xh/+nb78/xFUTUK9xBh8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Message-ID: <569cbaf9-f1fb-0e1f-a2ef-b1d7cd7dbb1f@nvidia.com>
+Date: Tue, 11 Apr 2023 17:03:52 -0400
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Content-Language: en-US
+To: Heng Qi <hengqi@linux.alibaba.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230403045833.21853-1-hengqi@linux.alibaba.com>
 From: Parav Pandit <parav@nvidia.com>
-To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
-CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
-	<parav@nvidia.com>
-Date: Tue, 11 Apr 2023 23:16:47 +0300
-Message-ID: <20230411201647.753327-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20230403045833.21853-1-hengqi@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SN4PR0501CA0019.namprd05.prod.outlook.com
+ (2603:10b6:803:40::32) To PH0PR12MB5481.namprd12.prod.outlook.com
+ (2603:10b6:510:d4::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT048:EE_|IA1PR12MB8517:EE_
-X-MS-Office365-Filtering-Correlation-Id: 397327bf-0e21-425f-aeae-08db3ac9b6f7
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5481:EE_|CYYPR12MB8939:EE_
+X-MS-Office365-Filtering-Correlation-Id: 659fc2ef-67a4-4966-19bc-08db3ad0428a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	+l3/kraPwmXbFolIIV+PgOHz2d2y0cr5t6bqZRwpHW8nMejVi6Hs7qkkUBcdjREQlD/iDZk85xpbKQoB8Zs1TeO/YQsYWTVLuU8cYruc+5XEcqEVy9IwglonRG/p9iuoUIppvi/RlVOL90Cl9AQzsWVOER5tymyXXRZKFarpEHDIqNxFBJBXhQlhrNYft8Q84qHXEBvmS+HpAW5r12kMsQ1EwfPb+2f92E4UXYkZzTM5sK79yKwQedXJ6mLSQad4xGGNBNIVAc4OMJ1qELirYo2lY2GOOAzvtOXBiaQ/Xkx9kHlJz0Ug2TlxM+MuMwwzEpSpFmzJAsvgelF/IgvZ0NeNlBMr2gLYaGpmfVXXwrs81d+nFBMEGfqCrtGshdtOws/6umrCiRdbS7+Iuze8dBS9rBahc4H0BT1NPF9Xz0fRzJ/0i/bXgC9LBtoM8mMYBFx1w77p3aoiqrJruuD+ZkQOVZvQaDRT4hOrHcP+a1Qbb+5rF+NHyCPqOkhUf9paa8RaINIMOGspu/StJarOW1GZeCJEzJF+Ippfk2Fx2gNgRbvts82FR8ndGnvDvWf3PeXejOSiZhbiSIx2m/m3hcfOabQSBINWH4s9xYZ52qJNIq+Z8J91ziO+5t8ckKH737wHnzLqTOJ10LDQMYIEHDx13/E77XsJvnPTX0+5f5YkTgVuZEyWatclOf+YLHSgZwwe57aIKx6ep9VTEICEtMpNdSYoGhog/1YaVYAUkwqXGd7Jbj7mRfHqhUPsm0nmWGI1ZBjlcS0zo1Bb3TKG0yy3RLb3cpMGQHPfqs/Y7gm7FnK4155AvnBxRiKhL7VeLaqnpb0akpvOOF+mBI/poQ==
+	zuyENwezguc/7AMLb+X/FRm5tJQzUG/gBDX0oekCvhaFadkswGQWTwt9th+LERW6Pp7hN6Toeng9MTHpxcez8H632M5k0xxn9+34zKaGPHxUFDjcwFupvQG7LuXaBpITMpQubxCOqULyAk1D1pX3msFI/XDL4PTFeUnbwUvm/b5yFNKps/QKeQOBx0qfqMYu3ZWZcO2KxOEVWYQILoblez/jxWtNQ35+jkX/Mg3js1T5jlamyOk0GsJUWkb69eKjS65QhVnpIDXoRyKiCaTYJWCCuMvQAmgPRGbQNbYzdbrfqY+Ff1M2ESUXNrjcr0T1HgWyM28fVyz1TfiMrTWWD7pye5k+j0fIvqsCrdGn3M8gN5HiJ+oXLH3useoiPXrUZnzhs6ZD0KQ/9pd6O+jbuJe5Y1i8ny8lFMDMCmtot2KCVYke+/iK8nxc2eSyXj2aS0IfsHUUguEyCpLBowd0HPr+krsrEQOok/m09ET8q+AMaJqWOG1ntjxyOQVzoJRuZ7ZvJAgHnmbC5axIAPbKBHZUvJc8B+WPoAyiCrZlH1dmn5rhNkpt8967Yigl3cbPM8C0KHNg1Lo4aBmuqbKkTs17c90ru29ksyUKm8hFGeWgzWfZRlCODBrcEfS0togXx3dTCEbUmXpSGv0F81WSKw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(39860400002)(376002)(451199021)(36840700001)(46966006)(40470700004)(40480700001)(478600001)(54906003)(70586007)(316002)(110136005)(36756003)(70206006)(5660300002)(40460700003)(8676002)(8936002)(4326008)(2616005)(41300700001)(2906002)(86362001)(966005)(82310400005)(6666004)(186003)(107886003)(82740400003)(36860700001)(16526019)(47076005)(83380400001)(34070700002)(26005)(426003)(1076003)(356005)(7636003)(336012);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(39860400002)(376002)(366004)(451199021)(478600001)(53546011)(26005)(316002)(6506007)(186003)(54906003)(2906002)(5660300002)(4326008)(66946007)(8676002)(6666004)(66476007)(6486002)(41300700001)(8936002)(66556008)(31696002)(83380400001)(86362001)(36756003)(6512007)(2616005)(38100700002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dHRONTVoYWg1Z0ZHbUJIYThBTGFlQ3NPNlVtdVV4UnQ0N253ZGtZU0I2d2ZM?=
+ =?utf-8?B?T1JPWC9RaWxwRlJoK2hJUUQ4QTRVVStXcHdMZmdYOE1CUXJ4TjdONmczTU1Y?=
+ =?utf-8?B?ZjdTbTBVZUVTKy9wSDF6ZHJuTlNPZmVqQnNSdmM3Z2JtNzhsT29KYktlcDZy?=
+ =?utf-8?B?b2VxaHp5d2RmaDA0dkI2djRkdzJiaW9oWE95VkNuaHlzQm8yQzFhOUxxRjNN?=
+ =?utf-8?B?WFBUZ0hwMlpNbG00UVkxbTFPTjZPckN5eDk2a0xyTHovT3c0ZVZMdnFkQ1E5?=
+ =?utf-8?B?ME9teFUraTFHQmpqRko4ejRDZkJyR0ZxUHphL1VkSlF5Qm1CUlNWUXMreTNx?=
+ =?utf-8?B?MFlMOFFnb0k5ZFNCMFJrMkRYQ2xnVkRUSWp2dStxODNEWmFGRCtITlRoTUlp?=
+ =?utf-8?B?anA1OUttelQ4Q3JaVlVncTkrOEM5bWZWa1B6dWRlMjU0akZtMkhGVDdNalBr?=
+ =?utf-8?B?dGxRS1RKT1N0QnByN2kzWUFWSk1uUm1NYVo3K0RZdWptelptVk9IZ3NSbnJu?=
+ =?utf-8?B?S2VQTTZNYTJta0JBUVV5LzFHay9QdFJuOUo4NEoyNzQvejVFcEVCb0xlWFRP?=
+ =?utf-8?B?Q3hXYU5IUVJkMGo0dzJHZjBQWXVteFYxOGlBREFqYWRyMU9UU0NucmtiQWlP?=
+ =?utf-8?B?NjQzLzArL2czY05kaitYL3RWalBGR2R4SkR1Y1pMWk5lcjBjUEJibms2bEZ2?=
+ =?utf-8?B?d3NQUGtxK3QrMnVJRHRTdHprTndEa1MxRkJ4ZGN2dk5pQWlWWDVOY1RmU1ZG?=
+ =?utf-8?B?OXU5MWhiRitJbFIyRTVTVmpsMFEzL0lWUFdTekFnelYzWWRuNlgrUU9PVEFF?=
+ =?utf-8?B?NVNkcUJyMWY3YVR6aWd0bmZMZmsxamFPVVpuVnhhYVQyeHh2VTRPVjFvOHMx?=
+ =?utf-8?B?b2duWDFoZTBVN3FyeldRbmJLNDVZMytLVm4rRUExSjB1WXQ3Y1BvTVRtYito?=
+ =?utf-8?B?U2V2b3BUamE4NDhGZHREQ3NtZUNMSlc4bmx5OUVHU3B5aldXYkJsOWxsY0U4?=
+ =?utf-8?B?VzdxbE5jc1pSNm5hN2NMQjVnc1k0Tm9hRDJRalhXSGt6Rm5tUGVjR2ttQ3ZL?=
+ =?utf-8?B?L0ppeHBmaGMra2Fab1hDNm95K2dzRGpHeWVNRGo4UnQ1NTlWbmcycXVLK1l5?=
+ =?utf-8?B?eDZKTkdKNlBtT2JCTTFDejRJSnlSRXFxVmh3N3Nqb3J2QnpUWXdydzYvUXpa?=
+ =?utf-8?B?TVBLTyszdWszNWtXd1JGaGlGYkN5V0JmM1p3bG9kbGJyWkVHamxyNS9zem1i?=
+ =?utf-8?B?aFFYWFcxcUtjZ0UvakVHZ0htRWk2SXYrMy9JVFNkazdoakxOMWdnUlpjY2Rr?=
+ =?utf-8?B?dmxsTzBOVW90STZwcWtodmwrZUxvV2VkejY2WjY0MDN4dmZ4cXhiMXRHV1pZ?=
+ =?utf-8?B?Zm40Y1VyZUUzclZTZGxzRGIzWHJBdlpCSDYvMjVnR1FpYmk3cTAvZ1NQemJs?=
+ =?utf-8?B?cWtUaDRPMEtvWW4rdXpZaGNXZ3pNK1h2WUZ1S0lEelNCbTlMemhUTmFhb0NV?=
+ =?utf-8?B?MVhBN0ZNb0xhQ1NvOHJmWGt1L2dqN1pRb05mUWxCRG5LeTNMMFJsNTZITk1K?=
+ =?utf-8?B?YzJ2YmFUc3RNSlEzTTRTbURvN2tGdWpGc2p3T3BTRHNqZlhDSGJwYkIyVFNr?=
+ =?utf-8?B?OVVKRVc3eEZreEdvcHdjdWF6V3N3ejFTaFdLNUJhSzd6clo1V0g5M2JySW13?=
+ =?utf-8?B?QzI2bFJYM3dmNDZYM2psb09udDJLN0VyZW9PUllZMEY2WVdGMVFzdXp1OGdF?=
+ =?utf-8?B?VnI3TkRpSFJWZjRoUTZRbUpabjYwckp5eGU4SGhyVXdlNnlqNHNMbnhjaGJO?=
+ =?utf-8?B?SUhTakdKYld2T3dQN2tMTGdSamQ1anBDWXVLZ1dOOGJiUit2eU00N3kydFlo?=
+ =?utf-8?B?TFU3SFgyRDR6SlkxRHRNcGt3MjJhMUQ4UzhoUGZ6TitBVjZvd2I5TGsyWmVw?=
+ =?utf-8?B?WlZUQVdiSm41V1pBUnRjRkV3ejF2QSs5UldhZ09sVVF2SWtaaUtQamJNL0RS?=
+ =?utf-8?B?eDRPTkl5V1FKOW1HYkdXbnF2N21DVkNVeUNnejBFeDdmVVpvVDJmejRPcFlz?=
+ =?utf-8?B?Z2FtRWpjTWhWMC8rMGZzeVViYzVPTVRLWkpIOWtTZ095bkRkUXVjUk1BT1Rm?=
+ =?utf-8?Q?pg6Xac/afg1Tom8E7r+QMJWcN?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 20:17:03.4017
+X-MS-Exchange-CrossTenant-Network-Message-Id: 659fc2ef-67a4-4966-19bc-08db3ad0428a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 21:03:54.8783
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 397327bf-0e21-425f-aeae-08db3ac9b6f7
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8517
-Subject: [virtio-dev] [PATCH] transport-mmio: Replace virtual queue with virtqueue
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PdXj5JW84xlyhU5efv6rqLJHOWAeXx230HS6iHc9REdvLcUEAotq1lHDmTE66CeF8KtdQJviny7egI1pohUJ5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8939
+Subject: [virtio-dev] Re: [PATCH v12] virtio-net: support inner header hash
 
-Basic facilities define the virtqueue construct for device <-> driver
-communication.
 
-PCI transport and individual devices description also refers to it as
-virtqueue.
 
-MMIO refers to it as 'virtual queue'.
+On 4/3/2023 12:58 AM, Heng Qi wrote:
 
-Align MMIO transport description to call such object a virtqueue.
+> To achieve this, the device can calculate a suitable hash based on the inner headers
+> of this flow, for example using the Toeplitz combined with a symmetric hash key.
+> 
+I am not sure you need symmetric hash key. Toeplitz with symmetric 
+hashing without the symmetric key is possible too.
 
-This patch is on top of [1].
+So just mentioning it as a 'combined with symmetric hashing' is enough.
 
-[1] https://lists.oasis-open.org/archives/virtio-dev/202304/msg00253.html
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- transport-mmio.tex | 50 +++++++++++++++++++++++-----------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+>   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+> @@ -198,6 +202,7 @@ \subsection{Device configuration layout}\label{sec:Device Types / Network Device
+>           u8 rss_max_key_size;
+>           le16 rss_max_indirection_table_length;
+>           le32 supported_hash_types;
+> +        le32 supported_tunnel_hash_types;
+>   };
+Given that a set command is added via cvq, it make sense to also do 
+symetrric work to get it via a cvq.
+This is also similar to the latest work for notification coalescing for 
+VQ where get and set done using single channel = cvq.
 
-diff --git a/transport-mmio.tex b/transport-mmio.tex
-index 2d24b4c..f5aaace 100644
---- a/transport-mmio.tex
-+++ b/transport-mmio.tex
-@@ -108,15 +108,15 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     bits accessible by writing to \field{DriverFeatures}.
-   }
-   \hline
--  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
--    Writing to this register selects the virtual queue that the
-+  \mmioreg{QueueSel}{Virtqueue index}{0x030}{W}{%
-+    Writing to this register selects the virtqueue that the
-     following operations on \field{QueueSizeMax},
-     \field{QueueSize}, \field{QueueReady},
-     \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
-     \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to.
-   }
-   \hline
--  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
-+  \mmioreg{QueueSizeMax}{Maximum virtqueue size}{0x034}{R}{%
-     Reading from the register returns the maximum size (number of
-     elements) of the queue the device is ready to process or
-     zero (0x0) if the queue is not available. This applies to the
-@@ -126,7 +126,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     \end{note}
-   }
-   \hline
--  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
-+  \mmioreg{QueueSize}{Virtqueue size}{0x038}{W}{%
-     Queue size is the number of elements in the queue.
-     Writing to this register notifies the device what size of the
-     queue the driver will use. This applies to the queue selected by
-@@ -136,9 +136,9 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     \end{note}
-   }
-   \hline
--  \mmioreg{QueueReady}{Virtual queue ready bit}{0x044}{RW}{%
-+  \mmioreg{QueueReady}{Virtqueue ready bit}{0x044}{RW}{%
-     Writing one (0x1) to this register notifies the device that it can
--    execute requests from this virtual queue. Reading from this register
-+    execute requests from this virtqueue. Reading from this register
-     returns the last value written to it. Both read and write
-     accesses apply to the queue selected by writing to \field{QueueSel}.
-   }
-@@ -166,7 +166,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     \begin{description}
-       \item[Used Buffer Notification] - bit 0 - the interrupt was asserted
-         because the device has used a buffer
--        in at least one of the active virtual queues.
-+        in at least one of the active virtqueues.
-       \item [Configuration Change Notification] - bit 1 - the interrupt was
-         asserted because the configuration of the device has changed.
-     \end{description}
-@@ -187,21 +187,21 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     See also p. \ref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}~\nameref{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Device Initialization}.
-   }
-   \hline
--  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtual queue's Descriptor Area 64 bit long physical address}{0x080}{0x084}{W}{%
-+  \mmiodreg{QueueDescLow}{QueueDescHigh}{Virtqueue's Descriptor Area 64 bit long physical address}{0x080}{0x084}{W}{%
-     Writing to these two registers (lower 32 bits of the address
-     to \field{QueueDescLow}, higher 32 bits to \field{QueueDescHigh}) notifies
-     the device about location of the Descriptor Area of the queue
-     selected by writing to \field{QueueSel} register.
-   }
-   \hline
--  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtual queue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
-+  \mmiodreg{QueueDriverLow}{QueueDriverHigh}{Virtqueue's Driver Area 64 bit long physical address}{0x090}{0x094}{W}{%
-     Writing to these two registers (lower 32 bits of the address
-     to \field{QueueDriverLow}, higher 32 bits to \field{QueueDriverHigh}) notifies
-     the device about location of the Driver Area of the queue
-     selected by writing to \field{QueueSel}.
-   }
-   \hline
--  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtual queue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
-+  \mmiodreg{QueueDeviceLow}{QueueDeviceHigh}{Virtqueue's Device Area 64 bit long physical address}{0x0a0}{0x0a4}{W}{%
-     Writing to these two registers (lower 32 bits of the address
-     to \field{QueueDeviceLow}, higher 32 bits to \field{QueueDeviceHigh}) notifies
-     the device about location of the Device Area of the queue
-@@ -235,7 +235,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
-     0xffffffffffffffff.
-   }
-   \hline
--  \mmioreg{QueueReset}{Virtual queue reset bit}{0x0c0}{RW}{%
-+  \mmioreg{QueueReset}{Virtqueue reset bit}{0x0c0}{RW}{%
-     If VIRTIO_F_RING_RESET has been negotiated, writing one (0x1) to this
-     register selectively resets the queue. Both read and write accesses
-     apply to the queue selected by writing to \field{QueueSel}.
-@@ -274,7 +274,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
- The device MUST change value returned in \field{ConfigGeneration} if there is any risk of a
- driver seeing an inconsistent configuration state.
- 
--The device MUST NOT access virtual queue contents when \field{QueueReady} is zero (0x0).
-+The device MUST NOT access virtqueue contents when \field{QueueReady} is zero (0x0).
- 
- If VIRTIO_F_RING_RESET has been negotiated, the device MUST present a 0 in
- \field{QueueReset} on reset.
-@@ -359,7 +359,7 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
- 
- \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Virtio Over MMIO / MMIO-specific Initialization And Device Operation / Virtqueue Configuration}
- 
--The driver will typically initialize the virtual queue in the following way:
-+The driver will typically initialize the virtqueue in the following way:
- 
- \begin{enumerate}
- \item Select the queue by writing its index to \field{QueueSel}.
-@@ -422,7 +422,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
- 
- The legacy MMIO transport used page-based addressing, resulting
- in a slightly different control register layout, the device
--initialization and the virtual queue configuration procedure.
-+initialization and the virtqueue configuration procedure.
- 
- Table \ref{tab:Virtio Transport Options / Virtio Over MMIO / MMIO Device Legacy Register Layout}
- presents control registers layout, omitting
-@@ -468,14 +468,14 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
-     (see QueuePFN).
-   }
-   \hline
--  \mmioreg{QueueSel}{Virtual queue index}{0x030}{W}{%
--    Writing to this register selects the virtual queue that the
-+  \mmioreg{QueueSel}{Virtqueue index}{0x030}{W}{%
-+    Writing to this register selects the virtqueue that the
-     following operations on the \field{QueueSizeMax},
-     \field{QueueSize}, \field{QueueAlign}
-     and \field{QueuePFN} registers apply to.
-   }
-   \hline
--  \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
-+  \mmioreg{QueueSizeMax}{Maximum virtqueue size}{0x034}{R}{%
-     Reading from the register returns the maximum size of the queue
-     the device is ready to process or zero (0x0) if the queue is not
-     available. This applies to the queue selected by writing to
-@@ -486,7 +486,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
-     \end{note}
-   }
-   \hline
--  \mmioreg{QueueSize}{Virtual queue size}{0x038}{W}{%
-+  \mmioreg{QueueSize}{Virtqueue size}{0x038}{W}{%
-     Queue size is the number of elements in the queue.
-     Writing to this register notifies the device what size of the
-     queue the driver will use. This applies to the queue selected by
-@@ -496,15 +496,15 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
-     \end{note}
-   }
-   \hline
--  \mmioreg{QueueAlign}{Used Ring alignment in the virtual queue}{0x03c}{W}{%
-+  \mmioreg{QueueAlign}{Used Ring alignment in the virtqueue}{0x03c}{W}{%
-     Writing to this register notifies the device about alignment
-     boundary of the Used Ring in bytes. This value should be a power
-     of 2 and applies to the queue selected by writing to \field{QueueSel}.
-   }
-   \hline
--  \mmioreg{QueuePFN}{Guest physical page number of the virtual queue}{0x040}{RW}{%
-+  \mmioreg{QueuePFN}{Guest physical page number of the virtqueue}{0x040}{RW}{%
-     Writing to this register notifies the device about location of the
--    virtual queue in the Guest's physical address space. This value
-+    virtqueue in the Guest's physical address space. This value
-     is the index number of a page starting with the queue
-     Descriptor Table. Value zero (0x0) means physical address zero
-     (0x00000000) and is illegal. When the driver stops using the
-@@ -536,15 +536,15 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
-   \hline
- \end{longtable}
- 
--The virtual queue page size is defined by writing to \field{GuestPageSize},
-+The virtqueue page size is defined by writing to \field{GuestPageSize},
- as written by the guest. The driver does this before the
--virtual queues are configured.
-+virtqueues are configured.
- 
--The virtual queue layout follows
-+The virtqueue layout follows
- p. \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout},
- with the alignment defined in \field{QueueAlign}.
- 
--The virtual queue is configured as follows:
-+The virtqueue is configured as follows:
- \begin{enumerate}
- \item Select the queue by writing its index to \field{QueueSel}.
- 
--- 
-2.26.2
+Granted that RSS and other fields are done differently, but it was bit 
+in the past.
 
+With that no need to define two fields at two different places in config 
+area and also in cvq.
+
+Just the new opcode is needed for GET and things will be fine.
+
+> +If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the device supports inner header hash and
+> +the driver can configure the inner header hash calculation for encapsulated packets \ref{sec:Device Types / Network Device / Device OperatiHn / Processing of Incoming Packets / Hash calculation for incoming packets / Tunnel/Encapsulated packet}
+> +by issuing the command VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG from the class VIRTIO_NET_CTRL_MQ.
+> +The command sets \field{hash_tunnel_types} in the structure virtio_net_hash_tunnel_config.
+> +
+> +struct virtio_net_hash_tunnel_config {
+> +    le32 hash_tunnel_types;
+> +};
+> +
+VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG_SET
+and
+VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG_GET
+
+> +Filed \field{hash_tunnel_types} contains a bitmask of supported hash tunnel types as
+> +defined in \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash tunnel types}.
+> +
+> +\subparagraph{Tunnel/Encapsulated packet}
+> +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Tunnel/Encapsulated packet}
+> +
+> +A tunnel packet is encapsulated from the original packet based on the tunneling
+> +protocol (only a single level of encapsulation is currently supported). The
+> +encapsulated packet contains an outer header and an inner header, and the device
+> +calculates the hash over either the inner header or the outer header.
+> +
+> +If VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received encapsulated packet's
+> +outer header matches one of the supported \field{hash_tunnel_types}, the hash
+> +of the inner header is calculated.
+s/one of the supported/one of the configured/
+Because support comes from GET or config space area; out of which a 
+smaller or equal subset of tunnel types are configured.
+
+> +\devicenormative{\subparagraph}{Inner Header Hash}{Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
+> +
+> +The device MUST calculate the outer header hash if the received encapsulated packet has an encapsulation type not in \field{supported_tunnel_hash_types}.
+> +
+Since the configured set can be smaller, a better reword is:
+The device MUST calculate the hash from the outer header if the received 
+encapsulated packet type is not matching from hash_tunnel_types.
+
+> +The device MUST respond to the VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG command with VIRTIO_NET_ERR if the device
+> +received an unrecognized or unsupported VIRTIO_NET_HASH_TUNNEL_TYPE_ flag.
+> +
+> +Upon reset, the device MUST initialize \field{hash_tunnel_type} to 0.
+> +
+> +\drivernormative{\subparagraph}{Inner Header Hash}{Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
+> +
+> +The driver MUST have negotiated the feature VIRTIO_NET_F_HASH_TUNNEL when issuing the command VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG.
+> +
+> +The driver MUST NOT set any VIRTIO_NET_HASH_TUNNEL_TYPE_ flags that are not supported by the device.
+> +
+>   \paragraph{Hash reporting for incoming packets}
+>   \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash reporting for incoming packets}
+>   
+> @@ -1308,6 +1450,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>    #define VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET        0 (for automatic receive steering)
+>    #define VIRTIO_NET_CTRL_MQ_RSS_CONFIG          1 (for configurable receive steering)
+>    #define VIRTIO_NET_CTRL_MQ_HASH_CONFIG         2 (for configurable hash calculation)
+> + #define VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG       3 (for configurable inner header hash)
+MQ_TUNNEL_CONFIG is not mutually exclusive with HASH or RSS config.
+Hence adding it here is incorrect.
+
+See the text below.
+"If more than one multiqueue mode is negotiated, the resulting device 
+configuration is defined by the last command
+sent by the driver."
+
+So MQ_TUNNEL config without RSS or HASH will be an undefined behavior, 
+as it doesn't what kind of hashing to be done.
+
+So please tunnel GET and SET commands outside of VIRTIO_NET_CTRL_MQ.
+This way it can work side by side with rss, hash and auto modes.
+
+I am sorry for the late response.
+I had a day off last week and other active discussions as you notice.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
