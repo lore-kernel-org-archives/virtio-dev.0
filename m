@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12140-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12141-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 86E07C7619A
-	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 19:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45459C76196
+	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 19:24:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D15BE42A9C
-	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 19:24:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 54F40604C9
+	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 19:24:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CB2E99865D6
-	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 19:24:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 31888986662
+	for <virtio-dev@archiver.kernel.org>; Tue, 11 Apr 2023 19:24:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BF811986371; Tue, 11 Apr 2023 19:24:34 +0000 (UTC)
+	id 1C4E698672A; Tue, 11 Apr 2023 19:24:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,36 +24,34 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 55A57986661;
-	Tue, 11 Apr 2023 19:24:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 47D909866A8;
+	Tue, 11 Apr 2023 19:24:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CZayAE0m1lUz93oOeu6ylhSlh2VEBwsDjSa0wJfb+FlTCaKHAHt61NIm0hE0i/KL7W63OPcPw2NEv2/l7VmvhAQOZBJ02UZSfpssX+L8s3l9uaclZOVH2kqIGJ4fboGwNoYO15oI01SwnMx/rzgpRVQ+IkzRKAtRf9X3aZTFPqqRadnP9Z6dqB6Dyse3f17TdeDIZuhuZdiZRr0OZpAhTlgjWP/OFePIJAdwK5ZtyA2UvuIFYs0CCMr8JEP+p17oDxQPgF4t4E/A19JDqIMvoKMCJSpkzjQhOCYBmewTJvtw1aaVEpUDSEE2TfBNcYGeiUh8ap2WQm7iRAZdZPg7Aw==
+ b=E6T9p4Cibpoth/QkpD4aKd95pALghF4ZNootKbl4mYIJ+ocarLkbO42/zMVXQC9voOWN35201gytf1Lfu28feCuU5sKwYjWDvOugZ5WrILVUPCvkkYq9oWhMu/PBFLX49iAbvSr0knSq6rznPVMW92Bv6hA+EMp3Ze5jqPlFjr0uoQdZSnN0M8R89cy++BE5+U3hyz9SCnqknUUHLoDoUjtihvWTRzQahgKeWM1C6DfZkyS+6N1qYRvm57C+h0nQLDyehXWoTe1UH2/qYOxiqAMQQ4YymLC1qldcQYe5WkKy4JdY1zsMJ2lgzzER/a8zOnqPrHF+zPFC/Oe229gFtw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5ieOfD8TvsPSS4zRZTyl+CE/fdHT6foNhDvw3rkLg5w=;
- b=nB19O22XAvGQDu9blTPYXiH1gSKtUZj/ORTMJfaieLzo+rYjSsH5k13KL8Ue6QfhOGQ0C8zyZh7FcOsSaGc7dImnQB6jH3+VFfPGCvPTbpfuQB8jSjDy0pp2z2OgK4OFjJFHn/lOGmJrWnEnIxzTX9Zr9yyZFvJVQbjajGdEGhkbsdb90qfEy3MM0Cb6O3xFfQZm4Xa7JlY7Jk/8p9qm14GPDS+N6vSDCwCWUL0W0tqrxUI4nBcVjc720gViXAOIjEjgJ6oSp+8aFRQEPpzA6NIu8xpKxEa6khKQYY3+Y7OglX0cr7hQmGWqKk0Fkki9EwHSDCLU8YFI+lGbYBKCAA==
+ bh=LOmZEzB8MKK7vo7E3WGI7VMeIea4xw7j0cIebonlIfQ=;
+ b=ZWVynVv+vTvG9Z9rv2ZscJ/Oi2fL8V9+KJU2/KDyckpsGHZYCVDLGIzOuUHOwfyiuuNnWkykXkrQl2Q+bOFoXfqC3ZsNohw7q8X0f+EdaFHmy2AwtA2xjTOPhlZVGVEk5b3Xk9TOPOq0Ypj94xPLL4oULWqIDurTCjFf1FPRe7RNtsxvwgZHALUtPbQtdvn+X1cxzkEg4BUlNEVOc8f7j3WVOCeH2Jt3oagW5XOOLAROppj25OvU+ka8hfPIe2/ZJcd0+IZXiH4PSMVsXvzKJtfptMH8VJ5wT7dHGoFgn9WYFKQnu0HFgcaKDLejjssd7TW7pRSG8EI92HdkP13i7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
 CC: <sgarzare@redhat.com>, <pasic@linux.ibm.com>,
 	<virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
 	<parav@nvidia.com>
-Date: Tue, 11 Apr 2023 22:23:41 +0300
-Message-ID: <20230411192341.751841-12-parav@nvidia.com>
+Date: Tue, 11 Apr 2023 22:23:30 +0300
+Message-ID: <20230411192341.751841-1-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230411192341.751841-1-parav@nvidia.com>
-References: <20230411192341.751841-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,112 +60,158 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT016:EE_|DS7PR12MB6335:EE_
-X-MS-Office365-Filtering-Correlation-Id: 15a4452e-8c7e-4473-e244-08db3ac25596
+X-MS-TrafficTypeDiagnostic: BL02EPF000145BA:EE_|MN2PR12MB4173:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3a6a52c9-bc59-44d8-6054-08db3ac25610
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	QwRh6TvchT8TWX09JRo4K0wcBiR138YFSm1aF0FIq+Cq0UFJI5o59fUebQN+4pxS4eg311wMnJagKW5dxdUAQ8q4Eia3iAweQAnGbPu8SUSBvDdhOPK8pH8BrPNpzOadT49KtBJ7tF3yvvbMeLnno+Yt5h1pJqKpVQhq8ahXt5A47/ifus0B1CuAZtJwYfQvdd1eLxCOGK3NmwM/5Meu6wWoh/542pz1gI56w1VvYVjlQjyu5auoMXCEl3YYV+kft0tr9vP7HIxvQtc83p+tornDZQaERYDgP1kMQepXvGv0SGA3diWd8fajh8Jg3sZetP2BjXI6Orjy1MkIzjiTghX2B8BVcxDHEzhfRahkuPrje/RW4q2IPvafPpK1kKVSs4UC8em9Dj8mE3sxZbsTaFgBTaLKm+75ykqsvSY6B7SVu+v+Zd5LCnBCrV1gc1W0NtTGGLD+QEMP/N3EBHZdKKr4cgrXZI7XpCiPuLmwVhwqNuKvUcTn1NFZmRrdVDeHE+UBqRcwSN14DZhw2S/JeGNRwHb/uOuXGrQTj6Jrw5h07P8s3QezsdD9S99/5EnUPxRB044lcuLeuMXpLtv9ngKj0iSl77ubqMAyYuJEzU6LTvU/PXq8WzJyhmw33xeILAxEZXdslNwwq6D9gv2QDZJCl3jX9iImXred5HUHYVGg9nKDXXEh0g4Kgwwe6WIgwibjWqhDmjUb76IIdy5A8Qdnue5FsrQPCL+FnsR8FLQyzx20LtPNubBalnZ7phmkW801diQLLILGQ771S1r3mkb9shxOAR7yqYdTKPlMkTWaNzQHVlsUFHarwVy4Rx13
+	ijlV8QgjXprQCasuojkxZaj8lfkwE0QoduySisyKSdj+uuQQbonwIGYPEZcOObhXbRfbYtQw8jOs4GZkh3RSrXgUBHGsKPPzaps6PUf7gOXmFpjPYZB2HzgHIW/0hzEhk95Ns0wUBnlMpWZdhKokWi/r/lVWKifdb0teJ252nlkwZylCxnb+a1yr9oFdLyAclB3n0MWjFZvyblYw3jINw/Pwpu1xkSMQTZy2skkc1EXhIUBTylDzy17QIq156dzzPdJeyt6dQi2neRI6OCwhHKojBooTJ3+XL80nExSoPw2gB12UJ3NitCdD9xD2WgebxBwFRRfulj7C7sjjKAWQYgrByHzTc8R56/HNBPkg+c5UMfR45b9jPOXP9KuwzkV+JTz0rUv80+3F2soKMLHSTS9CH07R6ifu1N7NRFQxXdulpT/9+KQ3sirax6mV+TAgnEIxxzbaHduuSjYiDyuOPYk/d1SY8yyxCBultzvuyGGa8C+GDDu1IPUWyiYbEac+KV7wGRA87GjQjlQP7KxwCKG2OtiRg6ADYNLDvQ9ylWwl/uO6lLAFTo5v34cqht/8jyVDD6R6p0caYJ0cXAuNZtnOKF09YVpl+GS6whpGwqZXdMYHyjaBu6IEIeA+Wmp4uBqFmgQIk9Du9rGG4H9TEsfHrZglOm8btL7uMo7GqSc/GoMa5LmqjGTiTZG94Z3w3FT924tB5GlBHsyB23zO7B03taqF3Z08a99g4Cv0P6CkIGh14GqJhi+jxq9tBiCOED2Qbj6Vz+UV0D/Zvmr+KSyQNRDsoXxenpm/eij9gB0=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199021)(36840700001)(46966006)(40470700004)(36756003)(86362001)(41300700001)(110136005)(316002)(54906003)(8676002)(4326008)(966005)(70206006)(478600001)(70586007)(82310400005)(5660300002)(40480700001)(36860700001)(2906002)(15650500001)(8936002)(356005)(7636003)(34070700002)(186003)(16526019)(82740400003)(6666004)(107886003)(26005)(1076003)(336012)(2616005)(83380400001)(426003)(47076005)(40460700003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(346002)(136003)(451199021)(40470700004)(36840700001)(46966006)(478600001)(40480700001)(47076005)(36756003)(83380400001)(86362001)(40460700003)(356005)(82740400003)(426003)(2616005)(7636003)(966005)(2906002)(316002)(110136005)(16526019)(1076003)(336012)(36860700001)(54906003)(26005)(186003)(8676002)(8936002)(6666004)(82310400005)(41300700001)(5660300002)(107886003)(70586007)(4326008)(70206006);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 19:24:13.5825
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 19:24:14.3162
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15a4452e-8c7e-4473-e244-08db3ac25596
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a6a52c9-bc59-44d8-6054-08db3ac25610
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT016.eop-nam11.prod.protection.outlook.com
+	BL02EPF000145BA.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6335
-Subject: [virtio-dev] [PATCH v13 11/11] virtio-net: Update vqn to vq_index for cvq cmds
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4173
+Subject: [virtio-dev] [PATCH v13 00/11] Rename queue number to queue index
 
-Replace field name vqn to vq_index for recent virtqueue level commands.
+1. Currently, virtqueue is identified between driver and device
+interchangeably using either number or index terminology.
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
-Signed-off-by: Parav Pandit <parav@nvidia.com>
+2. Between PCI and MMIO transport the queue size (depth) is
+defined as queue_size and QueueNum respectively.
+
+To avoid confusion and to have consistency, unify them to use
+index.
+
+3. Field name vqn in the driver notification structure is
+ambiguous as it is supposed to hold either vq index or device
+supplied vq config data.
+
+4. Device is really supplying queue identifier or a opaque data in the 
+queue_notify_data register, and this often get confused with
+very similar looking feature bit NOTIFICATION_DATA.
+
+Solution:
+a. Use virtqueue index description, and rename MMIO register as QueueSize.
+b. Replace virtqueue number with virtqueue index
+c. RSS area of virtio net has inherited some logic, describe it
+using abstract rss_rq_id.
+d. rename queue_notifify_data to queue_notify_config_data.
+e. rename vqn to vq_notify_config_data to reflect it can hold either vq
+index of device supplied some id.
+
+Patch summary:
+patch-1 introduce vq number as generic term
+patch-2 renames index to number for pci transport
+patch-3 rename queue_notify_data to queue_notify_config_data
+patch-4 remove first vq index reference
+patch-5 renames mmio register from Num to Size
+patch-6 renames index to number for mmio transport
+patch-7 renames num field to size for ccw transport
+patch-8 renames vq by its index for ccw transport
+patch-9 for virtio-net removes duplicate example from requirements
+patch-10 for virtio-net updates rss description to use vq index
+patch-11 for virtio-net to update cvq notifications coalescing commands
+
+This series only improves the documentation, it does not change any
+transport or device functionality.
+
+Please review.
+This series fixes the issue [1].
+
+[1] https://github.com/oasis-tcs/virtio-spec/issues/163
 
 ---
 changelog:
 v12->v13:
-- new patch
----
- device-types/net/description.tex | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+- renamed queue_notify_id to queue_notify_config_data
+- added patch to cover notifications coalescing commands after rebase
+- fixed left out virtqueue number to virtqueue index
+- dropped abbreviation of virtqueue to vq
+v11->v12:
+- replace number to index
+- avoid confusion around vqn field and rename to vq_notify_id
+- rename queue_notify_data to avoid confusing with NOTIFY_DATA
+v10->v11:
+- added Reviewed-by for all the reviewed patches
+- updated commit log of patch-8 to drop rq_handle reference
+- skipped comment to further use rss_rq_id, as rss_rq_id usage
+  and structure are self describing
+v9->v10:
+- added virtqueue number part in content in braces
+- replaced queue_select to vqn in ccw
+- avoided aggrasive alignment of 65 chars
+- updated commit log to drop reference to already merged patches
+- added review-by tag for already reviewed patches
+v8->v9:
+- addressed comments from David
+- few corrections with article
+- renaming 'virtqueue number' to 'vq number'
+- improving text and wording for rss_rq_id, avail notification
+- commit log of specific change in individual patches
+v7->v8:
+- remove note about first virtqueue number
+- skipped Max's comment to put word 'structure' in same line as its
+  crosses 65 chars limit per line
+- reworded queue_notification data set line, as '=' and vq number
+  wording was odd
+v6->v7:
+- remove text around first vq as it is already covered in the basic
+  virtqueues facility section
+v5->v6:
+- moved the vq number description from middle of vq operation
+  to beginning of vq introduction
+v4->v5:
+- fixed accidental removal of "unclassifed packets".
+- simplfied text around indirection_table mask
+- removed rss_rq_id references as indirection table and
+  unclassified_queue data type is self explanatory
+v3->v4:
+- moved note to comment for ccw
+- renamed rq_handle to rss_rq_id
+- moved rss_rq_id next to rss_config structure
+- define rss_config structure using rss_rq_id
+v2->v3:
+- addressed comments from Michael
+- added previous definitions for ccw fields
+- moved rq_handle definition before using it
+- added first patch to describe vq number
+- updated pci for available buffer notification section
+v1->v2:
+- added patches for virtio net for rss area
+- added patches for covering ccw transport
+- added missing entries to refer in mmio transport
 
-diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-index e4d236e..a55554c 100644
---- a/device-types/net/description.tex
-+++ b/device-types/net/description.tex
-@@ -1560,7 +1560,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- };
- 
- struct virtio_net_ctrl_coal_vq {
--    le16 vqn;
-+    le16 vq_index;
-     le16 reserved;
-     struct virtio_net_ctrl_coal coal;
- };
-@@ -1574,7 +1574,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- 
- Coalescing parameters:
- \begin{itemize}
--\item \field{vqn}: The virtqueue number of an enabled transmit or receive virtqueue.
-+\item \field{vq_index}: The virtqueue index of an enabled transmit or receive virtqueue.
- \item \field{max_usecs} for RX: Maximum number of microseconds to delay a RX notification.
- \item \field{max_usecs} for TX: Maximum number of microseconds to delay a TX notification.
- \item \field{max_packets} for RX: Maximum number of packets to receive before a RX notification.
-@@ -1587,7 +1587,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- \begin{itemize}
- \item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, the structure virtio_net_ctrl_coal is write-only for the driver.
- \item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure virtio_net_ctrl_coal_vq is write-only for the driver.
--\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} and \field{reserved} are write-only
-+\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vq_index} and \field{reserved} are write-only
-       for the driver, and the structure virtio_net_ctrl_coal is read-only for the driver.
- \end{itemize}
- 
-@@ -1596,9 +1596,9 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- \item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
- \item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
- \item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
--                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
-+                                        for an enabled transmit/receive virtqueue whose index is \field{vq_index}.
- \item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
--                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
-+                                        for an enabled transmit/receive virtqueue whose index is \field{vq_index}.
- \end{enumerate}
- 
- The device may generate notifications more or less frequently than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
-@@ -1608,12 +1608,12 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- with two pairs of virtqueues as an example:
- Each of the following commands sets \field{max_usecs} and \field{max_packets} parameters for virtqueues.
- \begin{itemize}
--\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueues having vqn 0 and vqn 2. Virtqueues having vqn 1 and vqn 3 retain their previous parameters.
--\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 0 sets coalescing parameters for virtqueue having vqn 0. Virtqueue having vqn 2 retains the parameters from command1.
--\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 0, the device responds with coalescing parameters of vqn 0 set by command2.
--\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 1 sets coalescing parameters for virtqueue having vqn 1. Virtqueue having vqn 3 retains its previous parameters.
--\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueues having vqn 1 and vqn 3, and overrides the parameters set by command4.
--\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 1, the device responds with coalescing parameters of vqn 1 set by command5.
-+\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueues having index 0 and index 2. Virtqueues having index 1 and index 3 retain their previous parameters.
-+\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vq_index} = 0 sets coalescing parameters for virtqueue having index 0. Virtqueue having index 2 retains the parameters from command1.
-+\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vq_index} = 0, the device responds with coalescing parameters of vq_index 0 set by command2.
-+\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vq_index} = 1 sets coalescing parameters for virtqueue having index 1. Virtqueue having index 3 retains its previous parameters.
-+\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueues having index 1 and index 3, and overrides the parameters set by command4.
-+\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vq_index} = 1, the device responds with coalescing parameters of index 1 set by command5.
- \end{itemize}
- 
- \subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
-@@ -1663,7 +1663,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- 
- \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- 
--The driver MUST set \field{vqn} to the virtqueue number of an enabled transmit or receive virtqueue.
-+The driver MUST set \field{vq_index} to the virtqueue index of an enabled transmit or receive virtqueue.
- 
- The driver MUST have negotiated the VIRTIO_NET_F_NOTF_COAL feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET.
- 
+Parav Pandit (11):
+  content: Add vq index text
+  content.tex Replace virtqueue number with index
+  content: Rename confusing queue_notify_data and vqn names
+  transport-pci: Avoid first vq index reference
+  transport-mmio: Rename QueueNum register
+  transport-mmio: Avoid referring to zero based index
+  transport-ccw: Rename queue depth/size to other transports
+  transport-ccw: Refer to the vq by its index
+  virtio-net: Avoid duplicate receive queue example
+  virtio-net: Describe RSS using rss rq id
+  virtio-net: Update vqn to vq_index for cvq cmds
+
+ content.tex                      | 20 ++++++++----
+ device-types/net/description.tex | 53 ++++++++++++++++++------------
+ notifications-be.c               |  2 +-
+ notifications-le.c               |  2 +-
+ transport-ccw.tex                | 15 +++++----
+ transport-mmio.tex               | 55 +++++++++++++++++++-------------
+ transport-pci.tex                | 28 +++++++++-------
+ 7 files changed, 106 insertions(+), 69 deletions(-)
+
 -- 
 2.26.2
 
