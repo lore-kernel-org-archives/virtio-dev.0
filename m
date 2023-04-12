@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12173-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12174-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EEA19C7619A
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 04:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 44A5CC77B6E
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 04:52:14 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 59D022B020
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 04:51:44 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9E7CD335C7
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 04:52:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 39C75986549
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 04:51:44 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 93310986549
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 04:52:13 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1DD6F9841AB; Wed, 12 Apr 2023 04:51:44 +0000 (UTC)
+	id 878409841AB; Wed, 12 Apr 2023 04:52:13 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,305 +24,113 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0C3C4986509
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Apr 2023 04:51:44 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7752A986509;
+	Wed, 12 Apr 2023 04:52:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: TyuiF_H2OeSloHIRBaTkSA-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681275101; x=1683867101;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WdQtxprxYgAIMd8JUlVVUKkr0OXA2Ma+u4/zdkzWUsg=;
-        b=CBn8lyj5Gaxmy2gOMMNOj2bsBiLGmt78HayN0+fRYCo1IhX/ZfKL9TuA6jOfR77E2/
-         QgMptqYZroqnGmoyspxCZnJZnTb686sjq68tVMJltSVJnUIdPkdxP5W5+OVAAXDtKONG
-         n6A7iWinQY0qDg9AaBnRn+7O1gDxrKxRspWWax+mFBG4DRxXbKgKKZ2Pifh0mCOAYHWp
-         fHZ3HX8rkgu2S3LAA9LRsqria/j0W7FObfh7vU9ahiBd4Me1UBd57qBIvL3c0dFfbpfv
-         YBp72q1BS4R+Os8nbbPq+0KIAaOOvovx9vbealZu9llLhRABE8xKuge3yDIxD0GJjZTh
-         JswA==
-X-Gm-Message-State: AAQBX9eR8/8lil0jULn1r3/iSuaiNDkOTdDSKAZq+kuymyiNyzyWJeWC
-	CiHMHXNMcvrr/5ZG8qY1vStI3VftXBQvp8MeVzFW5YyTCI4KKidMFX8eAVR2ZaRKPeZHw4SpciY
-	Jheh2Py9EAmd+aIZk9T1F9ROJ22UIqs8mNgNReY62htK4
-X-Received: by 2002:a05:622a:1189:b0:3d7:9d03:75ae with SMTP id m9-20020a05622a118900b003d79d0375aemr539876qtk.10.1681275100921;
-        Tue, 11 Apr 2023 21:51:40 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YzjpqlsHhhcVdirwnm3zGTHgg5iNJE278P7tO96Ym7up5DG74gLr9kGv2ypqNSgcfHc8F1TAY45aCco9yJiKU=
-X-Received: by 2002:a05:622a:1189:b0:3d7:9d03:75ae with SMTP id
- m9-20020a05622a118900b003d79d0375aemr539867qtk.10.1681275100586; Tue, 11 Apr
- 2023 21:51:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230410020906-mutt-send-email-mst@kernel.org>
- <CACGkMEtiROwuB+ECJqd13qdpMJSTMoDOzi1u_i85==42C0XSXw@mail.gmail.com>
- <20230410023715-mutt-send-email-mst@kernel.org> <CACGkMEs+E_OarQxP3NmLk3iSi7U0WgAn-m3b4eX7ULu1+v=sOw@mail.gmail.com>
- <20230410060417-mutt-send-email-mst@kernel.org> <CACGkMEuc47PdmQdC67Nz4AvX_+jy+XBgCkwZ1BHmM8VGb9gywA@mail.gmail.com>
- <20230411030056-mutt-send-email-mst@kernel.org> <CACGkMEt2QAfhCgpYjSRNzf3n4W_HJLrMfE9JHzocR_gPH_Zrtg@mail.gmail.com>
- <20230411063945-mutt-send-email-mst@kernel.org> <CACGkMEufWUXHKahg3GLOKfV5aptbiek_DKwy+7rCfMya2GPaTQ@mail.gmail.com>
- <20230412000802-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230412000802-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Date: Wed, 12 Apr 2023 12:51:29 +0800
-Message-ID: <CACGkMEshNydwBD=Q0JW-SDY6xyiJ4uVrLn+pxbUrinycBKwsrw@mail.gmail.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DzwAwTSvD9YKHrLwv4ZCCCumN/+tNolx5Z5x3VN0sXzlOWdOz0jTguP56Xm9mNAUb1eLpCIH9/BorUs70o/rT5otEmgGZEqf5ohQK1Ld71n3O7uyXAdvzN+RHbBzoc+HsPa+v715gq/ibV7MkFMJeOsC+CQYtIykL3GUKXxplxNkhC7wNtaGuGIYM2dqz++lmdi8jKn52vcHi9Y1Bs++Dhew8nkF+50S5WIH7jrswRKmm6+91JTwGaBjjfrG0Anl7IC0P0We5/2MIijLCx/p5sg8E2WksRI9kE54I+IOC0kRNbjqDDEgCWCR0yd3roRyArdNsN7LKjelJhIWFwOiiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CvY6F0a6f//lkcFOMVr4wDiFSVbTyJQikmz03SE1c/A=;
+ b=RE387Xc9MvurdihJRTAjrCnkFu+xuLTqnaH+CM2xY1mZqehv7ImzjVyWStFyx+n1cwxaL5uL++h+t0op/pkwL+CkA/3Y/5RPuocKI2pxUDzr//breHMIVi/VnLMVqp/zSgFqOSwzyZtXIkS+fcr1+X0XKGOuv6PKbW+AfbgzeOY++LkVjxcTaINbCJrNixCdNwIX5muRQLr7lplsKxEDLqTauThiZdiKqf8Dv/HDmso7nd2QOEfVhQ1HFJuVZvZMETb8BZzJ6MFkFgQmRrmktkLvCDsAEtvg0IqOalz3Ly30VoIbM5MQq+6CUSCDByotCOGc835E7f0lmhJ17HocwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
 To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, 
-	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com, 
-	Satananda Burla <sburla@marvell.com>, Maxime Coquelin <maxime.coquelin@redhat.com>, 
-	Yan Vugenfirer <yan@daynix.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH 00/11] Introduce transitional mmr pci device
+Thread-Index: AQHZY1tF5ObSeHDFk0eWHj0gIzL7fK8nLToAgAAAdXA=
+Date: Wed, 12 Apr 2023 04:52:09 +0000
+Message-ID:
+ <PH0PR12MB5481EC4B82A0A57F08ABF3F7DC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230330225834.506969-1-parav@nvidia.com>
+ <20230412004331-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230412004331-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SA3PR12MB7974:EE_
+x-ms-office365-filtering-correlation-id: 559bb1b0-d8a9-407a-5d83-08db3b11ac5a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ nKnQz0GoffZuzEsM7aYG2BBaJs21Mu4zegUjYV+aJid4sI1fXUlkkEYwebtyJtF6nztJlqi9nUVxObDj67Jl4oInUue7nZZgpbfFnvnwTQ+jpbfHRN5F4ttpJV0F4SCUxXNyNYKyaB/VtZ9P9hMcdRYFTqs/mTMbNCqFkZOj+FGFPpJeaBX8S+M+6I4n16lXDos/UY6c8cK5OxkQPQmJ8kFgV8xU4IUqYo4x3iI0GvqEBki/HKqSWce6tJzFI2kFVPSFUJ9BC+gkv1N8zVuTXUxkBy3CfjmoG3jfBqzko0j6iCYRMJAIpPNTPrspWsNmgp3NPZmXpNnKrjwjhBn0aJZbtkU1kdLC7ypKqcb3zNWAzrzfZqPUI61ap102N3CabAbrb4sl0Aca+2s5SYYZwOmEmbkbr2mGcS3+jlR9xy7FRuYUZW4XoOsZNgeiKwBoWWlTqF1aYMce987ePFAUJrpUUYdJbLb38NuQqbo+ipz6G8FNwlgsdESZPS2XiMvnv3FC3LwDMH4fdT/oueHOOu6FeX1zaSTVWdYV0IZ+3XCfESitaz4YfHDtUvxUnvF3B2floMT5DlhY4lBroz9k1hbLtSsKtgno9LiPvLPlFPsFTvSPpyFQQwNmEZ1Fj3Bw
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(136003)(39860400002)(396003)(346002)(451199021)(38070700005)(2906002)(4744005)(38100700002)(5660300002)(52536014)(55016003)(8936002)(8676002)(86362001)(9686003)(71200400001)(7696005)(6506007)(107886003)(83380400001)(54906003)(478600001)(122000001)(33656002)(186003)(66946007)(76116006)(41300700001)(66476007)(6916009)(4326008)(66446008)(64756008)(316002)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?4ys3bscRY/KelFzfJ2sRnRrpZYjfZtNwPS55iephuq/N/gQX30/JdL977TAb?=
+ =?us-ascii?Q?It1YT0H3s8iVsz2LLkDxqePBiMX9c6ChK75QL4M+UwfNvL1vhSZrM/uHhfnO?=
+ =?us-ascii?Q?A6pUHqLyNre+NpvfLB54hhbAuCaDKZyljKXB9Sd9NUMLFyFTZEbyNwGNQJEo?=
+ =?us-ascii?Q?vTX+1Wj3KO6uXZqJQ0oxh7rbNrLZ54E0IlWvwY2W/Qk6XJ5nYNGjEaml3Zjr?=
+ =?us-ascii?Q?KEVUA/0FQ272FUAvTJXqm5yjUSJAEOxkoiapqA+Z6T/Svj5jrlAR4s/iujfX?=
+ =?us-ascii?Q?FOKARnnZ42zIjhYJCy6EZejkulcWPDkPi2O8CLREfF/hnXL0f2Y6rligyFrM?=
+ =?us-ascii?Q?KuuFKUjpdmdoXVA6fwm/Mgi0rviVnh8FiDQD/NJVmIbSEdE661uf1/BgTZd4?=
+ =?us-ascii?Q?mE6T02z/25pnotElzj9O7NGt0pv/Pv4TC28yQxNK0t7nxZ09W+/lyS1X6NQD?=
+ =?us-ascii?Q?lsvnrl0m0Fz1eI/M3tiHkHVIcR3bFh4jAacbzoXR7zdD0cWInuPDw4ude1Qc?=
+ =?us-ascii?Q?j7b9NnnbclZb/xSAJhnEWpk2XI8gea3KPlRKSlRy11xDsK44nBQggO+fR/15?=
+ =?us-ascii?Q?dxKKReicW4vG4DcO4/VbbL8tzej5DhNCb82Plpm5oQfAb8vTY9Sp67lCXiqw?=
+ =?us-ascii?Q?a8ugGHHwtlKOax9dl8GWBGLJnzx322Q5mLL6ArTZYm9IrXLZR5wuiit0fjH9?=
+ =?us-ascii?Q?vtIWSfi63YJ3q7oUVMhqNCGiY2uCN4d4m3D1XQgo0iV06Iw5GXjfoOUbn+HQ?=
+ =?us-ascii?Q?wq94TyJChiulgHTF51npx/fBwl7myCFXCd8u/Z/R8we2OcjendJwwJbWdxgQ?=
+ =?us-ascii?Q?GH1H5K3iyBLUHu3rym6/VlQSnl5Xia6Tc0dVKRovZGCKaKE64wIydZChNRew?=
+ =?us-ascii?Q?knXvgOcp9eVMZOtqbNIpETrcBnfuBnUajhIQOwBID86fBQ/K9D3tzJLmu8Vm?=
+ =?us-ascii?Q?wIH6ljMEuzagSHKb1DfoOfnBk/6+HaKog5wl13YHAJ7PgstaJ7Gf1rxHgk9/?=
+ =?us-ascii?Q?SMat82g3XjuXRS6Th/X3oWc5sEvIVcsrqGREYEjZzoc/Y5ncR4B1bikFz+E+?=
+ =?us-ascii?Q?EKjAaCtLFQoeaahmAqBt3GNbp/38VZx2FxdGflIDRlwRrpp65fIJSPSQMAf1?=
+ =?us-ascii?Q?65OybkKOVG2CG4ZbOOYlrHjbNHV4I3IfLivdK8LUfxwo0dJCRAbCbg2McnXQ?=
+ =?us-ascii?Q?hqaLr4EZRE2R9UVzzAeBJ0rnCDnwvbDtOcC+S8ocNcAqwQNBXD9d8di42Frn?=
+ =?us-ascii?Q?fLp8ryqjW7dYHE/QeVJciBBeYe8J937lsEXGdazgW1b7v64NNhMkksmfmxmB?=
+ =?us-ascii?Q?PtchHAZB6BhHnkYZ7TMQNQCmE3cciGasJo9ofQjG/N+7JRbuSyH8fo4X0ZjW?=
+ =?us-ascii?Q?FwVDqnol8yGEH+09Pk//MfAbQhPrayiInTO/H5PyLpoBwFney8xiFs8EjyRm?=
+ =?us-ascii?Q?5TEyn/3Srmoi4RBm2qG0nidJjaXtBMiXp8cx7MQFdOXE21VnxU2qGd2y0z2C?=
+ =?us-ascii?Q?1V7q+blHfebLhNGgeORGIxuKsc61IQhXj+RMgv0avWa0J6clqNajkcv6IHt3?=
+ =?us-ascii?Q?Ng+ucwsM2FrGIA44ri3I1Sm/IzqoATy1dZu5ihlix6MEqwIVl8XY/nmC8VXQ?=
+ =?us-ascii?Q?GPMVpW1p9+eTw2Io+XUoKEE=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
- MMR dev config registers
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 559bb1b0-d8a9-407a-5d83-08db3b11ac5a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2023 04:52:09.4681
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CRmrG5Vg/wMB8Ntf3+2APxHb8BQUW2GO4EsoQaQ7o9o/JEME+C/+JzHJOeq+J9MN7HxxzOIAHnR8j36bClRIoQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7974
+Subject: [virtio-dev] RE: [PATCH 00/11] Introduce transitional mmr pci device
 
-On Wed, Apr 12, 2023 at 12:15=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com=
-> wrote:
->
-> On Wed, Apr 12, 2023 at 11:58:39AM +0800, Jason Wang wrote:
-> > On Tue, Apr 11, 2023 at 6:42=E2=80=AFPM Michael S. Tsirkin <mst@redhat.=
-com> wrote:
-> > >
-> > > On Tue, Apr 11, 2023 at 05:01:59PM +0800, Jason Wang wrote:
-> > > > On Tue, Apr 11, 2023 at 3:04=E2=80=AFPM Michael S. Tsirkin <mst@red=
-hat.com> wrote:
-> > > > >
-> > > > > On Tue, Apr 11, 2023 at 10:13:40AM +0800, Jason Wang wrote:
-> > > > > > On Mon, Apr 10, 2023 at 6:06=E2=80=AFPM Michael S. Tsirkin <mst=
-@redhat.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Apr 10, 2023 at 03:20:52PM +0800, Jason Wang wrote:
-> > > > > > > > On Mon, Apr 10, 2023 at 2:40=E2=80=AFPM Michael S. Tsirkin =
-<mst@redhat.com> wrote:
-> > > > > > > > >
-> > > > > > > > > On Mon, Apr 10, 2023 at 02:20:16PM +0800, Jason Wang wrot=
-e:
-> > > > > > > > > > On Mon, Apr 10, 2023 at 2:15=E2=80=AFPM Michael S. Tsir=
-kin <mst@redhat.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > On Mon, Apr 10, 2023 at 09:33:32AM +0800, Jason Wang =
-wrote:
-> > > > > > > > > > > > This is fine for vDPA but not for virtio if the des=
-ign can only work
-> > > > > > > > > > > > for some specific setups (OSes/archs).
-> > > > > > > > > > > >
-> > > > > > > > > > > > Thanks
-> > > > > > > > > > >
-> > > > > > > > > > > Well virtio legacy has a long history of documenting =
-existing hacks :)
-> > > > > > > > > >
-> > > > > > > > > > Exactly, so the legacy behaviour is not (or can't be) d=
-efined by the
-> > > > > > > > > > spec but the codes.
-> > > > > > > > >
-> > > > > > > > > I mean driver behaviour derives from the code but we do d=
-ocument it in
-> > > > > > > > > the spec to help people build devices.
-> > > > > > > > >
-> > > > > > > > >
-> > > > > > > > > > > But yes, VIRTIO_F_ORDER_PLATFORM has to be documented=
-.
-> > > > > > > > > > > And we have to decide what to do about ACCESS_PLATFOR=
-M since
-> > > > > > > > > > > there's a security problem if device allows not ackin=
-g it.
-> > > > > > > > > > > Two options:
-> > > > > > > > > > > - relax the rules a bit and say device will assume AC=
-CESS_PLATFORM
-> > > > > > > > > > >   is acked anyway
-> > > > > > > > > >
-> > > > > > > > > > This will break legacy drivers which assume physical ad=
-dresses.
-> > > > > > > > >
-> > > > > > > > > not that they are not already broken.
-> > > > > > > >
-> > > > > > > > I may miss something, the whole point is to allow legacy dr=
-ivers to
-> > > > > > > > run otherwise a modern device is sufficient?
-> > > > > > >
-> > > > > > > yes and if legacy drivers don't work in a given setup then we
-> > > > > > > should not worry.
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > > > - a new flag that is insecure (so useful for sec but =
-useless for dpdk) but optional
-> > > > > > > > > >
-> > > > > > > > > > This looks like a new "hack" for the legacy hacks.
-> > > > > > > > >
-> > > > > > > > > it's not just for legacy.
-> > > > > > > >
-> > > > > > > > We have the ACCESS_PLATFORM feature bit, what is the useage=
- for this new flag?
-> > > > > > >
-> > > > > > >
-> > > > > > > ACCESS_PLATFORM is also a security boundary. so devices must =
-fail
-> > > > > > > negotiation if it's not there. this new one won't be.
-> > > > > > >
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > > And what about ORDER_PLATFORM, I don't think we can mod=
-ify legacy drivers...
-> > > > > > > > > >
-> > > > > > > > > > Thanks
-> > > > > > > > >
-> > > > > > > > > You play some tricks with shadow VQ I guess.
-> > > > > > > >
-> > > > > > > > Do we really want to add a new feature in the virtio spec t=
-hat can
-> > > > > > > > only work with the datapath mediation?
-> > > > > > > >
-> > > > > > > > Thanks
-> > > > > > >
-> > > > > > > As long as a feature is useful and can't be supported otherwi=
-se
-> > > > > > > we are out of options.
-> > > > > >
-> > > > > > Probably not? Is it as simple as relaxing this:
-> > > > > >
-> > > > > > "Transitional devices MUST expose the Legacy Interface in I/O s=
-pace in BAR0."
-> > > > > >
-> > > > > > To allow memory space.
-> > > > > >
-> > > > > > This works for both software and hardware devices (I had a hand=
-y
-> > > > > > hardware that supports legacy virtio drivers in this way).
-> > > > > >
-> > > > > > Thanks
-> > > > >
-> > > > > Yes it is certainly simpler.
-> > > > >
-> > > > > Question: what happens if you try to run existing windows guests =
-or dpdk
-> > > > > on these? Do they crash horribly or exit gracefully?
-> > > >
-> > > > Haven't tried DPDK and windows. But I remember DPDK supported legac=
-y
-> > > > MMIO bars for a while.
-> > > >
-> > > > Adding Maxime and Yan for comments here.
-> > > >
-> > > > >
-> > > > > The point of the capability is to allow using modern device ID so=
- such
-> > > > > guests will not even try to bind.
-> > > >
-> > > > It means a mediation layer is required to use. Then it's not an iss=
-ue
-> > > > for this simple relaxing any more?
-> > > >
-> > > > An advantage of such relaxing is that, for the legacy drivers like =
-an
-> > > > ancient Linux version that can already do MMIO access to legacy BAR=
- it
-> > > > can work without any mediation.
-> > >
-> > > Yes. But the capability approach does not prevent that -
-> > > just use a transitional ID.
-> > > The disadvantage of a transitional ID is some old drivers might crash=
-, or fail
-> > > to work in other ways.
-> >
-> > If the driver is wrote correctly it should fail gracefully if it can't
-> > request legacy I/O regions.
->
-> it's not just regions. it's things like iommu, ordering, endian-ness...
-> we all know legacy is a mess.
 
-Yes, but this proposal will drag us back to legacy, isn't it? Or if it
-is used only in the vitalization environment, what's the advantages of
-doing it over simply mediating on top of modern device?
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Wednesday, April 12, 2023 12:48 AM
 
-1) legacy MMIO bar: spec changes, hypervisor mediation
-2) modern device: no spec changes, hypervisor mediation
+> Here is a counter proposal:
+>=20
+> #define VIRTIO_NET_F_LEGACY_HEADER  52      /* Use the legacy 10 byte
+> header for all packets */
+>=20
+>=20
+> Yes, sorry to say, you need to emulate legacy pci in software.
+>=20
+> With notification hacks, and reset hacks, and legacy interrupt hacks, and
+> writeable mac ...  this thing best belongs in vdpa anyway.
 
->
-> > > Using a modern ID with a capability
-> > > prevents old drivers from attaching.
-> >
-> > Just to make sure we are at the same page.
-> >
-> > It looks like the motivation for this series is allow hypervisor to
-> > mediate between legacy MMIO BAR and legacy driver. This end ups with a
-> > design that only work for a specific use case (virtualization) and a
-> > specific setups (e.g using Linux as a hypervisor). By definition, it's
-> > not a transitional device.
->
-> It can be a transitional or non-transitional device.
->
-> > What's more important, if it is only used
-> > for virtualization, legacy MMIO bar is not a must. We can present a
-> > legacy device on top of modern device by using necessary mediation
-> > technologies as discussed.
->
-> You may call it a bug, i call it a feature. I am not really
-> excited about all the bugs we'll see reported because
-> people will try to use legacy guests on bare metal virtio.
+What? I don't follow.
+Suddenly you attribute everything as hack with least explanation.
 
-I don't either but this (MMIO BAR0) have been used by several vendors for y=
-ears.
-
-> Can we just not go there please or at least give people
-> an option not to go there?
-
-Yes, so we've already had modern device. We know it could be used to
-mediate a legacy device without worries ordering iommu etc.
-
-So my understandings are:
-
-1) it's better not invent any of new facilities for legacy
-2) if legacy is insisted, allow MMIO BAR0 is much simpler and better
-
-Thanks
-
->
-> > By relaxing to use MMIO at BAR0, we had a much broad use cases. By
-> > definition, it's a transitional device. It's useful for both bare
-> > metal and virtualization. We don't worry about the buggy drivers or at
-> > least fixing (I meant fail on no I/O bar) those drivers is not hard.
-> >
-> > > Using a capability the system
-> > > designed is in control and can decide which drivers to use.
-> >
-> > Do we allow a virtio device only with this capability? If yes, this
-> > seems can mislead vendors. If not, we have already had modern
-> > interfaces so I don't see value to add that in the current Linux
-> > drivers. The only possible use case is the doing mediation in the
-> > hypervisor like Qemu not the driver.
->
-> exactly.
->
-> > >
-> > >
-> > >
-> > > > At least, if ID can help, it can be used with this as well.
-> > > >
-> > > > Thanks
-> > >
-> > >
-> > > I don't know what that means.
-> >
-> > I mean having dedicated ID for this relaxing (though I don't see too
-> > much value).
-> >
-> > Thanks
->
-> me neither.
->
-> > >
-> > > >
-> > > >
-> > > > >
-> > > > >
-> > > > > > > Keeping field practice things out of the
-> > > > > > > spec helps no one.
-> > > > > > >
-> > > > > > > > >
-> > > > > > > > > --
-> > > > > > > > > MST
-> > > > > > > > >
-> > > > > > >
-> > > > >
-> > >
->
 
 
 ---------------------------------------------------------------------
