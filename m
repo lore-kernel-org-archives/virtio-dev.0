@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12180-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12181-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0FF65C77B6E
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19B63C7619A
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:12:17 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7276A41A0F
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:10:26 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 672DA3250
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:12:16 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 643CB9865ED
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:10:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5CD0F986549
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:12:16 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 58C1098650F; Wed, 12 Apr 2023 05:10:26 +0000 (UTC)
+	id 51F10986509; Wed, 12 Apr 2023 05:12:16 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,69 +24,89 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 46BA098650E;
-	Wed, 12 Apr 2023 05:10:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 40A4F98650E
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Apr 2023 05:12:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Date: Wed, 12 Apr 2023 07:10:14 +0200
-From: Halil Pasic <pasic@linux.ibm.com>
+X-MC-Unique: bxvIQwruNrunkCo_onRVcg-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681276328;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e/d3A4gx6awjnCS+UqmFyZ2zuplRG02Yk/eSwjUAJo8=;
+        b=zarAndEj4b/PG1FDS3/sxOIpRSbIzCQV4gRArElIzUJI7dgJtY/do9sSHXLULX2QQP
+         /AxvgjbTbHiiymOF7yYnUDknJA+IAKJuRAo21GhE2d1JCadqYyxO+t9j9SXSr0ZCa/tg
+         6y7pJjpzH09pyzaEuxVYuLSq7dmkz0vBWbZDAlfC8XUi0KYBCS0SNxQU898D6xXRSydA
+         DJb+1DdN3oqHuoBjXS7PKvA8eQj8GSsmnE0sTKKW5pn4pcathBoYN3UOK9+CIoLMvudg
+         jmWpd0/Qucs2RFoawmjVV1qCn5wd+jDOf94vKfOt05/D2tQXhZFVVTUSJxvONSu7aGVq
+         EpEg==
+X-Gm-Message-State: AAQBX9eIWz8xktPJzM14h4tq065pbvWcVSm6LUEo+kxeHydDipuLTeWb
+	jisx6ijpmwouaiK2m/Eq4uWCco21Q9EE4uZ9xhsw2vZ0rwGR++CThw8w/NFecyuBvlLUjW0vZdA
+	I+jxTybnKyGnbFNm9P+pUYU+Woor6
+X-Received: by 2002:a7b:cb45:0:b0:3ed:2eb5:c2dd with SMTP id v5-20020a7bcb45000000b003ed2eb5c2ddmr8492750wmj.39.1681276328105;
+        Tue, 11 Apr 2023 22:12:08 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bXTUapFTahVvq7aao4ki/GmR2Qf4y9Q9fdL7WZoCtVpOI5drrVDODleCRvW/uGp80Wj33cCg==
+X-Received: by 2002:a7b:cb45:0:b0:3ed:2eb5:c2dd with SMTP id v5-20020a7bcb45000000b003ed2eb5c2ddmr8492739wmj.39.1681276327825;
+        Tue, 11 Apr 2023 22:12:07 -0700 (PDT)
+Date: Wed, 12 Apr 2023 01:12:04 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>,
-        <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>,
-        Halil Pasic <pasic@linux.ibm.com>
-Message-ID: <20230412071014.3c79f788.pasic@linux.ibm.com>
-In-Reply-To: <20230330225834.506969-1-parav@nvidia.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Message-ID: <20230412010437-mutt-send-email-mst@kernel.org>
 References: <20230330225834.506969-1-parav@nvidia.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+ <20230412004331-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481EC4B82A0A57F08ABF3F7DC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 96nIfi2Pk_3eyHyBPnKcxYBz-v7rLlyz
-X-Proofpoint-GUID: dOTrysvqwz6fjSJjNWH3Npcy6kabFKHh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-11_16,2023-04-11_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- suspectscore=0 impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- phishscore=0 clxscore=1015 mlxlogscore=999 mlxscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
- definitions=main-2304120044
-Subject: Re: [virtio-dev] [PATCH 00/11] Introduce transitional mmr pci
- device
+In-Reply-To: <PH0PR12MB5481EC4B82A0A57F08ABF3F7DC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] Re: [PATCH 00/11] Introduce transitional mmr pci device
 
-On Fri, 31 Mar 2023 01:58:23 +0300
-Parav Pandit <parav@nvidia.com> wrote:
-
-> Overview:
-> ---------
-> The Transitional MMR device is a variant of the transitional PCI device.
-> It has its own small Device ID range. It does not have I/O
-> region BAR; instead it exposes legacy configuration and device
-> specific registers at an offset in the memory region BAR.
+On Wed, Apr 12, 2023 at 04:52:09AM +0000, Parav Pandit wrote:
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Wednesday, April 12, 2023 12:48 AM
+> 
+> > Here is a counter proposal:
+> > 
+> > #define VIRTIO_NET_F_LEGACY_HEADER  52      /* Use the legacy 10 byte
+> > header for all packets */
+> > 
+> > 
+> > Yes, sorry to say, you need to emulate legacy pci in software.
+> > 
+> > With notification hacks, and reset hacks, and legacy interrupt hacks, and
+> > writeable mac ...  this thing best belongs in vdpa anyway.
+> 
+> What? I don't follow.
+> Suddenly you attribute everything as hack with least explanation.
 > 
 
-I have some conceptual problems with the current wording. I have to
-admit the ongoing discussion is for me quite difficult to follow.
-Nevertheless I have the feeling most of my concerns were already
-voiced by mostly Michael.
+Again hacks is not a bad thing but it's an attempt at reusing things in
+unexpected ways.
 
- 
-[..]
-> Please review.
-> 
+New issue I found today:
+- if guest disables MSI-X host can not disable MSI-X.
+  need some other channel to notify device about this.
 
-After reading trough everything, I have a feeling, I have at least a
-basic understanding of what you are trying to accomplish. If you
-don't mind I would prefer to wait for a v2, maybe things will
-settle down a little by then. I feel like me commenting right now
-would just muddy the waters even further, without any real merrit. But if
-you insist, you can get some...
+Old issues we discussed before today:
+- reset needs some special handling because real hardware
+  can not guarantee returning 0 on the 1st read
+- if guest writes into mac, reusing host mac (which is RO)
+  will not work, need extra registers
+- something about notification makes you want to poke
+  at modern notification register? which of course
+  is its own can of worms with VIRTIO_F_NOTIFICATION_DATA
+  changing the format completely.
 
-Regards,
-Halil
 
-[..]
+-- 
+MST
 
 
 ---------------------------------------------------------------------
