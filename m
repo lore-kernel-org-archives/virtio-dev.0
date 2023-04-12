@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12177-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12178-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9A446C77B6E
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3FFC9C7619A
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:03:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C01352A829
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:01:33 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 92A03419A9
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:03:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BACAC9865FA
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:01:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8BB389865B2
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Apr 2023 05:03:01 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id B08AA98651C; Wed, 12 Apr 2023 05:01:33 +0000 (UTC)
+	id 81D0398650E; Wed, 12 Apr 2023 05:03:01 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,138 +24,140 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9DFDF986509;
-	Wed, 12 Apr 2023 05:01:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7196A986509
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Apr 2023 05:02:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VpuzFYQB5CdmGMbWVKT2KfVorp1duCPy7LhrfFDquvuv3RYtb5Rk+QXmZ1yNOCZ1ah17hwiRZLBJesviEZqXzmQERFzdGFn1fDWrS0M2nSAjq0HmGI9MRMndmEjMDoBj5PUBoCMlC5pmpZNoy6zr2uYrgReU5howO4NT9iZEKGFmfF0SpSFChxqEt8QVTTT0KAemOmr0r+n51AJ4ZpN/rWyRTjRyyI7I1UvC5Y679Qaq3fuMnvVF4VdzrQnMY+Ppdry1YEBITENtOcpQr1NgftMz0AOROAEv1GH6IfLSjM0FWh4UV1r3fCNbrRygC0XFWYe+QoxOztvshGA4SgrN7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/8zQLB8zSyZW5IXcLyrS2lqFoWW59hte19hzTlUVyj8=;
- b=YMUjv5PLf02yutqXfCy049tuheXcDrhELkKrtebNZv4dDA1xAaxoU+0bbGwAAXYSHL1d9Yk64/sOCp+u3rwhPyLcsuudWhDlFXjuhob6OTY6hoaAQ8B3qdU/EZJegyYB1DEXlxhWEPwdQzNaO52/9CHu5FnMFAF2V1UBMCUUUSlsO9U288CoY+szy4gqMb2MKkCgLmi5L+4UBtQx/LI3blVPPfnrSx/AWbjfr2uxXwMD76iT3sY8U7m4na2ZDW//iodW+Nvy7gfd2E2hdH2Ld0Rc9jwF5xE5NacLofwd/jAqTDaYgv0cPzrxMysgDclE9oRUBL570H0fG4EUsF9Ikg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+X-MC-Unique: 5TlKdWLzNqGsWAudCV42dA-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681275776;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0RgyQScNj5DeCERmyiYZY8GJSw8uO6dFFaeCeu+QIGw=;
+        b=LyeF/2qHrUCMHwMJA+ma6cz8qHlsBaMbDlxqaH8z6+fXmkZ0HsEK4MeSfQO+dnO6h3
+         mRrlm4L9/tzdlMlgfNqYpPJijnVdbR8A2U1mTeggdIJuXx23LBxcZuJPpkuyKUn8p1pA
+         PgDB2f4Dk66FuPxyxYVy6m38ei1vn8513uPnB1jRiUyrO04izCe4MaqItKjs3sz2Z13C
+         3C/+f6DCD7utKaGzPgbBuOCunA6lR0Ry7u8tBl9/KHJLrEZFXY1fT4MXwsnl+/0F4keU
+         a4DKgKKN169Oc04elnXqeEOdj3B/tfzaqU4Y83b6V8WcA3f60mR0tCaE3udi7pi5cvyt
+         /5Gw==
+X-Gm-Message-State: AAQBX9fwEUdWNKtT2wnm8KlmHR2PXwlkr96CxAMYSWFJ/2n4jYjRefww
+	nGI0Kp2Mtb/zYWTfjs6iRPGd8DaPA34KHwhBxoNZDCrMaRHQDRD0Zx/S2IkudPj3dPp2PynNcBr
+	vjN1fkQKDSqpUOjf2NVAvkVwvFSvD8QozL7tO
+X-Received: by 2002:a7b:c406:0:b0:3ed:ca62:418e with SMTP id k6-20020a7bc406000000b003edca62418emr11571200wmi.9.1681275775893;
+        Tue, 11 Apr 2023 22:02:55 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bvNygYf/Otg1bFsEEuG5GbzcIhIS+C/XZsT/ZMv5X0NALsP3cvuyl9zMJSKI1l91KCOF/BZg==
+X-Received: by 2002:a7b:c406:0:b0:3ed:ca62:418e with SMTP id k6-20020a7bc406000000b003edca62418emr11571192wmi.9.1681275775607;
+        Tue, 11 Apr 2023 22:02:55 -0700 (PDT)
+Date: Wed, 12 Apr 2023 01:02:51 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
 	"cohuck@redhat.com" <cohuck@redhat.com>,
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>, Satananda Burla <sburla@marvell.com>,
-	Maxime Coquelin <maxime.coquelin@redhat.com>, Yan Vugenfirer <yan@daynix.com>
-Thread-Topic: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
- MMR dev config registers
-Thread-Index:
- AQHZY1tLAUtRpuZtUUOucQPGJlFfkK8flpUAgAQ7nwCAAE6hgIAAAXwAgAAFegCAAAt0AIAALl6AgAEOIwCAAFEgAIAAIPWAgAAcJ4CAASFtgIAABJ4AgAAKJYCAAACFsA==
-Date: Wed, 12 Apr 2023 05:01:23 +0000
-Message-ID:
- <PH0PR12MB548118F57BB4B4A4F8DC9D7ADC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230410020906-mutt-send-email-mst@kernel.org>
- <CACGkMEtiROwuB+ECJqd13qdpMJSTMoDOzi1u_i85==42C0XSXw@mail.gmail.com>
- <20230410023715-mutt-send-email-mst@kernel.org>
- <CACGkMEs+E_OarQxP3NmLk3iSi7U0WgAn-m3b4eX7ULu1+v=sOw@mail.gmail.com>
- <20230410060417-mutt-send-email-mst@kernel.org>
- <CACGkMEuc47PdmQdC67Nz4AvX_+jy+XBgCkwZ1BHmM8VGb9gywA@mail.gmail.com>
- <20230411030056-mutt-send-email-mst@kernel.org>
- <CACGkMEt2QAfhCgpYjSRNzf3n4W_HJLrMfE9JHzocR_gPH_Zrtg@mail.gmail.com>
- <20230411063945-mutt-send-email-mst@kernel.org>
- <CACGkMEufWUXHKahg3GLOKfV5aptbiek_DKwy+7rCfMya2GPaTQ@mail.gmail.com>
- <20230412000802-mutt-send-email-mst@kernel.org>
- <CACGkMEshNydwBD=Q0JW-SDY6xyiJ4uVrLn+pxbUrinycBKwsrw@mail.gmail.com>
-In-Reply-To:
- <CACGkMEshNydwBD=Q0JW-SDY6xyiJ4uVrLn+pxbUrinycBKwsrw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM8PR12MB5398:EE_
-x-ms-office365-filtering-correlation-id: 3884a1c8-8d79-49c8-9470-08db3b12f6dd
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- YALWwyRVT8VAju1LJlza9Iytfsw8N/Lp7daO0q26CN9W4mSUZEUk1qgphbdA8ZB7HtbB9FsrV2R5ChsnliiwL5Sjnv9QHL7BCmTZ0W/9R6qkaigt7EEfAPIzzpstq2kNRQPDHS1Tm7MVGIMmPER9g19cznTG0jl6YdSwEyEs0jy47UJ+y2eeegBKnHPLXjRAkwMUW7rq5CVq1/DUaScSt5fsJo0DAhaaZA56bBMdQhYcN7PmvPddfYzSRFqN1Z16+NQByhrrIiyqw6f00pUeYtjVdobx/7sSykn4hEonwSdK1aMSS9OBSKHDxdJ6oTKPp+iIfutuK45NOMi69Nh8u/URVVTNTGiCtFJTcED6NcjcFO4tbh+EQ6OMTqE4pU8pyPuv03z6s58PesKbr4FHH7/sYLf0WgZ4n3Phrav1KQ15KCgvvGmSchmPV6lUmxTbjU/GPAHUl8Ac/+9qPN/wuic+rqsQpBSwjPmKZ6M7D/rN7TfKryoCBC1HKHNsEhxgUK/frmyRZHV+29k0GizU78edrVfDAl1C+1sv/CGXIvy3lVOHnzClOqaYzvx62xSu0kG79Apkixa/kPIpp0/kDa190Z/dZ//TVxQcMgXZ3uHNKYaCdPQgsb3C6+hXt3Mp
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(39860400002)(376002)(396003)(136003)(451199021)(4326008)(64756008)(66446008)(66476007)(66556008)(76116006)(66946007)(8676002)(2906002)(41300700001)(52536014)(8936002)(316002)(5660300002)(478600001)(110136005)(54906003)(83380400001)(71200400001)(7696005)(9686003)(55016003)(6506007)(33656002)(186003)(38100700002)(38070700005)(86362001)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?WFZ5NDVyaWlnaU5WR3pTcjNsMFo0MzhZeit2OHRuUFJ5S01zSlh0STdMY1B1?=
- =?utf-8?B?enhsaUlaUkVlOGlIYkVFZ0JBU2xSTEYyZzVZbFFlZlFwZEZhZUZPbHc3My9H?=
- =?utf-8?B?aGU1bDBZazg0Ym5IM2N2djEvY1c1NzY1cklIeHJ2ZFREYlFRU3ZLQ1QzZngr?=
- =?utf-8?B?TC80M1BhSG1KTm45eTljTWszY0hiOXk1NFpCVitGNnBySHBVTGMxanNnTUZM?=
- =?utf-8?B?S1Y0ZnJHeStYaHJobjlLbjlZaGprVkN5bDlmVVczT3YzWTZzNjAwQmM5Q3BS?=
- =?utf-8?B?ZnZDODI1bEFUb1FkWmw5SDNaOW9XYzBPRFVsZ1djOUNWUEVxVXJGTVAzWTRE?=
- =?utf-8?B?bElmYWNvVDg3QmZXRXJqdlV6Z2ZvSnFmY2FOT1hsUFEydEFaRjFpdkRwcW85?=
- =?utf-8?B?bkZEWVJvaXc2SXd5N3Ywd0xQd2lCWFIzUHBCNUpWWUFLQzUvK2tpTXhyS3Zk?=
- =?utf-8?B?dThLazIzNy9ncGNTY053TjZBMVUvVlZCb0I2U2Y0RURHdUFvTTg5QXg4NGV6?=
- =?utf-8?B?NFlURzlGWjRhWjZRemNtL1R6b2w5RnlmVEdJc2pLYjU2aWgyVW9SdU9zSFFz?=
- =?utf-8?B?VXhMRnJjMVB4SndNVXVISDRCSTdLdGFJRXN1MC9VeURmZ2ZhVThMaFlJcHdR?=
- =?utf-8?B?T3Nhb1hwV3dDYnFZV1lEb0VIRjhDbGwwL2tTd0U3ZXNnMUVzdjZmMzlxNWhp?=
- =?utf-8?B?UGhMOVpoV2pCNmIrSzQxeDVmS2pFZHhEdTFUSTJhL1llSWQ2NnJubVBXekZR?=
- =?utf-8?B?T2s1OHhxdUVpMlpPOCt4QWVuNkRaQUtNdEdzcTNuZjd5em5nbXl4WWFuSUJm?=
- =?utf-8?B?WTNKdWJSM3FTQXVYMmhYOXR3SS9LYUkzZnR0dnVmdjBpNGc2RDNzcFVGZFRt?=
- =?utf-8?B?KzFBbW52QmN5UitEWWNmd0RjNHhQQUduYU5tUDlLenM4cXJKeDBLNHVvcU1s?=
- =?utf-8?B?eWdiOW9PMTk1WW1vYmM4RzAzaFRTbzdkUkZVaWxhWW5FZFRGTGU0amhIWVFH?=
- =?utf-8?B?VFZEZjVEd2Z6eGdPQm5hNHJCUVRvbXZ4T2xPQnRNdVErL3cxRnkwa0lrYlNj?=
- =?utf-8?B?cXVXVGVaM3RXK3RsaDE5aENSS0sza2V6OFFtMlk2dnZicVZuTVYyRHBHOUZk?=
- =?utf-8?B?YVkydmI5RmpIMkhnUlVYSEI2cDIvRGFyREYxazB2Z0x6OEYxWWNvTVRRUVFh?=
- =?utf-8?B?SkVpRjZrSG8wR1F6QU00cDA5VnRlT29oT3BRY1NHb1piYTJkRTVDL0VJMmoz?=
- =?utf-8?B?LzU3K0licG5UVDlnZTFxZGtLNWVHdnlJTkczYWJ4bUZKZVN5cG1tK3F4R2ds?=
- =?utf-8?B?bFJrYzlKVjlaRzBiNnNESU5LY1ZQNnpISUNidjRHNWw4aTNKSDEwWFN2NE9y?=
- =?utf-8?B?Y1NjaUU3SnJiRHNVSUZ4bG51Ull3dHd0Z1F4RHgwbUZsZ1RXekhYWnhaYVNo?=
- =?utf-8?B?QW5zckJPaEp2VDR1VE5VbDJibUw4U0IrU29ZczQ4dmZ3MWxrTmxVTk5uU0c0?=
- =?utf-8?B?QnpJNmhyMEhqMHBoTDQvZHREQ0NySmxvVGMxb1BQcGxuR1VBVlhPNTM5MTF2?=
- =?utf-8?B?VE9ZZ3pPYkJBZlp4b3VnRjZrNzZTa09vaEdYS1g1ZlJXQSttbVR5WjJkeHdO?=
- =?utf-8?B?OGtsNkIvMGpGUGo0WXZGMGRGWFZzUExhVi9PUUZXdGpidFJNUndWbitWWkt0?=
- =?utf-8?B?Z0VuY2pFa0RuY2tUaERBakhaTWlYTVlpam5MdDYxQTA4MFpOYlVUTkkyOTAz?=
- =?utf-8?B?cGUxRzFRd05SelpwdnA2dFFNbUhKS3lqKzlOSFdFS29pV1JiL2FmMHdYTFRu?=
- =?utf-8?B?TTRRZjFOYllRbDJFLzNmWHNmYkZuRXJUc1VSamNqd1Vhb3JkNlU4ZU4xVU9t?=
- =?utf-8?B?cHBXOWhEL2Y5SmkxYjNSUVBpZ1BwZW8zd3QzVzJBbXhpY3hIaVN5NnpTd3NV?=
- =?utf-8?B?bG1rTVp4OWFBQnVpOGFna2ZiZHhlOU93WVFSM2hnVjV4aWRNcUQyaldtWjRr?=
- =?utf-8?B?VFhqOVY0ekFCM082eEpJckJJYW5hbVVVZnJrVlZIanJ5eFdCcDlheTVYSnov?=
- =?utf-8?B?QTBGdDVyc0hwVllxSUNSWE9iQnYyemRaYXk3STV2dC9XWTc3eXg2T3AwRCtH?=
- =?utf-8?B?SzZodGRJbjVpcEpGYWVUQ2I1bnVkQUY1VVVLc2VCU3QxYnBXemYrdmJacFQ2?=
- =?utf-8?Q?Uzu6CSZnqIdZh3EFTVJgxpI=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	Shahaf Shuler <shahafs@nvidia.com>,
+	Satananda Burla <sburla@marvell.com>
+Message-ID: <20230412010224-mutt-send-email-mst@kernel.org>
+References: <20230330225834.506969-1-parav@nvidia.com>
+ <20230330225834.506969-11-parav@nvidia.com>
+ <20230412003006-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481394D07C5CFBB2347B5F0DC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230412004152-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548170E8002F19709C6D55ADDC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3884a1c8-8d79-49c8-9470-08db3b12f6dd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2023 05:01:23.9960
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hTertjyDwd1hzpj/RhXh2ZGCxsXgvWblt6UbEcgS7+8I2GNKCa3IhjTc3HQHZBTErHPOdrX90wL/6jOgoi0q/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5398
-Subject: [virtio-dev] RE: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
- MMR dev config registers
+In-Reply-To: <PH0PR12MB548170E8002F19709C6D55ADDC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] Re: [PATCH 10/11] transport-pci: Use driver notification PCI
+ capability
 
-DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogV2Vk
-bmVzZGF5LCBBcHJpbCAxMiwgMjAyMyAxMjo1MSBBTQ0KPiANCj4gWWVzLCBidXQgdGhpcyBwcm9w
-b3NhbCB3aWxsIGRyYWcgdXMgYmFjayB0byBsZWdhY3ksIGlzbid0IGl0PyANCk5vLiBUaGlzIHBy
-b3Bvc2FsIHN1cHBvcnRzIHRoZSBsZWdhY3kgdHJhbnNpdGlvbmFsIHBjaSBkZXZpY2UuDQoNCj4g
-T3IgaWYgaXQgaXMgdXNlZCBvbmx5IGluDQo+IHRoZSB2aXRhbGl6YXRpb24gZW52aXJvbm1lbnQs
-IHdoYXQncyB0aGUgYWR2YW50YWdlcyBvZiBkb2luZyBpdCBvdmVyIHNpbXBseQ0KPiBtZWRpYXRp
-bmcgb24gdG9wIG9mIG1vZGVybiBkZXZpY2U/DQo+IA0KQmVjYXVzZSB0aGUgc3BlYyBmb3IgbW9k
-ZXJuIGRldmljZSBkbyBub3QgYWxsb3cgaXQuIERpc2N1c3NlZCBpbiB0aGVzZSB0aHJlYWRzLg0K
-DQo+IDEpIGxlZ2FjeSBNTUlPIGJhcjogc3BlYyBjaGFuZ2VzLCBoeXBlcnZpc29yIG1lZGlhdGlv
-bg0KPiAyKSBtb2Rlcm4gZGV2aWNlOiBubyBzcGVjIGNoYW5nZXMsIGh5cGVydmlzb3IgbWVkaWF0
-aW9uDQo+DQpUaGlzIHF1ZXN0aW9uIHJlcGVhdHMgdGhlIHNhbWUgZGlzY3Vzc2lvbiBvY2N1cnJl
-ZCBpbiB0aGlzIHBhdGNoIHNlcmllcy4NCllvdSBtaWdodCB3YW50IHRvIHJlZmVyIGl0IGFnYWlu
-IHRvIGF2b2lkIHJlcGVhdGluZyBhbGwgb3ZlciBhZ2Fpbi4NCg0KPiAxKSBpdCdzIGJldHRlciBu
-b3QgaW52ZW50IGFueSBvZiBuZXcgZmFjaWxpdGllcyBmb3IgbGVnYWN5DQo+IDIpIGlmIGxlZ2Fj
-eSBpcyBpbnNpc3RlZCwgYWxsb3cgTU1JTyBCQVIwIGlzIG11Y2ggc2ltcGxlciBhbmQgYmV0dGVy
-DQpZb3UgaGF2ZSBtaXNzZWQgZmV3IGVtYWlscy4gOikNCk1NSU8gQkFSIGlzIHByb3Bvc2VkIGhl
-cmUgYW5kIGl0IGlzIG5vdCBsaW1pdGVkIHRvIEJBUiAwLg0KSXQgaXMgbGVmdCBmb3IgdGhlIGRl
-dmljZSB0byBlaXRoZXIgbWFwIHNvbWV0aGluZyBpbiBleGlzdGluZyBCQVIgb3IgdXNlIEJBUiAw
-Lg0KQmVjYXVzZSBQQ0kgaGFzIG9ubHkgMyBCQVJzLg0KQSBkZXZpY2UgbWF5IHdhbnQgdG8gc3Vw
-cG9ydCBsZWdhY3kgYW5kIG5vbi1sZWdhY3kgZnVuY3Rpb25hbGl0eSBib3RoIGF0IHRoZSBzYW1l
-IHRpbWUuDQpTbyBiZXR0ZXIgbm90IHRvIGhhcmQgd2lyZSBmb3IgQkFSIDAuDQo=
+On Wed, Apr 12, 2023 at 04:48:41AM +0000, Parav Pandit wrote:
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Wednesday, April 12, 2023 12:43 AM
+> > To: Parav Pandit <parav@nvidia.com>
+> > Cc: virtio-dev@lists.oasis-open.org; cohuck@redhat.com; virtio-
+> > comment@lists.oasis-open.org; Shahaf Shuler <shahafs@nvidia.com>;
+> > Satananda Burla <sburla@marvell.com>
+> > Subject: Re: [PATCH 10/11] transport-pci: Use driver notification PCI capability
+> > 
+> > On Wed, Apr 12, 2023 at 04:37:05AM +0000, Parav Pandit wrote:
+> > >
+> > >
+> > > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > > Sent: Wednesday, April 12, 2023 12:31 AM
+> > > >
+> > > > On Fri, Mar 31, 2023 at 01:58:33AM +0300, Parav Pandit wrote:
+> > > > > PCI devices support memory BAR regions for performant driver
+> > > > > notifications using the notification capability.
+> > > > > Enable transitional MMR devices to use it in simpler manner.
+> > > > >
+> > > > > Co-developed-by: Satananda Burla <sburla@marvell.com>
+> > > > > Signed-off-by: Parav Pandit <parav@nvidia.com>
+> > > > > ---
+> > > > >  transport-pci.tex | 28 ++++++++++++++++++++++++++++
+> > > > >  1 file changed, 28 insertions(+)
+> > > > >
+> > > > > diff --git a/transport-pci.tex b/transport-pci.tex index
+> > > > > 55a6aa0..4fd9898 100644
+> > > > > --- a/transport-pci.tex
+> > > > > +++ b/transport-pci.tex
+> > > > > @@ -763,6 +763,34 @@ \subsubsection{Notification structure
+> > > > > layout}\label{sec:Virtio Transport Options  cap.length >=
+> > > > > queue_notify_off * notify_off_multiplier + 4  \end{lstlisting}
+> > > > >
+> > > > > +\paragraph{Transitional MMR Interface: A note on Notification
+> > > > > +Capability} \label{sec:Virtio Transport Options / Virtio Over PCI
+> > > > > +Bus / Virtio Structure PCI Capabilities / Notification capability
+> > > > > +/ Transitional MMR Interface}
+> > > > > +
+> > > > > +The transitional MMR device benefits from receiving driver
+> > > > > +notifications at the Queue Notification address offered using the
+> > > > > +notification capability, rather than via the memory mapped legacy
+> > > > > +QueueNotify configuration register.
+> > > > > +
+> > > > > +Transitional MMR device uses same Queue Notification address
+> > > > > +within a BAR for all virtqueues:
+> > > > > +\begin{lstlisting}
+> > > > > +cap.offset
+> > > > > +\end{lstlisting}
+> > > > > +
+> > > > > +The transitional MMR device MUST support Queue Notification
+> > > > > +address within a BAR for all virtqueues at:
+> > > > > +\begin{lstlisting}
+> > > > > +cap.offset
+> > > > > +\end{lstlisting}
+> > > > > +
+> > > > > +The transitional MMR driver that wants to use driver
+> > > > > +notifications offered using notification capability MUST use same
+> > > > > +Queue Notification address within a BAR for all virtqueues at:
+> > > > > +
+> > > > > +\begin{lstlisting}
+> > > > > +cap.offset
+> > > > > +\end{lstlisting}
+> > > > > +
+> > > > Why? What exactly is going on here? legacy drivers will not do this.
+> > >
+> > > Legacy driver does in the q notify register that was sandwitched in between
+> > of slow configuration registers.
+> > > This is the notification offset for the hypervisor driver to perform the
+> > notification on behalf of the guest driver so that the acceleration available for
+> > the non-transitional device can be utilized here as well.
+> > 
+> > I don't get it. What acceleration? for guests you need a separate page so card
+> > can be mapped directly while config causes an exit. But hypervisor can access
+> > any register without vmexits.
+> 
+> Typically when guest VM writes to IOBAR q notification register, a vmexit occurs.
+> On that occurrence, hypervisor driver forwards the q notification using the q notification region which is defined by struct virtio_pci_notify_cap.
+
+What is wrong with forwarding it on the legacy window?
+
+-- 
+MST
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
