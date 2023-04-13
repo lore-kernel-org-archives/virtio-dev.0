@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12206-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12207-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 89E15C77B6C
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 11:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EE80C77B6E
+	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 13:36:14 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D928D3309C
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 11:03:36 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id BAFA52B146
+	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 13:36:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CF5D9986600
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 11:03:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9661B986601
+	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 13:36:13 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C3C97986360; Thu, 13 Apr 2023 11:03:36 +0000 (UTC)
+	id 7E425986360; Thu, 13 Apr 2023 13:36:13 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,490 +24,336 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B35569865F8;
-	Thu, 13 Apr 2023 11:03:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6B5A29865F8
+	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Apr 2023 13:36:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vg.ST4-_1681383807;
-Message-ID: <a95ca379-0675-9b33-f649-bd2a19b56190@linux.alibaba.com>
-Date: Thu, 13 Apr 2023 19:03:26 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681392971; x=1683984971;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hMGVWvpILtpdco9LjLsF4pzd8Gy5M98Wxi0qcDjc2PI=;
+        b=OYxUE5B0yF1vCYVdBUqSyHk1sLD51nPJtOx1BTxflkM6qOFrSbCR5NNwzQ1VJukS0H
+         EHD6mxdjr2Sn+6SzEYKbQ8vqdnj8yBWciodGTpbOaf9BKHjQOz2rpqo97YQNHMxrkUFA
+         Z5ehiyAMZOGScTZ7bwooZ3xrqqL9tbV8GRHBOdr4ESRJKGKsWaaw5G7t5JA2taYdSCdr
+         nvl20qWNV7Shf9Mwr1/Z9vUFfnkxtUQ3Fbfn9/J3zEpGoFU7zs8uVAxPHaJ9RkfnkMZQ
+         bnbWyaiaSO3FOfUUkG77a43qMiNHhI3fa++qFi1e5nUKW89J9yLNbC3jtkuUW/IkgmN0
+         OyQg==
+X-Gm-Message-State: AAQBX9cZkmFxtcV3yuEZMsaPYeSv9nY653DKXjyduwxDIbRo2kERYj8Z
+	RYhN6DwNyL++cae8BNjsyGRf5qLJLNMZrufbuySKuV+C0Kg4lKivDUatnGgA
+X-Google-Smtp-Source: AKy350Y0cVV26MJTqqGrMdHB1FM2YJOSgG+Sxtzre1BoBdHOmiU249uBqmrEenVgC4ovMqQp0djA4/DSeAj32Zzp2O0=
+X-Received: by 2002:a17:906:d298:b0:932:1bdf:be3e with SMTP id
+ ay24-20020a170906d29800b009321bdfbe3emr1318150ejb.0.1681392970881; Thu, 13
+ Apr 2023 06:36:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.1
-To: Jason Wang <jasowang@redhat.com>, virtio-dev@lists.oasis-open.org,
- virtio-comment@lists.oasis-open.org
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Parav Pandit <parav@nvidia.com>,
- Yuri Benditovich <yuri.benditovich@daynix.com>,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230403045833.21853-1-hengqi@linux.alibaba.com>
- <1d30d4a0-6bfc-3d58-17a4-645602d3792f@redhat.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <1d30d4a0-6bfc-3d58-17a4-645602d3792f@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v12] virtio-net: support inner header
- hash
+From: Timos Ampelikiotis <t.ampelikiotis@virtualopensystems.com>
+Date: Thu, 13 Apr 2023 16:35:59 +0300
+Message-ID: <CANN35wLsm_RTTKmxFz5jcBujoxfjPwsu37FAw9+W58hjt_nVPQ@mail.gmail.com>
+To: virtio-dev@lists.oasis-open.org
+Cc: Daniel Raho <s.raho@virtualopensystems.com>, 
+	Michele Paolino <m.paolino@virtualopensystems.com>, 
+	Alvise Rigo <a.rigo@virtualopensystems.com>, chou.kensou@jp.panasonic.com, 
+	wminer@linuxfoundation.org, stefanha@redhat.com
+Content-Type: multipart/alternative; boundary="000000000000c1ee5205f937ce4b"
+Subject: [virtio-dev] Virtio-loopback: PoC of a new Hardware Abstraction Layer for
+ non-Hypervisor environments based on Virtio
 
+--000000000000c1ee5205f937ce4b
+Content-Type: text/plain; charset="UTF-8"
 
+Dear virtio-dev community,
 
-在 2023/4/13 上午11:40, Jason Wang 写道:
->
-> 在 2023/4/3 12:58, Heng Qi 写道:
->> 1. Currently, a received encapsulated packet has an outer and an 
->> inner header, but
->> the virtio device is unable to calculate the hash for the inner 
->> header. The same
->> flow can traverse through different tunnels, resulting in the 
->> encapsulated
->> packets being spread across multiple receive queues (refer to the 
->> figure below).
->> However, in certain scenarios, we may need to direct these 
->> encapsulated packets of
->> the same flow to a single receive queue. This facilitates the processing
->> of the flow by the same CPU to improve performance (warm caches, less 
->> locking, etc.).
->>
->>                 client1                    client2
->>                    |        +-------+         |
->>                    +------->|tunnels|<--------+
->>                             +-------+
->>                                |  |
->>                                v  v
->>                        +-----------------+
->>                        | monitoring host |
->>                        +-----------------+
->>
->> To achieve this, the device can calculate a suitable hash based on 
->> the inner headers
->> of this flow, for example using the Toeplitz combined with a 
->> symmetric hash key.
->
->
-> Some device allows sorting n tuples before calculating hash, do we 
-> need to consider them?
+I would like to introduce you Virtio-loopback, Proof of Concept (PoC) that
+we have been working on at Virtual Open Systems in the context of the
+Automotive Grade Linux community (Virtualization & Containers expert
+group - EG-VIRT).
 
-If a device supports inner header hash and it has the ability to sort 
-tuples, the device can
-choose to continue to sort tuples or continue to do a symmetric hash 
-(use a special hash key, symmetric toeplitz hash or xor hash) .
-It depends on them, but I think we can document these for readers.
+We consider this work as a PoC and we are not currently planning
+upstream. However, if the zero-copy or any other aspect of this work
+is interesting for other Virtio implementations, we would be glad to
+discuss more.
 
->
->
->> 2. For legacy systems, they may lack entropy fields which modern 
->> protocols have in
->> the outer header, resulting in multiple flows with the same outer 
->> header but
->> different inner headers being directed to the same receive queue. 
->> This results in
->> poor receive performance.
->>
->> To address this limitation, inner header hash can be used to enable 
->> the device to advertise
->> the capability to calculate the hash for the inner packet, regaining 
->> better receive performance.
->>
->> Signed-off-by: Heng Qi<hengqi@linux.alibaba.com>
->> Reviewed-by: Xuan Zhuo<xuanzhuo@linux.alibaba.com>
->> ---
->> v11->v12:
->>     1. Add a command VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG.
->>     2. Refine the commit log. @Michael S . Tsirkin
->>     3. Add some tunnel types.
->>
->> v10->v11:
->>     1. Revise commit log for clarity for readers.
->>     2. Some modifications to avoid undefined terms. @Parav Pandit
->>     3. Change VIRTIO_NET_F_HASH_TUNNEL dependency. @Parav Pandit
->>     4. Add the normative statements. @Parav Pandit
->>
->> v9->v10:
->>     1. Removed hash_report_tunnel related information. @Parav Pandit
->>     2. Re-describe the limitations of QoS for tunneling.
->>     3. Some clarification.
->>
->> v8->v9:
->>     1. Merge hash_report_tunnel_types into hash_report. @Parav Pandit
->>     2. Add tunnel security section. @Michael S . Tsirkin
->>     3. Add VIRTIO_NET_F_HASH_REPORT_TUNNEL.
->>     4. Fix some typos.
->>     5. Add more tunnel types. @Michael S . Tsirkin
->>
->> v7->v8:
->>     1. Add supported_hash_tunnel_types. @Jason Wang, @Parav Pandit
->>     2. Change hash_report_tunnel to hash_report_tunnel_types. @Parav 
->> Pandit
->>     3. Removed re-definition for inner packet hashing. @Parav Pandit
->>     4. Fix some typos. @Michael S . Tsirkin
->>     5. Clarify some sentences. @Michael S . Tsirkin
->>
->> v6->v7:
->>     1. Modify the wording of some sentences for clarity. @Michael S. 
->> Tsirkin
->>     2. Fix some syntax issues. @Michael S. Tsirkin
->>
->> v5->v6:
->>     1. Fix some syntax and capitalization issues. @Michael S. Tsirkin
->>     2. Use encapsulated/encaptulation uniformly. @Michael S. Tsirkin
->>     3. Move the links to introduction section. @Michael S. Tsirkin
->>     4. Clarify some sentences. @Michael S. Tsirkin
->>
->> v4->v5:
->>     1. Clarify some paragraphs. @Cornelia Huck
->>     2. Fix the u8 type. @Cornelia Huck
->>
->> v3->v4:
->>     1. Rename VIRTIO_NET_F_HASH_GRE_VXLAN_GENEVE_INNER to 
->> VIRTIO_NET_F_HASH_TUNNEL. @Jason Wang
->>     2. Make things clearer. @Jason Wang @Michael S. Tsirkin
->>     3. Keep the possibility to use inner hash for automatic receive 
->> steering. @Jason Wang
->>     4. Add the "Tunnel packet" paragraph to avoid repeating the GRE 
->> etc. many times. @Michael S. Tsirkin
->>
->> v2->v3:
->>     1. Add a feature bit for GRE/VXLAN/GENEVE inner hash. @Jason Wang
->>     2. Chang \field{hash_tunnel} to \field{hash_report_tunnel}. 
->> @Jason Wang, @Michael S. Tsirkin
->>
->> v1->v2:
->>     1. Remove the patch for the bitmask fix. @Michael S. Tsirkin
->>     2. Clarify some paragraphs. @Jason Wang
->>     3. Add \field{hash_tunnel} and VIRTIO_NET_HASH_REPORT_GRE. @Yuri 
->> Benditovich
->>
->>   device-types/net/description.tex        | 143 ++++++++++++++++++++++++
->>   device-types/net/device-conformance.tex |   1 +
->>   device-types/net/driver-conformance.tex |   1 +
->>   introduction.tex                        |  44 ++++++++
->>   4 files changed, 189 insertions(+)
->>
->> diff --git a/device-types/net/description.tex 
->> b/device-types/net/description.tex
->> index 0500bb6..121585e 100644
->> --- a/device-types/net/description.tex
->> +++ b/device-types/net/description.tex
->> @@ -83,6 +83,9 @@ \subsection{Feature bits}\label{sec:Device Types / 
->> Network Device / Feature bits
->>   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
->>       channel.
->>   +\item[VIRTIO_NET_F_HASH_TUNNEL(52)] Device supports inner header hash
->> +    for tunnel-encapsulated packets.
->> +
->>   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications 
->> coalescing.
->>     \item[VIRTIO_NET_F_GUEST_USO4 (54)] Driver can receive USOv4 
->> packets.
->> @@ -139,6 +142,7 @@ \subsubsection{Feature bit 
->> requirements}\label{sec:Device Types / Network Device
->>   \item[VIRTIO_NET_F_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
->>   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or 
->> VIRTIO_NET_F_HOST_TSO6.
->>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
->> +\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along 
->> with VIRTIO_NET_F_RSS and/or VIRTIO_NET_F_HASH_REPORT.
->>   \end{description}
->>     \subsubsection{Legacy Interface: Feature bits}\label{sec:Device 
->> Types / Network Device / Feature bits / Legacy Interface: Feature bits}
->> @@ -198,6 +202,7 @@ \subsection{Device configuration 
->> layout}\label{sec:Device Types / Network Device
->>           u8 rss_max_key_size;
->>           le16 rss_max_indirection_table_length;
->>           le32 supported_hash_types;
->> +        le32 supported_tunnel_hash_types;
->>   };
->>   \end{lstlisting}
->>   The following field, \field{rss_max_key_size} only exists if 
->> VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT is set.
->> @@ -212,6 +217,12 @@ \subsection{Device configuration 
->> layout}\label{sec:Device Types / Network Device
->>   Field \field{supported_hash_types} contains the bitmask of 
->> supported hash types.
->>   See \ref{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Hash calculation for incoming 
->> packets / Supported/enabled hash types} for details of supported hash 
->> types.
->>   +Field \field{supported_tunnel_hash_types} only exists if the device
->> +supports inner header hash, i.e. if VIRTIO_NET_F_HASH_TUNNEL is set.
->> +
->> +Filed \field{supported_tunnel_hash_types} contains the bitmask of 
->> supported tunnel hash types.
->> +See \ref{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Hash calculation for incoming 
->> packets / Supported/enabled encapsulation hash types} for details of 
->> supported tunnel hash types.
->> +
->>   \devicenormative{\subsubsection}{Device configuration 
->> layout}{Device Types / Network Device / Device configuration layout}
->>     The device MUST set \field{max_virtqueue_pairs} to between 1 and 
->> 0x8000 inclusive,
->> @@ -848,6 +859,7 @@ \subsubsection{Processing of Incoming 
->> Packets}\label{sec:Device Types / Network
->>   If the feature VIRTIO_NET_F_RSS was negotiated:
->>   \begin{itemize}
->>   \item The device uses \field{hash_types} of the 
->> virtio_net_rss_config structure as 'Enabled hash types' bitmask.
->> +\item The device uses \field{hash_tunnel_types} of the 
->> virtio_net_hash_tunnel_config structure as 'Enabled hash tunnel 
->> types' bitmask if VIRTIO_NET_F_HASH_TUNNEL was negotiated.
->>   \item The device uses a key as defined in \field{hash_key_data} and 
->> \field{hash_key_length} of the virtio_net_rss_config structure (see
->>   \ref{sec:Device Types / Network Device / Device Operation / Control 
->> Virtqueue / Receive-side scaling (RSS) / Setting RSS parameters}).
->>   \end{itemize}
->> @@ -855,6 +867,7 @@ \subsubsection{Processing of Incoming 
->> Packets}\label{sec:Device Types / Network
->>   If the feature VIRTIO_NET_F_RSS was not negotiated:
->>   \begin{itemize}
->>   \item The device uses \field{hash_types} of the 
->> virtio_net_hash_config structure as 'Enabled hash types' bitmask.
->> +\item The device uses \field{hash_tunnel_types} of the 
->> virtio_net_hash_tunnel_config structure as 'Enabled hash tunnel 
->> types' bitmask if VIRTIO_NET_F_HASH_TUNNEL was negotiated.
->>   \item The device uses a key as defined in \field{hash_key_data} and 
->> \field{hash_key_length} of the virtio_net_hash_config structure (see
->>   \ref{sec:Device Types / Network Device / Device Operation / Control 
->> Virtqueue / Automatic receive steering in multiqueue mode / Hash 
->> calculation}).
->>   \end{itemize}
->> @@ -870,6 +883,8 @@ \subsubsection{Processing of Incoming 
->> Packets}\label{sec:Device Types / Network
->>     \subparagraph{Supported/enabled hash types}
->>   \label{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Hash calculation for incoming 
->> packets / Supported/enabled hash types}
->> +This paragraph relies on definitions from \hyperref[intro:IP]{[IP]},
->> +\hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
->>   Hash types applicable for IPv4 packets:
->>   \begin{lstlisting}
->>   #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
->> @@ -980,6 +995,133 @@ \subsubsection{Processing of Incoming 
->> Packets}\label{sec:Device Types / Network
->>   (see \ref{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Hash calculation for incoming 
->> packets / IPv6 packets without extension header}).
->>   \end{itemize}
->>   +\paragraph{Inner Header Hash}
->> +\label{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Inner Header Hash}
->> +
->> +If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the device supports 
->> inner header hash and
->> +the driver can configure the inner header hash calculation for 
->> encapsulated packets \ref{sec:Device Types / Network Device / Device 
->> OperatiHn / Processing of Incoming Packets / Hash calculation for 
->> incoming packets / Tunnel/Encapsulated packet}
->> +by issuing the command VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG from the 
->> class VIRTIO_NET_CTRL_MQ.
->> +The command sets \field{hash_tunnel_types} in the structure 
->> virtio_net_hash_tunnel_config.
->> +
->> +struct virtio_net_hash_tunnel_config {
->> +    le32 hash_tunnel_types;
->> +};
->> +
->> +Filed \field{hash_tunnel_types} contains a bitmask of supported hash 
->> tunnel types as
->> +defined in \ref{sec:Device Types / Network Device / Device Operation 
->> / Processing of Incoming Packets / Hash calculation for incoming 
->> packets / Supported/enabled hash tunnel types}.
->> +
->> +\subparagraph{Tunnel/Encapsulated packet}
->> +\label{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Hash calculation for incoming 
->> packets / Tunnel/Encapsulated packet}
->> +
->> +A tunnel packet is encapsulated from the original packet based on 
->> the tunneling
->> +protocol (only a single level of encapsulation is currently 
->> supported). The
->> +encapsulated packet contains an outer header and an inner header, 
->> and the device
->> +calculates the hash over either the inner header or the outer header.
->> +
->> +If VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received 
->> encapsulated packet's
->> +outer header matches one of the supported \field{hash_tunnel_types}, 
->> the hash
->> +of the inner header is calculated.
->
->
-> GRE allows X over Y, we'd better document what is supported in X and Y 
+Overview:
+---------
 
-Yes, I will do.
+Virtio-loopback is a new hardware abstraction layer designed for
+non-Hypervisor
+environments based on virtio. The main objective is to enable applications
+communication with vhost-user devices in a non-hypervisor environment.
 
-> (I guess they are implied in the supported_hash_types?)
+More in details, Virtio-loopback's design consists of a new transport
+(Virtio-loopback), a user-space daemon (Adapter), and a vhost-user device.
+The data path has been implemented using the "zero-copy" principle, where
+vhost-user devices access virtqueues directly in the kernel space. This
+first
+implementation supports multi-queues, does not require virtio-protocol
+changes
+and applies minor modifications to the vhost-user library. Supported
+vhost-user
+devices are today vhost-user-rng (both rust and C version), vhost-user-input
+and vhost-user-blk.
 
-Yes, but as you suggest we should document these explicitly.
+Motivation & requirements:
+-------------------------
 
->
->
->> +
->> +Supported encapsulated packet types:
->> +\begin{itemize}
->> +\item \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]}
->> +\item \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]}
->> +\item \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]}
->> +\item \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]}
->> +\item \hyperref[intro:vxlan]{[VXLAN]}
->> +\item \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]}
->> +\item \hyperref[intro:geneve]{[GENEVE]}
->> +\item \hyperref[intro:ipip]{[IPIP]}
->> +\item \hyperref[intro:nvgre]{[NVGRE]}
->> +\item \hyperref[intro:sit]{[STT]}
->> +\end{itemize}
->> +
->> +If VIRTIO_NET_HASH_TUNNEL_TYPE_NONE is set or the encapsulation type 
->> is not included in
->> +\field{hash_tunnel_types}, the hash of the outer header is 
->> calculated for the received encapsulated packet.
->> +
->> +The hash is calculated for the received non-encapsulated packet as 
->> if VIRTIO_NET_F_HASH_TUNNEL was not negotiated.
->> +
->> +\subparagraph{Supported/enabled encapsulation hash types}
->> +\label{sec:Device Types / Network Device / Device Operation / 
->> Processing of Incoming Packets / Hash calculation for incoming 
->> packets / Supported/enabled encapsulation hash types}
->> +
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NONE        (1 << 0)
->> +\end{lstlisting}
->> +
->> +Supported encapsulation hash types:
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 1)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 2)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 3)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 4)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:vxlan]{[VXLAN]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 5)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 6)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:geneve]{[GENEVE]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 7)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:ipip]{[IPIP]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 8)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:nvgre]{[NVGRE]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 9)
->> +\end{lstlisting}
->> +Hash type applicable for inner payload of the 
->> \hyperref[intro:stt]{[STT]} packet:
->> +\begin{lstlisting}
->> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_STT         (1 << 10)
->> +\end{lstlisting}
->> +
->> +\subparagraph{Tunnel QoS limitation}
->> +When a specific receive queue is shared by multiple tunnels to 
->> receive encapsulated packets,
->> +there is no quality of service (QoS) for these packets.
->
->
-> This is up to the implementation, so I'm not sure it's worthwhile for 
-> mentioning things like this and the "limitation".
->
+1. Enable the usage of the same user-space driver on both virtualized and
+   non-virtualized environments.
 
-Yes, I see what you mean. As we discussed before, similar to the RFCs of 
-various tunnels, they all briefly mention
-security issues. Perhaps we can modify them into some simple suggestions 
-here, similar to Tunnel QoS Advices:
-(1)Use a tool with good forwarding performance to keep the receive queue 
-from filling up;
-(2)...
+2. Maximize performance with zero copy design principles
 
-Anyway, I'm ok with these, it's up to you.
+3. Applications using such drivers are unchanged and transparently running
+in
+   both virtualized or non-virtualized environment.
 
->
->>   For example, when the packets of certain
->> +tunnels are spread across multiple receive queues, these receive 
->> queues may have an unbalanced
->> +amount of packets. This can cause a specific receive queue to become 
->> full, resulting in packet loss.
->
->
-> We have many places that can lead to packet dropping. For example, the 
-> automatic steering is best effort. I tend to avoid mentioning things 
-> like this.
+Design description:
+-------------------
 
-Ok. And Michael what do you think about this?
+a) Component's description:
+--------------------------
 
->
->
->> +
->> +Possible mitigations:
->> +\begin{itemize}
->> +\item Use a tool with good forwarding performance to keep the 
->> receive queue from filling up.
->> +\item If the QoS is unavailable, the driver can set 
->> \field{hash_tunnel_types} to VIRTIO_NET_HASH_TUNNEL_TYPE_NONE
->> +      to disable inner header hash for encapsulated packets.
->> +\item Choose a hash key that can avoid queue collisions.
->> +\item Perform appropriate QoS before packets consume the receive 
->> buffers of the receive queues.
->> +\end{itemize}
->> +
->> +The limitations mentioned above exist with/without the inner header 
->> hash.
->
->
-> This conflicts with the tile "Tunnel QoS limitation" which readers may 
-> think it happens only for tunnel.
+The Virtio-loopback architecture consists of three main components
+described below:
 
-Perhaps a "QoS Advices" is better?
+1) Driver: In order to route the VIRTIO communication in user-space
+   virtio-loopback driver was implemented and consists of:
+   - A new transport layer which is based on virtio-mmio and it is
+     responsible of routing the read/write communication of the virtio
+     device to the adapter binary.
+   - A character device which works as an intermediate layer between the
+     user-space components and the transport layer. The character device
+helps
+     the adapter to provide all the required information and initialize the
+     transport and at the same time, provides direct access to the vrings
+     from user-space. The access to the vrings is based on a memory mapping
+     mechanism which gives the ability to the vhost-user device to read and
+     write data directly into kernel's memory without the need of any copy.
 
-Thanks!
+2) Adapter: Implements the role that QEMU had in the corresponding
+virtualized
+   scenario. Specifically, combines the functionality of two main QEMU
+   components, virtio-mmio transport emulation and vhost-user backend, in
+order
+   to work as a bridge between the transport and the vhost-user device. The
+two
+   main parts of the adapter are:
+   - A vhost-user backend which is the main communication point with the
+     vhost-user device.
+   - A virtio-emulation which handles mostly the messages coming from the
+     driver and translates them into vhost-user messages/actions.
 
->
-> Thanks
->
->
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
->
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
->
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: 
-> https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
+3) Vhost-user device: This components required only minimal modifications to
+   make the vrings directly accessible in kernel's memory.
 
+b) Communication between the virtio-loopback components:
+-------------------------------------------------------
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+After the describing the role of its component, a few details need to be
+given
+about how they interact with each other and the mechanisms used.
 
+1) Transport & Adapter:
+   - The two components share a communication data structure which describes
+     the current read/write operation requested by the transport.
+   - When this data structure has been filled with all the required
+information
+     the transport triggers and EventFD and waits. The adapter wakes up,
+takes
+     the corresponding actions and finally notifies and unlocks the
+transport
+     by calling an IOCTL system call.
+   - Compared to the virtualized environment scenario, the adapter calls an
+     IOCTL system call to the driver in place of an interrupt.
+
+2) Adapter & Vhost-user device:
+   - The mechanisms used between these two component are the same as in
+     the virtualized environment case.
+     a) A UNIX socket is in place to exchange any VHOST-USER messages.
+     b) EventFDs are being used in order to trigger VIRTIO kick/call
+        requests.
+
+3) Transport & Vhost-user device:
+   - Since the Vrings are allocated into the Kernel's memory, vhost-user
+     device needs to communicate and request access from the virtio-loopback
+     driver. These requirement is served by implementing MMAP and IOCTL
+system
+     calls in the driver.
+
+c) Vrings & Zero copy memory mapping mechanism:
+----------------------------------------------
+
+The vrings are allocated by the virtio driver into the kernel's memory space
+and in order to be accessible by the user-space, especially by the
+vhost-user
+device, a new memory mapping mechanism needed to be created into the
+virtio-loopback driver. The new memory mapping mechanism is based on a
+page-fault handler which maps the accessed pages on-demand.
+
+Known issues & room for improvement:
+-----------------------------------
+
+Known limitation found in the current implementation:
+- The memory mapping mechanism needs improvements, in the current
+  implementation the device can potentially access the whole kernel's
+  memory. A more fine grained mmapping can be set by the kernel by
+  narrowing down the memory block shared.
+
+Possible next development targets might be about:
+- Security checks for the memory shared with the user-space (vhost
+user-device)
+- Add parallel device handling for the virtio-loopback transport and adapter
+- Add support for more vhost-user devices
+
+More information:
+----------------
+
+The full description of the technology can be found in the links below:
+- Virtio-loopback design document
+<https://git.virtualopensystems.com/virtio-loopback/docs/-/blob/virtio-loopback-rfc/design_docs/EG-VIRT_VOSYS_virtio_loopback_design_v1.4_2023_04_03.pdf>
+- How to test the technology
+<https://git.virtualopensystems.com/virtio-loopback/docs/-/blob/virtio-loopback-rfc/README.md>
+
+Links for all the key components of the design can be found below:
+1) Virtio-loopback-transport
+<https://git.virtualopensystems.com/virtio-loopback/loopback_driver/-/tree/virtio-loopback-rfc>
+2) Adapter
+<https://git.virtualopensystems.com/virtio-loopback/adapter_app/-/tree/virtio-loopback-rfc>
+3) Vhost-user devices in Qemu
+<https://git.virtualopensystems.com/virtio-loopback/qemu/-/tree/virtio-loopback-rfc>
+
+Virtio-loopback has been tested on RCAR-M3 board (AGL needlefish) and x86
+systems (Fedora 37). The results have been found to be comparable with VDUSE
+technology in virtio-blk case:
+- Automotive Grade Linux All Member Meeting Spring (8-9/03/2023) -
+Presentation
+<https://static.sched.com/hosted_files/aglammspring2023/44/vosys_virtio-loopback-berlin_2023-03-08.pdf>
+  + Activity done in the context of the AERO EU project (grant agreement No
+101092850)
+
+Thank you for taking the time to review this PoC,
+I would appreciate your feedback and suggestions for improvements.
+
+Best regards,
+Timos Ampelikiotis
+
+--000000000000c1ee5205f937ce4b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Dear virtio-dev community,<br><br><div><div>I would like t=
+o introduce you Virtio-loopback, Proof of Concept (PoC) that<br>we have bee=
+n working on at Virtual Open Systems in the context of the<br>Automotive Gr=
+ade Linux community (Virtualization &amp; Containers expert</div><div>group=
+ - EG-VIRT).<br><br>We consider this work as a PoC and we are not currently=
+ planning<br>upstream. However, if the zero-copy or any other aspect of thi=
+s work<br>is interesting for other Virtio implementations, we would be glad=
+ to<br>discuss more.<br><br>Overview:<br>---------<br><br>Virtio-loopback i=
+s a new hardware abstraction layer designed for non-Hypervisor<br>environme=
+nts based on virtio. The main objective is to enable applications<br>commun=
+ication with vhost-user devices in a non-hypervisor environment.<br><br>Mor=
+e in details, Virtio-loopback&#39;s design consists of a new transport<br>(=
+Virtio-loopback), a user-space daemon (Adapter), and a vhost-user device.<b=
+r>The data path has been implemented using the &quot;zero-copy&quot; princi=
+ple, where<br>vhost-user devices access virtqueues directly in the kernel s=
+pace. This first<br>implementation supports multi-queues, does not require =
+virtio-protocol changes<br>and applies minor modifications to the vhost-use=
+r library. Supported vhost-user<br>devices are today vhost-user-rng (both r=
+ust and C version), vhost-user-input<br>and vhost-user-blk.<br><br>Motivati=
+on &amp; requirements:<br>-------------------------<br><br>1. Enable the us=
+age of the same user-space driver on both virtualized and<br>=C2=A0 =C2=A0n=
+on-virtualized environments.<br><br>2. Maximize performance with zero copy =
+design principles<br><br>3. Applications using such drivers are unchanged a=
+nd transparently running in<br>=C2=A0 =C2=A0both virtualized or non-virtual=
+ized environment.<br><br>Design description:<br>-------------------<br><br>=
+a) Component&#39;s description:<br>--------------------------<div><br><div>=
+The Virtio-loopback architecture consists of three main components describe=
+d below:<br><br></div><div>1) Driver: In order to route the VIRTIO communic=
+ation in user-space<br>=C2=A0 =C2=A0virtio-loopback driver was implemented =
+and consists of:<br>=C2=A0 =C2=A0- A new transport layer which is based on =
+virtio-mmio and it is<br>=C2=A0 =C2=A0 =C2=A0responsible of routing the rea=
+d/write communication of the virtio<br>=C2=A0 =C2=A0 =C2=A0device to the ad=
+apter binary.<br>=C2=A0 =C2=A0- A character device which works as an interm=
+ediate layer between the<br>=C2=A0 =C2=A0 =C2=A0user-space components and t=
+he transport layer. The character device helps<br>=C2=A0 =C2=A0 =C2=A0the a=
+dapter to provide all the required information and initialize the<br>=C2=A0=
+ =C2=A0 =C2=A0transport and at the same time, provides direct access to the=
+ vrings<br>=C2=A0 =C2=A0 =C2=A0from user-space. The access to the vrings is=
+ based on a memory mapping<br>=C2=A0 =C2=A0 =C2=A0mechanism which gives the=
+ ability to the vhost-user device to read and<br>=C2=A0 =C2=A0 =C2=A0write =
+data directly into kernel&#39;s memory without the need of any copy.<br><br=
+>2) Adapter: Implements the role that QEMU had in the corresponding virtual=
+ized<br>=C2=A0 =C2=A0scenario. Specifically, combines the functionality of =
+two main QEMU<br>=C2=A0 =C2=A0components, virtio-mmio transport emulation a=
+nd vhost-user backend, in order<br>=C2=A0 =C2=A0to work as a bridge between=
+ the transport and the vhost-user device. The two<br>=C2=A0 =C2=A0main part=
+s of the adapter are:<br>=C2=A0 =C2=A0- A vhost-user backend which is the m=
+ain communication point with the<br>=C2=A0 =C2=A0 =C2=A0vhost-user device.<=
+br>=C2=A0 =C2=A0- A virtio-emulation which handles mostly the messages comi=
+ng from the<br>=C2=A0 =C2=A0 =C2=A0driver and translates them into vhost-us=
+er messages/actions.<br><br>3) Vhost-user device: This components required =
+only minimal modifications to<br>=C2=A0 =C2=A0make the vrings directly acce=
+ssible in kernel&#39;s memory.<br><br>b) Communication between the virtio-l=
+oopback components:<br>----------------------------------------------------=
+---<br><br>After the describing the role of its component, a few details ne=
+ed to be given<br>about how they interact with each other and the mechanism=
+s used.<br><br>1) Transport &amp; Adapter:<br>=C2=A0 =C2=A0- The two compon=
+ents share a communication data structure which describes<br>=C2=A0 =C2=A0 =
+=C2=A0the current read/write operation requested by the transport.<br>=C2=
+=A0 =C2=A0- When this data structure has been filled with all the required =
+information<br>=C2=A0 =C2=A0 =C2=A0the transport triggers and EventFD and w=
+aits. The adapter wakes up, takes<br>=C2=A0 =C2=A0 =C2=A0the corresponding =
+actions and finally notifies and unlocks the transport<br>=C2=A0 =C2=A0 =C2=
+=A0by calling an IOCTL system call.<br>=C2=A0 =C2=A0- Compared to the virtu=
+alized environment scenario, the adapter calls an<br>=C2=A0 =C2=A0 =C2=A0IO=
+CTL system call to the driver in place of an interrupt.<br><br>2) Adapter &=
+amp; Vhost-user device:<br>=C2=A0 =C2=A0- The mechanisms used between these=
+ two component are the same as in<br>=C2=A0 =C2=A0 =C2=A0the virtualized en=
+vironment case.<br>=C2=A0 =C2=A0 =C2=A0a) A UNIX socket is in place to exch=
+ange any VHOST-USER messages.<br>=C2=A0 =C2=A0 =C2=A0b) EventFDs are being =
+used in order to trigger VIRTIO kick/call<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 re=
+quests.<br><br>3) Transport &amp; Vhost-user device:<br>=C2=A0 =C2=A0- Sinc=
+e the Vrings are allocated into the Kernel&#39;s memory, vhost-user<br>=C2=
+=A0 =C2=A0 =C2=A0device needs to communicate and request access from the vi=
+rtio-loopback<br>=C2=A0 =C2=A0 =C2=A0driver. These requirement is served by=
+ implementing MMAP and IOCTL system<br>=C2=A0 =C2=A0 =C2=A0calls in the dri=
+ver.<br><br>c) Vrings &amp; Zero copy memory mapping mechanism:<br>--------=
+--------------------------------------<br><br>The vrings are allocated by t=
+he virtio driver into the kernel&#39;s memory space<br>and in order to be a=
+ccessible by the user-space, especially by the vhost-user<br>device, a new =
+memory mapping mechanism needed to be created into the<br>virtio-loopback d=
+river. The new memory mapping mechanism is based on a<br>page-fault handler=
+ which maps the accessed pages on-demand.<br><br>Known issues &amp; room fo=
+r improvement:<br>-----------------------------------<br><br>Known limitati=
+on found in the current implementation:<br>- The memory mapping mechanism n=
+eeds improvements, in the current<br>=C2=A0 implementation the device can p=
+otentially access the whole kernel&#39;s<br>=C2=A0 memory. A more fine grai=
+ned mmapping can be set by the kernel by<br>=C2=A0 narrowing down the memor=
+y block shared.<br><br>Possible next development targets might be about:<br=
+>- Security checks for the memory shared with the user-space (vhost user-de=
+vice)<br>- Add parallel device handling for the virtio-loopback transport a=
+nd adapter<br>- Add support for more vhost-user devices<br><br>More informa=
+tion:<br>----------------<br><br>The full description of the technology can=
+ be found in the links below:<br>-=C2=A0<a href=3D"https://git.virtualopens=
+ystems.com/virtio-loopback/docs/-/blob/virtio-loopback-rfc/design_docs/EG-V=
+IRT_VOSYS_virtio_loopback_design_v1.4_2023_04_03.pdf" target=3D"_blank">Vir=
+tio-loopback design document</a><br>-=C2=A0<a href=3D"https://git.virtualop=
+ensystems.com/virtio-loopback/docs/-/blob/virtio-loopback-rfc/README.md" ta=
+rget=3D"_blank">How to test the technology</a><br><br>Links for all the key=
+ components of the design can be found below:<br>1)=C2=A0<a href=3D"https:/=
+/git.virtualopensystems.com/virtio-loopback/loopback_driver/-/tree/virtio-l=
+oopback-rfc" target=3D"_blank">Virtio-loopback-transport</a><br>2)=C2=A0<a =
+href=3D"https://git.virtualopensystems.com/virtio-loopback/adapter_app/-/tr=
+ee/virtio-loopback-rfc" target=3D"_blank">Adapter</a><br>3)=C2=A0<a href=3D=
+"https://git.virtualopensystems.com/virtio-loopback/qemu/-/tree/virtio-loop=
+back-rfc" target=3D"_blank">Vhost-user devices in Qemu</a><br><br><font fac=
+e=3D"arial, sans-serif">Virtio-loopback has been tested on RCAR-M3 board (A=
+GL needlefish) and x86<br>systems (Fedora 37). The results have been found =
+to be comparable with VDUSE<br>technology in virtio-blk case:<br>-=C2=A0<a =
+href=3D"https://static.sched.com/hosted_files/aglammspring2023/44/vosys_vir=
+tio-loopback-berlin_2023-03-08.pdf" target=3D"_blank">Automotive Grade Linu=
+x All Member Meeting Spring (8-9/03/2023) - Presentation</a></font></div><d=
+iv><font face=3D"arial, sans-serif">=C2=A0 + Activity done in the context o=
+f the AERO EU project (grant agreement No 101092850)</font><br><br>Thank yo=
+u for taking the time to review this PoC,<br>I would appreciate your feedba=
+ck and suggestions for improvements.<br><br>Best regards,<br>Timos Ampeliki=
+otis<br></div></div></div></div></div>
+
+--000000000000c1ee5205f937ce4b--
