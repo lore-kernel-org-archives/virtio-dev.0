@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12216-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12217-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CCA7AC77B6E
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 21:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 439D6C77B61
+	for <virtio-dev@archiver.kernel.org>; Fri, 14 Apr 2023 02:37:08 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 116D92B07E
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 21:46:29 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 556872AD78
+	for <virtio-dev@archiver.kernel.org>; Fri, 14 Apr 2023 02:37:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EE6D2986617
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Apr 2023 21:46:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 36D26986617
+	for <virtio-dev@archiver.kernel.org>; Fri, 14 Apr 2023 02:37:07 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D6D4F986600; Thu, 13 Apr 2023 21:46:28 +0000 (UTC)
+	id 1A3A3983C98; Fri, 14 Apr 2023 02:37:07 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,117 +24,123 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C5208986601
-	for <virtio-dev@lists.oasis-open.org>; Thu, 13 Apr 2023 21:46:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 02C15986601
+	for <virtio-dev@lists.oasis-open.org>; Fri, 14 Apr 2023 02:37:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: OOviB903PqO_z8QjL04n9g-1
+X-MC-Unique: JiCAx5Y1N5S0iqZaMgUJ1A-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681422385; x=1684014385;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OTqphmYZkbT3QYsY/f5Uczx4let1/XUA/cgodrDsZhM=;
-        b=UGKTnJPYCq96WRE0C0PGL2PyRl77+aivXNFJiGFGOe1ab+9j71IsCleZcZdE08NVxN
-         KdikyORTj0jX9O/XvdAi89a5AgEkorMdVJb/NkAFaxFoNPqtJ/MeSilZxFaeJum1Oxkd
-         xm+WjdctqclYjzZigkGf+xMnJOMhEtdVvZCReagORJXEqy9Bd/a3V1T77nosvCb6b0cO
-         WXbt5W3aitMzJvh0jwl6dQbyL/eO4FpBynTG1KcVEXdwziY1rE74odNm4YhgOjamG6ux
-         XUwat5zzYlaKpxPaQ73D6R6zgP00DYDpepVADqZZm/75aQ79vGius0aeoRCGYL4XoHaA
-         Rj5Q==
-X-Gm-Message-State: AAQBX9dj2+fW22u4V03vUGeMoy2T1RAqP/Jgbe8CX6XlyLXgqsxQeWLe
-	UbMaeVdhYeFRIFPCtgdkGZOgzpXe4QO1nmUQecS6fDA8HizY/2EkvvLCqoUAbvzFIXo0duuuSZv
-	4hoaGKhgEzOmznS7Rj1Gd8ZbntM7+
-X-Received: by 2002:a5d:4d0a:0:b0:2ef:b596:3f71 with SMTP id z10-20020a5d4d0a000000b002efb5963f71mr2370321wrt.51.1681422385749;
-        Thu, 13 Apr 2023 14:46:25 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aorGjWLV3hdeONyukJCosC5DQgyvAUf0hw7xHS5KFBsoX0SEtK/5zAnmkssF6l6vpAV3eejw==
-X-Received: by 2002:a5d:4d0a:0:b0:2ef:b596:3f71 with SMTP id z10-20020a5d4d0a000000b002efb5963f71mr2370314wrt.51.1681422385432;
-        Thu, 13 Apr 2023 14:46:25 -0700 (PDT)
-Date: Thu, 13 Apr 2023 17:46:22 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: Jason Wang <jasowang@redhat.com>, virtio-dev@lists.oasis-open.org,
-	virtio-comment@lists.oasis-open.org,
-	Parav Pandit <parav@nvidia.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230413174525-mutt-send-email-mst@kernel.org>
-References: <20230403045833.21853-1-hengqi@linux.alibaba.com>
- <1d30d4a0-6bfc-3d58-17a4-645602d3792f@redhat.com>
- <a95ca379-0675-9b33-f649-bd2a19b56190@linux.alibaba.com>
+        d=1e100.net; s=20221208; t=1681439824; x=1684031824;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mDmsQShjzIeD0WvnjZ0qCqGkYB7vmZZCcmJVfFBzqrQ=;
+        b=PxOgdpG/9ig8TaQb4VgChMR1d+50bBw5sk2q0bO296puIWcGqy4qPGBpaiiGajMk83
+         mvzHkZ4lRny3T9jblK+8pawFm33ED/5N1XvEt9N5sIU+T9niEyoNbFsbbJTO8DDL6LWH
+         tEAsmKIQEO3vt8XXKeEIvjvloMyaET7dmb49mB4WG9uh5DQA31f9XWCkRHx+9tvEkYuB
+         H4H3Yy96DcCLwaRUtjJ3jyg1TaMgM6A+MV5uRB7n70sbqPG8XIre3ksTjL0/w1yTM9rW
+         9wQwhu2ftXd+LJoC1NnaeThZxQI14F6enBJJVzE1OEPN7YG+0FXxK+Vr4lk6u4QwxZA4
+         Ji8A==
+X-Gm-Message-State: AAQBX9fZPyYnFWd62xOMT9EsLuvd4o1xkJayPNrV3j3lF9u+4q5dKCZV
+	1qfMaRwzpM5cwsQ17GPk2rwZMPX2C1UY78aKfGTWU5ynjWL5BnTqtFlxIRhcbroQLUXy9r6sT1S
+	GiHPoG3bM1QONhYDFQ/d1kIEC5h3d6G+P4go04Rx7pIqS
+X-Received: by 2002:aca:120c:0:b0:383:fad3:d19 with SMTP id 12-20020aca120c000000b00383fad30d19mr953761ois.9.1681439823815;
+        Thu, 13 Apr 2023 19:37:03 -0700 (PDT)
+X-Google-Smtp-Source: AKy350afP3G19ju5SPTkoh31CFylPIeHGNCR2P5ZN0qWtk7IR61BE+NqLpbEOXR2Yr9ND+LK51ypGpQYmJsiIYaRu/0=
+X-Received: by 2002:aca:120c:0:b0:383:fad3:d19 with SMTP id
+ 12-20020aca120c000000b00383fad30d19mr953752ois.9.1681439823610; Thu, 13 Apr
+ 2023 19:37:03 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <a95ca379-0675-9b33-f649-bd2a19b56190@linux.alibaba.com>
+References: <CACGkMEvYsz1fSPG+fKpRaZ05Ut7ffKwvMPvR8xbRBsXA_6vGQw@mail.gmail.com>
+ <PH0PR12MB548137D7A25C99EAA42B4D12DC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEshW82qztmGw8YJWJ8=QCoRd6cPxQ+ySazxsO_o+U6c4Q@mail.gmail.com>
+ <PH0PR12MB548147CF939CB9C2A0586310DC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEu2B_GogDR9HUwB7mT8fkGh+Q_buPLz4nhwhK7h9k6BQQ@mail.gmail.com>
+ <PH0PR12MB5481F0CF5A555A6BB2CE856CDC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEuNOYOxvcSzrs0UFEyk+xOkGUpOfhK8rOy_Mebz5b5wdg@mail.gmail.com>
+ <a74d3107-d38c-df15-e2ff-f848635f24bd@nvidia.com> <CACGkMEt+bGN7UYEopXPj0+deAnYm1VUNp05VvGHcJnkd8LzbGg@mail.gmail.com>
+ <f9f01f9d-f6ec-0daa-a11d-c75589dcbe6c@nvidia.com> <20230413163216-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54818B39801152ECBA138E73DC989@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54818B39801152ECBA138E73DC989@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Fri, 14 Apr 2023 10:36:52 +0800
+Message-ID: <CACGkMEtMKqzN3E9S-pusTr=doYRtDvTZUie2PrygzPiH0p5fvg@mail.gmail.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, 
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, 
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>, 
+	Satananda Burla <sburla@marvell.com>, Maxime Coquelin <maxime.coquelin@redhat.com>, 
+	Yan Vugenfirer <yan@daynix.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v12] virtio-net: support inner
- header hash
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
+ MMR dev config registers
 
-On Thu, Apr 13, 2023 at 07:03:26PM +0800, Heng Qi wrote:
-> > >   For example, when the packets of certain
-> > > +tunnels are spread across multiple receive queues, these receive
-> > > queues may have an unbalanced
-> > > +amount of packets. This can cause a specific receive queue to
-> > > become full, resulting in packet loss.
-> > 
-> > 
-> > We have many places that can lead to packet dropping. For example, the
-> > automatic steering is best effort. I tend to avoid mentioning things
-> > like this.
-> 
-> Ok. And Michael what do you think about this?
+On Fri, Apr 14, 2023 at 5:08=E2=80=AFAM Parav Pandit <parav@nvidia.com> wro=
+te:
+>
+>
+>
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Thursday, April 13, 2023 5:02 PM
+>
+> > This thing ... you move some code to the card and reduce the amount of =
+virtio
+> > knowledge in software but do not eliminate it completely.
+> Sure. Practically there is no knowledge other than transporting like a vx=
+lan encapsulating, here its AQ.
+>
+> > Seems kind of pointless. Minimal hardware changes make more sense to me=
+, I'd
+> > say. Talking about that, what is a minimal hardware change to allow a v=
+dpa
+> > based solution?
+> > I think that's VIRTIO_NET_F_LEGACY_HEADER, right?
 
+I think it is. It would be much easier if we do this.
 
-I think this text did not do a great job explaining the
-security aspect. Here's a better, shorter explanation:
+>
+> The main requirement/point is that there is virito PCI VF that to be mapp=
+ed to the guest VM.
+> Hence, there is no vdpa type of hypervisor layer exists in this use case.
 
-	It is often an expectation of users that a tunnel isolates the external
-	network from the internal one. By completely ignoring entropy in the
-	external header and replacing it with entropy from the internal header,
-	for hash calculations, this expectation might be violated to a certain
-	extent, depending on how the hash is used. When the hash use is limited
-	to RSS queue selection, the effect will likely be limited to ability of
-	users inside the tunnel to cause packet drops in multiple queues (as
-	opposed to a single queue without the feature).
+It's about mediation which is a must for things like legacy. If
+there's a way that helps the vendor to get rid of the tricky legacy
+completely, then why not?
 
-> > 
-> > 
-> > > +
-> > > +Possible mitigations:
-> > > +\begin{itemize}
-> > > +\item Use a tool with good forwarding performance to keep the
-> > > receive queue from filling up.
-> > > +\item If the QoS is unavailable, the driver can set
-> > > \field{hash_tunnel_types} to VIRTIO_NET_HASH_TUNNEL_TYPE_NONE
-> > > +      to disable inner header hash for encapsulated packets.
-> > > +\item Choose a hash key that can avoid queue collisions.
-> > > +\item Perform appropriate QoS before packets consume the receive
-> > > buffers of the receive queues.
-> > > +\end{itemize}
-> > > +
-> > > +The limitations mentioned above exist with/without the inner header
-> > > hash.
-> > 
-> > 
-> > This conflicts with the tile "Tunnel QoS limitation" which readers may
-> > think it happens only for tunnel.
-> 
-> Perhaps a "QoS Advices" is better?
+>
+> This same VF need to be transitional as the guest kernel may not be known=
+.
+> hence sometimes vdpa sometime regular 1.x VF is not an option.
+> Hence for next few years, transitional VF will be plugged in into the gue=
+st VM when user is using the PCI VF devices.
 
-Plural of "advice" is "advice" not "advices".
+I'm not sure I get this. With VIRTIO_NET_F_LEGACY_HEADER, we don't
+need mediation for datapath. For the control path, mediation is a must
+for legacy and it's very easy to keep it work for modern, what's wrong
+with that?
 
-This advice is somewhat bogus though.
+Thanks
 
-The point I keep trying to make is that this:
-
-	Choose a hash key that can avoid queue collisions.
-
-is impossible with the feature and possible without.
-This was the whole reason I asked for a security
-considerations sections.
-
--- 
-MST
+>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-l=
+ists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
+>
 
 
 ---------------------------------------------------------------------
