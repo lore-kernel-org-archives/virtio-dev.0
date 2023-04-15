@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12320-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12321-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 21BE3C77B73
-	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 21:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9B0F1C77B73
+	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 22:58:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 29D76335C8
-	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 21:42:42 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B615F419AB
+	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 22:58:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 24D00986618
-	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 21:42:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 97A89986613
+	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 22:58:43 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 16770983D70; Wed, 19 Apr 2023 21:42:42 +0000 (UTC)
+	id 81C6E983D70; Wed, 19 Apr 2023 22:58:43 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,425 +24,241 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 03C4D986435
-	for <virtio-dev@lists.oasis-open.org>; Wed, 19 Apr 2023 21:42:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6DD76986435
+	for <virtio-dev@lists.oasis-open.org>; Wed, 19 Apr 2023 22:58:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681940558; x=1684532558;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vTsIYtGB3E5ATwhZiBSEj8WFcdi3rNa3YihIYz3qAnM=;
-        b=a/KUXyvgF5jivFp5PBzAF+Zk/eRKUF6tkRvIfiO7qBGNT7PQQ3d1YWCxsX6cl38ae2
-         amKmvw2xI4mP7K53EIo2KJ4NZAfRBU+vXMW6dL6N4h5FuiO2pzKhDcqBhU5rxOHqWIAp
-         PVLShVgjovlefF6WQBWMC6XCcNHbVjwU6Rzx3VQPWUToQcOnbZPMg3l1ScQbEO4RcwsZ
-         q2n/x23K5ZhLO1b2RInNSOIS6uc2O3BA0ks9K5sOy0ZlESzx+zROCaKNjqNfT2vKXGH6
-         18ZdshgilySlOEC3F7CrYvYnOLPyUGdVc864DRilBR0or+NDW+aIn82lJ89fKUl6WHSK
-         ZZsQ==
-X-Gm-Message-State: AAQBX9dgGywRviibQu41OZdBy7yn/gECWUBZ+BxY4MrBVFeRh2uo1wgj
-	IVwa6kHUoizATg20OLp6Gl//Iep6C+m2TEm2gPBKHp8HnH4DG3dRpU6Xtw==
-X-Google-Smtp-Source: AKy350ZUzM2AuKauPQKzUHUyIr+2Rwwmjq00kktz8PveJCLv364MQFAdVsnPOXi1s6QSCgkUUAccQ2DnpeADRdRo5CY=
-X-Received: by 2002:ac8:7d4d:0:b0:3ef:343b:fe7e with SMTP id
- h13-20020ac87d4d000000b003ef343bfe7emr149129qtb.2.1681940066858; Wed, 19 Apr
- 2023 14:34:26 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681945121; x=1684537121;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZQQK9CV11yV3Ka7YlWstgN9/FXVxHhCZ+9O7M6CdT04=;
+        b=O6mO6t9V5obK61ve+N355QyXfs1L1/HGc82pC5fM1kXFTRM2+cGbQnbPq0qi9gvOd+
+         h2tANH6iehuv2YDC63n0PebWRETS/U4qLRIIuowcxpXtRsU/DrYmBHG54jQxs8bLFjOA
+         k/EyFIqmuVibPm35dgDx8uXs0tJdHooL75HVDtq+H4IqSw/rtQvv/h+Fc1y9LqgaoT3P
+         r2OGxKI/URxXgRXtCYidX42Yy96S33ub4QSVyFBBn2028/EaaUoUY1NMO/jnv9nGLj/l
+         +44/z04mtJSJDM6L1qeBYvv0jN41FwYpPNBVqqQ/1UfzaTJp9CSEFa+jRKJQiC+yLQkc
+         sUnA==
+X-Gm-Message-State: AAQBX9d5vwsy/70G+WebPwSenfPmhZ+D96YDTNLAEOD31UkiKybxVB5c
+	Q3YPwai2Hz+IWgJXX13JFwQ=
+X-Google-Smtp-Source: AKy350YiLBZovZ3WeFWM7yZSJ+6ij7l5P2Xkhmusc8Uz+PvaG/di+tiz5mtT6hPli4LyxaNiOqHMSA==
+X-Received: by 2002:a05:6a00:84e:b0:623:c117:f20e with SMTP id q14-20020a056a00084e00b00623c117f20emr6578835pfk.19.1681945121261;
+        Wed, 19 Apr 2023 15:58:41 -0700 (PDT)
+Date: Sat, 15 Apr 2023 07:13:47 +0000
+From: Bobby Eshleman <bobbyeshleman@gmail.com>
+To: Stefano Garzarella <sgarzare@redhat.com>
+Cc: linux-hyperv@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+	Bobby Eshleman <bobby.eshleman@bytedance.com>, kvm@vger.kernel.org,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+	virtualization@lists.linux-foundation.org,
+	Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>, Bryan Tan <bryantan@vmware.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Stefan Hajnoczi <stefanha@redhat.com>,
+	Vishnu Dasa <vdasa@vmware.com>,
+	Jiang Wang <jiang.wang@bytedance.com>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"David S. Miller" <davem@davemloft.net>,
+	virtio-dev@lists.oasis-open.org
+Message-ID: <ZDpOq0ACuMYIUbb1@bullseye>
+References: <20230413-b4-vsock-dgram-v2-0-079cc7cee62e@bytedance.com>
+ <ZDk2kOVnUvyLMLKE@bullseye>
+ <r6oxanmhwlonb7lcrrowpitlgobivzp7pcwk7snqvfnzudi6pb@4rnio5wef3qu>
 MIME-Version: 1.0
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <5fa6dc30-af86-e58c-2d39-fde2836192c3@opensynergy.com> <CAPBb6MWqqAFB+g=JZu9-VgZbEJxS3wYaEgA-R_P=OyHRTHy7eQ@mail.gmail.com>
- <8ec36252-97c6-0378-e25b-fc972ea3a66d@opensynergy.com> <CAPBb6MVDKfKOyDFPiOL3fRp4Jn6WwMpSZt6V32EJ1CYW_+rw+w@mail.gmail.com>
- <909867c6-b66c-1281-45a7-38fd0aa32123@opensynergy.com> <87cz6mnaqk.fsf@redhat.com>
- <CAPBb6MWNfPH+e8=4zUcq2dV-59OdzTYSuN04Cg2rRPWao-nseQ@mail.gmail.com>
- <877cwttw2x.fsf@redhat.com> <87a60kg9rh.fsf@redhat.com> <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
- <877cvog030.fsf@redhat.com> <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
- <ca84a8f5-71ed-aea8-5751-60403d167283@opensynergy.com> <CAPBb6MUDWVK87_kGFen36tDJQoR-Les6djcKVihjuTKQBjweEQ@mail.gmail.com>
- <b5c9d69a-fbec-8046-225f-bdb5850bbd54@opensynergy.com> <87o7nmk1rs.fsf@redhat.com>
- <96978ce8-0837-2e08-f5ca-66587807798b@opensynergy.com>
-In-Reply-To: <96978ce8-0837-2e08-f5ca-66587807798b@opensynergy.com>
-From: Enrico Granata <egranata@google.com>
-Date: Wed, 19 Apr 2023 14:34:15 -0700
-Message-ID: <CAPR809sJBLAgLNyB7nCO6+izQgAAUiOLujV98+q_H8bcPEzx4g@mail.gmail.com>
-To: Alexander Gordeev <alexander.gordeev@opensynergy.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, Alexandre Courbot <acourbot@chromium.org>, 
-	virtio-dev@lists.oasis-open.org, Keiichi Watanabe <keiichiw@chromium.org>, 
-	=?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, 
-	Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=C3=B6ll?= <Matti.Moell@opensynergy.com>, 
-	Andrew Gazizov <andrew.gazizov@opensynergy.com>, 
-	Gustavo Padovan <gustavo.padovan@collabora.com>, Peter Griffin <peter.griffin@linaro.org>, 
-	=?UTF-8?Q?Bart=C5=82omiej_Grzesik?= <bag@semihalf.com>, 
-	Tomasz Figa <tfiga@chromium.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	Enric Balletbo i Serra <eballetb@redhat.com>, Albert Esteve <aesteve@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <r6oxanmhwlonb7lcrrowpitlgobivzp7pcwk7snqvfnzudi6pb@4rnio5wef3qu>
+Subject: [virtio-dev] Re: [PATCH RFC net-next v2 0/4] virtio/vsock: support datagrams
 
-Inlined
+CC'ing virtio-dev@lists.oasis-open.org because this thread is starting
+to touch the spec.
 
-Thanks,
-- Enrico
+On Wed, Apr 19, 2023 at 12:00:17PM +0200, Stefano Garzarella wrote:
+> Hi Bobby,
+> 
+> On Fri, Apr 14, 2023 at 11:18:40AM +0000, Bobby Eshleman wrote:
+> > CC'ing Cong.
+> > 
+> > On Fri, Apr 14, 2023 at 12:25:56AM +0000, Bobby Eshleman wrote:
+> > > Hey all!
+> > > 
+> > > This series introduces support for datagrams to virtio/vsock.
+> 
+> Great! Thanks for restarting this work!
+> 
 
-Thanks,
-- Enrico
+No problem!
 
+> > > 
+> > > It is a spin-off (and smaller version) of this series from the summer:
+> > >   https://lore.kernel.org/all/cover.1660362668.git.bobby.eshleman@bytedance.com/
+> > > 
+> > > Please note that this is an RFC and should not be merged until
+> > > associated changes are made to the virtio specification, which will
+> > > follow after discussion from this series.
+> > > 
+> > > This series first supports datagrams in a basic form for virtio, and
+> > > then optimizes the sendpath for all transports.
+> > > 
+> > > The result is a very fast datagram communication protocol that
+> > > outperforms even UDP on multi-queue virtio-net w/ vhost on a variety
+> > > of multi-threaded workload samples.
+> > > 
+> > > For those that are curious, some summary data comparing UDP and VSOCK
+> > > DGRAM (N=5):
+> > > 
+> > > 	vCPUS: 16
+> > > 	virtio-net queues: 16
+> > > 	payload size: 4KB
+> > > 	Setup: bare metal + vm (non-nested)
+> > > 
+> > > 	UDP: 287.59 MB/s
+> > > 	VSOCK DGRAM: 509.2 MB/s
+> > > 
+> > > Some notes about the implementation...
+> > > 
+> > > This datagram implementation forces datagrams to self-throttle according
+> > > to the threshold set by sk_sndbuf. It behaves similar to the credits
+> > > used by streams in its effect on throughput and memory consumption, but
+> > > it is not influenced by the receiving socket as credits are.
+> 
+> So, sk_sndbuf influece the sender and sk_rcvbuf the receiver, right?
+> 
 
-On Wed, Apr 19, 2023 at 12:39=E2=80=AFAM Alexander Gordeev
-<alexander.gordeev@opensynergy.com> wrote:
->
-> On 17.04.23 16:43, Cornelia Huck wrote:
-> > On Mon, Apr 17 2023, Alexander Gordeev <alexander.gordeev@opensynergy.c=
-om> wrote:
-> >
-> >> Hi Alexandre,
-> >>
-> >> Thanks for you letter! Sorry, it took me some time to write an answer.
-> >>
-> >> First of all I'd like to describe my perspective a little bit because =
-it
-> >> seems, that in many cases we (and other people writing their feedbacks=
-)
-> >> simply have very different priorities and background.
-> > Thank you for describing the environment you want to use this in, this
-> > helps to understand the different use cases.
->
-> Yeah, I hope too. I should have done that earlier. I think Dmitry
-> described our use-case, but it was several years ago, so nobody
-> remembers of course. We should reiterate all the use-cases once in a whil=
-e.
->
->
-> >> OpenSynergy, the company that I work for, develops a proprietary
-> >> hypervisor called COQOS mainly for automotive and aerospace domains. W=
-e
-> >> have our proprietary device implementations, but overall our goal is t=
-o
-> >> bring open standards into these quite closed domains and we're betting
-> >> big on virtio. The idea is to run safety-critical functions like cockp=
-it
-> >> controller alongside with multimedia stuff in different VMs on the sam=
-e
-> >> physical board. Right now they have it on separate physical devices. S=
-o
-> >> they already have maximum isolation. And we're trying to make this
-> >> equally safe on a single board. The benefit is the reduced costs and
-> >> some additional features. Of course, we also need features here, but a=
-t
-> >> the same time security and ease of certification are among the top of
-> >> our priorities. Nobody wants cars or planes to have security problems,
-> >> right? Also nobody really needs DVB and even more exotic devices in ca=
-rs
-> >> and planes AFAIK.
-> >>
-> >> For the above mentioned reasons our COQOS hypervisor is running on bar=
-e
-> >> metal. Also memory management for the guests is mostly static. It is
-> >> possible to make a shared memory region between a device and a driver
-> >> managed by device in advance. But definitely no mapping of random host
-> >> pages on the fly is supported.
-> >>
-> >> AFAIU crosvm is about making Chrome OS more secure by putting every ap=
-p
-> >> in its own virtualized environment, right? Both the host and guest are
-> >> linux. In this case I totally understand why V4L2 UAPI pass-through
-> >> feels like a right move. I guess, you'd like to make the switch to
-> >> virtualized apps as seemless as possible for your users. If they can't
-> >> use their DVBs anymore, they complain. And adding the virtualization
-> >> makes the whole thing more secure anyway. So I understand the desire t=
-o
-> >> have the range of supported devices as broad as possible. It is also
-> >> understandable that priorities are different with desktop
-> >> virtualization. Also I'm not trying to diminish the great work, that y=
-ou
-> >> have done. It is just that from my perspective this looks like a step =
-in
-> >> the wrong direction because of the mentioned concerns. So I'm going to
-> >> continue being a skeptic here, sorry.
-> >>
-> >> Of course, I don't expect that you continue working on the old approac=
-h
-> >> now as you have put that many efforts into the V4L2 UAPI pass-through.
-> >> So I think it is best to do the evolutionary changes in scope of virti=
-o
-> >> video device specification, and create a new device specification
-> >> (virtio-v4l2 ?) for the revolutionary changes. Then I'd be glad to
-> >> continue the virtio-video development. In fact I already started makin=
-g
-> >> draft v7 of the spec according to the comments. I hope it will be read=
-y
-> >> for review soon.
-> >>
-> >> I hope this approach will also help fix issues with virtio-video spec
-> >> and driver development misalignment as well as V4L2 compliance issues
-> >> with the driver. I believe the problems were caused partly by poor
-> >> communication between us and by misalignment of our development cycles=
-,
-> >> not by the driver complexity.
-> >>
-> >> So in my opinion it is OK to have different specs with overlapping
-> >> functionality for some time. My only concern is if this would be
-> >> accepted by the community and the committee. How the things usually go
-> >> here: preferring features and tolerating possible security issues or t=
-he
-> >> other way around? Also how acceptable is having linux-specific protoco=
-ls
-> >> at all?
-> > My main question is: What would be something that we can merge as a
-> > spec, that would either cover the different use cases already, or that
-> > could be easily extended to cover the use cases it does not handle
-> > initially?
-> >
-> > For example, can some of the features that would be useful in crosvm be
-> > tucked behind some feature bit(s), so that the more restricted COQOS
-> > hypervisor would simply not offer them? (Two feature bits covering two
-> > different mechanisms, like the current approach and the v4l2 approach,
-> > would also be good, as long as there's enough common ground between the
-> > two.)
-> >
-> > If a staged approach (adding features controled by feature bits) would
-> > be possible, that would be my preferred way to do it.
->
-> Hmm, I see several ways how we can use the feature flags:
-> 1. Basically making two feature flags: one for the current video spec
-> and one for the V4L2 UAPI pass through. Kind of the same as having two
-> different specs, but within one device. Not sure which way is better.
-> Probably having two separate devices would be easier to review and merge.
+Correct.
 
-I agree with this. It may be worth renaming the specs to something,
-say virtio-vencdec and virtio-v4l2 </bikeshedding>
-Having one spec for what is really two devices forked by flags may
-superficially seem simpler and less controversial (everyone gets what
-they want, right?) but it feels bolted on.
+> We should check if VMCI behaves the same.
+> 
+> > > 
+> > > The device drops packets silently. There is room for improvement by
+> > > building into the device and driver some intelligence around how to
+> > > reduce frequency of kicking the virtqueue when packet loss is high. I
+> > > think there is a good discussion to be had on this.
+> 
+> Can you elaborate a bit here?
+> 
+> Do you mean some mechanism to report to the sender that a destination
+> (cid, port) is full so the packet will be dropped?
+> 
 
-> 2. Finding a subset of V4L2, that closely matches the current draft, and
-> restrict everything else. A perfectly reasoned answer for this case will
-> require a lot of work going through all the V4L2 structures I think. And
-> even if we have a concrete plan, it has to be implemented first. I doubt
-> it is possible. Based on the things, that I already know, this is going
-> to be a compromise on security anyway, so we're not happy about that.
-> More on that below.
+Correct. There is also the case of there being no receiver at all for
+this address since this case isn't rejected upon connect(). Ideally,
+such a socket (which will have 100% packet loss) will be throttled
+aggressively.
 
-To be fair, this could be done on the device side, right? I am not
-saying it would be trivial, but the device implementation could
-restrict the subset of V4L2 it accepts to whatever it feels is "safe"
-and limit the rest.
+Before we go down too far on this path, I also want to clarify that
+using UDP over vhost/virtio-net also has this property... this can be
+observed by using tcpdump to dump the UDP packets on the bridge network
+your VM is using. UDP packets sent to a garbage address can be seen on
+the host bridge (this is the nature of UDP, how is the host supposed to
+know the address eventually goes nowhere). I mention the above because I
+think it is possible for vsock to avoid this cost, given that it
+benefits from being point-to-point and g2h/h2g.
 
-> 3. Stop trying to simply pass the V4L2 UAPI through and focus on making
-> the virtio video spec as close to the V4L2 UAPI as possible, but with
-> the appropriate security model. So that the video device can be extended
-> with a feature flag to something very close to full V4L2 UAPI. A lot of
-> work as well, I think. And this won't allow us to simply link the V4L2
-> UAPI in the spec and therefore reduce its size, which is Alexandre's
-> current goal. So Alexandre and his team are not happy this way probably.
->
->  From the security point of view these are our goals from most to less
-> important AFAIU:
-> 1. Make the device secure. If a device is compromised, the whole
-> physical machine is at risk. Complexity is the enemy here. It helps a
-> lot to make the device as straightforward and easy to implement as
-> possible. Therefore it is good to make the spec device/function-centric
-> from this PoV.
-> 2. Ensure, that drivers are also secure at least from user-space side.
-> Maybe from device side too.
-> 3. Implementing secure playback and making sure media doesn't leak. For
-> this case it is nice to have these object UUIDs as buffers.
->
-> Please correct me if there's something wrong here.
->
-> When we start looking from this perspective even things like naming
-> video buffer queues "output" for device input and "capture" for device
-> output are problematic. In my experience this naming scheme takes some
-> time and for sure several coding mistakes to get used to. Unfortunately
-> this can't be turned off with some feature flags. In contrast virtio
-> video v6 names these queues "input" and "output". This is perfectly fine
-> if we look from the device side. It is understandable, that Alexandre's
-> list of differences between V4L2 UAPI and the current state of virtio
-> video doesn't include these things. But we have to count them, I think.
-> That's why it takes me so long to make the list. :) So throwing away
-> this simplicity is still going to be a compromise from the security
-> perspective, that we're not happy about.
->
-> This is mostly because V4L2 UAPI brings a hard dependency on V4L2, its
-> security model, legacy, use-cases, developers, etc. It can be changed
-> over time, but this is a long process because this means changing the
-> Linux UAPI. Also this means, that nothing can be removed from it, only
-> added (if the V4L2 community agrees). For example, we can't simply add a
-> new way of sharing buffers for potential new use-cases once we switch to
-> V4L2 UAPI AFAIU. The V4L2 community can simply reject changes because
-> this is a UAPI after all. We kind of have a weak dependency already,
-> because the only driver implementation is based on V4L2 and we'd like to
-> keep the spec as close to V4L2 as possible, but it is not the same
-> thing. So at the moment it looks like the V4L2 UAPI proposal is not
-> super flexible. Alexandre said, that we can simply not implement some of
-> the ioctls. Well, this definitely doesn't cover all the complexity like
-> the structures and other subtle details.
->
-> Also adding the feature flags would probably defeat the stated purpose
-> of switching to V4L2 UAPI anyway: the simplicity of the spec and of the
-> V4L2 driver.
->
-> So I have a lot of doubts about the feasibility of adding feature flags.
-> If Alexandre and his team want the V4L2 UAPI as is, then looks like it
-> is best to simply have two specs:
-> 1. virtio-video for those interested in building from ground up with the
-> security model appropriate for virtualization in mind. This is going to
-> take time and not going to reach feature parity with V4L2 ever I think.
-> I mean some old devices might never get support this way.
-> 2. virtio-v4l2 as a shortcut for those interested in having feature
-> parity with V4L2 fast. Like a compatibility layer. Probably this is
-> going to be used in linux host + linux guest use-cases only. Maybe it
-> gets obsoleted by the first spec in several years for most modern use-cas=
-es.
+If we're okay with vsock being on par, then the current series does
+that. I propose something below that can be added later and maybe
+negotiated as a feature bit too.
 
-This latter device also makes a lot of sense for Android (I know,
-Linux based) where there are nifty implementations of a number of HALs
-that will just work if you assume V4L2 and will not (or will not
-without rework) if you assume anything else.
+> Can we adapt the credit mechanism?
+> 
 
->
-> Or maybe have these two cases within a single device spec as I wrote abov=
-e.
->
-> This makes a lot of sense to me. If V4L2 UAPI pass through is in fact
-> only needed for compatibility, then this way we can avoid a lot of work
-> going through all of the V4L2 and trying to find different subsets or
-> trying to construct something, that is close to V4L2 UAPI, but doesn't
-> compromise on the security. I'm not really interested in doing all this
-> work because we're already more or less satisfied with the current
-> state. We don't need feature parity with V4L2. On the other hand for
-> Alexandre the feature-parity with V4L2 is clearly of higher priority,
-> than all these subtle security model differences. In my opinion it also
-> doesn't make sense to invest that much time in something, that looks
-> like a compatibility layer. So it seems both of us are interested in
-> avoiding all this extra work. Then I'd just prefer to have two different
-> specs so that everyone can work according to their priorities.
->
->
-> > Regarding the protocol: I think Linux-originating protocols (that can b=
-e
-> > implemented on non-Linux setups) are fine, Linux-only protocols probabl=
-y
-> > not so much.
->
-> Thanks for the information. Well, it looks like the V4L2 UAPI could be
-> implemented on any platform unless it needs a completely new way of
-> memory management since all the V4L2_MEMORY_* constants are going to be
-> used already AFAIU.
->
->
-> >>>>      a. So V4L2 subsystem and the current virtio-video driver are al=
-ready
-> >>>> reducing the complexity. And this seems as the right place to do thi=
-s,
-> >>>> because the complexity is caused by the amount of V4L2 use cases and=
- its
-> >>>> legacy. If somebody wants to use virtio-video in a Windows guest, th=
-ey
-> >>>> would prefer a simpler API, right? I think this use-case is not pure=
-ly
-> >>>> abstract at all.
-> >>> The V4L2 subsystem is there to factorize code that can be shared
-> >>> between drivers and manage their internal state. Our target is the
-> >>> V4L2 UAPI, so a Windows driver needs not be concerned about these
-> >>> details - it does what it would have done with virtio-video, and just
-> >>> uses the V4L2 structures to communicate with the host instead of the
-> >>> virtio-video ones.
-> >> It can also reuse the virtio-video structures. So I think despite the
-> >> ability to reuse V4L2 structures, having to implement a linux-specific
-> >> interface would still be a bigger pain.
-> > Hm. Do the v4l2 structures drag in too many adjacent things that need t=
-o
-> > be implemented? Can we match the video-video structures from the curren=
-t
-> > proposal with some v4l2 structures and extract a common wrapper for
-> > those that match, with a feature-bit controlled backend? It would be
-> > fine if any of those backends supported a slightly different subset of
-> > the common parts, as long as the parts implemented by both would be
-> > enough to implement a working device. (Mostly thinking out loud here.)
->
-> I don't think this is realistic unfortunately. On per ioctl level it is
-> possible to disable some functionality probably, but the V4L2 structures
-> are set in stone. We can only extend them.
->
->
-> >>> The guest driver that I wrote is, I think, a good example of the
-> >>> complexity you can expect in terms of guest driver size (as it is
-> >>> pretty functional already with its 1000 and some LoCs). For the UAPI
-> >>> complexity, the host device basically unpacks the information it need=
-s
-> >>> and rebuilds the V4L2 structures before calling into the host device,
-> >>> and I don't see this process as more complex that the unpacking of
-> >>> virtio-video structs which we also did in crosvm.
-> >> Unfortunately our hypervisor doesn't support mapping random host pages
-> >> in the guest. Static allocations of shared memory regions are possible=
-.
-> >> But then we have to tell V4L2 to allocate buffers there. Then we'll ne=
-ed
-> >> a region per virtual device. This is just very tedious and inflexible.
-> >> That's why we're mainly interested in having the guest pages sharing i=
-n
-> >> the virtio video spec.
-> > This really sounds like you'll want a different approach -- two
-> > mechanisms covered by two feature bits might indeed be the way to go.
->
-> Well, basically this is the way we have it now. I'm not sure what is
-> Alexandre's plan with the V4L2 UAPI approach. And if this is going to be
-> solved, the solution already doesn't look future-proof anyway unfortunate=
-ly.
->
->
-> >>> I hope I have somehow addressed your points. The main point here is t=
-o
-> >>> discuss whether the V4L2 UAPI is a suitable transport for guest/host
-> >>> accelerated codec work, regardless of what the guest or host
-> >>> ultimately uses as UAPI. The goal of the PoC is to demonstrate that
-> >>> this is a viable solution. This PoC is largely simplified by the fact
-> >>> that V4L2 is used all along the way, but this is irrelevant - yes,
-> >>> actual devices will likely talk to other APIs and maintain more state=
-,
-> >>> like a virtio-video device would do. What I want to demonstrate is
-> >>> that we can send encoding work and receive a valid stream, and that i=
-t
-> >>> is not costly, and only marginally more complex than our virtio-video
-> >>> spec attempts.
-> >>>
-> >>> ... and we can support cameras too, but that's just a convenient
-> >>> side-effect, not the ultimate solution to the camera virtualization
-> >>> problem (that's for the camera folks to decide).
-> >> Thanks for your answer!
-> > Thanks everyone -- do you think the "two feature bits to cover differen=
-t
-> > approaches, but using a common infrastructure" idea could work? If yes,
-> > I think that's the direction we should take. If we can implement this
-> > with just one feature bit, that might also be a good route to extend it
-> > later, but I'm not familiar enough with the whole infrastructure to mak=
-e
-> > any judgement here.
->
-> Thanks for your suggestions. Hopefully we end up with a good solution.
->
->
-> --
-> Alexander Gordeev
-> Senior Software Engineer
->
-> OpenSynergy GmbH
-> Rotherstr. 20, 10245 Berlin
->
-> Phone: +49 30 60 98 54 0 - 88
-> Fax: +49 (30) 60 98 54 0 - 99
-> EMail: alexander.gordeev@opensynergy.com
->
-> www.opensynergy.com
->
-> Handelsregister/Commercial Registry: Amtsgericht Charlottenburg, HRB 1086=
-16B
-> Gesch=C3=A4ftsf=C3=BChrer/Managing Director: R=C3=A9gis Adjamah
->
->
-> Please mind our privacy notice<https://www.opensynergy.com/datenschutzerk=
-laerung/privacy-notice-for-business-partners-pursuant-to-article-13-of-the-=
-general-data-protection-regulation-gdpr/> pursuant to Art. 13 GDPR. // Unse=
-re Hinweise zum Datenschutz gem. Art. 13 DSGVO finden Sie hier.<https://www=
-.opensynergy.com/de/datenschutzerklaerung/datenschutzhinweise-fuer-geschaef=
-tspartner-gem-art-13-dsgvo/>
+I've thought about this a lot because the attraction of the approach for
+me would be that we could get the wait/buffer-limiting logic for free
+and without big changes to the protocol, but the problem is that the
+unreliable nature of datagrams means that the source's free-running
+tx_cnt will become out-of-sync with the destination's fwd_cnt upon
+packet loss.
+
+Imagine a source that initializes and starts sending packets before a
+destination socket even is created, the source's self-throttling will be
+dysfunctional because its tx_cnt will always far exceed the
+destination's fwd_cnt.
+
+We could play tricks with the meaning of the CREDIT_UPDATE message and
+fwd_cnt/buf_alloc fields, but I don't think we want to go down that
+path.
+
+I think that the best and simplest approach introduces a congestion
+notification (VIRTIO_VSOCK_OP_CN?). When a packet is dropped, the
+destination sends this notification. At a given repeated time period T,
+the source can check if it has received any notifications in the last T.
+If so, it halves its buffer allocation. If not, it doubles its buffer
+allocation unless it is already at its max or original value.
+
+An "invalid" socket which never has any receiver will converge towards a
+rate limit of one packet per time T * log2(average pkt size). That is, a
+socket with 100% packet loss will only be able to send 16 bytes every
+4T. A default send buffer of MAX_UINT32 and T=5ms would hit zero within
+160ms given at least one packet sent per 5ms. I have no idea if that is
+a reasonable default T for vsock, I just pulled it out of a hat for the
+sake of the example.
+
+"Normal" sockets will be responsive to high loss and rebalance during
+low loss. The source is trying to guess and converge on the actual
+buffer state of the destination.
+
+This would reuse the already-existing throttling mechanisms that
+throttle based upon buffer allocation. The usage of sk_sndbuf would have
+to be re-worked. The application using sendmsg() will see EAGAIN when
+throttled, or just sleep if !MSG_DONTWAIT.
+
+I looked at alternative schemes (like the Datagram Congestion Control
+Protocol), but I do not think the added complexity is necessary in the
+case of vsock (DCCP requires congestion windows, sequence numbers, batch
+acknowledgements, etc...). I also looked at UDP-based application
+protocols like TFTP, DHCP, and SIP over UDP which use a delay-based
+backoff mechanism, but seem to require acknowledgement for those packet
+types, which trigger the retries and backoffs. I think we can get away
+with the simpler approach and not have to potentially kill performance
+with per-packet acknowledgements.
+
+> > > 
+> > > In this series I am also proposing that fairness be reexamined as an
+> > > issue separate from datagrams, which differs from my previous series
+> > > that coupled these issues. After further testing and reflection on the
+> > > design, I do not believe that these need to be coupled and I do not
+> > > believe this implementation introduces additional unfairness or
+> > > exacerbates pre-existing unfairness.
+> 
+> I see.
+> 
+> > > 
+> > > I attempted to characterize vsock fairness by using a pool of processes
+> > > to stress test the shared resources while measuring the performance of a
+> > > lone stream socket. Given unfair preference for datagrams, we would
+> > > assume that a lone stream socket would degrade much more when a pool of
+> > > datagram sockets was stressing the system than when a pool of stream
+> > > sockets are stressing the system. The result, however, showed no
+> > > significant difference between the degradation of throughput of the lone
+> > > stream socket when using a pool of datagrams to stress the queue over
+> > > using a pool of streams. The absolute difference in throughput actually
+> > > favored datagrams as interfering least as the mean difference was +16%
+> > > compared to using streams to stress test (N=7), but it was not
+> > > statistically significant. Workloads were matched for payload size and
+> > > buffer size (to approximate memory consumption) and process count, and
+> > > stress workloads were configured to start before and last long after the
+> > > lifetime of the "lone" stream socket flow to ensure that competing flows
+> > > were continuously hot.
+> > > 
+> > > Given the above data, I propose that vsock fairness be addressed
+> > > independent of datagrams and to defer its implementation to a future
+> > > series.
+> 
+> Makes sense to me.
+> 
+> I left some preliminary comments, anyway now it seems reasonable to use
+> the same virtqueues, so we can go head with the spec proposal.
+> 
+> Thanks,
+> Stefano
+> 
+
+Thanks for the review!
+
+Best,
+Bobby
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
