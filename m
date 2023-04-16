@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12241-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12242-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB377C77B71
-	for <virtio-dev@archiver.kernel.org>; Sat, 15 Apr 2023 06:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4138EC77B73
+	for <virtio-dev@archiver.kernel.org>; Sun, 16 Apr 2023 13:42:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B9C152AD79
-	for <virtio-dev@archiver.kernel.org>; Sat, 15 Apr 2023 06:05:32 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 585952CAEA
+	for <virtio-dev@archiver.kernel.org>; Sun, 16 Apr 2023 13:42:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 97571986617
-	for <virtio-dev@archiver.kernel.org>; Sat, 15 Apr 2023 06:05:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3BAAE986406
+	for <virtio-dev@archiver.kernel.org>; Sun, 16 Apr 2023 13:42:01 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 74640986414; Sat, 15 Apr 2023 06:05:32 +0000 (UTC)
+	id 2B870985FF0; Sun, 16 Apr 2023 13:42:01 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,429 +24,130 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0A0AC984091
-	for <virtio-dev@lists.oasis-open.org>; Sat, 15 Apr 2023 06:04:59 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1165D985FF8;
+	Sun, 16 Apr 2023 13:41:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681538696; x=1684130696;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MwqV9U3jGIkY8WJulEL2d3ph6wKy5XLbYjf5TsMxJcQ=;
-        b=d6+FbFAtyOHMlnLNmsL6bzAP+/PVcK00ZnPBlEnA/MkTEDsgK0pGYsx613O8PqUduZ
-         LX3iEyKaQYc381wPzLXQSLBHbbkRnSivJvgZYnlaSq0IgYaQVdS6mK1WOXZMWCANy2mr
-         Pmo1wh8XzmRMi3Ay2mFKTOSEGl2VP1A4rVWnEpj6XCNRYIDozl5u0ljpeUg7PHQl4YIW
-         q1b/jVscU5zp3HUb7xW4iUHfSNUtO6IgyJfSSzstlC1Hwcq6xstTJFqaoNGcbAml6RIU
-         w9ptlxifo6LMZi0C3movDjzux/vzgCkxSqdbG3oiO1BEwAmq7TEAm2LGxwFRoE+VXTR4
-         C9dQ==
-X-Gm-Message-State: AAQBX9dTVsv0Upvl1Qh5qyZoJqJhbeIgI8io8EMG4pnaW20yqYD0nurE
-	2G0n+KSFF9HbCxyfYwa1IvraIBrOdNccxEK25uw=
-X-Google-Smtp-Source: AKy350agFxIW0l7JAGhow7yUNsrEz9ergEj3ypyH3ufwG/es3y+NwXcJ52Rehi6jVqWxARxuwazDDQ==
-X-Received: by 2002:ac8:5a4d:0:b0:3e8:e0ed:8cb9 with SMTP id o13-20020ac85a4d000000b003e8e0ed8cb9mr12662983qta.19.1681538695724;
-        Fri, 14 Apr 2023 23:04:55 -0700 (PDT)
-X-Received: by 2002:a05:6e02:219a:b0:314:17e2:16d1 with SMTP id
- j26-20020a056e02219a00b0031417e216d1mr96902ila.4.1681538312010; Fri, 14 Apr
- 2023 22:58:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ce8MIHEY7lAxDfP1fTYdEmkT1fbBBEGBqO9zUMcji86OZx4f93/abrzyDupI0H+t3l2aeA2+nRObEXlPVnpJSBMlPAORJlAr1E6KkQrrwO4AaeyV8pazWGLVnygoHIfaGTidU10oT4bJann1zRcXvEJoh4LYPUFN6SK4hIjJh2PDBkcKcBN0AjBfo3VAJ1jtQHcQps8RnXK0cORzBL5PnOciLLGveoe7Y8fGwd1v9aZfiKVB1won1+MIYYYJp8CohHpSAWtZQhMcsPs6gsY6SoZ/EeMGgyV6LZVIyXO8cxONoWnPL4/2IceYjErcpyH3AzsyP5dM4m8fYwU9P3Cdow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tCsZMPEY9nN+SaVCx6jaEc/Fqgoh3MLkHZs+uDQ9ewg=;
+ b=O2HZCkWhNl/kV4FBSx9Ztwqxw2wJi72MWEpxA9bOsmIq71/dpVE1Wc/j4P7HjU5nvEEs8nobtQcnwjpRVFx3jSBcwsnzSNkQfOxKa51QMK1U+5oCFoKmzpE1mNQvDVgRI8Mzk70f0LrSQS+35jWIuuAO0IKKPKvygt5aMhl/ZkAveuzfMKpqq9886quoftj5/Q2XXBfm+SBYh44g60gyk6dHAUFgJICbmjwJ/a99eTYl97oo0K0QfSJHTye64x9FIz9S1mKRwGg5vCjf6l3oAyC5wRpgsqdnB/He4QlgFpdMK9F0/VE4tszxxLOzilOKDgo2d4LBhOuLo70UjM5/uA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: Jason Wang <jasowang@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>, Satananda Burla <sburla@marvell.com>,
+	Maxime Coquelin <maxime.coquelin@redhat.com>, Yan Vugenfirer <yan@daynix.com>
+Thread-Topic: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
+ MMR dev config registers
+Thread-Index:
+ AQHZY1tLAUtRpuZtUUOucQPGJlFfkK8flpUAgAQ7nwCAAE6hgIAAAXwAgAAFegCAAAt0AIAALl6AgAEOIwCAAFEgAIAAIPWAgAAcJ4CAASFtgIAABJ4AgAAKJYCAAACFsIAABgyAgAAAT3CAAAYpAIAAAJIAgAAJz4CAAILBcIAAxPiAgAAc1wCAABy4gIAAzAAAgAA85gCAAABI8IAAXS4AgAAARpCAAEh7AIADk47Q
+Date: Sun, 16 Apr 2023 13:41:55 +0000
+Message-ID:
+ <PH0PR12MB5481F9D94282F794E0A08BF0DC9F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References:
+ <CACGkMEu2B_GogDR9HUwB7mT8fkGh+Q_buPLz4nhwhK7h9k6BQQ@mail.gmail.com>
+ <PH0PR12MB5481F0CF5A555A6BB2CE856CDC9B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEuNOYOxvcSzrs0UFEyk+xOkGUpOfhK8rOy_Mebz5b5wdg@mail.gmail.com>
+ <a74d3107-d38c-df15-e2ff-f848635f24bd@nvidia.com>
+ <CACGkMEt+bGN7UYEopXPj0+deAnYm1VUNp05VvGHcJnkd8LzbGg@mail.gmail.com>
+ <f9f01f9d-f6ec-0daa-a11d-c75589dcbe6c@nvidia.com>
+ <20230413163216-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54818B39801152ECBA138E73DC989@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEtMKqzN3E9S-pusTr=doYRtDvTZUie2PrygzPiH0p5fvg@mail.gmail.com>
+ <PH0PR12MB5481EEEE5BFE68CDC6628455DC999@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230414025523-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230414025523-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BN9PR12MB5275:EE_
+x-ms-office365-filtering-correlation-id: 42503ab9-a71c-40cc-1cc6-08db3e8057f7
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ 0Pc+NO0su2f1bMAHPHDXNeRud2Unvr6qiTZEGCN6tgeq1LCiLjHac7tPdYh8PwQ+7Gjtts4WiMWSao31WtlzhB0nF38EaP7mJXVRF/Ak4L6x7ZBKh02SjN9iXCxgiRzY51MIxFgacuztcWeU0P99nXKzNh0o7W8lZvjKkjmvCP8FYPLnADm8NRdHRj7w11Dxo3b4EbWOnb7gnfxTCGlWqTmBM6Td360dbMgCEWY/On10bgjqkBjvN1XYTysjSBxSb136b4ADPdu8WetQ1IfQ9HThqUizCxRwFJLCcj4uhm7vKLghIeqxvaz9alSNv1WaFIX9QcnYWZfqsojmIXeiVxUsdWfmjJ1waD3cmXG6sL+H88lpXK3A9Vpnr28brCN619AGFFniD5IUl7afYZIERj0l8C3dPoXO6sMQHqww0uhLpOu/cbRxOt3EMCnoZLzxLn0PjXb+VwT0cvFFR/7yAR6XaAw/CbzxVcok3lr6MIWnoIjhCRkX/rrPtHULp2X2tn0IdjoRClIZudwDFOEpELRYXJQEysu8CIZ2FmIxFxawJayJQLLPYBLGGjdAJ+ZEFFlW9IL8GSYBZYIpKUGYZejG97kjfQwUXHaFuOUG+VpBKhOBH6nzU4jLlwn/pJb6
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(346002)(366004)(136003)(451199021)(54906003)(186003)(26005)(6506007)(38070700005)(83380400001)(38100700002)(4326008)(6916009)(66946007)(66556008)(66476007)(64756008)(66446008)(76116006)(9686003)(478600001)(71200400001)(4744005)(2906002)(33656002)(41300700001)(316002)(122000001)(8676002)(86362001)(7696005)(8936002)(55016003)(52536014)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?dHRwMFlTckU5OWxtWDlVZnR5THRmNk5IcWNKbzh1YXJVdXVWWHNMendRTHpK?=
+ =?utf-8?B?ZHJMdVRCazNLb3UrN0lsWFlTWGlNaDRuUzVNOEoraG5zcEg5T3lVcWZRMDV3?=
+ =?utf-8?B?ODdiaFRpTnFSMUZqQWpKQnRPOEN4MThPampPNFdjNUI4Tnk5NWM5L2xZMzBx?=
+ =?utf-8?B?bmU5aG90MnRQRWZ2K3VSaG9EbXQ5cVhxdThzU3BGOEJING9tRzVlL0MwZk9E?=
+ =?utf-8?B?QjhOQTcxVWl4QlZzS3JuQlU5L3R6OTNuRGVhR2JkMVp0d1VUeWh1U29JbUNX?=
+ =?utf-8?B?dlI4SlVNMFBYMVFWTnFKV3R0RWxFcWlUbEROSlFpRFh2M252VGJRVEh5dGFn?=
+ =?utf-8?B?WEZiRFpwZEp0UTZlc0dIbG5ySk9Denhxd3kzY2J5YXZma0F5VUU4aDVmeE4z?=
+ =?utf-8?B?ZTV1N3RGaG9pOFZ3TzdWV2pzcVovTzhhVGM0Nm9zbXlxQllUUDZQRmNDK0p0?=
+ =?utf-8?B?RitZcW9zSVJJK1J0RnRBL1ZWVjNnTUs4eS92UjRaOERxUG1FOGtZVzZSOWR0?=
+ =?utf-8?B?a3BUOGNPNWhLaW5lUjQ1cmtGNmxUYjM1dXNqUTZ6b2pMV3l5cWRaVlptR3pp?=
+ =?utf-8?B?ZHFmNjRsWmhoZUpzWXdTa1czUVpTWmlkRnU4S1JLdVFqcDRQUldacitlSkVW?=
+ =?utf-8?B?THgxKzhWMWhEaHhjZjE1d2pCQjRuTXVGZ0l2ZmMrWXBMNWJoMlVtTVlMQnVS?=
+ =?utf-8?B?akd3bDlvL2hyc0RzVXcvVlF3QTNxZlRYbXV1ZkF3WjQvWG1GTXg1bmZ2WDNR?=
+ =?utf-8?B?UDlFK0lvUlJMVTExS21UaDJQRjNEMXdXSVlVQ3pOZms1c1JIcHQyTG5lWDdr?=
+ =?utf-8?B?WFMxalFhVVZlWWZxN29wM0R2UnVMTEJjUkszbkZUOTV2ZTZWbUdZZmlxK1Zx?=
+ =?utf-8?B?Q3RORm5QaStUcmF4eFlkQUNoWHRISmlZcENOOFlZZUlHQzZNblRWT2xqZFAv?=
+ =?utf-8?B?UFZuZmNYZVlBVktGNTZZekM2RE85ZFFyM1hkcGdlU1VTb2NadDlXZWdwN2hs?=
+ =?utf-8?B?c3VLOVozRTcvQy9CdXc1enZFcnl5WVpxNWk1VkNHYkJ2K2hxa01YOE42cmlr?=
+ =?utf-8?B?VFpKZGdiSjJYOVFwN0R6K1ZZMkRSRTE5RFBpYk1qalZYdXJKeE9Zbk5aOE0y?=
+ =?utf-8?B?ZzBSN2hnY0ZGYVBDOGhuS3RIU3d6clVqcVZub1V5MmtObk80OU5Idm5ReU5G?=
+ =?utf-8?B?eWU0ZU5EYVV6ZmZRU0ZzcVhRTHB2QW5pUExBMkxURXBWR2cwQnF5LzBtY3Bn?=
+ =?utf-8?B?cVJMbGFHcmFBVS9HckRKSjJOaDlHcE9HM3hjNVNPaFp3dHFIUmZERFZZcS91?=
+ =?utf-8?B?SStEMnEvWXpvK3h5MTVvWC9zdWZsTm9HcWFxdUEwR2Y3NkFIdUtXSjNMV1kw?=
+ =?utf-8?B?L2VVdldpam14OElMN2k3T1VpU010ZEhiNEN3d2xZNmxuSEhLaDJsK1dSKy9h?=
+ =?utf-8?B?d3Q4U3BtR2FmaCt4WkdnN1FORTdDZ25RV1o5VkVEazZHSlYwTTcxZjBrRVAv?=
+ =?utf-8?B?QTVzazlZS0c5emEvU2tKNW91bFc3UytBNGZoYkI0clZYT0ZIdGpUbWZvMFNI?=
+ =?utf-8?B?RzVWUjNxME53Zkpza0N1Ujl4RVFQZ2FYQkY1NnNVV0RwODFlTittYzZYN0t2?=
+ =?utf-8?B?MzZjam5XeU1CQzJ2MUYrdVRoUmdUMGEvNjBPNmhyYWlYUnQ2ZDdjZmpkd0Vw?=
+ =?utf-8?B?Z2dJWFlyLzZMYit6S2xNeGc1d1BmT3BOVHJabUlSVkg2QVVEOGZTZ3RZajhC?=
+ =?utf-8?B?TWMzZyt2YUlad2NGRUJYTk9QblRtL1Y1ckg2Yk13RmFzT2h6eW5zRHgxK2kv?=
+ =?utf-8?B?THZqMEZQRjlTNnZLLzF4UTJ2cnZvQTZxWG0vdjI1bisyeUFlYy9oNmZtS0xy?=
+ =?utf-8?B?VW1hbVVOMHp5dnpZakNWd2V3U1MrajU5VU8vUkpvYmpWMFV2aDQxLzFBS3Z3?=
+ =?utf-8?B?WjNEU0NQbmZGYVlTMXBVVWJ5UXY4YWl6dEpRZ3RHOGR5c0Q2dGJYaC9SY3Rv?=
+ =?utf-8?B?dTF5VjJVcUwySjRDN3VZRFBFOGdzd25ybzVwNGVhaDJUTkVEY0VReGovWVpM?=
+ =?utf-8?B?b09zT0NHT1Rhd05PaE0wVkdBUWdTMFFaWE1md2R5WC9CeHJFVFJkZmJxaFFv?=
+ =?utf-8?Q?NU5M=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <5fa6dc30-af86-e58c-2d39-fde2836192c3@opensynergy.com> <CAPBb6MWqqAFB+g=JZu9-VgZbEJxS3wYaEgA-R_P=OyHRTHy7eQ@mail.gmail.com>
- <8ec36252-97c6-0378-e25b-fc972ea3a66d@opensynergy.com> <CAPBb6MVDKfKOyDFPiOL3fRp4Jn6WwMpSZt6V32EJ1CYW_+rw+w@mail.gmail.com>
- <909867c6-b66c-1281-45a7-38fd0aa32123@opensynergy.com> <87cz6mnaqk.fsf@redhat.com>
- <CAPBb6MWNfPH+e8=4zUcq2dV-59OdzTYSuN04Cg2rRPWao-nseQ@mail.gmail.com>
- <877cwttw2x.fsf@redhat.com> <87a60kg9rh.fsf@redhat.com> <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
- <877cvog030.fsf@redhat.com> <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
- <CADSE00KD9=2hs5b=fZpTe7XDm3Q3PAmQczGciE=zLBOF3UNLBA@mail.gmail.com>
-In-Reply-To: <CADSE00KD9=2hs5b=fZpTe7XDm3Q3PAmQczGciE=zLBOF3UNLBA@mail.gmail.com>
-From: Alexandre Courbot <acourbot@chromium.org>
-Date: Sat, 15 Apr 2023 14:58:20 +0900
-X-Gmail-Original-Message-ID: <CAPBb6MW6RxdaH_kq6ZsWpP78yGBSP4T6p3E4=O=uKje4P+MiFw@mail.gmail.com>
-Message-ID: <CAPBb6MW6RxdaH_kq6ZsWpP78yGBSP4T6p3E4=O=uKje4P+MiFw@mail.gmail.com>
-To: Albert Esteve <aesteve@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, 
-	Alexander Gordeev <alexander.gordeev@opensynergy.com>, virtio-dev@lists.oasis-open.org, 
-	Keiichi Watanabe <keiichiw@chromium.org>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, 
-	Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=C3=B6ll?= <Matti.Moell@opensynergy.com>, 
-	Andrew Gazizov <andrew.gazizov@opensynergy.com>, Enrico Granata <egranata@google.com>, 
-	Gustavo Padovan <gustavo.padovan@collabora.com>, Peter Griffin <peter.griffin@linaro.org>, 
-	=?UTF-8?Q?Bart=C5=82omiej_Grzesik?= <bag@semihalf.com>, 
-	Tomasz Figa <tfiga@chromium.org>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	Enric Balletbo i Serra <eballetb@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 42503ab9-a71c-40cc-1cc6-08db3e8057f7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Apr 2023 13:41:55.5599
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OJWLkC+MfTx6UgwJgK2nC61VdKWhKfVAPEbdGxVKR+0FUwjpyRjmLL9cJ+5TFGpmMVzG0bcFZoicMlXhW5hd5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5275
+Subject: [virtio-dev] RE: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
+ MMR dev config registers
 
-Thanks for the feedback Albert!
-
-On Mon, Mar 27, 2023 at 10:00=E2=80=AFPM Albert Esteve <aesteve@redhat.com>=
- wrote:
->
->
->
->
-> On Tue, Mar 14, 2023 at 6:06=E2=80=AFAM Alexandre Courbot <acourbot@chrom=
-ium.org> wrote:
->>
->> Hi Cornelia,
->>
->> On Fri, Mar 10, 2023 at 11:20=E2=80=AFPM Cornelia Huck <cohuck@redhat.co=
-m> wrote:
->> >
->> > On Fri, Mar 10 2023, Alexandre Courbot <acourbot@chromium.org> wrote:
->> >
->> > > Hi Cornelia,
->> > >
->> > > On Fri, Mar 10, 2023 at 7:51=E2=80=AFPM Cornelia Huck <cohuck@redhat=
-.com> wrote:
->> > >>
->> > >> On Tue, Feb 07 2023, Cornelia Huck <cohuck@redhat.com> wrote:
->> > >>
->> > >> > On Tue, Feb 07 2023, Alexandre Courbot <acourbot@chromium.org> wr=
-ote:
->> > >> >
->> > >> >> On Mon, Feb 6, 2023 at 11:13 PM Cornelia Huck <cohuck@redhat.com=
-> wrote:
->> > >> >>> I hope we can sort this out soon -- I guess I'm not the only on=
-e who is
->> > >> >>> anxious about this spec moving forward :) Please let me know if=
- I can
->> > >> >>> help in any way.
->> > >> >>
->> > >> >> I'll try to address Alexander's points in more detail, but I am =
-not
->> > >> >> seeing any blocking issue with using the V4L2 UAPI as the basis =
-for
->> > >> >> virtio-video (we are working on a small proof-of-concept and thi=
-ngs
->> > >> >> are going smoothly so far).
->> > >> >
->> > >> > Great to hear, looking forward to it!
->> > >>
->> > >> Quick question: Is there any git repo or similar where interested
->> > >> parties can follow along? It would be great to have virtio-video in=
- 1.3;
->> > >> if you have some idea on when it might be ready, we could come up w=
-ith a
->> > >> schedule to accommodate that.
->> > >
->> > > I'm glad you asked, as a matter of fact I have just finished the
->> > > virtio-v4l2 proof of concept today! It is capable of exposing a came=
-ra
->> > > or encoder V4L2 device from the host to the guest, by encapsulating
->> > > V4L2 commands into virtio.
->> >
->> > \o/ Excellent news!
->>
->> I am delighted that you seem to like it!
->>
->> >
->> > >
->> > > The guest driver code (single file for simplicity):
->> > > https://github.com/Gnurou/linux/blob/virtio-v4l2/drivers/media/virti=
-o-v4l2/virtio_v4l2_driver.c
->> > >
->> > > Bulk of the host-side crosvm device code:
->> > > https://github.com/Gnurou/crosvm/blob/virtio-v4l2/devices/src/virtio=
-/v4l2/protocol.rs
->> > > https://github.com/Gnurou/crosvm/blob/virtio-v4l2/devices/src/virtio=
-/v4l2/worker.rs
->> > >
->> > > Neither are works of art, so please forgive the few inefficiencies
->> > > here and there - the goal was to make them easy to understand. Still=
-,
->> > > the guest driver is probably closer to what a final driver would loo=
-k
->> > > like. It fits in around 1,000 LoCs (comments excluded), which is
->> > > enough to support stateful video encoders as well as USB camera
->> > > devices. Decoders cannot be run yet because they require support for
->> > > V4L2 events and polling - I will try to enable these features next.
->> > > But even in its current state this driver shows one interesting aspe=
-ct
->> > > of virtio-v4l2, at least for Linux guests: a single and relatively
->> > > simple driver is able to drive a wide range of devices.
->> >
->> > I had a quick look at the driver; it indeed looks like a big win on
->> > Linux systems. (The one thing I'm missing is how easy it would be to
->> > replicate the used v4l2 parts on non-Linux systems.)
->>
->> For non-Linux systems (host or guest, we may need to copy/paste or
->> reproduce the UAPI structures. Thankfully they are unambiguously
->> described in the UAPI documentation, see for example
->> https://www.kernel.org/doc/html/v4.9/media/uapi/v4l/vidioc-enum-fmt.html
->> for the formats structure.
->>
->> >
->> > >
->> > > The crosvm device code proxies a V4L2 device on the host, again usin=
-g
->> > > roughly 1,200 lines of non-comment code. This design does not intend
->> > > to reflect what an actual host device will look like - in effect the=
-y
->> > > should be much more specialized since they are unlikely to also call
->> > > into V4L2 on the host side. However, if the host is Linux and we jus=
-t
->> > > want to expose a USB camera or other V4L2 device almost as-is, then
->> > > this could actually be a good fit.
->> > >
->> > > The protocol should be easy to understand by looking at the code - w=
-e
->> > > only have 5 virtio commands to open/close a session, map/unmap a
->> > > host-allocated buffer into the guest PAS, and the IOCTL command whic=
-h
->> > > sends V4L2 ioctl structures to the host and waits for its reply. All
->> > > ioctls are synchronous per-session, meaning that a session only send=
-s
->> > > one ioctl at a time and waits for its response before it can send th=
-e
->> > > next (as this is what user-space does too). Ioctls, however, never
->> > > block on the host side and the ones that would do (DQBUF and DQEVENT=
-)
->> > > are replaced by host-initiated events. On top of being familiar to
->> > > people who have worked with V4L2 (i.e. a large portion of the media
->> > > folks), this simple design seems to be efficient as I have observed
->> > > identical performance on both host and guest with the vicodec virtua=
-l
->> > > encoder. Since this device generates frames using the CPU and keeps
->> > > one core 100% busy, any overhead introduced by virtualization should
->> > > be noticeable - yet I got nearly identical framerates on both host a=
-nd
->> > > guest.
->> >
->> > I haven't worked with v4l2, but this approach sounds reasonable to me.
->> >
->> > >
->> > > Things that still need to be implemented before this can be consider=
-ed
->> > > more complete:
->> > >
->> > > * Controls. This should not be particularly difficult but I left it
->> > > for now as they are not necessary to demonstrate the viability of th=
-is
->> > > project.
->> > > * Guest-allocated memory buffers and virtio objects. Based on our
->> > > previous experience with virtio-video these should not be difficult =
-to
->> > > implement. Currently all video buffers are allocated by the host, an=
-d
->> > > mapped into the guest if needed.
->> > > * Events and polling, required to use a decoder. Again these were no=
-t
->> > > strictly necessary for the proof of concept, but since we've gone th=
-is
->> > > far I will try to get them to work as the next step.
->> > > * Requests and multi-part media devices. This will be necessary in
->> > > order to support more modern camera pipelines. I haven't made up my
->> > > mind yet about whether we should support this, but if we want to it
->> > > should not be too hard (describe several devices in the configuratio=
-n
->> > > space and enable the request-related commands). I need to talk to
->> > > camera folks to know whether there is an actual interest in this.
->> > > * Support for more ioctls, in case we want to support tuners and rad=
-ios.
->> > >
->> > > If you want to try this code, you need to build the guest kernel wit=
-h
->> > > CONFIG_VIRTIO_V4L2 and enable the `v4l2` feature when building crosv=
-m
->> > > (check out the Book of Crosvm if you need instructions on how to bui=
-ld
->> > > and use it). Then pass --virtio-v4l2=3D/dev/videoX to crosvm in orde=
-r to
->> > > expose the /dev/videoX host V4L2 device to the guest.
->> > >
->> > > I have successfully captured frames (and verified their validity)
->> > > using the following devices:
->> > >
->> > > * A simple USB camera using the `uvcvideo` driver. Both host and gue=
-st
->> > > could capture a MJPEG stream with the following command:
->> > > v4l2-ctl -d0 -v pixelformat=3DMJPG --stream-mmap --stream-to=3Dtest.=
-mjpg
->> > >
->> > > * The vivid virtual camera driver. I could capture a valid YUV strea=
-m
->> > > using the following command:
->> > > v4l2-ctl -d0 -v pixelformat=3DNV12 --stream-mmap --stream-to test.yu=
-v
->> > >
->> > > * The encoder device of the vicodec virtual codec driver. On both ho=
-st
->> > > and guest, the following command produces a valid FWHT stream in
->> > > `test.fwht`:
->> > > v4l2-ctl -x pixelformat=3DNV12 --stream-mmap --stream-out-mmap
->> > > --stream-to-hdr test.fwht
->> >
->> > This looks very good already.
->>
->> Turns out that ffmpeg can also be used to capture video and encode it
->> in a more convenient format, e.g:
->>
->> ffmpeg -f v4l2 -i /dev/video0 output.mkv
->>
->> This is a very good sign with respect to compliance with V4L2
->> protocols. We had a very hard time getting the original virtio-video
->> to be used with common tools and passing the V4L2 compliance test in
->> general, but with this approach it seems like it will be much simpler
->> to achieve.
->
->
-> I was curious, and I have tried the prototype. I was gladly surprised at =
-how nice
-> it behaves in this state. Really nice work.
->
-> I have managed to expose different devices to the host and run compliance=
- tests,
-> capture frames from a camera, and encode by doing:
->
-> # v4l2-ctl -d0 -x width=3D640,height=3D480 -v width=3D640,height=3D480,pi=
-xelformat=3DFWHT \
->                 --stream-mmap --stream-out-mmap \
->                 --stream-from in-640-480.YU12 --stream-to output.fwht
-
-Just a small update: I have updated the device and driver to handle
-V4L2 events and polling and the vicodec decoder is now also working.
-
-Instructions are mostly unchanged:
-
-* Insert the vicodec module on your host (sudo modprobe vicodec multiplanar=
-=3D1)
-* Check that it is working properly:
-** Encode 30 frames in FWHT format:
-v4l2-ctl -d/dev/video0 -x pixelformat=3DNV12 --stream-mmap
---stream-out-mmap --stream-to-hdr out.fwht --stream-count 30
-** Decode them back to NV12:
-v4l2-ctl -d/dev/video1 -v pixelformat=3DNV12 --stream-mmap
---stream-out-mmap --stream-from-hdr out.fwht --stream-to out.nv12
-(You can check the result with YUView, frame size is 1280x720).
-* Get the kernel at https://github.com/Gnurou/linux/tree/virtio-v4l2
-and build with CONFIG_VIRTIO_V4L2,
-* Get crosvm at https://github.com/Gnurou/crosvm/tree/virtio-v4l2 and
-run it with the "--virtio-v4l2=3D/dev/video0 --virtio-v4l2=3D/dev/video1"
-options to virtualize the encoder and decoder devices,
-* Run the same commands as the second step in the guest, you should
-get the exact same result as when they were run on the host.
-
-This demonstrates that a decoder device can be virtualized quite
-simply by this solution. Next let me enable controls (so
-v4l2-compliance passes in the guest) and the remaining types of buffer
-memories and we should have something rather complete, at least on the
-guest side.
-
-I have also chatted a bit more with a few camera folks at Google, and
-they agreed that V4L2 with requests should be enough to support even
-modern camera pipelines. That is, the whole complexity of the host
-pipeline would not and should not be entirely exposed to the guest,
-only a simpler model that makes sense for what the camera is used for,
-and for that V4L2 is more than enough. So a stronger confidence that
-this will be suitable for the camera use-case as well.
-
-If nobody strongly objects, I think this can be pushed a bit more
-officially. Cornelia, would you consider it for inclusion if I
-switched the next version of the specification to use V4L2 as the
-host/guest protocol? This may take some more time as I want to confirm
-the last details with code, but it should definitely be faster to
-merge and to test with a real implementation than our previous
-virtio-video attempts.
-
-Cheers,
-Alex.
-
-
-
-
->
-> Some results for the compliance tests using vicodec:
-> *  Enconder device
->     * Host
-> Total for vicodec device /dev/video4: 46, Succeeded: 45, Failed: 1, Warni=
-ngs: 0
->     * Guest
-> Total for virtio_v4l2 device /dev/video0: 45, Succeeded: 34, Failed: 11, =
-Warnings: 0
->
-> *  Decoder device
->     * Host
-> Total for vicodec device /dev/video5: 46, Succeeded: 42, Failed: 4, Warni=
-ngs: 0
->     * Guest
-> Total for virtio_v4l2 device /dev/video0: 45, Succeeded: 36, Failed: 9, W=
-arnings: 0
->
->>
->>
->> >
->> > >
->> > > By this work I hope to demonstrate to people interested in video
->> > > virtualization that encapsulating V4L2 in virtio is not only a viabl=
-e
->> > > solution, it is a huge shortcut in terms of specification crafting,
->> > > driver writing, and overall headaches involved in specifying somethi=
-ng
->> > > as complex as a video device. Not only could we support video decode=
-rs
->> > > and encoders, which was the goal of virtio-video, we would also get
->> > > image processors, video overlays and simple cameras for free, and
->> > > potentially more complex cameras if we decide to.
->> > >
->> > > After writing this prototype (and a couple attempts at the
->> > > virtio-video specification) I don't see any reason not to rely on a
->> > > battle-tested protocol instead of designing our own that does
->> > > basically the same thing. The genericity of V4L2 may mean that
->> > > sometimes we will need 2 commands where virtio-video would require
->> > > only one, but we are talking about a low frequency of virtio command=
-s
->> > > (60 fps for video playback typically) and that genericity comes with
->> > > the benefit of a single Linux guest driver.
->> > >
->> > > If there is an agreement to move forward with this, I guess the next
->> > > step for me will be to write a proper spec so the protocol can be
->> > > understood and discussed in detail. Then why not try and upstream th=
-e
->> > > kernel driver and make ChromeOS use this too in place of our
->> > > heavily-patched virtio-video. :) We might even make it for virtio 1.=
-3.
->> > >
->> > > Looking forward to your feedback. Please don't hesitate to ask
->> > > questions, especially if you are not familiar with V4L2. I can also
->> > > help folks interested in running this with the setup if needed.
->> >
->> > Thank you for sharing your work! I think this looks very promising, an=
-d
->> > I'd like to hear feedback from others as well. I assume that would mak=
-e
->> > the spec change more digestible than earlier versions.
->>
->> The spec should indeed be considerably lighter. I'll wait for more
->> feedback, but if the concept appeals to other people as well, I may
->> give the spec a try soon.
->>
->
-> From my perspective, I think we gain a simpler backend, simpler
-> driver, and potential support for more devices for free. It may
-> not cover all usecases, but that has already been discussed in this
-> thread. For that purpose, virtio-camera will still be a possibility.
->
-> FWIW, I think this is a great step in the right direction, as it will mak=
-e both
-> drivers and devices easier to implement and debug.
->
-> BR,
-> Albert
->
->>
->> Meanwhile I'll also try to add support for stateful decoders and
->> guest-allocated buffers to the prototype so it can be considered more
->> complete.
->>
->> Cheers,
->> Alex.
->>
->> ---------------------------------------------------------------------
->> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->>
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PiBGcm9tOiB2aXJ0aW8tY29tbWVudEBsaXN0cy5vYXNpcy1vcGVuLm9yZyA8dmlydGlvLWNvbW1l
+bnRAbGlzdHMub2FzaXMtDQo+IG9wZW4ub3JnPiBPbiBCZWhhbGYgT2YgTWljaGFlbCBTLiBUc2ly
+a2luDQo+IFNlbnQ6IEZyaWRheSwgQXByaWwgMTQsIDIwMjMgMjo1NyBBTQ0KIA0KPiBEbyB5b3Ug
+cmVmZXIgdG8gdGhlIHRyaWNrIEphc29uIHByb3Bvc2VkIHdoZXJlIEJBUjAgaXMgbWVtb3J5IGJ1
+dCBvdGhlcndpc2UNCj4gbWF0Y2hlcyBsZWdhY3kgQkFSMCBleGFjdGx5PyBJcyB0aGlzIHlvdXIg
+cHJlZmVycmVkIHNvbHV0aW9uIGF0IHRoaXMgcG9pbnQgdGhlbj8NCg0KV2UgbG9vayBhdCBpdCBh
+Z2Fpbi4NCkFib3ZlIHNvbHV0aW9uIGNhbiB3b3JrIHJlbGlhYmx5IG9ubHkgZm9yIGEgdmVyeSBz
+bWFsbCBudW1iZXIgb2YgUEYgYW5kIHRoYXQgdG9vIHdpdGggdmVyeSBzcGVjaWFsIGhhcmR3YXJl
+IGNpcmN1aXRyeSBkdWUgdG8gdGhlIHJlc2V0IGZsb3cuDQoNClRoZXJlZm9yZSwgZm9yIHZpcnR1
+YWxpemF0aW9uIGJlbG93IGludGVyZmFjZSBpcyBwcmVmZXJyZWQuDQphLiBGb3IgdHJhbnNpdGlv
+bmFsIGRldmljZSBsZWdhY3kgY29uZmlndXJhdGlvbiByZWdpc3RlciB0cmFuc3BvcnQgb3ZlciBB
+USwNCk5vdGlmaWNhdGlvbiB0byB1dGlsaXplIHRyYW5zaXRpb25hbCBkZXZpY2Ugbm90aWZpY2F0
+aW9uIGFyZWEgb2YgdGhlIEJBUi4NCg0KYi4gTm9uIGxlZ2FjeSBpbnRlcmZhY2Ugb2YgdHJhbnNp
+dGlvbmFsIGFuZCBub24tdHJhbnNpdGlvbmFsIFBDSSBkZXZpY2UgdG8gYWNjZXNzIGRpcmVjdCBQ
+Q0kgZGV2aWNlIHdpdGhvdXQgbWVkaWF0aW9uLg0K
 
