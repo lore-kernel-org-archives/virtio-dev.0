@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12276-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12277-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01656C77B75
-	for <virtio-dev@archiver.kernel.org>; Tue, 18 Apr 2023 11:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 52EB7C77B75
+	for <virtio-dev@archiver.kernel.org>; Tue, 18 Apr 2023 11:58:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 53F307AF0A
-	for <virtio-dev@archiver.kernel.org>; Tue, 18 Apr 2023 11:43:25 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 632B89F4E7
+	for <virtio-dev@archiver.kernel.org>; Tue, 18 Apr 2023 11:58:19 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 40E36986402
-	for <virtio-dev@archiver.kernel.org>; Tue, 18 Apr 2023 11:43:25 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 461CC9863FB
+	for <virtio-dev@archiver.kernel.org>; Tue, 18 Apr 2023 11:58:19 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 2BDAC984043; Tue, 18 Apr 2023 11:43:25 +0000 (UTC)
+	id 346F6984043; Tue, 18 Apr 2023 11:58:19 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,115 +24,92 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1A3CD9863E3
-	for <virtio-dev@lists.oasis-open.org>; Tue, 18 Apr 2023 11:43:25 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 219AA9863E7
+	for <virtio-dev@lists.oasis-open.org>; Tue, 18 Apr 2023 11:58:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: m2cebooQOIWftmmJDAn1yQ-1
+X-MC-Unique: skd2f9FSPdiWjLmqbgq3Wg-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681818199; x=1684410199;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qSVxkAWYVcAYM9MmphL1lhz6u6SleLiUfnKv5S/4kRg=;
-        b=bMelVEf/XuudTt45V+QAI9/QcterjIIdko/ieIKA9zEte+WF7leaEwOcqEbHNGy57A
-         z6WKTMf0BNk534nh/F6OKNcFjBW3jFKfwiLJDFX+N2G3ATtw54f4Z/Fk/LmSWw/jDBPy
-         BoI03uSyZKgScIiFE2RG4EaHwTK91G5Dht5/TMtJwzQGSb59TSNaBsUVRl19FAQFf1T3
-         wHndHDrRgB86i9X/3hg51W1ief/f20y/8mjeojZg7VWL56usYFA2HtKJWqNux1f5b/AB
-         BJK0AFE6f6WdmIJZOTvGghuSYdceP1oG4w1gy2miM3ZSpnksgA3Zu44R19EJYvARuLLB
-         SmsQ==
-X-Gm-Message-State: AAQBX9cRXlHvi/p89Cjk3bcsbV5eP3rU/FSLkIw1XV9qTREZDLH9PrHf
-	L0U9tpBvRUjBC/dUUsrlhfiqcCkqm53/esBbDjtja5cIdTKQxxR6E2VrP7FRyJl796QeJonFKg9
-	R3tvzSNVVRnDwR6nc8OW337G51kPH
-X-Received: by 2002:adf:ea8b:0:b0:2f2:c46b:1eb5 with SMTP id s11-20020adfea8b000000b002f2c46b1eb5mr1784928wrm.59.1681818199720;
-        Tue, 18 Apr 2023 04:43:19 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Y97qGGEIm90ZjWqlLvDKfgIuJkZjZVzbWnLvF+51tfrCkNKj4JMgLigO8fLbXeBD/MV1HSYA==
-X-Received: by 2002:adf:ea8b:0:b0:2f2:c46b:1eb5 with SMTP id s11-20020adfea8b000000b002f2c46b1eb5mr1784910wrm.59.1681818199422;
-        Tue, 18 Apr 2023 04:43:19 -0700 (PDT)
-Date: Tue, 18 Apr 2023 07:43:15 -0400
+        d=1e100.net; s=20221208; t=1681819096; x=1684411096;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8TtIpQFmh6KEPWQeNckjC4fUVrBL7e4REAHDp201IZg=;
+        b=b+tSP/LF9qLhnnEowrNmTTB7ZGl107WFQ6yP1DFJ9rnOMl7p/RhfMgEFTlFtrUL2cg
+         P1Vmuob+au9nN5J9pm+Rn5mB5SnTQeXfufix8+UbjoJ70QPjgyDwDrWdnMIejmBkcTER
+         BHafOCMt24aynkZnt6VgnJh7/x+mZs7MSzssJXNfLV5+EeMNmer0pcn++JeB2Msc/lKS
+         7EhOgVN0rKktz4YmA8tK6fM5nMAeHwfgl5EYkDQv4poBxsnTzoIQSKg8d7bboLFLHnR4
+         7zknifftoCvwyWZo83ITj2dndkWoifcpnf1sa1u7jcC19t95FlEkpPUECnoFQ2oZ98Gh
+         m7dQ==
+X-Gm-Message-State: AAQBX9ebYoEv1D+da9XCGhp7no3fj3s4Oo7z58la7GIUMdDXSAR0o0XQ
+	2uPyrGoj37VbhFHGYEPIKufM6z/s0fcvAoU8XxIBELNgOrSxNYxy/jAnfhZZbU40I33U/z+RMsR
+	4MG6AJTm66YR9h612R5r75n22zp91
+X-Received: by 2002:a05:6000:1107:b0:2e5:56f8:61fc with SMTP id z7-20020a056000110700b002e556f861fcmr1682425wrw.15.1681819095837;
+        Tue, 18 Apr 2023 04:58:15 -0700 (PDT)
+X-Google-Smtp-Source: AKy350a8+tHP80PH4qz20BxxCUu37KHorM8hFjrlBdOczuc8uIH61ZhkuIIblAgW5F+IyMiC+E2CHg==
+X-Received: by 2002:a05:6000:1107:b0:2e5:56f8:61fc with SMTP id z7-20020a056000110700b002e556f861fcmr1682411wrw.15.1681819095572;
+        Tue, 18 Apr 2023 04:58:15 -0700 (PDT)
+Date: Tue, 18 Apr 2023 07:58:11 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: Parav Pandit <parav@nvidia.com>,
+To: Parav Pandit <parav@nvidia.com>
+Cc: Jason Wang <jasowang@redhat.com>,
 	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
 	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"sgarzare@redhat.com" <sgarzare@redhat.com>,
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230418074307-mutt-send-email-mst@kernel.org>
-References: <20230411192341.751841-1-parav@nvidia.com>
- <20230411192341.751841-4-parav@nvidia.com>
- <20230417054149.5d7f62e8.pasic@linux.ibm.com>
- <PH0PR12MB548148EDDB407D4B1A3E316ADC9C9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230418133958.13d5b98b.pasic@linux.ibm.com>
+	Shahaf Shuler <shahafs@nvidia.com>,
+	Satananda Burla <sburla@marvell.com>,
+	Maxime Coquelin <maxime.coquelin@redhat.com>,
+	Yan Vugenfirer <yan@daynix.com>
+Message-ID: <20230418075401-mutt-send-email-mst@kernel.org>
+References: <CACGkMEvSSXyXQnRs=OiaSJnSEYHP83chL6-B5ZPCGx6TeW9W5Q@mail.gmail.com>
+ <PH0PR12MB548135CF5268D979A6D8EDE8DC999@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEsHtC99kTTa0TrfeJuhV+F7e-WF7XRgbLJkCBQeAxW8pA@mail.gmail.com>
+ <PH0PR12MB5481C29561D5E48BA5D8AEEEDC999@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEseO=4xDA+pH2x=CaJ6XyzHEx1ZFO-+uevJH50kLeSWhA@mail.gmail.com>
+ <PH0PR12MB5481FFC95F54AD048927FF12DC9C9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230417162618-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481710854882449008F28BDDC9C9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEvPv7eH3+cggcCVZvRCqkNCh_CX+6azNJtdJUDxjjAjwg@mail.gmail.com>
+ <PH0PR12MB548113626CD6C7B2F8589042DC9D9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20230418133958.13d5b98b.pasic@linux.ibm.com>
+In-Reply-To: <PH0PR12MB548113626CD6C7B2F8589042DC9D9@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Subject: Re: [virtio-dev] [PATCH v13 03/11] content: Rename confusing
- queue_notify_data and vqn names
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 09/11] transport-pci: Describe PCI
+ MMR dev config registers
 
-On Tue, Apr 18, 2023 at 01:39:58PM +0200, Halil Pasic wrote:
-> On Mon, 17 Apr 2023 20:53:32 +0000
-> Parav Pandit <parav@nvidia.com> wrote:
+On Tue, Apr 18, 2023 at 01:30:43AM +0000, Parav Pandit wrote:
 > 
-> > > From: Halil Pasic <pasic@linux.ibm.com>
-> > > Sent: Sunday, April 16, 2023 11:42 PM  
-> [..]
-> > >   
-> > > > @@ -1053,9 +1059,9 @@ \subsubsection{Available Buffer
-> > > > Notifications}\label{sec:Virtio Transport Option  If  
-> > > VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated:  
-> > > >  \begin{itemize}
-> > > >  \item If VIRTIO_F_NOTIFICATION_DATA has not been negotiated, the
-> > > > driver MUST use the -\field{queue_notify_data} value instead of the virtqueue  
-> > > index.  
-> > > > +\field{queue_notify_id} value instead of the virtqueue index.
-> > > >  \item If VIRTIO_F_NOTIFICATION_DATA has been negotiated, the driver
-> > > > MUST set the -\field{vqn} field to the \field{queue_notify_data} value.
-> > > > +\field{vq_notify_id} field to the \field{queue_notify_id} value.  
-> > > 
-> > > Seems you did not catch these with the s/_id/_config_data/. By doing the
-> > > replace one would get queue_notify_config_data, vq_notify_config_data and
-> > > queue_notify_config_data respectively.
-> > > 
-> > > But that still does not seem right, and the right answer depends on to what do
-> > > we rename \field{vqn}.
-> > >   
-> > vqn -> vq_notif_config_data in the notification structure.
 > 
-> I think I got what you mean. I intend to double check it
-> in v14.
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Monday, April 17, 2023 8:37 PM
 > 
+> > > > > Do you mean say we have three AQs, AQ_1, AQ_2, and AQ_3;
+> > > > > AQ_1 of the PF used by admin work as SIOV device create, SRIOV
+> > > > > MSIX
+> > > > configuration.
+> > > > > AQ_2 of the PF used for transporting legacy config access of the
+> > > > > PCI VF
+> > > > > AQ_3 of the PF for some transport work.
+> > > > >
+> > > > > If yes, sounds find to me.
+> > > >
+> > > > Latest proposal simply leaves the split between AQs up to the driver.
+> > > > Seems the most flexible.
+> > > Yes. It is. Different opcode range and multiple AQs enable to do so.
 > > 
-> > virtio_pci_common_cfg.queue_notify_data -> queue_notify_config_data.
-> > 
+> > Right, so it would be some facility that makes the transport commands of
+> > modern and legacy are mutually exclusive.
 > 
-> I have no strong opinion about this one.
-> 
-> > Better to rename
-> > 
-> > VIRTIO_F_NOTIF_CONFIG_DATA to VIRTIO_F_NOTIFY_CONFIG_DATA.
-> > Adding "Y" is not going to make it that long. Field names will have some consistency.
-> > WDYT?
-> 
-> No strong opinion on this either. I agree with Michael that "NOTIF"
-> likely stands for "notification", but I also see your point: having
-> "notify" in the field names and "NOTIF" in the feature name isn't great
-> either.
-> 
-> IMHO VIRTIO_F_NOTIFY_CONFIG_DATA should remain aligned with
-> VIRTIO_F_NOTIFICATION_DATA in one way or another. Thus way out would be
-> to do something like:
-> virtio_pci_common_cfg.queue_notify_data -> queue_notif_config_data
-> 
-> I think as editors Connie and Michael should have the most say in this
-> though.
-> 
-> Regards,
-> Halil
+> Ok. I didn’t follow the mutual exclusion part.
+> If a device has exposed legacy interface it will have to transport legacy access via its PF.
+> Same device can be transitional, and its 1.x interface doesn’t need to through this transport channel of PF, right?
 
-Fine by me.
+I think in any case, using device through two transports at the same
+time shouldn't be legal.
+
 
 -- 
 MST
