@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12313-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12314-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE0BCC77B75
-	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 13:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AD639C6FD18
+	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 13:50:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 21C4D41EEB
-	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 13:35:39 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 03F052B014
+	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 13:50:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1399798662B
-	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 13:35:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B7962986615
+	for <virtio-dev@archiver.kernel.org>; Wed, 19 Apr 2023 13:50:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 075C5986432; Wed, 19 Apr 2023 13:35:39 +0000 (UTC)
+	id 95999986422; Wed, 19 Apr 2023 13:50:36 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,153 +24,657 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EA6AA986426;
-	Wed, 19 Apr 2023 13:35:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 377A1986426
+	for <virtio-dev@lists.oasis-open.org>; Wed, 19 Apr 2023 13:49:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K0fQcSR0BphpGXNtbA5FkHkAdviOBA9UGdlefBIwB1ty4RQGKxuhX9cP3vkbDwfsWF4BP34ZpQpsHByRdSz7uxnEHoRG+1Or/B+g7KsyK6DM8z90AdkrZi8awmLYk4e6m+QieAhalG/i2u4VzlW4oerZtuEIC3G1rNj6TpPtT5OPPm0L171dzV80C54934Yd37Z8NggOUFmZ7UHMBiFpUzS9eqUeQh1gGwNcOVYq+QpA2o/DSW4LyPZeKwb6iC1dJNuBmOH6TTF+UeV0qX5V+5Oz41Ymk0kjG9ojsSwYOLRBP9qyQ6GvIIS8TylDVP78J0WAfHfD71j9uXe+ZcP7sg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3tPHc+OurWGP8lp8JXEDmPyDqWq5H6GJ6ah4gBS1mmA=;
- b=ZJf3oBRviTK9AGUPaCSS3xaBkqpuMerNyDTgTrpU8ng0OWGeCg2Cz/1bwoL1WAEHstlNmZp7z0tlHoWyuJhYfi+mmb3la3Bh1/xdDNeHyAO8qQghdJkUKo34aYqoRgt8+6qM3xwt91Q9wQLVxD2i52/SU0vTBhJ4RoU2iPW+UazqOAEv2IwoZn5dvw4p2x1Nv7fRKf21jX8rimxsqzbWy7OY8sAtz9SG+t4o1kIMTnisYkS4/tHiS128/+F9+jc77/Fl/H3s/tJT4lU125gNONonu/QYEa2EXI1fw2BEdtTqedzD5F7HjTbkIyyJDNNgOc0nVJfRcZNx/xLPk17zBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: Cornelia Huck <cohuck@redhat.com>, "mst@redhat.com" <mst@redhat.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"pasic@linux.ibm.com" <pasic@linux.ibm.com>
-CC: "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [PATCH] device-types/multiple: replace queues with enqueues
-Thread-Index: AQHZbLDQUabXUOZYdke6uzVPKsmTjq8yrYqAgAAAUmA=
-Date: Wed, 19 Apr 2023 13:35:32 +0000
-Message-ID:
- <PH0PR12MB5481908F52883B1C3BE31A15DC629@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230411200358.753101-1-parav@nvidia.com>
- <87bkjkngj6.fsf@redhat.com>
-In-Reply-To: <87bkjkngj6.fsf@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CH3PR12MB7761:EE_
-x-ms-office365-filtering-correlation-id: 90da238d-54bf-409e-484b-08db40daf303
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- JtnGVzQT23kl+Nk0RH17+QcGzX5DjDQgkFccHQQS+HQGEpT0YaT6Ug++gOn2nOtbw5oser+Jxo9wLrpd8qh6K46CiF5oyasJjcpi8ykfAnQZi/DNz0LAQWi/C52ArPlBo1ZoWSj26SUjdQiWroiSyYOgkRkI57ltzjbeKa3kyHAM1mLPXc2kz737cJYAcrIYWLcTPb7hs2LLoeNvmvdCnJgBE8rJ+6HfOgfe7b3Ke7O8DWlNsGW3dy5LWwIx63N+lEtYxZHGrINX/6EtVisXBfOROFRjWNMV9CM4wOf69T9DG6NQ6p7MSTN5O241z5JW2ublYAr2o45XrjJR2IVNloRneur+A5EOGR3XQ3j0d0p6dQaPbcip5URaU7H9TMUub5jwqarSaFs12/GMUrFxCMwk7X67q2zVWrrZTzlZrAeGfdh9kEo1fhqX78BrNIJyztDowPdNVPFSgnSrfhGQd2f1+ocMH3e9vjTY4Ub5BTV63ZWZJsvPgFJdxyvH0vFK+OeUjpRfXe0Fo/vwyaoZJZY5AEVQtJB6smrO/773ZSuPEwh5pTXefePSn5fOTFwvI0hWmQcOC9sCDlFgsRFE61RLee0T8cTGF0xcaZZmDhPBhI4caTyrwsL9FfyYYE36
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(451199021)(55016003)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(4326008)(478600001)(110136005)(316002)(54906003)(8936002)(8676002)(5660300002)(52536014)(41300700001)(122000001)(38100700002)(186003)(83380400001)(9686003)(7696005)(71200400001)(107886003)(6506007)(26005)(33656002)(86362001)(38070700005)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?tDA+l61C6tElCxUtWd9tHnszDLRU+NEyKbQopCRD4WoFPBkrvYDijsID9Lut?=
- =?us-ascii?Q?CODmQ2qMdLPPU3quKQplhYNmagB+TNv//DwNsf/CzmH+efZRNjAi6xNxGKYc?=
- =?us-ascii?Q?kCZ8Y/p9rmc2lr+uau9jQqvtzRZ73XEGV5eC+yx57MPj5mJK54b7J8xi0sPY?=
- =?us-ascii?Q?ctDn1BlTwUNq6khs3qPDwBxrBJMuSGu5Va9b8xD0/XxxdXN5XkJAzBCDDqvT?=
- =?us-ascii?Q?8D6xT9+lyTfeF5r/c87jQw3vR0bXWvjOUl6ayKVkmHnuVmvsCpa9VbtFTw7b?=
- =?us-ascii?Q?EOqpXy+cYM+1cb+4NFPEPhyjugxOTvxBkYrhBcKbO7LMjN3Z6do82/WbK142?=
- =?us-ascii?Q?3+U+91zO7P+bpyWF3rLR024YivDXaI8lCh1nS8QOkYpHlDzilJkbJ/C4Z+ZT?=
- =?us-ascii?Q?uGS48d+0gnWrvdbag6ahC/SrAloMfKdaiUmVtPOkz4012T1V8FokZQKKqMc4?=
- =?us-ascii?Q?qvBIzrKGXG7yIxYQ3kyOKJRSnaOK7505cOnQ55VDRLbYgeG9PFFzocLciV7h?=
- =?us-ascii?Q?IExdOMYLwzAah5/YTe+mPsbzkBoxbsu2GHyBXhZ4t8HrPGQ9QW6fWOqSsdpU?=
- =?us-ascii?Q?S1tHAKrfdc6OaHRQ7R1XSR4HcyjVBcezpHDGm9B2qD6X13EBul3J7hJv7DN9?=
- =?us-ascii?Q?r42aW2Jgmie4/4kqkAwfSktC7H8/W8BGoSPEfGl0oNuak7RYYl7gjLlxoGNu?=
- =?us-ascii?Q?lwyPk1Oy7uLFb92uMESKwbo7VUxIj7TqAdjzglQcm1wQqPDQ5aBnew29EN1f?=
- =?us-ascii?Q?fXptMQWUWzB3yAviAz+c4bFmUQwnkD0W84FyEMA5leLrhkp7Enu3FEoDJbSL?=
- =?us-ascii?Q?v+R3L8pywtrq7SFEr/tOkmygmUYorOaXN/JPB6xCTdCwrWVhzt/JOimTd64K?=
- =?us-ascii?Q?qyIkkh7S9pyI/ffzsuVUrt4GspMhd48HvVvOoqu5LB7D1gpB+n3gMpJb6JHM?=
- =?us-ascii?Q?ui3cpqJnTijNIlmcSHXWptSN2hAi2xxFXxiz4hwH1q0PfwPmr9Sh+70PzFjI?=
- =?us-ascii?Q?axZ+7JniY6rTGK96BZRzdQJXja/oXdbajW4ZGBHnC/QPB1MUjjfcnepLjmld?=
- =?us-ascii?Q?LsHTtd7ZhhdBe/WxTZUjDUNV4ewLKEjLuukfV8SJftSmJmxUOD7T+LM5EwXG?=
- =?us-ascii?Q?NidXG3861g/qDd/2n9l/7CEq/rJWMzQkMzFZvaOeDSdvG1pyBuyMjSmgggVX?=
- =?us-ascii?Q?Qq5NMQx1GxD2RpPwLKN+xiQ7CHuLpKMm73lPJv34ALNZV2WGwFKj16AogScC?=
- =?us-ascii?Q?n/FIyPZLs2REiBMhTU5dU7UB7zPHmO7Cyrm0lvW/wqchQu8uIueZ7O2cT8/A?=
- =?us-ascii?Q?q23H10+KGQQlKVr+oC5Id0IDGXbalVJn4tQ29msw1Oy2xDPC8b4zqbpfQDdY?=
- =?us-ascii?Q?XACIlufs4LoKWFjJuHHc2dk513ul82klvXaEO81Z1p5msq8hvvOtYZtyHmQ/?=
- =?us-ascii?Q?8U0Re4KwRGJEV1Kd1Ycwg1AS1p21XL+JjcItTeo/bkpo9EjZDOj11B7x5A/9?=
- =?us-ascii?Q?VaTJq2QNaT8oKTLreWWhgad/Qdo4AcmhDIrw+c5YprSX0V3N/naZFFIJjSkW?=
- =?us-ascii?Q?O0Svk1y7rTJxd9ApdYU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681912184; x=1684504184;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=01sxgQIxencg5TtolijUItyYJDdAvlMGoTyAZwSYRGo=;
+        b=gVbsDSpVgyHjmG4mTYt2ILTDNIjmvCP6IYem+vKaEasp/ZZYDhPN4zlLqd7KG7DSo0
+         MZLPV6NgJJVyBGLph1V6Uw0kAup+PnWR+u6q4MFpKCPa7EGkBt0XVKMaSwV0THfsmovg
+         9BG2X1buJ787kA73bMoRGmpNDwAkyFPgh9IIn8JZZbH9v8uw+raqthAaNRgTGluMxDRI
+         UpG6QYL9+LP+tgp0t6A9q8bVT2xAukFhqvEmEOWUvrIacuujE3RLHhCeOXiPrpIb3Zag
+         RfPqV/VbTSGkBs/vN3qM1XbNv7/C0v3LUn/jfnMgUFl4iMmiHi2cBrqs8fkaw/+kTlXV
+         nnYQ==
+X-Gm-Message-State: AAQBX9c2M0AgOZ8NrPrxmcSH+T8UenqzucwLteaGUZUpjt/T4lzH1Xaa
+	QNi0UmwYZuRZmUNdlSlNO+oYnIeOHbMhJEd164GKaA==
+X-Google-Smtp-Source: AKy350Y0pPy403PqcVBw9E94eiiPJIZC0ciKbz4amYqGVS09kN6azZWYMxIrKpqyK0cXJDw4TL6aAXTiQzSeiu+2+RI=
+X-Received: by 2002:a17:906:5410:b0:94a:5ecb:6ea7 with SMTP id
+ q16-20020a170906541000b0094a5ecb6ea7mr14765712ejo.43.1681912184522; Wed, 19
+ Apr 2023 06:49:44 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90da238d-54bf-409e-484b-08db40daf303
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2023 13:35:32.6897
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z9UGNO5KfdmFuRGjdXyMRX794r2+zXmYl4zDVM4EyRmHtYku50mVDpQo9YA/IDV0DdtaGncjSCnqr+TmQ/YWxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7761
-Subject: [virtio-dev] RE: [PATCH] device-types/multiple: replace queues with enqueues
+References: <CANN35wLsm_RTTKmxFz5jcBujoxfjPwsu37FAw9+W58hjt_nVPQ@mail.gmail.com>
+ <1681804788.7404423-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1681804788.7404423-1-xuanzhuo@linux.alibaba.com>
+From: Timos Ampelikiotis <t.ampelikiotis@virtualopensystems.com>
+Date: Wed, 19 Apr 2023 16:49:33 +0300
+Message-ID: <CANN35wKBSJ-cxju6oM1E0B70Hm-Rs2Z2Q+SybOgFMkp4oeJ36A@mail.gmail.com>
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: Daniel Raho <s.raho@virtualopensystems.com>, 
+	Michele Paolino <m.paolino@virtualopensystems.com>, 
+	Alvise Rigo <a.rigo@virtualopensystems.com>, chou.kensou@jp.panasonic.com, 
+	wminer@linuxfoundation.org, stefanha@redhat.com, 
+	virtio-dev@lists.oasis-open.org, 
+	linwen deng <linwendeng@virtualopensystems.com>
+Content-Type: multipart/alternative; boundary="0000000000004d5c4205f9b0b2cf"
+Subject: Re: [virtio-dev] Virtio-loopback: PoC of a new Hardware Abstraction
+ Layer for non-Hypervisor environments based on Virtio
+
+--0000000000004d5c4205f9b0b2cf
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hello Xuan,
+
+The main differences between virtio-loopback and vDUSE are mainly:
+
+1) the data sharing mechanism
+
+2) the Virtio/Vhost-user devices which are supported by each solution
 
 
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Wednesday, April 19, 2023 9:33 AM
->=20
-> On Tue, Apr 11 2023, Parav Pandit <parav@nvidia.com> wrote:
->=20
-> > Queue is a verb and noun both. Replacing it with enqueue avoids
-> > ambiguity around plural queues noun vs verb; similar to virtio fs
-> > device description.
->=20
-> Personally, I don't think this patch adds much, but I don't really mind i=
-t, either.
->=20
+In particular, Virtio-loopback implements a zero-copy memory mapping
+
+mechanism, the data are directly accessible by the user-space and
+
+supports vhost-user-blk, vhost-user-input, vhost-user-rng.
+
+
+At the best of my knowledge, VDUSE is based on a bouncing buffer
+
+mechanism which does not implement the zero-copy principle. In addition,
+
+it supports vhost-user-blk and vhost-user-net only.
+
+Kind regards,
+
+Timos
+
+
+On Tue, Apr 18, 2023 at 11:01=E2=80=AFAM Xuan Zhuo <xuanzhuo@linux.alibaba.=
+com>
+wrote:
+
+> On Thu, 13 Apr 2023 16:35:59 +0300, Timos Ampelikiotis <
+> t.ampelikiotis@virtualopensystems.com> wrote:
+> > Dear virtio-dev community,
 > >
-> > Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > ---
-> >  device-types/blk/description.tex   | 2 +-
-> >  device-types/gpio/description.tex  | 4 ++--
-> >  device-types/i2c/description.tex   | 2 +-
-> >  device-types/scsi/description.tex  | 2 +-
-> > device-types/vsock/description.tex | 2 +-
-> >  5 files changed, 6 insertions(+), 6 deletions(-)
+> > I would like to introduce you Virtio-loopback, Proof of Concept (PoC)
+> that
+> > we have been working on at Virtual Open Systems in the context of the
+> > Automotive Grade Linux community (Virtualization & Containers expert
+> > group - EG-VIRT).
 > >
->=20
-> (...)
->=20
-> > diff --git a/device-types/vsock/description.tex
-> > b/device-types/vsock/description.tex
-> > index 105bb30..07909d6 100644
-> > --- a/device-types/vsock/description.tex
-> > +++ b/device-types/vsock/description.tex
-> > @@ -218,7 +218,7 @@ \subsubsection{Buffer Space
-> > Management}\label{sec:Device Types / Socket Device /  \field{buf_alloc}=
- and
-> \field{fwd_cnt} fields.
+> > We consider this work as a PoC and we are not currently planning
+> > upstream. However, if the zero-copy or any other aspect of this work
+> > is interesting for other Virtio implementations, we would be glad to
+> > discuss more.
+>
+> What is the difference between this and vduse?
+>
+> Thanks.
+>
 > >
-> >  \subsubsection{Receive and Transmit}\label{sec:Device Types / Socket
-> > Device / Device Operation / Receive and Transmit} -The driver queues
-> > outgoing packets on the tx virtqueue and incoming packet
-> > +The driver enqueues outgoing packets on the tx virtqueue and incoming
-> > +packet
->=20
-> "queues (...) on" reads natural to me, but I'd use "to" with "enqueues"..=
-.=20
-Yes, I agree.
-The driver enqueues outgoing packets to the tx virtqueue reads better to me=
-.
-
-> can any
-> native speakers comment?
->=20
-> >  receive buffers on the rx virtqueue. Packets are of the following form=
-:
+> > Overview:
+> > ---------
 > >
-> >  \begin{lstlisting}
+> > Virtio-loopback is a new hardware abstraction layer designed for
+> > non-Hypervisor
+> > environments based on virtio. The main objective is to enable
+> applications
+> > communication with vhost-user devices in a non-hypervisor environment.
+> >
+> > More in details, Virtio-loopback's design consists of a new transport
+> > (Virtio-loopback), a user-space daemon (Adapter), and a vhost-user
+> device.
+> > The data path has been implemented using the "zero-copy" principle, whe=
+re
+> > vhost-user devices access virtqueues directly in the kernel space. This
+> > first
+> > implementation supports multi-queues, does not require virtio-protocol
+> > changes
+> > and applies minor modifications to the vhost-user library. Supported
+> > vhost-user
+> > devices are today vhost-user-rng (both rust and C version),
+> vhost-user-input
+> > and vhost-user-blk.
+> >
+> > Motivation & requirements:
+> > -------------------------
+> >
+> > 1. Enable the usage of the same user-space driver on both virtualized a=
+nd
+> >    non-virtualized environments.
+> >
+> > 2. Maximize performance with zero copy design principles
+> >
+> > 3. Applications using such drivers are unchanged and transparently
+> running
+> > in
+> >    both virtualized or non-virtualized environment.
+> >
+> > Design description:
+> > -------------------
+> >
+> > a) Component's description:
+> > --------------------------
+> >
+> > The Virtio-loopback architecture consists of three main components
+> > described below:
+> >
+> > 1) Driver: In order to route the VIRTIO communication in user-space
+> >    virtio-loopback driver was implemented and consists of:
+> >    - A new transport layer which is based on virtio-mmio and it is
+> >      responsible of routing the read/write communication of the virtio
+> >      device to the adapter binary.
+> >    - A character device which works as an intermediate layer between th=
+e
+> >      user-space components and the transport layer. The character devic=
+e
+> > helps
+> >      the adapter to provide all the required information and initialize
+> the
+> >      transport and at the same time, provides direct access to the vrin=
+gs
+> >      from user-space. The access to the vrings is based on a memory
+> mapping
+> >      mechanism which gives the ability to the vhost-user device to read
+> and
+> >      write data directly into kernel's memory without the need of any
+> copy.
+> >
+> > 2) Adapter: Implements the role that QEMU had in the corresponding
+> > virtualized
+> >    scenario. Specifically, combines the functionality of two main QEMU
+> >    components, virtio-mmio transport emulation and vhost-user backend, =
+in
+> > order
+> >    to work as a bridge between the transport and the vhost-user device.
+> The
+> > two
+> >    main parts of the adapter are:
+> >    - A vhost-user backend which is the main communication point with th=
+e
+> >      vhost-user device.
+> >    - A virtio-emulation which handles mostly the messages coming from t=
+he
+> >      driver and translates them into vhost-user messages/actions.
+> >
+> > 3) Vhost-user device: This components required only minimal
+> modifications to
+> >    make the vrings directly accessible in kernel's memory.
+> >
+> > b) Communication between the virtio-loopback components:
+> > -------------------------------------------------------
+> >
+> > After the describing the role of its component, a few details need to b=
+e
+> > given
+> > about how they interact with each other and the mechanisms used.
+> >
+> > 1) Transport & Adapter:
+> >    - The two components share a communication data structure which
+> describes
+> >      the current read/write operation requested by the transport.
+> >    - When this data structure has been filled with all the required
+> > information
+> >      the transport triggers and EventFD and waits. The adapter wakes up=
+,
+> > takes
+> >      the corresponding actions and finally notifies and unlocks the
+> > transport
+> >      by calling an IOCTL system call.
+> >    - Compared to the virtualized environment scenario, the adapter call=
+s
+> an
+> >      IOCTL system call to the driver in place of an interrupt.
+> >
+> > 2) Adapter & Vhost-user device:
+> >    - The mechanisms used between these two component are the same as in
+> >      the virtualized environment case.
+> >      a) A UNIX socket is in place to exchange any VHOST-USER messages.
+> >      b) EventFDs are being used in order to trigger VIRTIO kick/call
+> >         requests.
+> >
+> > 3) Transport & Vhost-user device:
+> >    - Since the Vrings are allocated into the Kernel's memory, vhost-use=
+r
+> >      device needs to communicate and request access from the
+> virtio-loopback
+> >      driver. These requirement is served by implementing MMAP and IOCTL
+> > system
+> >      calls in the driver.
+> >
+> > c) Vrings & Zero copy memory mapping mechanism:
+> > ----------------------------------------------
+> >
+> > The vrings are allocated by the virtio driver into the kernel's memory
+> space
+> > and in order to be accessible by the user-space, especially by the
+> > vhost-user
+> > device, a new memory mapping mechanism needed to be created into the
+> > virtio-loopback driver. The new memory mapping mechanism is based on a
+> > page-fault handler which maps the accessed pages on-demand.
+> >
+> > Known issues & room for improvement:
+> > -----------------------------------
+> >
+> > Known limitation found in the current implementation:
+> > - The memory mapping mechanism needs improvements, in the current
+> >   implementation the device can potentially access the whole kernel's
+> >   memory. A more fine grained mmapping can be set by the kernel by
+> >   narrowing down the memory block shared.
+> >
+> > Possible next development targets might be about:
+> > - Security checks for the memory shared with the user-space (vhost
+> > user-device)
+> > - Add parallel device handling for the virtio-loopback transport and
+> adapter
+> > - Add support for more vhost-user devices
+> >
+> > More information:
+> > ----------------
+> >
+> > The full description of the technology can be found in the links below:
+> > - Virtio-loopback design document
+> > <
+> https://git.virtualopensystems.com/virtio-loopback/docs/-/blob/virtio-loo=
+pback-rfc/design_docs/EG-VIRT_VOSYS_virtio_loopback_design_v1.4_2023_04_03.=
+pdf
+> >
+> > - How to test the technology
+> > <
+> https://git.virtualopensystems.com/virtio-loopback/docs/-/blob/virtio-loo=
+pback-rfc/README.md
+> >
+> >
+> > Links for all the key components of the design can be found below:
+> > 1) Virtio-loopback-transport
+> > <
+> https://git.virtualopensystems.com/virtio-loopback/loopback_driver/-/tree=
+/virtio-loopback-rfc
+> >
+> > 2) Adapter
+> > <
+> https://git.virtualopensystems.com/virtio-loopback/adapter_app/-/tree/vir=
+tio-loopback-rfc
+> >
+> > 3) Vhost-user devices in Qemu
+> > <
+> https://git.virtualopensystems.com/virtio-loopback/qemu/-/tree/virtio-loo=
+pback-rfc
+> >
+> >
+> > Virtio-loopback has been tested on RCAR-M3 board (AGL needlefish) and x=
+86
+> > systems (Fedora 37). The results have been found to be comparable with
+> VDUSE
+> > technology in virtio-blk case:
+> > - Automotive Grade Linux All Member Meeting Spring (8-9/03/2023) -
+> > Presentation
+> > <
+> https://static.sched.com/hosted_files/aglammspring2023/44/vosys_virtio-lo=
+opback-berlin_2023-03-08.pdf
+> >
+> >   + Activity done in the context of the AERO EU project (grant agreemen=
+t
+> No
+> > 101092850)
+> >
+> > Thank you for taking the time to review this PoC,
+> > I would appreciate your feedback and suggestions for improvements.
+> >
+> > Best regards,
+> > Timos Ampelikiotis
+> >
+>
 
+--0000000000004d5c4205f9b0b2cf
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+<div dir=3D"ltr"><span id=3D"gmail-docs-internal-guid-efebe2a7-7fff-a012-e3=
+38-ad19dfee3373"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;ma=
+rgin-bottom:0pt"><span style=3D"font-size:11pt;color:rgb(0,0,0);background-=
+color:transparent;font-variant-numeric:normal;font-variant-east-asian:norma=
+l;font-variant-alternates:normal;vertical-align:baseline;white-space:pre-wr=
+ap"><font face=3D"arial, sans-serif">Hello Xuan,</font></span></p><font fac=
+e=3D"arial, sans-serif"><br></font><p dir=3D"ltr" style=3D"line-height:1.38=
+;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;color:rgb(=
+0,0,0);background-color:transparent;font-variant-numeric:normal;font-varian=
+t-east-asian:normal;font-variant-alternates:normal;vertical-align:baseline;=
+white-space:pre-wrap"><font face=3D"arial, sans-serif">The main differences=
+ between virtio-loopback and vDUSE are mainly:</font></span></p><p dir=3D"l=
+tr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=
+=3D"font-size:11pt;color:rgb(0,0,0);background-color:transparent;font-varia=
+nt-numeric:normal;font-variant-east-asian:normal;font-variant-alternates:no=
+rmal;vertical-align:baseline;white-space:pre-wrap"><font face=3D"arial, san=
+s-serif">1) the data sharing mechanism</font></span></p><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font=
+-size:11pt;color:rgb(0,0,0);background-color:transparent;font-variant-numer=
+ic:normal;font-variant-east-asian:normal;font-variant-alternates:normal;ver=
+tical-align:baseline;white-space:pre-wrap"><font face=3D"arial, sans-serif"=
+>2) the Virtio/Vhost-user devices which are supported by each solution</fon=
+t></span></p><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin=
+-bottom:0pt"><span style=3D"font-size:11pt;color:rgb(0,0,0);background-colo=
+r:transparent;font-variant-numeric:normal;font-variant-east-asian:normal;fo=
+nt-variant-alternates:normal;vertical-align:baseline;white-space:pre-wrap">=
+<font face=3D"arial, sans-serif"><br></font></span></p><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-=
+size:11pt;color:rgb(0,0,0);background-color:transparent;font-variant-numeri=
+c:normal;font-variant-east-asian:normal;font-variant-alternates:normal;vert=
+ical-align:baseline;white-space:pre-wrap"><font face=3D"arial, sans-serif">=
+In particular, Virtio-loopback implements a zero-copy memory mapping</font>=
+</span></p><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-b=
+ottom:0pt"><span style=3D"font-size:11pt;color:rgb(0,0,0);background-color:=
+transparent;font-variant-numeric:normal;font-variant-east-asian:normal;font=
+-variant-alternates:normal;vertical-align:baseline;white-space:pre-wrap"><f=
+ont face=3D"arial, sans-serif">mechanism, the data are directly accessible =
+by the user-space and</font></span></p><p dir=3D"ltr" style=3D"line-height:=
+1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;color:=
+rgb(0,0,0);background-color:transparent;font-variant-numeric:normal;font-va=
+riant-east-asian:normal;font-variant-alternates:normal;vertical-align:basel=
+ine;white-space:pre-wrap"><font face=3D"arial, sans-serif">supports vhost-u=
+ser-blk, vhost-user-input, vhost-user-rng.</font></span></p><p dir=3D"ltr" =
+style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"=
+font-size:11pt;color:rgb(0,0,0);background-color:transparent;font-variant-n=
+umeric:normal;font-variant-east-asian:normal;font-variant-alternates:normal=
+;vertical-align:baseline;white-space:pre-wrap"><font face=3D"arial, sans-se=
+rif"><br></font></span></p><p dir=3D"ltr" style=3D"line-height:1.38;margin-=
+top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;color:rgb(0,0,0);b=
+ackground-color:transparent;font-variant-numeric:normal;font-variant-east-a=
+sian:normal;font-variant-alternates:normal;vertical-align:baseline;white-sp=
+ace:pre-wrap"><font face=3D"arial, sans-serif">At the best of my knowledge,=
+ VDUSE is based on a bouncing buffer</font></span></p><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-=
+size:11pt;color:rgb(0,0,0);background-color:transparent;font-variant-numeri=
+c:normal;font-variant-east-asian:normal;font-variant-alternates:normal;vert=
+ical-align:baseline;white-space:pre-wrap"><font face=3D"arial, sans-serif">=
+mechanism which does not implement the zero-copy principle. In addition,</f=
+ont></span></p><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;marg=
+in-bottom:0pt"><span style=3D"font-size:11pt;color:rgb(0,0,0);background-co=
+lor:transparent;font-variant-numeric:normal;font-variant-east-asian:normal;=
+font-variant-alternates:normal;vertical-align:baseline;white-space:pre-wrap=
+"><font face=3D"arial, sans-serif">it supports vhost-user-blk and vhost-use=
+r-net only.</font></span></p><font face=3D"arial, sans-serif"><br></font><p=
+ dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><s=
+pan style=3D"font-size:11pt;color:rgb(0,0,0);background-color:transparent;f=
+ont-variant-numeric:normal;font-variant-east-asian:normal;font-variant-alte=
+rnates:normal;vertical-align:baseline;white-space:pre-wrap"><font face=3D"a=
+rial, sans-serif">Kind regards,</font></span></p><p dir=3D"ltr" style=3D"li=
+ne-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:1=
+1pt;color:rgb(0,0,0);background-color:transparent;font-variant-numeric:norm=
+al;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-a=
+lign:baseline;white-space:pre-wrap"><font face=3D"arial, sans-serif">Timos<=
+/font></span></p></span><br class=3D"gmail-Apple-interchange-newline"></div=
+><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Tu=
+e, Apr 18, 2023 at 11:01=E2=80=AFAM Xuan Zhuo &lt;<a href=3D"mailto:xuanzhu=
+o@linux.alibaba.com">xuanzhuo@linux.alibaba.com</a>&gt; wrote:<br></div><bl=
+ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
+t:1px solid rgb(204,204,204);padding-left:1ex">On Thu, 13 Apr 2023 16:35:59=
+ +0300, Timos Ampelikiotis &lt;<a href=3D"mailto:t.ampelikiotis@virtualopen=
+systems.com" target=3D"_blank">t.ampelikiotis@virtualopensystems.com</a>&gt=
+; wrote:<br>
+&gt; Dear virtio-dev community,<br>
+&gt;<br>
+&gt; I would like to introduce you Virtio-loopback, Proof of Concept (PoC) =
+that<br>
+&gt; we have been working on at Virtual Open Systems in the context of the<=
+br>
+&gt; Automotive Grade Linux community (Virtualization &amp; Containers expe=
+rt<br>
+&gt; group - EG-VIRT).<br>
+&gt;<br>
+&gt; We consider this work as a PoC and we are not currently planning<br>
+&gt; upstream. However, if the zero-copy or any other aspect of this work<b=
+r>
+&gt; is interesting for other Virtio implementations, we would be glad to<b=
+r>
+&gt; discuss more.<br>
+<br>
+What is the difference between this and vduse?<br>
+<br>
+Thanks.<br>
+<br>
+&gt;<br>
+&gt; Overview:<br>
+&gt; ---------<br>
+&gt;<br>
+&gt; Virtio-loopback is a new hardware abstraction layer designed for<br>
+&gt; non-Hypervisor<br>
+&gt; environments based on virtio. The main objective is to enable applicat=
+ions<br>
+&gt; communication with vhost-user devices in a non-hypervisor environment.=
+<br>
+&gt;<br>
+&gt; More in details, Virtio-loopback&#39;s design consists of a new transp=
+ort<br>
+&gt; (Virtio-loopback), a user-space daemon (Adapter), and a vhost-user dev=
+ice.<br>
+&gt; The data path has been implemented using the &quot;zero-copy&quot; pri=
+nciple, where<br>
+&gt; vhost-user devices access virtqueues directly in the kernel space. Thi=
+s<br>
+&gt; first<br>
+&gt; implementation supports multi-queues, does not require virtio-protocol=
+<br>
+&gt; changes<br>
+&gt; and applies minor modifications to the vhost-user library. Supported<b=
+r>
+&gt; vhost-user<br>
+&gt; devices are today vhost-user-rng (both rust and C version), vhost-user=
+-input<br>
+&gt; and vhost-user-blk.<br>
+&gt;<br>
+&gt; Motivation &amp; requirements:<br>
+&gt; -------------------------<br>
+&gt;<br>
+&gt; 1. Enable the usage of the same user-space driver on both virtualized =
+and<br>
+&gt;=C2=A0 =C2=A0 non-virtualized environments.<br>
+&gt;<br>
+&gt; 2. Maximize performance with zero copy design principles<br>
+&gt;<br>
+&gt; 3. Applications using such drivers are unchanged and transparently run=
+ning<br>
+&gt; in<br>
+&gt;=C2=A0 =C2=A0 both virtualized or non-virtualized environment.<br>
+&gt;<br>
+&gt; Design description:<br>
+&gt; -------------------<br>
+&gt;<br>
+&gt; a) Component&#39;s description:<br>
+&gt; --------------------------<br>
+&gt;<br>
+&gt; The Virtio-loopback architecture consists of three main components<br>
+&gt; described below:<br>
+&gt;<br>
+&gt; 1) Driver: In order to route the VIRTIO communication in user-space<br=
+>
+&gt;=C2=A0 =C2=A0 virtio-loopback driver was implemented and consists of:<b=
+r>
+&gt;=C2=A0 =C2=A0 - A new transport layer which is based on virtio-mmio and=
+ it is<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 responsible of routing the read/write communicatio=
+n of the virtio<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 device to the adapter binary.<br>
+&gt;=C2=A0 =C2=A0 - A character device which works as an intermediate layer=
+ between the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 user-space components and the transport layer. The=
+ character device<br>
+&gt; helps<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 the adapter to provide all the required informatio=
+n and initialize the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 transport and at the same time, provides direct ac=
+cess to the vrings<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 from user-space. The access to the vrings is based=
+ on a memory mapping<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 mechanism which gives the ability to the vhost-use=
+r device to read and<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 write data directly into kernel&#39;s memory witho=
+ut the need of any copy.<br>
+&gt;<br>
+&gt; 2) Adapter: Implements the role that QEMU had in the corresponding<br>
+&gt; virtualized<br>
+&gt;=C2=A0 =C2=A0 scenario. Specifically, combines the functionality of two=
+ main QEMU<br>
+&gt;=C2=A0 =C2=A0 components, virtio-mmio transport emulation and vhost-use=
+r backend, in<br>
+&gt; order<br>
+&gt;=C2=A0 =C2=A0 to work as a bridge between the transport and the vhost-u=
+ser device. The<br>
+&gt; two<br>
+&gt;=C2=A0 =C2=A0 main parts of the adapter are:<br>
+&gt;=C2=A0 =C2=A0 - A vhost-user backend which is the main communication po=
+int with the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 vhost-user device.<br>
+&gt;=C2=A0 =C2=A0 - A virtio-emulation which handles mostly the messages co=
+ming from the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 driver and translates them into vhost-user message=
+s/actions.<br>
+&gt;<br>
+&gt; 3) Vhost-user device: This components required only minimal modificati=
+ons to<br>
+&gt;=C2=A0 =C2=A0 make the vrings directly accessible in kernel&#39;s memor=
+y.<br>
+&gt;<br>
+&gt; b) Communication between the virtio-loopback components:<br>
+&gt; -------------------------------------------------------<br>
+&gt;<br>
+&gt; After the describing the role of its component, a few details need to =
+be<br>
+&gt; given<br>
+&gt; about how they interact with each other and the mechanisms used.<br>
+&gt;<br>
+&gt; 1) Transport &amp; Adapter:<br>
+&gt;=C2=A0 =C2=A0 - The two components share a communication data structure=
+ which describes<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 the current read/write operation requested by the =
+transport.<br>
+&gt;=C2=A0 =C2=A0 - When this data structure has been filled with all the r=
+equired<br>
+&gt; information<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 the transport triggers and EventFD and waits. The =
+adapter wakes up,<br>
+&gt; takes<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 the corresponding actions and finally notifies and=
+ unlocks the<br>
+&gt; transport<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 by calling an IOCTL system call.<br>
+&gt;=C2=A0 =C2=A0 - Compared to the virtualized environment scenario, the a=
+dapter calls an<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 IOCTL system call to the driver in place of an int=
+errupt.<br>
+&gt;<br>
+&gt; 2) Adapter &amp; Vhost-user device:<br>
+&gt;=C2=A0 =C2=A0 - The mechanisms used between these two component are the=
+ same as in<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 the virtualized environment case.<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 a) A UNIX socket is in place to exchange any VHOST=
+-USER messages.<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 b) EventFDs are being used in order to trigger VIR=
+TIO kick/call<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0requests.<br>
+&gt;<br>
+&gt; 3) Transport &amp; Vhost-user device:<br>
+&gt;=C2=A0 =C2=A0 - Since the Vrings are allocated into the Kernel&#39;s me=
+mory, vhost-user<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 device needs to communicate and request access fro=
+m the virtio-loopback<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 driver. These requirement is served by implementin=
+g MMAP and IOCTL<br>
+&gt; system<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 calls in the driver.<br>
+&gt;<br>
+&gt; c) Vrings &amp; Zero copy memory mapping mechanism:<br>
+&gt; ----------------------------------------------<br>
+&gt;<br>
+&gt; The vrings are allocated by the virtio driver into the kernel&#39;s me=
+mory space<br>
+&gt; and in order to be accessible by the user-space, especially by the<br>
+&gt; vhost-user<br>
+&gt; device, a new memory mapping mechanism needed to be created into the<b=
+r>
+&gt; virtio-loopback driver. The new memory mapping mechanism is based on a=
+<br>
+&gt; page-fault handler which maps the accessed pages on-demand.<br>
+&gt;<br>
+&gt; Known issues &amp; room for improvement:<br>
+&gt; -----------------------------------<br>
+&gt;<br>
+&gt; Known limitation found in the current implementation:<br>
+&gt; - The memory mapping mechanism needs improvements, in the current<br>
+&gt;=C2=A0 =C2=A0implementation the device can potentially access the whole=
+ kernel&#39;s<br>
+&gt;=C2=A0 =C2=A0memory. A more fine grained mmapping can be set by the ker=
+nel by<br>
+&gt;=C2=A0 =C2=A0narrowing down the memory block shared.<br>
+&gt;<br>
+&gt; Possible next development targets might be about:<br>
+&gt; - Security checks for the memory shared with the user-space (vhost<br>
+&gt; user-device)<br>
+&gt; - Add parallel device handling for the virtio-loopback transport and a=
+dapter<br>
+&gt; - Add support for more vhost-user devices<br>
+&gt;<br>
+&gt; More information:<br>
+&gt; ----------------<br>
+&gt;<br>
+&gt; The full description of the technology can be found in the links below=
+:<br>
+&gt; - Virtio-loopback design document<br>
+&gt; &lt;<a href=3D"https://git.virtualopensystems.com/virtio-loopback/docs=
+/-/blob/virtio-loopback-rfc/design_docs/EG-VIRT_VOSYS_virtio_loopback_desig=
+n_v1.4_2023_04_03.pdf" rel=3D"noreferrer" target=3D"_blank">https://git.vir=
+tualopensystems.com/virtio-loopback/docs/-/blob/virtio-loopback-rfc/design_=
+docs/EG-VIRT_VOSYS_virtio_loopback_design_v1.4_2023_04_03.pdf</a>&gt;<br>
+&gt; - How to test the technology<br>
+&gt; &lt;<a href=3D"https://git.virtualopensystems.com/virtio-loopback/docs=
+/-/blob/virtio-loopback-rfc/README.md" rel=3D"noreferrer" target=3D"_blank"=
+>https://git.virtualopensystems.com/virtio-loopback/docs/-/blob/virtio-loop=
+back-rfc/README.md</a>&gt;<br>
+&gt;<br>
+&gt; Links for all the key components of the design can be found below:<br>
+&gt; 1) Virtio-loopback-transport<br>
+&gt; &lt;<a href=3D"https://git.virtualopensystems.com/virtio-loopback/loop=
+back_driver/-/tree/virtio-loopback-rfc" rel=3D"noreferrer" target=3D"_blank=
+">https://git.virtualopensystems.com/virtio-loopback/loopback_driver/-/tree=
+/virtio-loopback-rfc</a>&gt;<br>
+&gt; 2) Adapter<br>
+&gt; &lt;<a href=3D"https://git.virtualopensystems.com/virtio-loopback/adap=
+ter_app/-/tree/virtio-loopback-rfc" rel=3D"noreferrer" target=3D"_blank">ht=
+tps://git.virtualopensystems.com/virtio-loopback/adapter_app/-/tree/virtio-=
+loopback-rfc</a>&gt;<br>
+&gt; 3) Vhost-user devices in Qemu<br>
+&gt; &lt;<a href=3D"https://git.virtualopensystems.com/virtio-loopback/qemu=
+/-/tree/virtio-loopback-rfc" rel=3D"noreferrer" target=3D"_blank">https://g=
+it.virtualopensystems.com/virtio-loopback/qemu/-/tree/virtio-loopback-rfc</=
+a>&gt;<br>
+&gt;<br>
+&gt; Virtio-loopback has been tested on RCAR-M3 board (AGL needlefish) and =
+x86<br>
+&gt; systems (Fedora 37). The results have been found to be comparable with=
+ VDUSE<br>
+&gt; technology in virtio-blk case:<br>
+&gt; - Automotive Grade Linux All Member Meeting Spring (8-9/03/2023) -<br>
+&gt; Presentation<br>
+&gt; &lt;<a href=3D"https://static.sched.com/hosted_files/aglammspring2023/=
+44/vosys_virtio-loopback-berlin_2023-03-08.pdf" rel=3D"noreferrer" target=
+=3D"_blank">https://static.sched.com/hosted_files/aglammspring2023/44/vosys=
+_virtio-loopback-berlin_2023-03-08.pdf</a>&gt;<br>
+&gt;=C2=A0 =C2=A0+ Activity done in the context of the AERO EU project (gra=
+nt agreement No<br>
+&gt; 101092850)<br>
+&gt;<br>
+&gt; Thank you for taking the time to review this PoC,<br>
+&gt; I would appreciate your feedback and suggestions for improvements.<br>
+&gt;<br>
+&gt; Best regards,<br>
+&gt; Timos Ampelikiotis<br>
+&gt;<br>
+</blockquote></div>
 
+--0000000000004d5c4205f9b0b2cf--
