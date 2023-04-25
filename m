@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12397-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12398-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1B00EC77B61
-	for <virtio-dev@archiver.kernel.org>; Tue, 25 Apr 2023 06:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 79B45C6FD18
+	for <virtio-dev@archiver.kernel.org>; Tue, 25 Apr 2023 06:31:15 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4D17129FD2
-	for <virtio-dev@archiver.kernel.org>; Tue, 25 Apr 2023 06:20:35 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8E2393E306
+	for <virtio-dev@archiver.kernel.org>; Tue, 25 Apr 2023 06:31:14 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3FB7F98644E
-	for <virtio-dev@archiver.kernel.org>; Tue, 25 Apr 2023 06:20:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 76DA498643E
+	for <virtio-dev@archiver.kernel.org>; Tue, 25 Apr 2023 06:31:14 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 334739863D7; Tue, 25 Apr 2023 06:20:35 +0000 (UTC)
+	id 5D95A983FEA; Tue, 25 Apr 2023 06:31:14 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,281 +24,192 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 178B9986411
-	for <virtio-dev@lists.oasis-open.org>; Tue, 25 Apr 2023 06:20:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4AF009863D7
+	for <virtio-dev@lists.oasis-open.org>; Tue, 25 Apr 2023 06:31:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: oVTKAnyeP8mCGPW8o0G8uA-1
+X-MC-Unique: c9ABWIpBO8yuoyU_GVpgpw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682403608; x=1684995608;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pqBeHguuwW7PXihIGiy2PWo40JUXji1VJaKA79r7toE=;
-        b=hNX2zrf1YCIZ5m6hKz3VTANzCK78XZaDgeJy7oJ3mrS2yjeTvIUfzT261XzKAHAJUR
-         SdzjksKaky3Ye3dgUCrsiQA/rsyGOaxVjYh5Y3DbHdB0kkXizF7ZQYKIcnqhbAKO87bf
-         DO6itMAb9ZtTj9YJOkQedtyRJjS0fyhQ+MR2YRvI0GIKA6r2QNv3SSsTwr8sFCADmkSe
-         WDIq4Clw609PSqQ6QoqfkaX/9b966x848SmtuC9bOPYD3MJm6FzsLCMyZnKmcQvaLPfx
-         7drbLouO8Wc+DiGDxBxaCrPVsQjD2HG6acikO8SHlkvq3elgqhT7FLYaYCCWICPLkjo2
-         TLpA==
-X-Gm-Message-State: AAQBX9flAcvJNFZ1VZkJ6e2wRAi6S/LoHoU1NpPRegTP17hCawvy4n4g
-	Jiw6EI5ZPYT1fCYiaMv3KVIYHKX9RlAip3XcYyLPidzboPg6c70nRLuXCS1eIo+6LUrXd8ECt2u
-	4Tb4Ghvo3hp0iUr7i58nmPbbwqmtK
-X-Received: by 2002:adf:ce0c:0:b0:2f2:1fb6:7b0c with SMTP id p12-20020adfce0c000000b002f21fb67b0cmr11083660wrn.49.1682403607897;
-        Mon, 24 Apr 2023 23:20:07 -0700 (PDT)
-X-Google-Smtp-Source: AKy350a4GlFDL33t/x5sWfnuGL8/9uadJe0QplHqhh3EmeBMFRY3uIZ/J6VIjSOJWQZUvemgCM9bfw==
-X-Received: by 2002:adf:ce0c:0:b0:2f2:1fb6:7b0c with SMTP id p12-20020adfce0c000000b002f21fb67b0cmr11083632wrn.49.1682403607514;
-        Mon, 24 Apr 2023 23:20:07 -0700 (PDT)
-Date: Tue, 25 Apr 2023 02:20:02 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	jasowang@redhat.com, cohuck@redhat.com, sgarzare@redhat.com,
-	stefanha@redhat.com, nrupal.jani@intel.com, Piotr.Uminski@intel.com,
-	hang.yuan@intel.com, virtio@lists.oasis-open.org,
-	Jiri Pirko <jiri@nvidia.com>, Zhu Lingshan <lingshan.zhu@intel.com>,
-	pasic@linux.ibm.com, Shahaf Shuler <shahafs@nvidia.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <20230425020925-mutt-send-email-mst@kernel.org>
-References: <cover.1682354275.git.mst@redhat.com>
- <79c27bca6f72e4ea5d1d0e3a6b1a54369b03fb30.1682354275.git.mst@redhat.com>
- <e9256f17-f9ab-de6d-0377-d9fc210a7cc0@nvidia.com>
+        d=1e100.net; s=20221208; t=1682404270; x=1684996270;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=J8G5N+ME00TdEJpQRiOhYGKKvH6zxeIAIRDCvlVSA5Q=;
+        b=MCgxGyBljJOQXpmpjEI5g5WnlS00IBwGfnbCxaLJ3XNHv5Pfkqiuw0TnxlmpNP6ywd
+         LT32tu56XOawlX9N3VPBRXmDACfe03lGLGy8UUP1v96sRXwJrp8S1Yj76G38x0KAqwbH
+         ZBPyYRe9QfG9TFZDHRxNyfeHHAWPyPV9ekofe+2+o47luIapIXy2rmiTVSfw3kohRaE+
+         kvjhVkWE4NwhzOimE2Jy7JCPB3566QnhEgafxtfMC0Hmj44M1EKHeoGJ3FwmTHHfsDXz
+         kFTuMjDHHPiDFLwi0x82oE6fM9fMSpAfENnlpz1+i5n/oVchaBBET+ChDjGoOaGMdjTk
+         h33A==
+X-Gm-Message-State: AAQBX9dzdzBIZ1Aatabs51kU6OGHci6vBAEpBSMQzvUgJ/1J5pHa/yeh
+	gZjq8dNGvmKDGE80wW2qRfTDJgTw/0+wHNabZRbH+Xtjq54UoPPGKR0hfxU4dW9TF+vyEYBUuii
+	SSFFOfRvg4XmXFV3Xd4fbrGu7EV+s
+X-Received: by 2002:a17:902:e543:b0:1a1:ca4d:120a with SMTP id n3-20020a170902e54300b001a1ca4d120amr24711600plf.7.1682404270501;
+        Mon, 24 Apr 2023 23:31:10 -0700 (PDT)
+X-Google-Smtp-Source: AKy350Z38kCYEeYn3DGkVEhSQCxFiF0sMj0/cOG9gBy8bo3vQHksMoOhZKXw6kNnTIvBS4G/3P6ifA==
+X-Received: by 2002:a17:902:e543:b0:1a1:ca4d:120a with SMTP id n3-20020a170902e54300b001a1ca4d120amr24711587plf.7.1682404270156;
+        Mon, 24 Apr 2023 23:31:10 -0700 (PDT)
+Message-ID: <d1e62181-894c-25bb-3546-16a4f92beeb0@redhat.com>
+Date: Tue, 25 Apr 2023 14:31:04 +0800
 MIME-Version: 1.0
-In-Reply-To: <e9256f17-f9ab-de6d-0377-d9fc210a7cc0@nvidia.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+To: Parav Pandit <parav@nvidia.com>, zhenwei pi <pizhenwei@bytedance.com>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Cornelia Huck
+ <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>, houp@yusur.tech
+References: <1ab0beff-8b18-7a94-1a68-6bf36bcd0394@bytedance.com>
+ <CACGkMEvh+G2Tm=WDTOK3K2GO8c2dQ4y=UiKAk_kvsid2MGzbGg@mail.gmail.com>
+ <8f65c9aa-c867-0929-151c-21bbe25a0693@bytedance.com>
+ <4150bd72-a358-c854-0c64-b149621a1b8d@nvidia.com>
+From: Jason Wang <jasowang@redhat.com>
+In-Reply-To: <4150bd72-a358-c854-0c64-b149621a1b8d@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v12 03/10] admin: introduce group administration commands
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] [PROPOSAL] Virtio Over Fabrics(TCP/RDMA)
 
-On Mon, Apr 24, 2023 at 06:07:12PM -0400, Parav Pandit wrote:
-> 
-> 
-> On 4/24/2023 12:44 PM, Michael S. Tsirkin wrote:
-> > This introduces a general structure for group administration commands,
-> > used to control device groups through their owner.
-> > 
-> > Following patches will introduce specific commands and an interface for
-> > submitting these commands to the owner.
-> > 
-> > Note that the commands are focused on controlling device groups:
-> > this is why group related fields are in the generic part of
-> > the structure.
-> 
-> Below paragraph is no longer applies as we already discussed more use cases
-> of the AQ such as accessing the PCI VF's legacy config space registers.
-> Please drop below paragraph.
 
-Look - at one point you want commit log to record design process,
-an another you turn around and ask me to drop it.
-I feel like keeping this around frankly. Maybe I will add
-a sentence or two along the lines of "Note that nothing limits us from
-extending this down the road though - but let's focus
-on what we already know for now".
+在 2023/4/25 13:03, Parav Pandit 写道:
+>
+>
+> On 4/24/2023 9:38 AM, zhenwei pi wrote:
+>>
+>>
+>>  From the point of my view, there are 3 cases:
+>> 1, Host/container scenario. For example, host kernel connects a 
+>> virtio target block service, maps it as a vdx(virtio-blk) device(used 
+>> by Map-Reduce service which needs a fast/large size disk). The host 
+>> kernel also connects a virtio target crypto service, maps it as 
+>> virtio crypto device(used by nginx to accelarate HTTPS). And so on.
+>>
+>>          +----------+    +----------+       +----------+
+>>          |Map-Reduce|    |   nginx  |  ...  | processes|
+>>          +----------+    +----------+       +----------+
+>> ------------------------------------------------------------
+>> Host         |               |                  |
+>> Kernel   +-------+       +-------+          +-------+
+>>           | ext4  |       | LKCF  |          | HWRNG |
+>>           +-------+       +-------+          +-------+
+>>               |               |                  |
+>>           +-------+       +-------+          +-------+
+>>           |  vdx  |       |vCrypto|          | vRNG  |
+>>           +-------+       +-------+          +-------+
+>>               |               |                  |
+>>               |           +--------+             |
+>>               +---------->|TCP/RDMA|<------------+
+>>                           +--------+
+>>                               |
+>>                           +------+
+>>                           |NIC/IB|
+>>                           +------+
+>>                               | +-------------+
+>>                               +--------------------->|virtio target|
+>> +-------------+
+>>
+>> 2, Typical virtualization environment. The workloads run in a guest, 
+>> and QEMU handles virtio-pci(or MMIO), and forwards requests to target.
+>>          +----------+    +----------+       +----------+
+>>          |Map-Reduce|    |   nginx  |  ...  | processes|
+>>          +----------+    +----------+       +----------+
+>> ------------------------------------------------------------
+>> Guest        |               |                  |
+>> Kernel   +-------+       +-------+          +-------+
+>>           | ext4  |       | LKCF  |          | HWRNG |
+>>           +-------+       +-------+          +-------+
+>>               |               |                  |
+>>           +-------+       +-------+          +-------+
+>>           |  vdx  |       |vCrypto|          | vRNG  |
+>>           +-------+       +-------+          +-------+
+>>               |               |                  |
+>> PCI --------------------------------------------------------
+>>                               |
+>> QEMU                 +--------------+
+>>                       |virtio backend|
+>>                       +--------------+
+>>                               |
+>>                           +------+
+>>                           |NIC/IB|
+>>                           +------+
+>>                               | +-------------+
+>>                               +--------------------->|virtio target|
+>> +-------------+
+>>
+> Example #3 enables to implement virtio backend over fabrics initiator 
+> in the user space, which is also a good use case.
+> It can be also be done in non native virtio backend.
+> More below.
+>
+>> 3, SmartNIC/DPU/vDPA environment. It's possible to convert virtio-pci 
+>> request to virtio-of request by hardware, and forward request to 
+>> virtio target directly.
+>>          +----------+    +----------+       +----------+
+>>          |Map-Reduce|    |   nginx  |  ...  | processes|
+>>          +----------+    +----------+       +----------+
+>> ------------------------------------------------------------
+>> Host         |               |                  |
+>> Kernel   +-------+       +-------+          +-------+
+>>           | ext4  |       | LKCF  |          | HWRNG |
+>>           +-------+       +-------+          +-------+
+>>               |               |                  |
+>>           +-------+       +-------+          +-------+
+>>           |  vdx  |       |vCrypto|          | vRNG  |
+>>           +-------+       +-------+          +-------+
+>>               |               |                  |
+>> PCI --------------------------------------------------------
+>>                               |
+>> SmartNIC             +---------------+
+>>                       |virtio HW queue|
+>>                       +---------------+
+>>                               |
+>>                           +------+
+>>                           |NIC/IB|
+>>                           +------+
+>>                               | +-------------+
+>>                               +--------------------->|virtio target|
+>> +-------------+
+>>
+> All 3 seems a valid use cases.
+>
+> Use case 1 and 2 can be achieved directly without involving any 
+> mediation layer or any other translation layer (for example virtio to 
+> nfs).
 
-This extreme focus on commit log is poinless anyway - it makes
-much more sense for code since commit log describes the
-change in english. Here the whole change is english anyway.
 
-> > Without this the admin vq would become a "whatever" vq which does not do
-> > anything specific at all, just a general transport like thing.
-> > I feel going this way opens the design space to the point where
-> > we no longer know what belongs in e.g. config space
-> > what in the control q and what in the admin q.
-> > As it is, whatever deals with groups is in the admin q; other
-> > things not in the admin q.
-> > 
-> 
-> A PF can use same or different AQ with a new struct
-> virtio_legacy_register_access with a different opcode range.
+Not for at least use case 2? It said it has a virtio backend in Qemu. Or 
+the only possible way is to have virtio of in the guest.
 
-We'll get to that bridge and we'll cross it, the proposal is not
-on list even yet. I actually think that yes, you need
-it in a separate function. If PF is passed through to guest
-then PF can not also safely DMA into host memory.
-Alternatively, we could use an MMIO based mechanism for
-admin commands. And maybe that would be a good fit.
+Thanks
 
-> AQ doesn't replace the control vq, so that part description is fine.
-> 
-> > There are specific exceptions such as query but that's an exception that
-> > proves the rule ;)
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> > Reviewed-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> > ---
-> > 
-> > changes since v11:
-> > 	acks by Stefan and Lingshan
-> > 
-> > changes since v10:
-> > 	explain the role of status vs status_qualifier, addresses
-> > 		multiple comments
-> > 	add more status values and appropriate qualifiers,
-> > 		as suggested by Parav
-> > 	clarify reserved command opcodes as suggested by Stefan
-> > 	better formatting for ranges, comment by Jiri
-> > 	make sure command-specific-data is a multiple of qword,
-> > 	so things are aligned, suggested by Jiri
-> > 	add Q_OK qualifier for success
-> > ---
-> >   admin.tex        | 121 +++++++++++++++++++++++++++++++++++++++++++++++
-> >   introduction.tex |   3 ++
-> >   2 files changed, 124 insertions(+)
-> > 
-> > diff --git a/admin.tex b/admin.tex
-> > index 05d506a..d6042e4 100644
-> > --- a/admin.tex
-> > +++ b/admin.tex
-> > @@ -60,4 +60,125 @@ \section{Device groups}\label{sec:Basic Facilities of a Virtio Device / Device g
-> >   PCI transport (see \ref{sec:Virtio Transport Options / Virtio Over PCI Bus}).
-> >   \end{description}
-> > +\subsection{Group administration commands}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group administration commands}
-> > +The driver sends group administration commands to the owner device of
-> > +a group to control member devices of the group.
-> > +This mechanism can
-> > +be used, for example, to configure a member device before it is
-> > +initialized by its driver.
-> > +\footnote{The term "administration" is intended to be interpreted
-> > +widely to include any kind of control. See specific commands
-> > +for detail.}
-> > +
-> > +All the group administration commands are of the following form:
-> > +
-> > +\begin{lstlisting}
-> > +struct virtio_admin_cmd {
-> > +        /* Device-readable part */
-> > +        le16 opcode;
-> > +        /*
-> > +         * 1       - SR-IOV
-> > +         * 2-65535 - reserved
-> > +         */
-> > +        le16 group_type;
-> > +        /* unused, reserved for future extensions */
-> > +        u8 reserved1[12];
-> > +        le64 group_member_id;
-> > +        le64 command_specific_data[];
-> > +
-> > +        /* Device-writable part */
-> > +        le16 status;
-> > +        le16 status_qualifier;
-> > +        /* unused, reserved for future extensions */
-> > +        u8 reserved2[4];
-> > +        u8 command_specific_result[];
-> > +};
-> > +\end{lstlisting}
-> > +
-> > +For all commands, \field{opcode}, \field{group_type} and if
-> > +necessary \field{group_member_id} and \field{command_specific_data} are
-> > +set by the driver, and the owner device sets \field{status} and if
-> > +needed \field{status_qualifier} and
-> > +\field{command_specific_result}.
-> > +
-> > +Generally, any unused device-readable fields are set to zero by the driver
-> > +and ignored by the device.  Any unused device-writeable fields are set to zero
-> > +by the device and ignored by the driver.
-> > +
-> > +\field{opcode} specifies the command. The valid
-> > +values for \field{opcode} can be found in the following table:
-> > +
-> > +\begin{tabular}{|l|l|}
-> > +\hline
-> > +opcode & Name & Command Description \\
-> > +\hline \hline
-> > +0x0000 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
-> > +\hline
-> > +0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
-> > +\hline
-> > +\end{tabular}
-> > +
-> > +The \field{group_type} specifies the group type identifier.
-> > +The \field{group_member_id} specifies the member identifier within the group.
-> > +See section \ref{sec:Introduction / Terminology / Device group}
-> > +for the definition of the group type identifier and group member
-> > +identifier.
-> > +
-> > +The \field{status} describes the command result and possibly
-> > +failure reason at an abstract level, this is appropriate for
-> > +forwarding to applications. The \field{status_qualifier} describes
-> > +failures at a low virtio specific level, as appropriate for debugging.
-> > +The following table describes possible \field{status} values;
-> > +to simplify common implementations, they are intentionally
-> > +matching common \hyperref[intro:errno]{Linux error names and numbers}:
-> > +
-> > +\begin{tabular}{|l|l|l|}
-> > +\hline
-> > +Status (decimal) & Name & Description \\
-> > +\hline \hline
-> > +00   & VIRTIO_ADMIN_STATUS_OK    & successful completion  \\
-> > +\hline
-> > +11   & VIRTIO_ADMIN_STATUS_EAGAIN    & try again \\
-> > +\hline
-> > +12   & VIRTIO_ADMIN_STATUS_ENOMEM    & insufficient resources \\
-> > +\hline
-> > +22   & VIRTIO_ADMIN_STATUS_EINVAL    & invalid command \\
-> > +\hline
-> > +other   & -    & group administration command error  \\
-> > +\hline
-> > +\end{tabular}
-> > +
-> > +When \field{status} is VIRTIO_ADMIN_STATUS_OK, \field{status_qualifier}
-> > +is reserved and set to zero by the device.
-> > +
-> > +The following table describes possible \field{status_qualifier} values:
-> > +\begin{tabular}{|l|l|l|}
-> > +\hline
-> > +Status & Name & Description \\
-> > +\hline \hline
-> > +0x00   & VIRTIO_ADMIN_STATUS_Q_OK               & used with VIRTIO_ADMIN_STATUS_OK  \\
-> > +\hline
-> > +0x01   & VIRTIO_ADMIN_STATUS_Q_INVALID_COMMAND  & command error: no additional information  \\
-> > +\hline
-> > +0x02   & VIRTIO_ADMIN_STATUS_Q_INVALID_OPCODE   & unsupported or invalid \field{opcode}  \\
-> > +\hline
-> > +0x03   & VIRTIO_ADMIN_STATUS_Q_INVALID_FIELD    & unsupported or invalid field within \field{command_specific_data}  \\
-> > +\hline
-> > +0x04   & VIRTIO_ADMIN_STATUS_Q_INVALID_GROUP    & unsupported or invalid \field{group_type} \\
-> > +\hline
-> > +0x05   & VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER   & unsupported or invalid \field{group_member_id} \\
-> > +\hline
-> > +0x06   & VIRTIO_ADMIN_STATUS_Q_NORESOURCE       & out of internal resources: ok to retry \\
-> > +\hline
-> > +0x07   & VIRTIO_ADMIN_STATUS_Q_TRYAGAIN         & command blocks for too long: should retry \\
-> > +\hline
-> > +0x08-0xFFFF   & -    & reserved for future use \\
-> > +\hline
-> > +\end{tabular}
-> > +
-> > +Each command uses a different \field{command_specific_data} and
-> > +\field{command_specific_result} structures and the length of
-> > +\field{command_specific_data} and \field{command_specific_result}
-> > +depends on these structures and is described separately or is
-> > +implicit in the structure description.
-> > diff --git a/introduction.tex b/introduction.tex
-> > index 287c5fc..b7155bf 100644
-> > --- a/introduction.tex
-> > +++ b/introduction.tex
-> > @@ -68,6 +68,9 @@ \section{Normative References}\label{sec:Normative References}
-> >   	\phantomsection\label{intro:FUSE}\textbf{[FUSE]} &
-> >   	Linux FUSE interface,
-> >   	\newline\url{https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/fuse.h}\\
-> > +	\phantomsection\label{intro:errno}\textbf{[errno]} &
-> > +	Linux error names and numbers,
-> > +	\newline\url{https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/asm-generic/errno-base.h}\\
-> Thanks for fixing this link. Missing in commit log changes for v12.
 
-Sorry.
-
-> Hopefully after b4 integration, this will be smooth.
-
-not sure what that has to do with it.
-
-> >           \phantomsection\label{intro:eMMC}\textbf{[eMMC]} &
-> >           eMMC Electrical Standard (5.1), JESD84-B51,
-> >           \newline\url{http://www.jedec.org/sites/default/files/docs/JESD84-B51.pdf}\\
-> 
-> Other than commit log change,
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Many blk and file protocols outside of the virtio already exists which 
+> achieve this. I don't see virtio being any different to support this 
+> in native manner, mainly the blk, fs, crypto device.
+>
+> use case #3 brings additional a benefits at the same time different 
+> complexity but sure #3 is also a valid and common use case in our 
+> experiences.
+>
+> In my experience working with FC, iSCSI, FCoE, NVMe RDMA fabrics, iSER,
+> A virito fabrics needs a lot of work to reach the scale, resiliency 
+> and lastly the security. (step by step...)
+>
+> My humble suggestion is : pick one transport instead of all at once, 
+> rdma being most performant probably the first candidate to see the 
+> perf gain for use case #1 and #2 from remote system.
+>
+> I briefly see your rdma command descriptor example, which is not 
+> aligned to 16B. Perf wise it will be poor than nvme rdma fabrics.
+>
+> For PCI transport for net, we intent to start the work to improve 
+> descriptors, the transport binding for net device. From our research I 
+> see that some abstract virtio descriptors are great today, but if you 
+> want to get best out of the system (sw, hw, cpu), such abstraction is 
+> not the best. Sharing of "id" all the way to target and bring back is 
+> an example of such inefficiency in your example.
+>
 
 
 ---------------------------------------------------------------------
