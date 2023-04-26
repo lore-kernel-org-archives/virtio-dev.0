@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12421-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12422-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DD812C77B61
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 01:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 95502C77B78
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 03:03:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DD14A2A8EC
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 01:10:40 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CE02F3711A
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 03:03:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B4269986647
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 01:10:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C0B68986650
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 03:03:47 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 99174983D70; Wed, 26 Apr 2023 01:10:40 +0000 (UTC)
+	id B34E9983D70; Wed, 26 Apr 2023 03:03:47 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,91 +24,91 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 836E19865E2
-	for <virtio-dev@lists.oasis-open.org>; Wed, 26 Apr 2023 01:10:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9F6609864A2
+	for <virtio-dev@lists.oasis-open.org>; Wed, 26 Apr 2023 03:03:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
+X-MC-Unique: 47rFvHLYNquGi_UrZTrWqw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682471439; x=1685063439;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Y2xhbCB7IK3bWtyX0TORtIxAgsTf+zaJodL0cvexKU=;
-        b=jjtMzdIVqxp8YFizeoN8QoA2sx+0HjW70Anx00aB3walbsxDo7Q+1VC2UagpNAbtiS
-         ECMWOXaTLaTEb8OkiAzt8qscuUBADBwW/2aIJAmtLMb8z7vXKmPzU7K9kOD21EO7ds5v
-         FRTtFLyfUF/yuhG6QzRBUzTaKbHKI8stoj3FeaI4T96HQe8p3Ztf/nsTYxfUfrT/ERIM
-         raWUC3zkcNByEIpC5G72NsT9nJoOLdoIGIUfizw1ZIdoYM3v5tdObiXVCSqBX25kW5S1
-         MSk4+6QavMk/w2pKj7orhqZsuzST4JLB6tsHhJTD5xVQTJ31cDGyGHvCX6CyKJIixF5N
-         TvXQ==
-X-Gm-Message-State: AAQBX9ey9KAV6tqq1Uv7Xbek0+CN6juBlMq2ut4Ci5ydVb0ZXpi4yQgL
-	sgUky++WRHKAU5MPnDkmY0j8ug==
-X-Google-Smtp-Source: AKy350b2sKfgGDS2Q71daTN1CJL8RCzQNPNoiixdjHyOCJzGbnNci7m8HvsWaPRZu9F8BZE2ftK4Qw==
-X-Received: by 2002:a17:90a:bd94:b0:249:842d:312f with SMTP id z20-20020a17090abd9400b00249842d312fmr19166295pjr.4.1682471438903;
-        Tue, 25 Apr 2023 18:10:38 -0700 (PDT)
-Message-ID: <63d20b11-e6e8-7f9e-5cbd-be2a506115c6@bytedance.com>
-Date: Wed, 26 Apr 2023 09:08:41 +0800
+        d=1e100.net; s=20221208; t=1682478221; x=1685070221;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=veN78nQ8ynyiy9us883OttMEFcRypLuEY7eMRjOcxSE=;
+        b=OaKTtWJcD7WKh/pojMwyAN+3XqprNShaXkFpOUWjq+wsW1MDW9XcDe54C1sxrZ97lT
+         YU5BndtyujXm48vitqMxd0RGybyF+Sr967ILFh03/1DrakkH3uEgaUdqSEOPVjxuirvS
+         Wlj12db/FoEYm67PTf7XL6Sg9jAkDAnUW2d3+jRNnqqNRv9Mr4wiGTjvrNBQjQXrwtz3
+         Hdc92+9ptVlDe1tWAeoLtKkhEA0phIL9WDu4Vp0Ri9MdKloQ9T6w4Ts8Bqgreo4Nb/Om
+         2ZidQ+eWPICEEivL13yFujZ8n/+IyD8JLO8nPTw7KkhBD/4SerMHLGNQHz90bMamxmCF
+         uDAA==
+X-Gm-Message-State: AAQBX9cjoA3/JIP5WjmRS6M9rB1JPO4DhahCTJtwK1SGC3WjbS8ZUQTs
+	S7zZ+7nsTXy4b1fBQTcuLRQzAjaCQYomXAeelTNOpQ1b3/eAA+lMA3jmSYtIfwfmmtQVptA12XZ
+	Hjgjw3b1zyEyZjrc34NJGHay29DDpZZ2FGkC37Tr0uRkl
+X-Received: by 2002:a2e:88cd:0:b0:2a8:b076:3877 with SMTP id a13-20020a2e88cd000000b002a8b0763877mr3859002ljk.10.1682478221346;
+        Tue, 25 Apr 2023 20:03:41 -0700 (PDT)
+X-Google-Smtp-Source: AKy350b8dgbOoKwCv/5NH9dYzFTFpkckqz6KviKVdF+hi1aY6DtqEB8vxxjYVMTshI320AF0wpBhF7yVOeRQbQqRqN0=
+X-Received: by 2002:a2e:88cd:0:b0:2a8:b076:3877 with SMTP id
+ a13-20020a2e88cd000000b002a8b0763877mr3858993ljk.10.1682478221058; Tue, 25
+ Apr 2023 20:03:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Content-Language: en-US
-To: Stefan Hajnoczi <stefanha@redhat.com>, Jason Wang <jasowang@redhat.com>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Cornelia Huck
- <cohuck@redhat.com>, parav@nvidia.com, virtio-dev@lists.oasis-open.org,
- "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
- "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>, houp@yusur.tech
 References: <1ab0beff-8b18-7a94-1a68-6bf36bcd0394@bytedance.com>
- <CACGkMEvh+G2Tm=WDTOK3K2GO8c2dQ4y=UiKAk_kvsid2MGzbGg@mail.gmail.com>
- <20230425135532.GA697094@fedora>
-From: zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20230425135532.GA697094@fedora>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: Re: [virtio-comment] [PROPOSAL] Virtio Over Fabrics(TCP/RDMA)
+ <CACGkMEvh+G2Tm=WDTOK3K2GO8c2dQ4y=UiKAk_kvsid2MGzbGg@mail.gmail.com> <20230425140942.GB697094@fedora>
+In-Reply-To: <20230425140942.GB697094@fedora>
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 26 Apr 2023 11:03:29 +0800
+Message-ID: <CACGkMEvJhoM=BzVUAYaBjdkuAsY2fVijL1p8LzC63F1RGoKC5g@mail.gmail.com>
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: zhenwei pi <pizhenwei@bytedance.com>, "Michael S . Tsirkin" <mst@redhat.com>, 
+	Cornelia Huck <cohuck@redhat.com>, parav@nvidia.com, virtio-dev@lists.oasis-open.org, 
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, 
+	"helei.sig11@bytedance.com" <helei.sig11@bytedance.com>, houp@yusur.tech
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [virtio-comment] [PROPOSAL] Virtio Over Fabrics(TCP/RDMA)
 
-
-
-On 4/25/23 21:55, Stefan Hajnoczi wrote:
+On Tue, Apr 25, 2023 at 10:09=E2=80=AFPM Stefan Hajnoczi <stefanha@redhat.c=
+om> wrote:
+>
 > On Mon, Apr 24, 2023 at 11:40:02AM +0800, Jason Wang wrote:
->> On Sun, Apr 23, 2023 at 7:31 PM zhenwei pi <pizhenwei@bytedance.com> wrote:
->>> "Virtio Over Fabrics" aims at "reuse virtio device specifications", and
->>> provides network defined peripheral devices.
->>> And this protocol also could be used in virtualization environment,
->>> typically hypervisor(or vhost-user process) handles request from virtio
->>> PCI/MMIO/CCW, remaps request and forwards to target by fabrics.
->>
->> This requires meditation in the datapath, isn't it?
->>
->>>
->>> - Protocol
->>> The detail protocol definition see:
->>> https://github.com/pizhenwei/linux/blob/virtio-of-github/include/uapi/linux/virtio_of.h
->>
->> I'd say a RFC patch for virtio spec is more suitable than the codes.
-> 
-> VIRTIO over TCP has long been anticipated but so far no one posted an
-> implementation. There are probably mentions of it from 10+ years ago.
-> I'm excited to see this!
-> 
-> Both the VIRTIO spec and the Linux drivers provide an abstraction that
-> allows fabrics (e.g. TCP) to fit in as a VIRTIO Transport. vrings are
-> not the only way to implement virtqueues.
-> 
-> Many VIRTIO devices will work fine over a message passing transport like
-> TCP. A few devices like the balloon device may not make sense. Shared
-> Memory Regions won't work.
-> 
+> > On Sun, Apr 23, 2023 at 7:31=E2=80=AFPM zhenwei pi <pizhenwei@bytedance=
+.com> wrote:
+> > > I develop an kernel initiator(unstable, WIP version, currently TCP/RD=
+MA
+> > > supported):
+> > > https://github.com/pizhenwei/linux/tree/virtio-of-github
+> >
+> > A quick glance at the code told me it's a mediation layer that convert
+> > descriptors in the vring to the fabric specific packet. This is the
+> > vDPA way.
+> >
+> > If we agree virtio of fabic is useful, we need invent facilities to
+> > allow building packet directly without bothering the virtqueue (the
+> > API is layout independent anyhow).
+>
+> I agree. vrings makes sense for RDMA, but I think virtio_fabrics.c
+> should not be dependent on vrings.
+>
+> Linux struct virtqueue is independent of vrings but the implementation
+> currently lives in virtio_ring.c because there has never been a
+> non-vring transport before.
+>
+> It would be nice to implement virtqueue_add_sgs() specifically for
+> virtio_tcp.c without the use of vrings. Is a new struct
+> virtqueue_ops needed with with .add_sgs() and related callbacks?
+>
+> Luckily the <linux/virtio.h> API already supports this abstraction and
+> changes to existing device drivers should be unnecessary or minimal.
 
-Fully agree.
+That's my understanding.
 
-> Please define VIRTIO over Fabrics as a Transport in the VIRTIO spec so
-> that the integration with the VIRTIO device model is seamless. I look
-> forward to discussing spec patches.
-> 
+Btw, I'm also ok if we start with vring and optimize on top.
+
+Thanks
+
+>
 > Stefan
 
-Thanks, I'm working on it.
-
--- 
-zhenwei pi
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
