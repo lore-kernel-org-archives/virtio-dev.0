@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12437-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12438-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7717DC77B78
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 15:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C8C6EC7618E
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 15:21:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id AE9201EAE7
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 15:11:22 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id E0EB929FE2
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 15:21:00 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9208E986641
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 15:11:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CA9B9986650
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 15:21:00 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 7CF8098663C; Wed, 26 Apr 2023 15:11:22 +0000 (UTC)
+	id BD66A98663F; Wed, 26 Apr 2023 15:21:00 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,669 +24,139 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6BA8F98663F
-	for <virtio-dev@lists.oasis-open.org>; Wed, 26 Apr 2023 15:11:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A9FAD986640;
+	Wed, 26 Apr 2023 15:20:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1682521877.947000
-X-TM-MAIL-UUID: 881f9e90-c790-4029-8a0a-2abac7cbf6c2
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jCuCkHOI3wbt3JSaQqHTs4aKTha9nThMiyef9Ezh24HPWz35RgF90Wc1+vCE1NOrytAj1Pe301uNbUOBhrby+9O2HDU13bkpqgC1BNFrS4M9adNd4p6rmUDv4QNUBRKNo/I0tUgZABk6V7d9knibt4tDJvz+PnyoJWu2AWQ70dMuruoCB8QbDgQcyino6ZXw/0hZRR+n3+oxW8W31FwQNHFe+eaX3yNjmDG+VVqedOPJivcm4qa31VzG+4B9gXkLpfxlcXLby8bA/cQODHv/3wxMMFbBpbtgxys0LGzuMljhXfCrONeiwWWcQnf6MCXSkeNZUOTCPExDXaFYeqVVKw==
+ b=Ua3WbiBdKkpRos9nsvXWuJStDdJmksjwW1sH/2JxGu0Q6vX/W/EL/lnQp1OqZJ8eCMCQAR4asBmWF2oOEiEwep3c/0jV2IcmnD3fsmX87lgDznNUfZ05AqApUHUdsIE68rxFlz+1xh6IImEC2+gbvW5E9RV+jzi5Cc4AVJS/vSNBNIhP3BPASkOYkP4tgot7m5fkFOQb4IzV15fl3e3lJG/+7TRoqW+AD5yYRLWA7Y+Xz8w3dJFj7hiGXra7qPFBk+pRhn0USrP1npAVe6in3r/IBj5WA5g/wDvksQWEziiZHcSqXZzaZbtjrRLoqysFXFHzHMpLaoz7O4LdJqdY4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T9QS9vT7mR1AB9yv+UKKyB3rENfsS5S0u+FrcgWFW9g=;
- b=BsQbq4yQJyLBzj60vX1x+Q2x05gFwWHDkOk3fwZZcN7w3JYvo6xThA7tBzZFCoNxTDSXAIaLejlS65WzsQU4oZzCxKeZ3YK05vLat8HiCTBflyL60z9d1uzEh2MGTcxz6YKcqPjiNsvTuVCmOwGnk1ShJEL5JUBNbPDa58yWFH4Xqqmxmm/LuPYcZtOrpAXahz7bFAzkqn149vCNbhCzJpCdkbrqm76w8tQcIdUqfcQL4I6UcwWYxciC7AK+s3uKY47OzgWngzbuIu00DlvBAp7yxANTO2IiJJky3S70u/b+pRRq+hzj+z/ZRnEMz6KlVME29ZrfMrs5TFpq0jRvig==
+ bh=RjTIVikBufvpTfKraKJ8HUGd+36hbqQM5fvTmRgKxts=;
+ b=bWHNFqUPNpDpPsJvTXzIjTcdRbAHYf7Kl4yhAbneFf3KRHl/lBqxvYZZrwce04S1JLRf1ahw318DCPnE92InEadczpDm/PBwTijNQY4dW4T1wZH0u8Yn48LO8cmxH0PyihbpeLe3wJuBYOo68LaPaMF9BhA1MaU7kNrFgz/3EsdrPc7OY9dXsSO6xmGPKRpoGoBD0ZRmc+wCPSEo5OYTnMzGaU8NwkBQMxRTv/p3/gWruxL+xKc+xle87aP7rDPBXc1yJKXhBBzhOHhwGmIpxicShRWLfgWLo3dxl65/ViGkvBKoMTtKiyxsV5GOvCaf08sV2Q96lM04UFzxl/lgBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <11372cda-a766-ef50-45d7-ed637b72a31c@opensynergy.com>
-Date: Wed, 26 Apr 2023 17:11:11 +0200
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: Heng Qi <hengqi@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri
+ Benditovich <yuri.benditovich@daynix.com>, Xuan Zhuo
+	<xuanzhuo@linux.alibaba.com>
+Thread-Topic: [virtio-comment] RE: [PATCH v13] virtio-net: support inner
+ header hash
+Thread-Index:
+ AQHZdbY0vUbPhs5ETkuums+/PkRABq88fZaAgAEg8YCAAABEcIAABYoAgAAAppCAAA54AIAABLgQ
+Date: Wed, 26 Apr 2023 15:20:55 +0000
+Message-ID:
+ <PH0PR12MB548128BFD5C89A136CD4BDD8DC659@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230423073532.105636-1-hengqi@linux.alibaba.com>
+ <f9221063-8419-9cb3-e59c-0b0393bdd501@nvidia.com>
+ <ced8a6f0-7858-0b0a-55bb-26eea2a7ff5a@linux.alibaba.com>
+ <PH0PR12MB5481EA937633233A9A9E5E30DC659@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1d0adb7d-fcc8-404d-8105-bc1f818bc3a3@linux.alibaba.com>
+ <PH0PR12MB54817E0B2B0B232B49320F5CDC659@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230426104902-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230426104902-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
 Content-Language: en-US
-To: Alexandre Courbot <acourbot@chromium.org>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org,
- Keiichi Watanabe <keiichiw@chromium.org>,
- =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>,
- Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=c3=b6ll?=
- <Matti.Moell@opensynergy.com>,
- Andrew Gazizov <andrew.gazizov@opensynergy.com>,
- Enrico Granata <egranata@google.com>,
- Gustavo Padovan <gustavo.padovan@collabora.com>,
- Peter Griffin <peter.griffin@linaro.org>,
- =?UTF-8?Q?Bart=c5=82omiej_Grzesik?= <bag@semihalf.com>,
- Tomasz Figa <tfiga@chromium.org>,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Enric Balletbo i Serra <eballetb@redhat.com>,
- Albert Esteve <aesteve@redhat.com>
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <5fa6dc30-af86-e58c-2d39-fde2836192c3@opensynergy.com>
- <CAPBb6MWqqAFB+g=JZu9-VgZbEJxS3wYaEgA-R_P=OyHRTHy7eQ@mail.gmail.com>
- <8ec36252-97c6-0378-e25b-fc972ea3a66d@opensynergy.com>
- <CAPBb6MVDKfKOyDFPiOL3fRp4Jn6WwMpSZt6V32EJ1CYW_+rw+w@mail.gmail.com>
- <909867c6-b66c-1281-45a7-38fd0aa32123@opensynergy.com>
- <87cz6mnaqk.fsf@redhat.com>
- <CAPBb6MWNfPH+e8=4zUcq2dV-59OdzTYSuN04Cg2rRPWao-nseQ@mail.gmail.com>
- <877cwttw2x.fsf@redhat.com> <87a60kg9rh.fsf@redhat.com>
- <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
- <877cvog030.fsf@redhat.com>
- <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
- <ca84a8f5-71ed-aea8-5751-60403d167283@opensynergy.com>
- <CAPBb6MUDWVK87_kGFen36tDJQoR-Les6djcKVihjuTKQBjweEQ@mail.gmail.com>
- <b5c9d69a-fbec-8046-225f-bdb5850bbd54@opensynergy.com>
- <CAPBb6MUFbZzTTPqztVXQpcPN+PtqrmCoyaD5dySYdP_7EbRDdQ@mail.gmail.com>
-From: Alexander Gordeev <alexander.gordeev@opensynergy.com>
-In-Reply-To: <CAPBb6MUFbZzTTPqztVXQpcPN+PtqrmCoyaD5dySYdP_7EbRDdQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: BE1P281CA0134.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:7a::17) To BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:4d::9)
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DS0PR12MB6583:EE_
+x-ms-office365-filtering-correlation-id: e90d67d9-35f7-40b3-c9c5-08db4669d4cc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ X83Tu9kvASpnBlH5jl/fVAtI4ATOtbZD/588XEBBnzNuhhmfbIwU+J+eNgln5fZlO0O7+xUMKbCA6zisZao0RvdodXlI8159vAmG79BWt+P+YpOJLFMv0Zke7UE8uUEJXeB7TAyURccFfC+bASqwC8POnmk73CoaerlFuvYV6rZ4OkQieW44Qsbxe8PW+fR5Rb71v7wZGZNirx2cuvBY5K0ytCGVWjzztJXrLuyAnrCmFtsM73GbtdrWTKbwjvz+bZxxORBAhuAd8JcYA4/w/xFv3tMQx/TdNZ1E5p2Un7iEbqaJ8JI30f6Z2cMEynP810WkYSrmKq+DcP9DL63rug9zTkn4yLOElYzuS2FmDueYxYK1qkK+tMN7mFhtsIpwaiJr5gOMzSEL6EVyPldUfjKtytSzn4HBKjZyl6LA3aVcI2jkknRepDxO3+q6mEJww7dKIRKYtBX3ZuqYrq7VUdQwlX9P89nuWaEcaGOghsa5DkZLLnHRv/Pzb3va3l/IoBwI23gx8jNDsfe9TufUOx/kTqEM7wbclxLf6z8UfJLikYbJY4NYJGkheawEjyoHJwEVdyAr6LB48wUEm+iFMJuFnuNPwuKe7/oERJfUMqMS4f+GN19EhWsv6spAoqvd
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(396003)(136003)(366004)(39860400002)(451199021)(52536014)(38100700002)(122000001)(5660300002)(8936002)(66946007)(76116006)(66556008)(64756008)(66446008)(66476007)(8676002)(6916009)(41300700001)(86362001)(4326008)(316002)(38070700005)(55016003)(2906002)(26005)(186003)(6506007)(9686003)(7696005)(71200400001)(83380400001)(33656002)(478600001)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?VnZvMmFFNHRwcGtXRk1pSHNMWTNnaHpKMHV6QzUyaFFIWGhYenIyRDRvakp2?=
+ =?utf-8?B?c3RWT3F1SjNsenpmZk5Sb3k0SitlMTR5L0psb05VWnRHVWRKbXcrOFNZVkpE?=
+ =?utf-8?B?S1oyZ3k1YVVocWJYQjhGT3FGOEM5aytTQWU4UmtkL0Eyem13WHFoZnlmNjRv?=
+ =?utf-8?B?TzhLL2I1UXZVZnI4NDRqdWhxb3FWdUNYK0ZQeTI1TXhOYlR0RkIzMGpKcUdr?=
+ =?utf-8?B?K005TVFEOUNMZEVuR2t5c2dQVXkxMmdHWEpUM2dXV0JlSllMclFPRlp1Mmc4?=
+ =?utf-8?B?Vm1ta3JlQi83TU5JbXpnZGNieVRtUHl5ckg3c3I2Q3IxNnFzMEh6SlUzQndH?=
+ =?utf-8?B?SFY1TUNVTS9uSTBhLzhDQUpubXBZbjQvYUNrNUxsNUtNcGE5azRGSTRESThW?=
+ =?utf-8?B?aGx0STFrL1VCbnI2T3owaGRJaHUrQmFCTmxTcUNKNDUyaVFwYzE5Q3NQTFhW?=
+ =?utf-8?B?V3ZhZXJnUllTS1lqYmlhaE00L08rRlRSSVd5a1VLNXpBeUZmek5YdVhMQ1Jo?=
+ =?utf-8?B?UGRqOG93YTFkYXZTN1BvTllnKzQrcXlzcTdneW1ZQjl6V2VrOFdGNjNYNGlT?=
+ =?utf-8?B?dGR2OHlHTFkrZnFBY3hIZWlPYmhDVXMwYkx1eVVTMUZndmRXb0J4Q01rN3o4?=
+ =?utf-8?B?cjRoQkxiL1NtWkEzcHlDRkNsbXltT1NUUWkySVk2Mnhoc3czZHhQQy9BOEVC?=
+ =?utf-8?B?RGhwU005SFZjVzM2ZVdnZlJqanE4VVcwR0dubytPdkRja29VRCs5UEdTaDUx?=
+ =?utf-8?B?cHNycVQ2dkUzRitDbGgwYzVQM01ZVE1GbVJLRDJpVTN6N2tuSktRVFJDa2pt?=
+ =?utf-8?B?azlXbzc5VkFZQU51cGRDc2FDbHNsaFhhR2hraEhtdVc3NkJkMnMzeG9LWXNH?=
+ =?utf-8?B?OXpVYzI5MGp3bzY3KzdrY2prTlBSelRUSVVlNUNVdVMyMkdnanMxRVlFbXRm?=
+ =?utf-8?B?NHYvZ1hyQ2lWZDRhR0hiWTlQOVVRcUxUallMZEZLWnN5SGpGMzFiOEVQYlR4?=
+ =?utf-8?B?RGJPdUlFWmJKUVZubzhRbU5Wcnp6a1BhUE1NTTA4TFRxWW0vRWJSeG1vK3Fi?=
+ =?utf-8?B?UEhSc3ZEMU5kT2k2bDRtWnp1dThnekd5VzcxNDBTRHpldzh4RTZlelVsQ3dV?=
+ =?utf-8?B?VytEbExKdTRGd1paMWt3UUcyZDhpTmZtcjV2aVJmL2VabE1SSk16OGI1bHow?=
+ =?utf-8?B?L2ppcjg4VTVZb3hhenNlNGh5Y0cxZWdvVHZFc0tnc3cxTzcvUEExb2FhNEU4?=
+ =?utf-8?B?NE04VFpkL2ZkUXRUK0dwY1NpRUswbTR1V3ZWdnhSb3JCeUtjdmJVOUR2WVFV?=
+ =?utf-8?B?eHc3aHpwWWViNk16dENmZ2JJYTkxWWZ4QllmRy92NDFYazNWZzZ4c25YZk1F?=
+ =?utf-8?B?QTlEN2FjbUpJWjhVZTNWd0JzWDVZVHZBYzU3Y0NVZHE4MDNsb0k1YjI2Ynh4?=
+ =?utf-8?B?L2tVYTJUc28xSkpsVUFPSngwemRjeVJ5RXN5MVJGNXZNNWJLYUVBZG4xaWhw?=
+ =?utf-8?B?QkRPdnV5WGhxa0swY1hSRVlUWkx4VlZGYitwZm92VXhmblBWM1BQSlNkUHZ5?=
+ =?utf-8?B?cTdVdWIvMldOTWRrNGNwVDk0U0NFRGdUdFN6enJQMHBGQ2FhVkZLK3ZyR2N3?=
+ =?utf-8?B?WHV0dHhiWUQrbklRYWtvb0dqdE5HQzhSU0Zuc09Xem1DNStoRk9udEo4TDBX?=
+ =?utf-8?B?aVJuYmwvU1lWcGlVYmpEOU5SZkozbkN4aUdWZDJsc3pvSkZ4TE82eGxEbVBa?=
+ =?utf-8?B?cmF0Q25oS3ZCOUZ1REZjQUpaTGNsMXNwM1hmcnlrY1lNTUdlWTFmVTFWUWlC?=
+ =?utf-8?B?d2FvTmw2cE1QZ09UN011VEtpMXI2UEdTOWxPSkFPRUU2R1paNEJXNldwNy9t?=
+ =?utf-8?B?RU5yeTlxOWMwTXJXdVJQV2k2OFdSMGd2VU1FRVlkT0RRYWkyamgyNzVzcmhy?=
+ =?utf-8?B?cWNjdTNlYXgzTnVPSXpNYUhHUFVPeHNaL1dVSUQxbUZNVm93eFV3andMT25C?=
+ =?utf-8?B?N0tNejBXek93bXE4QVh6OFZXeGRySUtDQTZBaGtKTW5wNGp2MUFGYTVkNlhL?=
+ =?utf-8?B?N2IrUmFIMjY4OEJ4WGlpTjl2QW1tRG51RzhlK0VacW5yWkNtYVYzT3hpdWJy?=
+ =?utf-8?Q?Py7A=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BE1P281MB2663:EE_|BE1P281MB2897:EE_
-X-MS-Office365-Filtering-Correlation-Id: e24684db-c332-41d2-f666-08db46687aaf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CoXX7k39/L8FOzbTJkDVznCe3jUKz/zyZ7RRzZiRleQZBq2FEu6ZyXy7SezjohMZog5gMD357y4nz1nWhnUm/5pSuii/4q7MsZhCkpc0ki4ihwDk39OZgCLKG4ErEn46BZg6rbSVAVISXW98BnaX7fTo/cs+02JPvBDzbz+SEv9qcAz06JKgLGgO0CjjqUSQmXBYSfGnEKTuPa6g9ZSHbJ1QDmG7BEAxGnfz8CX+6vp22IP2OxkG7vZUuFWw0oOMqGx8IhctvDORGt4pXkTvz95rGhkHByBOqJzgCO3iPXHQinW7SeXK7E3we+7RsCGMA+g7WlLQ/v5AY/hxGa4/pIOCrVplvv+85XLwbz0Wp0RG5SWEMFaLkEypUU57BbEmE+Re89w/28z/aSS6fSk4tBsnsJoK2KTp91aVLr+WM3AY/ojuQh0JrUShRIUN2fwfN6zvrRFPWWDJe4pcPbfX9Irh2LN9pdHYPI3nYzfZEjrczKFObz90LVLZRqE6N1wYRqxqpk+ah5vWBKGmTlm5slvLdxAwGzOsZxskaownL1o=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(366004)(136003)(376002)(396003)(346002)(39840400004)(451199021)(30864003)(31686004)(66899021)(186003)(38100700002)(42186006)(86362001)(6916009)(4326008)(316002)(54906003)(36756003)(478600001)(41300700001)(31696002)(66946007)(66556008)(15974865002)(66476007)(2616005)(66574015)(83380400001)(26005)(53546011)(7416002)(8936002)(8676002)(44832011)(5660300002)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ckxrZUdZUGRsQlVwaWxoSTVtWm5oaExEQk5WbHNiUWt3QUcrNGJkVWNIWldU?=
- =?utf-8?B?QUlmMHd1dllRdFJkdHJHbGJ1ZnpXMkhRbUdCL2VsdVU0QytqbDZGVWh1U3Y2?=
- =?utf-8?B?OVpBZHhXSDE1Wk1pMlpPOEdTYzNLNm01K1lhNlozUldaa0tRbzMyYWtLUkxB?=
- =?utf-8?B?YnIvZ1JZaWFoK25mZWh4TXl3dWtCRGt6WE1RUEZOVTZRYjNWdWd2U25ENDh4?=
- =?utf-8?B?cTY0OE91NzZBbW1hS0FGeUZQVnMvNmVCN3pNalE5RHRXU3VjUUdoYTdxT0xw?=
- =?utf-8?B?cHZ5aW5tWTExa1RMVThJNHliRE1rdUxkVndqVUVENG1pTG4rMXpEMll4d1lN?=
- =?utf-8?B?WUlwemN0M3F6SnExVTZrVmN0RXlQZEQxSWIwTkdvSnBUSEFpYXJ4S3FFZGR0?=
- =?utf-8?B?aE5EbGMyNEVXTXcvc1pUVEhzSWdzb0RjUjMvL2d2STN0NkJwQTJkZ1c3YXhQ?=
- =?utf-8?B?bXA2WWl2aTJXWURGMTI1djNMTEdxVEQyK294Zkc2Q2g3MzlhVDFTdjYxK2hH?=
- =?utf-8?B?NUZsTm5FSW9ENWZxM1pWRGZqUk1IRnkwZi83U3dWZXMzM3JDaWdTSExkbWdi?=
- =?utf-8?B?MzJ1NSswWEFlNUdHNWhTM1dYWENoWE1KQ2Q4c1lyOTl6VUo3TjNOY1hpR0NH?=
- =?utf-8?B?aEpMdmozUWtOY2cwSlVuMFcvWUttNFZmTTU0ZWxkMWN0aTd6aDhsK1V0ZHhL?=
- =?utf-8?B?MThQdmJCcHlaTVBZRU83N0dITUJ3UHBwbmtwL0FQNEVYMkpWRjJxVFJURXFr?=
- =?utf-8?B?LzJ4enJqWFNhZFdEdzUxcys3c1FlT0dkdlc3T0NjYnBGek1rMWpUbFcxSGVS?=
- =?utf-8?B?OUkxemVFSC9CZmVndWdsMW44MFBZNVhVcUZWQ1RTbmRHZFpDdndRWFFicDJ5?=
- =?utf-8?B?QXkxZmFkQXk4Nlc0bFk5TW1NYzZ5S2VTMVprWGlib24zNWpRMUdTNnlqREJy?=
- =?utf-8?B?YjFYVjR4RVNBWkdVWHZBcDJhTXdTVFBSdzJaem1wZm1ScEtJUjVaSGlZMDdK?=
- =?utf-8?B?bGk0YzFUaEozMU8xOGlJWmlGa1BJZmFoWnZIQWFUdkxTa1RmWVM3UlNSZHpB?=
- =?utf-8?B?S1RPM0VQUnhXeTFVaUtnTEI4eGFjbjcvZ2dhQVcrNmE0WEJsRWJoR3g2b2Ni?=
- =?utf-8?B?cGdOWlMxNnYvQ2RTaXdvWERKbnNuRHk1a1lkblZ6d0tzdEFBKzBuUWpGYmtI?=
- =?utf-8?B?dS9BQ0hSL1YrRjRMQVE5Vk96bExyWDNKWi9hcVlhNzBNazBPN25qOWVBNUpz?=
- =?utf-8?B?UE93bThma0RWNVR4TmE0ems1R1JmMHZCMUFXZnFEL0FNYUVleVlUYjBtblFm?=
- =?utf-8?B?WFE3SGdOV3pKL3hoLzBoOGorU2hPWEJ4dlJ3d2xKU3AycDliK2xtd3NqdERN?=
- =?utf-8?B?NE5yWWpoYmZSTTRwSzVYbXkrSFo3WWdPN3lOKzFQT0xNMGlmSU9VK0d6eUxs?=
- =?utf-8?B?cGpBd2ZwQlovS0ZqVGdrVFh1Q0E1cGU1cXRBMmx2c1dYWG45ZTNTZ29TeUEw?=
- =?utf-8?B?QTd6eXBxSzJiV1dFemhXanZWcjlFczZnQVBoMFdNU2xGNDBpaHMwcXZnZC9p?=
- =?utf-8?B?NlBJL3BBRGFiT2J0dWloTU5LQ2wweWU1VVNTamRpU3FmZFlsbEo5NDJZbzdY?=
- =?utf-8?B?bmQrdWYxUDA5ZnpzUHJTRDZqWVZkaElJYlRnTGplcU84TWpZOVdGTTI1eXNK?=
- =?utf-8?B?L1A3ZW5iYzJvcGt6TjdjZU91K1NacEIzZjJpZG5CMitkaHhDZzdrVHZrb0JJ?=
- =?utf-8?B?OTJyNUVDTncvUjNRUDgrcG9scXFJU2ZOazNNb1BaRUw3elk0Yjg2YnloWFph?=
- =?utf-8?B?VlVpRmluaXN3cWlKcnpqbzVyYndLZWhjMS8xSkxFc1BlVnJvcjBVQXB1dDk5?=
- =?utf-8?B?QkJtOHo0VlRZMGhINU5pNXVLcG5tMUJVYWVtYlVMeFVNSlhOaW1vMFVZMFJ6?=
- =?utf-8?B?VzhPcDJmTnNVMzlZTWUrZU9NVUVrUlQ2eXFSUzZNTkNWeGZrcUIrbkxvZzVt?=
- =?utf-8?B?UVR3QkFVN3ZXbXE2N296QTFYUjJaNW5ZRzN0RFVhNnpEV0xsVEZyakppSktF?=
- =?utf-8?B?OFYyZXN4dWZoeGEwQjNtY0J4NmpEQW0yMVNqRnN0SE1nRWpHelU2c1hSVE1K?=
- =?utf-8?Q?VYYW0Q7fE2pjb8X7NeU7Yr9O/?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e24684db-c332-41d2-f666-08db46687aaf
-X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
+X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2023 15:11:15.4382
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e90d67d9-35f7-40b3-c9c5-08db4669d4cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2023 15:20:55.8724
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZcHC0kLvg4T2vpE+RtGNBAoo8r4jIfXWgwlgxBZlzFBweezsBRrx99Gb686Rcu+0LKHFL6XhMXzifQb+MqiXpQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB2897
-X-TM-AS-ERS: 104.47.7.174-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1007-27590.000
-X-TMASE-Result: 10--29.345500-4.000000
-X-TMASE-MatchedRID: jFqw+1pFnMz/9O/B1c/Qy6n9fPsu8s0a9mojSc/N3QdlEv6AItKWF/GG
-	5PZMzxFoSJMpuNZVDMj7SMNvd0KhY2dkza/sEr/bTipLDaMylH1lH44U2Ru12g6QlBHhBZuwh/E
-	iWLGaPFKP9u+1+GFcS77MjnGq0ZbCs0pnWOAJ983O0qvSSPZDm3iywgNDw+2onhD4vcFcha7UKH
-	jPpSVKRLk+TRtvZ0rpyA5RTZwM2e3SlUwSXNXPcfQAclqqmRB8AajW+EL+laPHBGR0WyQqAkopD
-	+RCCRBkeVCL4AZCQ9rPbp196kml41y8LZtP0/3O3u5w3Ea2Xmgcsx3IH4sq3NZ5C2tydwt9KlbG
-	+C+eP5qQ6tag/ox2gDwSas/EhcgSFerRtFceXJiIf3m0sUfx5/lSepWcgdLP8z0YrPW2jLDv5tG
-	5qQwjQNAYmKqwwYweY/5MySWMxKqonpzqWq1NCtEJQUcCarUjUcH09qBGmHSGD9O3ui1h2Mu3fu
-	7mGETZ/sXPK0ncsYCKVQxIp6Qr4YXWZSIKVRR3qug9vIA2WOCIgHmdq1Tibb7LhjjzshwBfDofT
-	psyCK9vzxvIxmtIp+S2uL/OKCubKNwM/2h5PEi8coKUcaOOvU+crEA4+nhZLlKcC0fi2OnQDjkg
-	BdHEzWDpkSrECXhWKNl5orFFFNrDY2ppZGFxViZm6wdY+F8KrB85uDT3cKSu9yzHHu0ZiRqGc7h
-	et5hm5jmTk07qyg2LYFg0O8yZXFwQqT2rE4uUWCjDJRYeAZ2UO3k9AyCPTU2SImGKAVGgsREym4
-	hTah4ZPH31Qe1dM/NscTkbWfwJPLAqoUWoiXd+yskgwrfsC30tCKdnhB581B0Hk1Q1KyJHtBsf5
-	/UXJbVQu1GNZ+si4kYXbobxJbLyU/oX+tpNmCG2Ull2Wedt
-X-TMASE-XGENCLOUD: 98354572-affa-4c14-afdf-9c2a5fcc3725-0-0-200-0
-X-TM-Deliver-Signature: 4E7BCAA5E2B6640F5B12A31F4945F40A
-X-TM-Addin-Auth: 1AgDJ7am5ovxn1+uJ6ktQfpCXsU3HZr2WLZO7BnU+89AhtDKHD4DHO1D7Mo
-	MeBnCoGD2sBcwbDIHskM1ZhTXm8QlohYbAzZoBjp1KUtzqJ3KF3Dg11NViRnbcKwelO7LUhZ8t4
-	Bez84cfVTZ54lFv/1/AWmBVppNFTVgTLC1LMBa9cCZVlJwPUkggowe/gp309bRTKHRtAv/vAWVs
-	l5c/2LPQHG57pwdQ6TU9LgGTRSP5TLuXpHDbmS95mpCIwXOADgGcJBt82iCdjT8xxnRXBMO2iHw
-	Y944snuu9VdtvKU=.GHSkJfftnNJ2pjZswF6k94micWvVRyDRPDQC8rg2cIQ+0MSnMZ8SpnKUIn
-	RmMO5Ly6AAyPxt2k5dTc7gqY1US7zEezb3oR8dQ/Nwv6DOpx4+A6DAlQ2nd59nQyFCDHOtRfgKF
-	JPb95janEV1nBKNiY6DZWAI6UGCq7Im/PmulbkSNVrfnbIjkX4QjvFC+ZHnoGc+d/Wv+PYcExQo
-	b8dvI9XSJIJLtKBfYYBDB7yQQ9F8OBkcCWFqIpskepRdL2s2j0AwuUuwi+m7k5jHSShVIVP201K
-	j7uq9Iqlrrb9TPvrjB+WUPJS/NYvgsTs2pMv/V4Np6sKPKaYYDWubliibrQ==
-X-TM-Addin-ProductCode: EMS
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LrF5k68jZaHdK9JtEEdR3gammClEOEWeIvVJ8enLazD0AEBn2sAWzxUeKOGgMeoq0kIpXN9LcLKWcBA/7C1L4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6583
+Subject: [virtio-dev] RE: [virtio-comment] RE: [PATCH v13] virtio-net: support inner header
+ hash
 
-On 21.04.23 06:02, Alexandre Courbot wrote:
-> Hi Alexander,
->
-> On Mon, Apr 17, 2023 at 9:52=E2=80=AFPM Alexander Gordeev
-> <alexander.gordeev@opensynergy.com> wrote:
->>
->> Hi Alexandre,
->>
->> Thanks for you letter! Sorry, it took me some time to write an answer.
->>
->> First of all I'd like to describe my perspective a little bit because it
->> seems, that in many cases we (and other people writing their feedbacks)
->> simply have very different priorities and background.
->>
->> OpenSynergy, the company that I work for, develops a proprietary
->> hypervisor called COQOS mainly for automotive and aerospace domains. We
->> have our proprietary device implementations, but overall our goal is to
->> bring open standards into these quite closed domains and we're betting
->> big on virtio. The idea is to run safety-critical functions like cockpit
->> controller alongside with multimedia stuff in different VMs on the same
->> physical board. Right now they have it on separate physical devices. So
->> they already have maximum isolation. And we're trying to make this
->> equally safe on a single board. The benefit is the reduced costs and
->> some additional features. Of course, we also need features here, but at
->> the same time security and ease of certification are among the top of
->> our priorities. Nobody wants cars or planes to have security problems,
->> right? Also nobody really needs DVB and even more exotic devices in cars
->> and planes AFAIK.
->>
->> For the above mentioned reasons our COQOS hypervisor is running on bare
->> metal. Also memory management for the guests is mostly static. It is
->> possible to make a shared memory region between a device and a driver
->> managed by device in advance. But definitely no mapping of random host
->> pages on the fly is supported.
->>
->> AFAIU crosvm is about making Chrome OS more secure by putting every app
->> in its own virtualized environment, right?
->
-> Not really, but for the discussion here you can assume that it is a
-> VMM similar to QEmu with KVM enabled.
-
-Thanks for the clarification. If my idea about your use-case is not
-totally correct, then it would be very helpful if you can provide more
-details about it.
-
->> Both the host and guest are
->> linux. In this case I totally understand why V4L2 UAPI pass-through
->> feels like a right move. I guess, you'd like to make the switch to
->> virtualized apps as seemless as possible for your users. If they can't
->> use their DVBs anymore, they complain. And adding the virtualization
->> makes the whole thing more secure anyway. So I understand the desire to
->> have the range of supported devices as broad as possible. It is also
->> understandable that priorities are different with desktop
->> virtualization. Also I'm not trying to diminish the great work, that you
->> have done. It is just that from my perspective this looks like a step in
->> the wrong direction because of the mentioned concerns. So I'm going to
->> continue being a skeptic here, sorry.
->>
->> Of course, I don't expect that you continue working on the old approach
->> now as you have put that many efforts into the V4L2 UAPI pass-through.
->> So I think it is best to do the evolutionary changes in scope of virtio
->> video device specification, and create a new device specification
->> (virtio-v4l2 ?) for the revolutionary changes. Then I'd be glad to
->> continue the virtio-video development. In fact I already started making
->> draft v7 of the spec according to the comments. I hope it will be ready
->> for review soon.
->>
->> I hope this approach will also help fix issues with virtio-video spec
->> and driver development misalignment as well as V4L2 compliance issues
->> with the driver. I believe the problems were caused partly by poor
->> communication between us and by misalignment of our development cycles,
->> not by the driver complexity.
->>
->> So in my opinion it is OK to have different specs with overlapping
->> functionality for some time. My only concern is if this would be
->> accepted by the community and the committee. How the things usually go
->> here: preferring features and tolerating possible security issues or the
->> other way around? Also how acceptable is having linux-specific protocols
->> at all?
->>
->> Also I still have concerns about memory management with V4L2 UAPI
->> pass-through. Please see below.
->>
->> On 17.03.23 08:24, Alexandre Courbot wrote:
->>> Hi Alexander,
->>>
->>> On Thu, Mar 16, 2023 at 7:13=E2=80=AFPM Alexander Gordeev
->>> <alexander.gordeev@opensynergy.com> wrote:
->>>> Hi Alexandre,
->>>>
->>>> On 14.03.23 06:06, Alexandre Courbot wrote:
->>>>> If we find out that there is a benefit in going through the V4L2
->>>>> subsystem (which I cannot see for now), rebuilding the UAPI structure=
-s
->>>>> to communicate with the device is not different from building
->>>>> virtio-video specific structures like what we are currently doing.
->>>> Well, the V4L2 subsystem is there for a reason, right? It does some
->>>> important things too. I'm going to check all the v4l2_ioctl_ops
->>>> callbacks in the current virtio-video driver to make the list. Also if
->>>> you have some PoC spec/implementations, that would be nice to review. =
-It
->>>> is always better to see the actual implementation, of course.
->>>>
->>>> I have these points so far:
->>>>
->>>> 1. Overall the V4L2 stateful decoder API looks significantly more
->>>> complex to me. Looks like you're a V4L2 expert, so this might not be
->>>> visible to you that much.
->>> V4L2 is more generic than virtio-video, so as a result specific uses
->>> tend to require a bit more operations. I would argue the mental
->>> overhead of working with it is less than significant, and most of it
->>> consists in not forgetting to call STREAMON on a queue after some
->>> operations. Things like format, resolution and buffer management do
->>> not get more complex (and V4L2 is actually more complete than our
->>> previous proposal on these).
->>>
->>> The counterpart of this marginal extra complexity is that you can
->>> virtualize more kinds of devices, and even within virtio-video support
->>> more formats than what has been specified so far. If your guest is
->>> Linux, the same kernel driver can be used to expose any kind of device
->>> supported by V4L2, and the driver is also much simpler than
->>> virtio-video, so you are actually reducing complexity significantly
->>> here. Even if you are not Linux, you can share the V4L2 structures
->>> definitions and low-layer code that sends V4L2 commands to the host
->>> between drivers. So while it is true that some specifics become
->>> slightly more complex, there is a lot of potential simplification when
->>> you look at the whole picture.
->>>
->>> It's an opinionated proposal, and it comes with a few compromises if
->>> you are mostly interested in codecs alone. But looking at the guest
->>> driver convinces me that this is the better approach when you look at
->>> the whole picture.
->>
->> Sorry, I just see it differently as I tried to describe above. The
->> problem is that we don't yet see the whole picture with the V4L2 UAPI
->> pass-through. I reviewed the code briefly. It is great, that you already
->> implemented the MMAP mode and host allocations already. But I would
->> argue, that this is the simplest case. Do you agree?
->
-> I was trying to do a proof-of-concept here, of course it is not
-> feature-complete and of course I started with the simplest case. I
-> don't see your point here.
-
-I understand that. The point is that the real complexity is yet to come.
-Please see below. I think this is logical: if you only have implemented
-the simplest case, then implementing more complex cases requires making
-the implementation more complex.
-
->> Also this mode of
->> operation is not supported in our hypervisor for reasons mentioned
->> above. So in our case this PoC doesn't yet prove anything unfortunately.
->
-> I did not have your use-case in mind while writing the PoC, its
-> purpose was to demonstrate the suitability of V4L2 as a protocol for
-> virtualizing video.
->
-> Now if your hypervisor does static memory management and pre-allocates
-> memory for guest buffers, then the V4L2 MMAP memory type actually
-> looks like the best fit for the job. There are no tokens like virtio
-> objects UUID to manage, and the MMAP request can be as simple as
-> returning the pre-mapped address of the buffer in the guest PAS.
->
-> If instead it carves some predefined amount of memory out for the
-> whole guest and expects it to allocate buffer memory from there, then
-> the USERPTR memory type (which works like the guest pages of
-> virtio-video) is what you want to use.
-
-It doesn't look like a good idea to us. This means preconfiguring memory
-regions in the hypervisor config. It is hard to predict the amount of
-memory, that is necessary. If we allocate too much, this is a waste of
-memory. If we allocate too little, it won't be enough. Then we don't
-know yet how to make V4L2 allocate from that memory. Then this memory
-has to be managed on the host side. And memory management is exactly the
-thing, that causes most security issues, right? So overall this is very
-tedious, potentially wasteful and not flexible.
-
-
->> I think the real complexity is yet to come.
->
-> Evidence would be appreciated.
-
-Please check my comment above.
-
->>>>      a. So V4L2 subsystem and the current virtio-video driver are alre=
-ady
->>>> reducing the complexity. And this seems as the right place to do this,
->>>> because the complexity is caused by the amount of V4L2 use cases and i=
-ts
->>>> legacy. If somebody wants to use virtio-video in a Windows guest, they
->>>> would prefer a simpler API, right? I think this use-case is not purely
->>>> abstract at all.
->>> The V4L2 subsystem is there to factorize code that can be shared
->>> between drivers and manage their internal state. Our target is the
->>> V4L2 UAPI, so a Windows driver needs not be concerned about these
->>> details - it does what it would have done with virtio-video, and just
->>> uses the V4L2 structures to communicate with the host instead of the
->>> virtio-video ones.
->>
->> It can also reuse the virtio-video structures. So I think despite the
->> ability to reuse V4L2 structures, having to implement a linux-specific
->> interface would still be a bigger pain.
->
-> The only Linux-specific thing in this interface is that it
-> misleadingly has "Linux" in its name. Otherwise it's really similar to
-> what we previously had.
->
->>
->>
->>>>      b. Less complex API is better from a security point of view too. =
-When
->>>> V4L2 was developed, not many people were concerned with malicious USB
->>>> devices probably. At least exploiting a malicious USB device usually
->>>> requires physical access. With virtual devices and multiple VMs the
->>>> stakes are higher, I believe.
->>> That's probably true, but I fail to see how the fact we are using
->>> struct v4l2_buffer instead of struct virtio_video_buffer can have an
->>> impact on that?
->>>
->>> V4L2 has a larger UAPI surface because it manages more kinds of
->>> devices, but drivers only need to implement the ioctls they need. For
->>> the rest, they just return -ENOTTY, and evil actors are hopefully kept
->>> at bay.
->>
->> Still there are definitely more ways to do things wrong. It would be
->> harder to audit a larger API surface.
->
-> If you write a video device you don't need to support more API than
-> that requested for your device. All unsupported interfaces can simply
-> return ENOTTY.
-
-
-
->>>> 2. We have a working virtio-video driver. So we need very good reasons
->>>> to start from scratch. You name two reasons AFAIR: simplicity and
->>>> possible use of cameras. Did I miss something else?
->>>>
->>>>      a. The simplicity is there only in case all the interfaces are V4=
-L2,
->>>> both in the backend and in the guest. Otherwise the complexity is just
->>>> moved to backends. I haven't seen V4L2 in our setups so far, only some
->>>> proprietary OMX libraries. So from my point of view, this is not
->>>> simplicity in general, but an optimization for a specific narrow use c=
-ase.
->>> V4L2 is not a narrow use-case when it comes to video devices on Linux
->>> - basically every user space application involving cameras or codecs
->>> can use it. Even the virtio-video driver exposes a V4L2 device, so
->>> unless you are using a different driver and proprietary userspace apps
->>> specifically written to interact with that driver, V4L2 is involved in
->>> your setup at some point.
->>
->> Sorry, I mean narrow use-case if we look into other possibilities:
->>
->> 1. Stateless V4L2 on the host.
->> 2. Any other interface on the host.
->> 3. Any other guest except Linux.
->>
->> Our targets are several popular embedded SoCs. Unfortunately we don't
->> have the luxury of simply having normal V4L2 devices there. And it
->> doesn't look like this is going to change.
->>
->>
->>> The guest driver that I wrote is, I think, a good example of the
->>> complexity you can expect in terms of guest driver size (as it is
->>> pretty functional already with its 1000 and some LoCs). For the UAPI
->>> complexity, the host device basically unpacks the information it needs
->>> and rebuilds the V4L2 structures before calling into the host device,
->>> and I don't see this process as more complex that the unpacking of
->>> virtio-video structs which we also did in crosvm.
->>
->> Unfortunately our hypervisor doesn't support mapping random host pages
->> in the guest.
->
-> The ability to map random host pages to the guest is *not* a
-> requirement of virtio-v4l2.
->
->> Static allocations of shared memory regions are possible.
->> But then we have to tell V4L2 to allocate buffers there. Then we'll need
->> a region per virtual device. This is just very tedious and inflexible.
->> That's why we're mainly interested in having the guest pages sharing in
->> the virtio video spec.
->
-> I'll be happy to update the PoC and make it able to use guest pages as
-> buffer backing memory. It just wasn't the priority to demonstrate the
-> global approach.
-
-Great, thank you. If you have a concrete plan already, I think it could
-be beneficial to discuss it now. Otherwise I'd prefer to keep working on
-the current approach until I see something concrete.
-
->>>>      b. For modern cameras the V4L2 interface is not enough anyway. Th=
-is
->>>> was already discussed AFAIR. There is a separate virtio-camera
->>>> specification, that indeed is based on V4L2 UAPI as you said. But
->>>> combining these two specs is certainly not future proof, right? So I
->>>> think it is best to let the virtio-camera spec to be developed
->>>> independently.
->>> I don't know if virtio-camera has made progress that they have not
->>> published yet, but from what I have seen virtio-v4l2 can cover
->>> everything that the currently published driver does (I could not find
->>> a specification, but please point me to it if it exists), so there
->>> would be no conflict to resolve.
->>>
->>> V4L2 with requests support should be capable of handling complex
->>> camera configurations, but the effort indeed seems to have switched to
->>> KCAM when it comes to supporting complex native cameras natively. That
->>> being said:
->>>
->>> * KCAM is not merged yet, is probably not going to be for some time
->>> (https://ddec1-0-en-ctp.trendmicro.com:443/wis/clicktime/v1/query?url=
-=3Dhttps%3a%2f%2flwn.net%2fArticles%2f904776%2f&umid=3D7506d37b-2a1b-4aff-a=
-c10-25fcc75ef955&auth=3D53c7c7de28b92dfd96e93d9dd61a23e634d2fbec-7499883461=
-cdeab6be6e5789888e8475e39171da), and we don't know how we can
->>> handle virtualization with it,
->>> * The fact that the camera is complex on the host does not mean that
->>> all that complexity needs to be exposed to the guest. I don't know how
->>> the camera folks want to manage this, but one can imagine that the
->>> host could expose a simpler model for the virtual camera, with only
->>> the required knobs, while the host takes care of doing all the complex
->>> configuration.
->>> * The counter argument can be made that simple camera devices do not
->>> need a complex virtualization solution, so one can also invoke
->>> simplicity here to advocate for virtio-v4l2.
->>>
->>> My point is not to say that all other camera virtualization efforts
->>> should be abandoned - if indeed there is a need for something more
->>> specific, then nothing prevents us from having a virtio-camera
->>> specification added. However, we are nowhere close to this at the
->>> moment, and right now there is no official solution for camera
->>> virtualization, so I see no reason to deny the opportunity to support
->>> simple camera devices since its cost would just be to add "and cameras
->>> device" in the paragraph of the spec that explains what devices are
->>> supported.
->>
->> Well, for reasons described above it still seems perfectly fine to me to
->> have separate devices. Ok, the argument, that this approach also seems
->> more future-proof, is not a strong one.
->
-> Please elaborate on its weaknesses then.
-
-Well, as you said basically. The weakness of the argument is that the
-virtio-camera is not yet published, the KCAM is not merged yet, so yeah,
-the future is not clear actually.
-
-BTW I just thought about one more case, that is already real: sharing
-camera streams with pipewire. I think pipewire doesn't provide a V4L2
-UAPI interface, right?
-
->>>> 3. More specifically I can see, that around 95% V4L2 drivers use
->>>> videobuf2. This includes the current virtio-video driver. Bypassing th=
-e
->>>> V4L2 subsystem means that vb2 can't be used, right? In various
->>>> discussions vb2 popped up as a thing, that would be hard to avoid. Wha=
-t
->>>> do you think about this? How are you going to deal with various V4L2
->>>> memory types (V4L2_MEMORY_MMAP, V4L2_MEMORY_DMABUF, etc), for example?
->>>> I'll try to dive deeper myself too...
->>> VB2 is entirely avoided in the current driver, but my understanding is
->>> that its helpers could be used if needed.
->>>
->>> In virtio-v4l2, MMAP means that the host is responsible for managing
->>> the buffers, so vb2 is entirely avoided. USERPTR means the guest
->>> passes a SG list of guest physical addresses as mapping memory. VB2
->>> may or may not be involved in managing this memory, but most likely
->>> not if that memory comes from the guest userspace. DMABUF means the
->>> guest passes a virtio object as the backing memory of the buffer.
->>> There again there is no particular management to be done on the guest
->>> side.
->>>
->>> I bypassed VB2 for the current driver, and the cost of doing this is
->>> that I had to write my own mmap() function.
->>
->> The cost of it as of now is also that:
->>
->> 1. Only guest user-space applications, that use V4L2_MEMORY_MMAP, are
->> supported AFAIU.
->
-> This has nothing to do with VB2. I wanted to demonstrate that V4L2
-> could be used as a host-guest protocol and did it on a single memory
-> type to release something quickly. Please stop strawmanning the design
-> because the PoC is still incomplete.
-
-Please stop putting labels like this on my arguments. This is not
-helpful at all.
-
->> 2. There is no flexibility to choose whatever way of memory management
->> host and guest would like to use. Now the guest user-space application
->> selects this.
->
-> Errr no. The guest user-space chooses a type of memory from what the
-> guest kernel exposes, which depends on what the host itself decides to
-> expose.
-
-I don't agree. If an already written user-space app supports only MMAP,
-then there is no way to force it use USERPTR, right? Please correct me
-if I'm wrong.
-
->> The latter makes the solution much less flexible IMO. For example, this
->> won't work well with our hypervisor. There might other special needs in
->> other use-cases. Like sharing these object UUIDs. Probably this can
->> handled by mapping, for example, V4L2_MEMORY_USERPTR to guest-pages
->> sharing, V4L2_MEMORY_DMABUF to the UUIDs (which is not quite correct
->> IMHO).
->
-> Please elaborate on why this is not correct.
-
-Because IMHO UUIDs pointing to memory allocated by virtio-gpu are quite
-different dmabufs created in the guest with udmabuf, for example. This
-can be confusing.
-
->> So this already means querying the device for supported sharing
->> methods, rewriting the flow of V4L2 UAPI calls on the fly, ensuring
->> consistency, etc. This already looks hackish to me. Do you have a better
->> plan?
->
-> How do you support different kinds of memory without querying? Or do
-> you suggest we stick to a single one?
->
-> I am also not quite sure what you mean by "rewriting the flow of V4L2
-> UAPI calls on the fly". There is no "rewriting" - V4L2 structures are
-> just used to communicate with the host instead of virtio-video
-> structures.
-
-I'd like to know your ideas or better a concrete plan for enabling
-user-space apps, that only support MMAP, to work on top of a device,
-that supports only guest pages sharing.
-
->> Also this limits us to only 3 methods, right? And what if there
->> are more than 3 methods in the future?
->
-> Nothing prevents us from adding new virtio-specific memory types if
-> needed. But what other methods did you have in mind?
-
-You mean we can easily extend V4L2 UAPI with our own memory types, that
-are not used in usual V4L2 drivers? Please provide some evidence.
-
->> I think this inflexibility is a major problem with this approach.
->>
->>
->>>>> Actually I don't think this is even something we need to think about =
--
->>>>> in its simplest form the V4L2 guest driver just needs to act as a
->>>>> proxy for the device. So which decoder API is used by the host is
->>>>> completely irrelevant to the guest driver - it can support a decoder,
->>>>> an encoder, or a camera - it doesn't even need to be aware of what
->>>>> kind of device it is exposing and that simplicity is another thing
->>>>> that I like with this design.
->>>> As I wrote above the design would be indeed simple only in case the
->>>> actual hardware is exposed to a backend through V4L2 too. Otherwise th=
-e
->>>> complexity is just moved to backends.
->>> Yes, and while I acknowledge that, this is not really more complex
->>> that what you would have to do with a virtio-video device which also
->>> needs to manage its own state and drive the hardware through backends.
->>> I say that based on the experience working on the virtio-video device
->>> in crosvm which follows that design too.
->>
->> As I wrote above we have a different use-case. And I see the current
->> state of virtio video as a good common ground for different parties and
->> use-cases. Unfortunately I don't see any upsides for our use-cases from
->> the V4L2 UAPI proposal, only downsides.
->
-> Well AFAICT V4L2 provides the exact same set of capabilities as
-> virtio-video, with only minor differences. If virtio-video was
-> suitable for your use-case, V4L2 should be as well.
->
-> Maybe it makes things marginally more complex for your particular
-> proprietary bare-metal hypervisor. But it also makes things
-> dramatically easier and provides much more features for the vast
-> majority of the virtio audience who run Linux guests and can now use a
-> much simpler driver. Which one do we want to prioritize?
-
-This sounds like a neglect for our use-case. This is not helpful, if
-we're going to continue working with the same device, because this
-questions our ability to cooperate. That's fine as long as we can
-continue developing the current version separately.
-
-> I'm sorry but your answer is full of vague assertions about supposed
-> shortcomings of the approach without any concrete evidence of its
-> unsuitability. Please show us why this wouldn't work for you.
-
-I asked you what is your plan about the guest pages sharing. Probably
-you didn't see this question because I don't see the answer in your
-email. So I'm reiterating it here. What is your plan? Without that I can
-only share my own ideas, and indeed the whole conversation can seem
-vague and hypothetical.
-
-I also provided a benchmark in the other email. We haven't agreed on
-that yet, but I hope this can help making things clear.
-
---
-Alexander Gordeev
-Senior Software Engineer
-
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
-
-Phone: +49 30 60 98 54 0 - 88
-Fax: +49 (30) 60 98 54 0 - 99
-EMail: alexander.gordeev@opensynergy.com
-
-www.opensynergy.com
-
-Handelsregister/Commercial Registry: Amtsgericht Charlottenburg, HRB 108616=
-B
-Gesch=C3=A4ftsf=C3=BChrer/Managing Director: R=C3=A9gis Adjamah
-
-Please mind our privacy notice<https://www.opensynergy.com/datenschutzerkla=
-erung/privacy-notice-for-business-partners-pursuant-to-article-13-of-the-ge=
-neral-data-protection-regulation-gdpr/> pursuant to Art. 13 GDPR. // Unsere=
- Hinweise zum Datenschutz gem. Art. 13 DSGVO finden Sie hier.<https://www.o=
-pensynergy.com/de/datenschutzerklaerung/datenschutzhinweise-fuer-geschaefts=
-partner-gem-art-13-dsgvo/>
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gRnJvbTogTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4NCj4gU2VudDog
+V2VkbmVzZGF5LCBBcHJpbCAyNiwgMjAyMyAxMDo1OCBBTQ0KDQo+IEFsbCB0aGVzZSBhcmUgUk9N
+IHRob3VnaC4gQ2FuIGJlIHNoYXJlZCBiZXR3ZWVuIGZ1bmN0aW9ucyBvbiBhIHNpbmdsZSBkZXZp
+Y2UsDQo+IGJlIGl0IFZGcyBvciBtdWx0aWZ1bmN0aW9uIFBGLiBZZWEgSSBoZWFyZCB5b3UgYWJv
+dXQgbWF5YmUgbWFraW5nIHRoZW0NCj4gcHJvZ3JhbW1hYmxlLiBGb3Igc29tZSBjYXNlcyB3aGVy
+ZSB0aGVyZSBpcyBhIGhhcmR3YXJlIHJlc291cmNlIGFzc29jaWF0ZWQNCj4gd2l0aCBpdCwgaXQg
+bWFrZXMgc2Vuc2UuDQpSaWdodC4gU29tZSBhcmUsIHNvbWUgYXJlIG5vdCBST00uDQpBbmQgaXQg
+ZGVtYW5kcyBzcGVjaWFsIGNpcmN1aXRyeSBmb3Igbm9uLWNyaXRpY2FsIHBhdGguDQoNCj4gTm90
+IGluIHRoaXMgY2FzZSB0aG91Z2gsIGl0J3MganVzdCBhbm90aGVyIHdheSB0byBjYWxjdWxhdGUg
+aGFzaC4NCj4gDQpTdXJlLiBJbnN0ZWFkIG9mIGRvaW5nIGZpZWxkIGJ5IGZpZWxkIGJpLXNlY3Rp
+b24gdGhpcyB3YXkgcmVxdWlyZXMgY29uc3RhbnQgZGlzY3Vzc2lvbiBsaWtlIHRoaXMuDQpJbnN0
+ZWFkLCBwbGFjZW1lbnQgb2YgdGltZSBjcml0aWNhbCBmaWVsZHMgaW4gTU1JTyBpcyBiZXR0ZXIg
+YXBwcm9hY2ggYXMgaXQgaXMgZ2VuZXJpYyBndWlkZWxpbmUgdnMgUk9NL1JBTSBmaWVsZHMuDQog
+DQo+IA0KPiA+IERlcGVuZGluZyBvbiB0aGUgY29udGFpbmVyL1ZNIHNpemUgY2VydGFpbiBjYXBh
+YmlsaXRpZXMgbWF5IGNoYW5nZSBmcm9tDQo+IGRldmljZSB0byBkZXZpY2UuDQo+ID4gSGVuY2Ug
+aXQgaXMgaGFyZCB0byBkZWR1cGxpY2F0ZSB0aGVtIGF0IGRldmljZSBsZXZlbC4NCj4gPg0KPiA+
+IFRoZXJlZm9yZSwgYWJpbGl0eSB0byBxdWVyeSB0aGVtIG92ZXIgYSBub25fYWx3YXlzX2F2YWls
+YWJsZSB0cmFuc3BvcnQgaXMNCj4gcHJlZmVycmVkIGNob2ljZSBmcm9tIHRoZSBkZXZpY2UuDQo+
+ID4NCj4gPiBBIGRyaXZlciBtYXkgY2hvb3NlIHRvIGNhY2hlIGl0IGlmIGl0cyBiZWluZyBmcmVx
+dWVudGx5IGFjY2Vzc2VkIG9yIGFzayBkZXZpY2UNCj4gd2hlbiBuZWVkZWQuDQo+ID4gRXZlbiB3
+aGVuIGl0J3MgY2FjaGVkIGJ5IGRyaXZlciwgaXQgaXMgY29taW5nIGZyb20gdGhlIGNvbXBvbmVu
+dCB0aGF0DQo+IGRvZXNu4oCZdCBoYXZlIHRyYW5zcG9ydCBsZXZlbCB0aW1lb3V0cyBhc3NvY2lh
+dGVkIHdpdGggaXQuDQo+IA0KPiB3ZWxsIGNhY2hpbmcgYnkgZHJpdmVyIGlzIHVzaW5nIHVwIHNh
+bWUgYW1vdW50IG9mIFJBTSwgb25seSB3aXRoIG5vIGNoYW5jZSB0bw0KPiANCk5vIGNoYW5jZSB0
+byBmYXVsdC4gQW5kIGJldHRlciB1dGlsaXppbmcgdGhlIGRldmljZS4NCkFuZCBpdCBpcyBub3Qg
+YWx3YXlzIHRoZSBwaW5uZWQgUkFNLCBmdXR1cmUgaXQgY2FuIGJlIHBhZ2VkIG91dCB0b28uIA0K
+TWFueSBmaWVsZHMgd29uJ3QgYmUgZXZlbiBjYWNoZWQuDQpTb21lIG1heSBldmVuIGdldCBzZXQg
+aW4gdGhlIG5ldF9kZXZpY2Ugb3Igb3RoZXIga2VybmVsIGxldmVsIGRldmljZSBzdHJ1Y3R1cmVz
+Lg0K
 
