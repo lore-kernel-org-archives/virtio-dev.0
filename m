@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12429-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12430-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69BA8C77B60
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 09:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A480C77B60
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 13:42:57 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8EAF029FD1
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 09:33:37 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 75BE9339BE
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 13:42:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7D48E986650
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 09:33:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6701E986650
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Apr 2023 13:42:56 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 709FE98663F; Wed, 26 Apr 2023 09:33:37 +0000 (UTC)
+	id 5A8B6986640; Wed, 26 Apr 2023 13:42:56 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,244 +24,152 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5BEC998663C;
-	Wed, 26 Apr 2023 09:33:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4602198663F;
+	Wed, 26 Apr 2023 13:42:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R941e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0Vh2lPgm_1682501607;
-Message-ID: <1682501373.3154237-2-xuanzhuo@linux.alibaba.com>
-Date: Wed, 26 Apr 2023 17:29:33 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>,
- parav@nvidia.com,
- virtio-dev@lists.oasis-open.org,
- "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
- "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>,
- houp@yusur.tech,
- zhenwei pi <pizhenwei@bytedance.com>
-References: <1ab0beff-8b18-7a94-1a68-6bf36bcd0394@bytedance.com>
- <CACGkMEvh+G2Tm=WDTOK3K2GO8c2dQ4y=UiKAk_kvsid2MGzbGg@mail.gmail.com>
- <8f65c9aa-c867-0929-151c-21bbe25a0693@bytedance.com>
- <CACGkMEu9Tzrj+9CUzWOeGhRK-qONHk6cf+2RTTJtxtcKFB8cqw@mail.gmail.com>
-In-Reply-To: <CACGkMEu9Tzrj+9CUzWOeGhRK-qONHk6cf+2RTTJtxtcKFB8cqw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: Re: [virtio-comment] [PROPOSAL] Virtio Over Fabrics(TCP/RDMA)
-
-On Tue, 25 Apr 2023 14:36:04 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Mon, Apr 24, 2023 at 9:38=E2=80=AFPM zhenwei pi <pizhenwei@bytedance.c=
-om> wrote:
-> >
-> >
-> >
-> > On 4/24/23 11:40, Jason Wang wrote:
-> > > On Sun, Apr 23, 2023 at 7:31=E2=80=AFPM zhenwei pi <pizhenwei@bytedan=
-ce.com> wrote:
-> > >>
-> > >> Hi,
-> > >>
-> > >> In the past years, virtio supports lots of device specifications by
-> > >> PCI/MMIO/CCW. These devices work fine in the virtualization environm=
-ent,
-> > >> and we have a chance to support virtio device family for the
-> > >> container/host scenario.
-> > >
-> > > PCI can work for containers for sure (or does it meet any issue like
-> > > scalability?). It's better to describe what problems you met and why
-> > > you choose this way to solve it.
-> > >
-> > > It's better to compare this with
-> > >
-> > > 1) hiding the fabrics details via DPU
-> > > 2) vDPA
-> > >
-> > Hi,
-> >
-> > Sorry, I missed this part. "Network defined peripheral devices of virtio
-> > family" is the main purpose of this proposal,
->
-> This can be achieved by either DPU or vDPA.
-
-I agree this.
-
-So I didn't understand what the meaning of this realization. Although I am =
-also
-very excited to this idea, this broaden the possibility of virtio. But, I s=
-till
-really want to know what the meaning of this idea is, better performance? Or
-can achieve some situations that we cannot achieved now.
-
-> I think the advantages is,
-> if we standardize this in the spec, it avoids vendor specific
-> protocol.
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vh3Y9BA_1682516566;
+Message-ID: <ced8a6f0-7858-0b0a-55bb-26eea2a7ff5a@linux.alibaba.com>
+Date: Wed, 26 Apr 2023 21:42:43 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+To: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230423073532.105636-1-hengqi@linux.alibaba.com>
+ <f9221063-8419-9cb3-e59c-0b0393bdd501@nvidia.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <f9221063-8419-9cb3-e59c-0b0393bdd501@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [PATCH v13] virtio-net: support inner header hash
 
 
-Sorry, I dont got this.
 
-Thanks.
+在 2023/4/26 上午4:28, Parav Pandit 写道:
+>
+>
+> On 4/23/2023 3:35 AM, Heng Qi wrote:
+>>     \subsubsection{Legacy Interface: Feature bits}\label{sec:Device 
+>> Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+>> @@ -198,6 +202,7 @@ \subsection{Device configuration 
+>> layout}\label{sec:Device Types / Network Device
+>>           u8 rss_max_key_size;
+>>           le16 rss_max_indirection_table_length;
+>>           le32 supported_hash_types;
+>> +        le32 supported_tunnel_hash_types;
+>>   };
+> In v12 I was asking this to move to above field from the config area 
+> to the GET command in comment [1] as,
+>
+> "With that no need to define two fields at two different places in 
+> config area and also in cvq."
+
+I'm not sure if this is sufficiently motivated, RSS also has 
+supports_hash_types in config space.
+
+We don't actually need cvq and config to sync on 
+supported_tunnel_hash_types, since it doesn't need to change (meaning 
+supported_tunnel_hash_types doesn't send configuration change 
+notifications).
 
 >
-> > this allows us to use many
-> > types of remote resources which are provided by virtio target.
-> >
-> >  From the point of my view, there are 3 cases:
-> > 1, Host/container scenario. For example, host kernel connects a virtio
-> > target block service, maps it as a vdx(virtio-blk) device(used by
-> > Map-Reduce service which needs a fast/large size disk). The host kernel
-> > also connects a virtio target crypto service, maps it as virtio crypto
-> > device(used by nginx to accelarate HTTPS). And so on.
-> >
-> >          +----------+    +----------+       +----------+
-> >          |Map-Reduce|    |   nginx  |  ...  | processes|
-> >          +----------+    +----------+       +----------+
-> > ------------------------------------------------------------
-> > Host         |               |                  |
-> > Kernel   +-------+       +-------+          +-------+
-> >           | ext4  |       | LKCF  |          | HWRNG |
-> >           +-------+       +-------+          +-------+
-> >               |               |                  |
-> >           +-------+       +-------+          +-------+
-> >           |  vdx  |       |vCrypto|          | vRNG  |
-> >           +-------+       +-------+          +-------+
-> >               |               |                  |
-> >               |           +--------+             |
-> >               +---------->|TCP/RDMA|<------------+
-> >                           +--------+
-> >                               |
-> >                           +------+
-> >                           |NIC/IB|
-> >                           +------+
-> >                               |                      +-------------+
-> >                               +--------------------->|virtio target|
-> >                                                      +-------------+
-> >
-> > 2, Typical virtualization environment. The workloads run in a guest, and
-> > QEMU handles virtio-pci(or MMIO), and forwards requests to target.
-> >          +----------+    +----------+       +----------+
-> >          |Map-Reduce|    |   nginx  |  ...  | processes|
-> >          +----------+    +----------+       +----------+
-> > ------------------------------------------------------------
-> > Guest        |               |                  |
-> > Kernel   +-------+       +-------+          +-------+
-> >           | ext4  |       | LKCF  |          | HWRNG |
-> >           +-------+       +-------+          +-------+
-> >               |               |                  |
-> >           +-------+       +-------+          +-------+
-> >           |  vdx  |       |vCrypto|          | vRNG  |
-> >           +-------+       +-------+          +-------+
-> >               |               |                  |
-> > PCI --------------------------------------------------------
-> >                               |
-> > QEMU                 +--------------+
-> >                       |virtio backend|
-> >                       +--------------+
-> >                               |
-> >                           +------+
-> >                           |NIC/IB|
-> >                           +------+
-> >                               |                      +-------------+
-> >                               +--------------------->|virtio target|
-> >                                                      +-------------+
-> >
+> I am sorry if that was not clear enough.
 >
-> So it's the job of the Qemu to do the translation from virtqueue to packe=
-t here?
+> [1] 
+> https://lore.kernel.org/virtio-dev/569cbaf9-f1fb-0e1f-a2ef-b1d7cd7dbb1f@nvidia.com/
 >
-> > 3, SmartNIC/DPU/vDPA environment. It's possible to convert virtio-pci
-> > request to virtio-of request by hardware, and forward request to virtio
-> > target directly.
-> >          +----------+    +----------+       +----------+
-> >          |Map-Reduce|    |   nginx  |  ...  | processes|
-> >          +----------+    +----------+       +----------+
-> > ------------------------------------------------------------
-> > Host         |               |                  |
-> > Kernel   +-------+       +-------+          +-------+
-> >           | ext4  |       | LKCF  |          | HWRNG |
-> >           +-------+       +-------+          +-------+
-> >               |               |                  |
-> >           +-------+       +-------+          +-------+
-> >           |  vdx  |       |vCrypto|          | vRNG  |
-> >           +-------+       +-------+          +-------+
-> >               |               |                  |
-> > PCI --------------------------------------------------------
-> >                               |
-> > SmartNIC             +---------------+
-> >                       |virtio HW queue|
-> >                       +---------------+
-> >                               |
-> >                           +------+
-> >                           |NIC/IB|
-> >                           +------+
-> >                               |                      +-------------+
-> >                               +--------------------->|virtio target|
-> >                                                      +-------------+
-> >
-> > >>
-> > >> - Theory
-> > >> "Virtio Over Fabrics" aims at "reuse virtio device specifications", =
-and
-> > >> provides network defined peripheral devices.
-> > >> And this protocol also could be used in virtualization environment,
-> > >> typically hypervisor(or vhost-user process) handles request from vir=
-tio
-> > >> PCI/MMIO/CCW, remaps request and forwards to target by fabrics.
-> > >
-> > > This requires meditation in the datapath, isn't it?
-> > >
-> > >>
-> > >> - Protocol
-> > >> The detail protocol definition see:
-> > >> https://github.com/pizhenwei/linux/blob/virtio-of-github/include/uap=
-i/linux/virtio_of.h
-> > >
-> > > I'd say a RFC patch for virtio spec is more suitable than the codes.
-> > >
-> >
-> > OK. I'll send a RFC patch for virtio spec later if this proposal is
-> > acceptable.
+>>   \subparagraph{Supported/enabled hash types}
+>>   \label{sec:Device Types / Network Device / Device Operation / 
+>> Processing of Incoming Packets / Hash calculation for incoming 
+>> packets / Supported/enabled hash types}
+>> +This paragraph relies on definitions from \hyperref[intro:IP]{[IP]}, 
+>> \hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
+>>   Hash types applicable for IPv4 packets:
+>>   \begin{lstlisting}
+>>   #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
+>> @@ -980,6 +993,152 @@ \subsubsection{Processing of Incoming 
+>> Packets}\label{sec:Device Types / Network
+>>   (see \ref{sec:Device Types / Network Device / Device Operation / 
+>> Processing of Incoming Packets / Hash calculation for incoming 
+>> packets / IPv6 packets without extension header}).
+>>   \end{itemize}
+>>   +\paragraph{Inner Header Hash}
+>> +\label{sec:Device Types / Network Device / Device Operation / 
+>> Processing of Incoming Packets / Inner Header Hash}
+>> +
+>> +If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the device supports 
+>> inner header hash and the driver can send
+>> +commands VIRTIO_NET_CTRL_TUNNEL_HASH_SET and 
+>> VIRTIO_NET_CTRL_TUNNEL_HASH_GET for the inner header hash configuration.
+>> +
+>> +struct virtio_net_hash_tunnel_config {
+> Please move field from the config struct to here. Both are RO fields.
 >
-> Well, I think we need to have an RFC first to know if it is acceptable or=
- not.
+> le32 supported_hash_tunnel_types;
+>> +    le32 hash_tunnel_types;
+>> +};
+>> +
+>> +#define VIRTIO_NET_CTRL_TUNNEL_HASH 7
+>> + #define VIRTIO_NET_CTRL_TUNNEL_HASH_SET 0
+>> + #define VIRTIO_NET_CTRL_TUNNEL_HASH_GET 1
+>> +
+>> +Filed \field{hash_tunnel_types} contains a bitmask of configured 
+>> hash tunnel types as
+>> +defined in \ref{sec:Device Types / Network Device / Device Operation 
+>> / Processing of Incoming Packets / Hash calculation for incoming 
+>> packets / Supported/enabled hash tunnel types}.
+>> +
+>> +The class VIRTIO_NET_CTRL_TUNNEL_HASH has the following commands:
+>> +\begin{itemize}
+>> +\item VIRTIO_NET_CTRL_TUNNEL_HASH_SET: set the 
+>> \field{hash_tunnel_types} to configure the inner header hash 
+>> calculation for the device.
+>> +\item VIRTIO_NET_CTRL_TUNNEL_HASH_GET: get the 
+>> \field{hash_tunnel_types} from the device.
+>> +\end{itemize}
+>> +
+>> +For the command VIRTIO_NET_CTRL_TUNNEL_HASH_SET, the structure 
+>> virtio_net_hash_tunnel_config is write-only for the driver.
+>> +For the command VIRTIO_NET_CTRL_TUNNEL_HASH_GET, the structure 
+>> virtio_net_hash_tunnel_config is read-only for the driver.
+>> +
+> You need to split the structures to two, one for get and one for set 
+> in above description as get and set contains different fields.
+>> +
+>> +If VIRTIO_NET_HASH_TUNNEL_TYPE_NONE is set or the encapsulation type 
+>> is not included in \field{hash_tunnel_types},
+>> +the hash of the outer header is calculated for the received 
+>> encapsulated packet.
+>> +
+>> +
+>> +For scenarios with sufficient external entropy or no internal 
+>> hashing requirements, inner header hash may not be needed:
+>> +A tunnel is often expected to isolate the external network from the 
+>> internal one. By completely ignoring entropy
+>> +in the external header and replacing it with entropy from the 
+>> internal header, for hash calculations, this expectation
+> You wanted to say inner here like rest of the places.
 >
-> >
-> > [...]
-> >
-> > >
-> > > A quick glance at the code told me it's a mediation layer that convert
-> > > descriptors in the vring to the fabric specific packet. This is the
-> > > vDPA way.
-> > >
-> > > If we agree virtio of fabic is useful, we need invent facilities to
-> > > allow building packet directly without bothering the virtqueue (the
-> > > API is layout independent anyhow).
-> > >
-> > > Thanks
-> > >
-> >
-> > This code describes the case 1[Host/container scenario], also proves
-> > this case works.
-> > Create a virtqueue in the virtio fabric module, also emulate a
-> > "virtqueue backend" here, when uplayer kicks vring, the "backend" gets
-> > notified and builds packet to TCP/RDMA.
->
-> In this case, it won't perform good. Since it still use virtqueue
-> which is unnecessary in the datapath for fabric.
->
-> Thanks
->
-> >
-> > [...]
-> >
-> > --
-> > zhenwei pi
-> >
+> s/internal header/inner header
+
+I want to make the 'external' and 'internal' correspond, but avoid the 
+internal header, and use a unified 'inner header' is also reasonable.:)
+
 >
 >
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>> +The driver MUST NOT set any VIRTIO_NET_HASH_TUNNEL_TYPE_ flags that 
+>> are not supported by the device.
+> Multiple flags so,
 >
+> s/flags that are/flags which are/
+
+Will fix.
+
+Thanks!
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
