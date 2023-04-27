@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12444-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12445-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1D32C7618E
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 29B98C77B60
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:28:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9C28C29FC9
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:20:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5A86D2A823
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:28:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0885A9866EE
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:20:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 55A12986652
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:28:41 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 77D89986642; Thu, 27 Apr 2023 02:20:33 +0000 (UTC)
+	id 4B01A986288; Thu, 27 Apr 2023 02:28:41 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,68 +24,73 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B0A74986641;
-	Thu, 27 Apr 2023 02:19:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 37A9D986641;
+	Thu, 27 Apr 2023 02:28:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vh5U1-k_1682561983;
-Message-ID: <7f486f29-10a6-7625-fef8-3d543f529e4c@linux.alibaba.com>
-Date: Thu, 27 Apr 2023 10:19:42 +0800
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vh5MawF_1682562509;
+Message-ID: <5463159d-daa2-101b-6abf-ea7aa4f40bd0@linux.alibaba.com>
+Date: Thu, 27 Apr 2023 10:28:29 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.10.0
-To: Parav Pandit <parav@nvidia.com>,
- "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
- "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
+ Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
  Yuri Benditovich <yuri.benditovich@daynix.com>,
  Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 References: <20230423073532.105636-1-hengqi@linux.alibaba.com>
- <f9221063-8419-9cb3-e59c-0b0393bdd501@nvidia.com>
- <ced8a6f0-7858-0b0a-55bb-26eea2a7ff5a@linux.alibaba.com>
- <PH0PR12MB5481EA937633233A9A9E5E30DC659@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1d0adb7d-fcc8-404d-8105-bc1f818bc3a3@linux.alibaba.com>
- <PH0PR12MB54817E0B2B0B232B49320F5CDC659@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230425165659-mutt-send-email-mst@kernel.org>
+ <19e6d4e6-e3d8-7eca-4d54-d113b4cc5504@linux.alibaba.com>
+ <20230426104538-mutt-send-email-mst@kernel.org>
 From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <PH0PR12MB54817E0B2B0B232B49320F5CDC659@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <20230426104538-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] RE: [virtio-comment] RE: [PATCH v13] virtio-net:
- support inner header hash
+Subject: Re: [virtio-dev] Re: [virtio-comment] [PATCH v13] virtio-net: support
+ inner header hash
 
 
 
-在 2023/4/26 下午10:24, Parav Pandit 写道:
+在 2023/4/26 下午10:48, Michael S. Tsirkin 写道:
+> On Wed, Apr 26, 2023 at 10:14:30PM +0800, Heng Qi wrote:
+>> This does not mean that every device needs to implement and support all of
+>> these, they can choose to support some protocols they want.
+>>
+>> I add these because we have scale application scenarios for modern protocols
+>> VXLAN-GPE/GENEVE:
+>>
+>> +\item In scenarios where the same flow passing through different tunnels is expected to be received in the same queue,
+>> +      warm caches, lessing locking, etc. are optimized to obtain receiving performance.
+>>
+>>
+>> Maybe the legacy GRE, VXLAN-GPE and GENEVE? But it has a little crossover.
+>>
+>> Thanks.
+> But VXLAN-GPE/GENEVE can use source port for entropy.
 >
->> From: Heng Qi <hengqi@linux.alibaba.com>
->> Sent: Wednesday, April 26, 2023 10:04 AM
->> Yes, but that seems like a tiny cost, and the cvq command-related structure is
->> much simpler.
-> Current structure size is 24 bytes.
-> This size becomes multiplier with device count scale to be always available and rarely changes.
+> 	It is recommended that the UDP source port number
+> 	 be calculated using a hash of fields from the inner packet
 >
-> As we add new features such device capabilities grow making the multiplier bigger.
-> For example
-> a. flow steering capabilities (how many flows, what mask, supported protocols, generic options)
-> b. hds capabilities
-> c. counter capabilities (histogram based, which error counters supported, etc)
-> d. which new type of tx vq improvements supported.
-> e. hw gro context count supported
->
-> May be more..
->
-> Depending on the container/VM size certain capabilities may change from device to device.
-> Hence it is hard to deduplicate them at device level.
+> That is best because
+> it allows end to end control and is protocol agnostic.
 
-This makes sense. In general, we should be careful about adding things 
-to the device space unless the benefit is non-trivial.
+Yes. I agree with this, I don't think we have an argument on this point 
+right now.:)
+
+For VXLAN-GPE/GENEVE or other modern tunneling protocols, we have to 
+deal with
+scenarios where the same flow passes through different tunnels.
+
+Having them hashed to the same rx queue, is hard to do via outer headers.
+
+> All that is missing is symmetric Toepliz and all is well?
+
+The scenarios above or in the commit log also require inner headers.
+
 
 Thanks.
 
 >
-> Therefore, ability to query them over a non_always_available transport is preferred choice from the device.
->
-> A driver may choose to cache it if its being frequently accessed or ask device when needed.
-> Even when it's cached by driver, it is coming from the component that doesn’t have transport level timeouts associated with it.
 
 
 ---------------------------------------------------------------------
