@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12445-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12446-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 29B98C77B60
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 96279C77B73
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 08:22:35 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5A86D2A823
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:28:41 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B97E52AEC2
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 08:22:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 55A12986652
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 02:28:41 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A517A986651
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 08:22:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4B01A986288; Thu, 27 Apr 2023 02:28:41 +0000 (UTC)
+	id 8C3B3986641; Thu, 27 Apr 2023 08:22:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,74 +24,80 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 37A9D986641;
-	Thu, 27 Apr 2023 02:28:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 75F9D986642
+	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Apr 2023 08:22:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vh5MawF_1682562509;
-Message-ID: <5463159d-daa2-101b-6abf-ea7aa4f40bd0@linux.alibaba.com>
-Date: Thu, 27 Apr 2023 10:28:29 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682583752; x=1685175752;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1iEFX27gOLKED0gJBOHZ20m6ca7CQKWDk132DtklGDo=;
+        b=YnqicNbM8W177JfolzfarI8mbMCeFHj5trTYD6cRZSa53U3VT7JYYMbTOiz7NeXvNx
+         8xS54Acc+uMiAnsb778wiC/C2t/cKA7YlUG9pgn7Q0vvapOuFkb+NIEJ1wCzqGFfCDdA
+         ihsLmz8OyKSfb9dq+BRuG5S8pel0k1M00hUnwnlrAqYYj/QMqn9UjEOsz9ljSCb3AMCR
+         OiJGY1Nr5SsoQKYgF8WOV8bYBwmyq9TuG/cdbz7IqEit5LrbtXKM+MaTpurk1RyLmZxp
+         2bpBXpaZCPrRCKWeeeQf1ILONHpIbntAi+hvCwvRXTLLrvqTHyI3vIetPJRF/UlEw2GN
+         pXDA==
+X-Gm-Message-State: AC+VfDx1j9X+UHWoODoQO+Axi//erFJZhfwSPRBbMmYA+X4n3n6IGC4F
+	/5m2sYzNpzCYW2CE0j1igRixzg==
+X-Google-Smtp-Source: ACHHUZ5UuI2cDKRy061k/Po+DHCWDcfLjnHjKd1KGUTArNlM5p6Aw6gqHMFHPzZJugVkuE4qbvxX7g==
+X-Received: by 2002:a17:902:cec4:b0:19c:f232:21ca with SMTP id d4-20020a170902cec400b0019cf23221camr927289plg.3.1682583752597;
+        Thu, 27 Apr 2023 01:22:32 -0700 (PDT)
+Message-ID: <5af40945-9f11-93f8-bd2b-3a795d13f06c@bytedance.com>
+Date: Thu, 27 Apr 2023 16:20:34 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
- Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
- Yuri Benditovich <yuri.benditovich@daynix.com>,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230423073532.105636-1-hengqi@linux.alibaba.com>
- <20230425165659-mutt-send-email-mst@kernel.org>
- <19e6d4e6-e3d8-7eca-4d54-d113b4cc5504@linux.alibaba.com>
- <20230426104538-mutt-send-email-mst@kernel.org>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230426104538-mutt-send-email-mst@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Content-Language: en-US
+To: Parav Pandit <parav@nvidia.com>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Cornelia Huck
+ <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>, houp@yusur.tech,
+ Jason Wang <jasowang@redhat.com>, jiangzhuo.cs@bytedance.com
+References: <1ab0beff-8b18-7a94-1a68-6bf36bcd0394@bytedance.com>
+ <CACGkMEvh+G2Tm=WDTOK3K2GO8c2dQ4y=UiKAk_kvsid2MGzbGg@mail.gmail.com>
+ <8f65c9aa-c867-0929-151c-21bbe25a0693@bytedance.com>
+ <4150bd72-a358-c854-0c64-b149621a1b8d@nvidia.com>
+From: zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <4150bd72-a358-c854-0c64-b149621a1b8d@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] Re: [virtio-comment] [PATCH v13] virtio-net: support
- inner header hash
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: Re: [virtio-comment] [PROPOSAL] Virtio Over Fabrics(TCP/RDMA)
 
+On 4/25/23 13:03, Parav Pandit wrote:
+> 
+> 
+[...]
+> 
+> I briefly see your rdma command descriptor example, which is not aligned 
+> to 16B. Perf wise it will be poor than nvme rdma fabrics.
+> 
 
+Hi,
+I'm confused here, could you please give me more hint?
+1, The size of command descriptor(I defined in example) is larger than 
+command size of nvme rdma, more overhead leads performance worse than 
+nvme over rdma.
 
-在 2023/4/26 下午10:48, Michael S. Tsirkin 写道:
-> On Wed, Apr 26, 2023 at 10:14:30PM +0800, Heng Qi wrote:
->> This does not mean that every device needs to implement and support all of
->> these, they can choose to support some protocols they want.
->>
->> I add these because we have scale application scenarios for modern protocols
->> VXLAN-GPE/GENEVE:
->>
->> +\item In scenarios where the same flow passing through different tunnels is expected to be received in the same queue,
->> +      warm caches, lessing locking, etc. are optimized to obtain receiving performance.
->>
->>
->> Maybe the legacy GRE, VXLAN-GPE and GENEVE? But it has a little crossover.
->>
->> Thanks.
-> But VXLAN-GPE/GENEVE can use source port for entropy.
->
-> 	It is recommended that the UDP source port number
-> 	 be calculated using a hash of fields from the inner packet
->
-> That is best because
-> it allows end to end control and is protocol agnostic.
+2, The command size not aligned to 16B leads performance issue on RDMA 
+SEND operation. My colleague Zhuo help me test the performance on 
+sending 16/24/32 bytes:
+taskset -c 30 ib_send_bw -d mlx5_2 -i 1 -x 3 -s 16 -t 1 xx.xx.xx.xx
+taskset -c 30 ib_send_bw -d mlx5_2 -i 1 -x 3 -s 24 -t 1 xx.xx.xx.xx
+taskset -c 30 ib_send_bw -d mlx5_2 -i 1 -x 3 -s 32 -t 1 xx.xx.xx.xx
+The QPS seems almost same.
 
-Yes. I agree with this, I don't think we have an argument on this point 
-right now.:)
+> For PCI transport for net, we intent to start the work to improve 
+> descriptors, the transport binding for net device. From our research I 
+> see that some abstract virtio descriptors are great today, but if you 
+> want to get best out of the system (sw, hw, cpu), such abstraction is 
+> not the best. Sharing of "id" all the way to target and bring back is an 
+> example of such inefficiency in your example.
 
-For VXLAN-GPE/GENEVE or other modern tunneling protocols, we have to 
-deal with
-scenarios where the same flow passes through different tunnels.
-
-Having them hashed to the same rx queue, is hard to do via outer headers.
-
-> All that is missing is symmetric Toepliz and all is well?
-
-The scenarios above or in the commit log also require inner headers.
-
-
-Thanks.
-
->
-
+-- 
+zhenwei pi
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
