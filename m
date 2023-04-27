@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12450-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12451-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9B433C77B73
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 14:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EC685C77B7C
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 14:20:27 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B99FF2AD53
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 14:10:57 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 12B742AEDC
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 14:20:27 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6D2A698664A
-	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 14:10:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E2AE898664C
+	for <virtio-dev@archiver.kernel.org>; Thu, 27 Apr 2023 14:20:26 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 5542D986642; Thu, 27 Apr 2023 14:10:57 +0000 (UTC)
+	id BD57B986644; Thu, 27 Apr 2023 14:20:26 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,32 +24,32 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 434CF986644
-	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Apr 2023 14:10:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 67C51986646
+	for <virtio-dev@lists.oasis-open.org>; Thu, 27 Apr 2023 14:20:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1682604651.757000
-X-TM-MAIL-UUID: d1c84556-44ed-40d9-9f4b-596b11fadf82
+X-TM-MAIL-RECEIVED-TIME: 1682605212.707000
+X-TM-MAIL-UUID: 376967d6-0364-49aa-9a10-4f9ca2f520e8
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c6sL/Ku2BKvnNmb0YaFJMYjwRENS0F4cgMo8rfTf37yX/lQA/SZU3T2He+O5TC+lqy4t9ZQn+iJ5STKBUqgHyEhluTdHvAU7pHqXz/gNkvDH3FbNgroqhSwUKDyLAoJo/PZUjGub/rDYPgrxDdScx4K/MgLXbaWxW+Y1rugnLGVMzkRtWI8FkOh4AYnnNsK3KxA+qCoWPhCMcNC6CHV1616oUB7zJkqmMBKPs0vwnZBiUID1Xsw1Kev6U3XnDl1tk4UxKiUEWSp4AaqgeXXULoD/Xs03W/uZV04thverqt4hxHVhKd8hyJ8/lxnpq8FB7eda07TTmjybCHNnHi9J2A==
+ b=a/VVL5/UtXyosJCAAMZG1bOi9eDvlVXFINwkqxGnimWYbT288OpHuAyeYP5DOmynx6liycdz5L+2iNbPaJQbRTRaDlaAwM6xohjKGPQ/EXe6QwImt9+PW5b8c5U/LK2IUxHEZNW9RJ6HbVDH/NcYK+tVRyQgOsVWaiWeW0ShVMYFX1nFojietFC5MyhcPMXygJVldjMjOqRY7UgR3MWW19dSrRj0rdAriT59llek8T2ylQOo7m42CGplZNdZT44ej4AGIYPAmbkmGi7+VMcgeYmp9g8FdzBxgyZRkkXu5FyCbusdvavpwECxEIDXWLqmxgvra0DXPb2irrypmA1ehg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YSh7b/9vv8gAjQ5ZSA3e2pIS1RS22TFoJkmIrIg5+VU=;
- b=nFFZyr5Aisz5Bt6lUYTRuupi6h64vPkgrnVouwy7E3dk6CthqxvhBzHuce9MLqN+maw8jw2TDW3vdyqEhYeWLcoK/7pcTnlJmRcSIBONxTsmF+v6B8m6KCn1fwcMRE4jOQmNk8/y35KkeARzXUqMVvd2AHzBp3URlyckD1lu21xLEnVXkAlJ70RJUjf0+V8FCjykvQBBTpJpVVlBWM7Gd0F+G00zQ+DVGlH1F3rEUmnfJi9sqaUiRJ1cRqGkzFXrGxAiWvnmt6c02BQgFcoRAm1opMRlU4CtPXlTIgafQB40Myvfs7E+tClanq4qi93OawuzQwIfi6WV1R1j3+Gulw==
+ bh=W6VKM7S7g417nSmUT0HnUXiqQMZCsrFK1HYb7wlsh5g=;
+ b=oK7lfVwWLm4ez+lTGrnTSg9h09mlhzexmlnvto6chyDrLfPdkSLhWKWBQEzqTn4qdAkXZKWFAfl0N3C8hWR+0hdj27RuzwTHXxOLauVQM75zUAmKvH61u/Vc/OKUeTWZWVd+oWcnPUAeZBUgZHwIpfbrmA4gm96ikkueLFy0GxRpzWUR2DLqdfAhUe/jfEQwltQhY6tZf3hzdLP+H9N/78ZhJeocLWypuijBdoeNbE4Xg1ZaSeB/ETPBXdktF4q/83MQ53BmE+j52qo/0VyeMaCOidZZ7lI72QBVp1IbT6xY2ndxvpcm9tpLJCSSgSe0T5k6JnHOzq16FUxHmS7vTw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=opensynergy.com; dmarc=pass action=none
  header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <c1658889-0a90-5681-6afb-7160cdf1bf77@opensynergy.com>
-Date: Thu, 27 Apr 2023 16:10:47 +0200
+Message-ID: <b2d78c20-8476-ccda-42ca-6863f44b06ed@opensynergy.com>
+Date: Thu, 27 Apr 2023 16:20:09 +0200
 Content-Language: en-US
-To: Cornelia Huck <cohuck@redhat.com>,
- Alexandre Courbot <acourbot@chromium.org>
-Cc: virtio-dev@lists.oasis-open.org, Keiichi Watanabe
- <keiichiw@chromium.org>, =?UTF-8?Q?Alex_Benn=c3=a9e?=
- <alex.bennee@linaro.org>, Marcin Wojtas <mwojtas@google.com>,
- =?UTF-8?Q?Matti_M=c3=b6ll?= <Matti.Moell@opensynergy.com>,
+To: Alexandre Courbot <acourbot@chromium.org>
+Cc: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org,
+ Keiichi Watanabe <keiichiw@chromium.org>,
+ =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>,
+ Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=c3=b6ll?=
+ <Matti.Moell@opensynergy.com>,
  Andrew Gazizov <andrew.gazizov@opensynergy.com>,
  Enrico Granata <egranata@google.com>,
  Gustavo Padovan <gustavo.padovan@collabora.com>,
@@ -60,7 +60,6 @@ Cc: virtio-dev@lists.oasis-open.org, Keiichi Watanabe
  Enric Balletbo i Serra <eballetb@redhat.com>,
  Albert Esteve <aesteve@redhat.com>
 References: <20221208072325.2259940-1-acourbot@chromium.org>
- <CAPBb6MVDKfKOyDFPiOL3fRp4Jn6WwMpSZt6V32EJ1CYW_+rw+w@mail.gmail.com>
  <909867c6-b66c-1281-45a7-38fd0aa32123@opensynergy.com>
  <87cz6mnaqk.fsf@redhat.com>
  <CAPBb6MWNfPH+e8=4zUcq2dV-59OdzTYSuN04Cg2rRPWao-nseQ@mail.gmail.com>
@@ -76,211 +75,341 @@ References: <20221208072325.2259940-1-acourbot@chromium.org>
  <CAPBb6MUHXh0XYLH=8anWLNQaS+p6_VhMRki+qSqFQGeYQzBSSA@mail.gmail.com>
  <2d5df33a-c246-81ee-92e7-a44712600e62@opensynergy.com>
  <590378d1-83e0-b058-7eeb-2dbe5963670e@opensynergy.com>
- <87354okkx5.fsf@redhat.com>
+ <CAPBb6MWMjvTiAdCwfUH62EpqYLHotFoDg7hAfqY2oLkpmYM_HQ@mail.gmail.com>
 From: Alexander Gordeev <alexander.gordeev@opensynergy.com>
-In-Reply-To: <87354okkx5.fsf@redhat.com>
+In-Reply-To: <CAPBb6MWMjvTiAdCwfUH62EpqYLHotFoDg7hAfqY2oLkpmYM_HQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: AM0PR01CA0171.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::40) To BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
+X-ClientProxiedBy: BE1P281CA0248.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:8b::10) To BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:b10:4d::9)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BE1P281MB2663:EE_|BEZP281MB3108:EE_
-X-MS-Office365-Filtering-Correlation-Id: 74210945-7a30-44d4-d9c9-08db47293419
+X-MS-TrafficTypeDiagnostic: BE1P281MB2663:EE_|BE1P281MB3127:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6a206ad3-fb8f-4777-57bf-08db472a8296
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	rLcyd4yPsV7M3KkfIRp06ei3hwGEuYL4q72tAn3WCCQB1bwBTh4N9p2pkgCV2/hH9WZXadgqR78nsEvt+CZecG8o6f33jz9X25wJOgOWdR+YqsRxl/dAmtJX6Qb3vD2aNBUFbYsH+dnIhkwsIxEDBW99UcfZmz1LZw55Sd8NyQW9hzHCrQOPruPhtdacV7pa7sf8PBYYlWF/b+Sk1jT64ecq17cUNE8YN8gzVqp4GMX34Oa4t05zNCGemzXTx2gxWpMgrTiYfrvSdag+YyXPkBVZMogM8DUU+S4zf0HwcxzIpPG8432m/PM/0hVpEN69EgcKumM7zCz/k52lKdC3dFKG0zASg8c9qWGtQtGjXhTy1nXJ7N1YHcqwyWbOdEO4XRizzreIu4VmmALDFYZ4At0kYcq5yWEeHQELXU6D4JW+9TAIja3OFaoCvjgfozYV/Y1KzVd2KeF66ixEOPVInTLTEYKbpNvu0w2JbmwUJRshkOjvw3z4Ss9L3egq7k9XH++InEB/ovNPDQRb/cLoP9o2A4lLPXA/3sK1AOCtObc=
+	rhPc3S2iuS6hRiewAp3GMduTpDLpE2ldwBdn1EE3Ft+o4Hqxbh2q5SApwo2O7xRB14uiW4Du/2+V7RjyqXwQFVcd0yDx07MDildwawlQCSH90bbevP0yooH6YRAP8OKK16CB08bZOkd1YYpWi3i3msUEyoIW1BjzNJpf1933p6zNjJouwgAOfABSpIP/HOHYo3J8Fqt2HZy/iD3S8bOVE9mT2VL1jAJtVRf0nZrASQUoDL3ELarbbRoqXMzQoL2NMsS7cDQFjLp9TKjHFAK3BgW+8Bd5m6BHnfYQP5AyNSCbH1zGzkjOFRc2C2IpO720fsVzb7e2z32t/Su3Vss3j2nYdoh9ZnmXXLayggVQmhGo+YKcL2zooHybengEF+OLr2eLnAD31m22IXl2S6v//nE1f+uo5M3a4WF+kozLPWGi+TjDYHIHrSAZOyX/xmN9vusuTWFxYpD1DG2rtS7GTV/LZzGQT09cfDBxh2J4niX3et6lp2ArBrUzZYlTqgtLn7qcMrs30wak4rGIulXvua2ZaztcwhGSvoDGACrJSrmxnfGpkgutwkLm0q3mq8tMifAfFOiA241PpDIG9UScJfQ6pTRwEDSvFcgdC6XzXtLpUD/92uozhE/pQlceN+Rw1WB2qgqRZ+4994dHz12Hxg==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(346002)(396003)(376002)(39840400004)(136003)(366004)(451199021)(31686004)(66899021)(26005)(38100700002)(66476007)(31696002)(4326008)(41300700001)(15974865002)(66556008)(66946007)(86362001)(478600001)(54906003)(42186006)(36756003)(316002)(110136005)(66574015)(83380400001)(2616005)(53546011)(186003)(8936002)(5660300002)(8676002)(2906002)(7416002)(44832011);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(136003)(376002)(346002)(366004)(39840400004)(396003)(451199021)(66899021)(316002)(4326008)(66476007)(66946007)(66556008)(6916009)(42186006)(54906003)(966005)(15974865002)(86362001)(31696002)(478600001)(36756003)(186003)(53546011)(26005)(41300700001)(66574015)(38100700002)(2616005)(30864003)(2906002)(31686004)(5660300002)(44832011)(8936002)(83380400001)(7416002)(8676002)(5930299015);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RXd1TVRGQjdYTVlZOHA5SjNmWFBmT3NsNWlXcG8zb09JeEp1VVU1ZnlGSVVO?=
- =?utf-8?B?dnFUUGlSOTJXMzRtMld0cEZYMHlkNDlQbjhLd0dDd1NUclpWRk9YSGhvV0NQ?=
- =?utf-8?B?RmU2eENaaHJ3TDRwQWNKaDVHNHppNFRoYjFGdjlvTTZMQnBjTWpINUw3NXFz?=
- =?utf-8?B?Y0txQUx6TW02Y29TVVdYd2V2a21CTUwzU3JISERocWpBSDR3LzIrSzJqUTM4?=
- =?utf-8?B?ZlJrZUUzUkVLYkN1bCsyZEluZmIwTFVoVmNES1ZTV2tScTJhNDhia1A3alVk?=
- =?utf-8?B?VkFYMkZDR01jNkRoZk1lNUJ0U2RxbXdBa0V3ZDdQMThuZkloWWJFbERKSGpW?=
- =?utf-8?B?T0syUU05ZU0vN2hYUGtOc1JlTXUxcy9aNDVuV0JhUWlSSWtqZGJHMTdJY0ZC?=
- =?utf-8?B?bnlYcDNrVkhBSEs2UkZzTzlScHpLSVBZdnltOTJQQ2xVL1FiV0lEMCtma1Rs?=
- =?utf-8?B?bGYrNklVeGlQWHMxOHpNMGRSRUFJbllsd3luTUtpVnpuS2ZVUmxIdDVRQUp6?=
- =?utf-8?B?YU1peW9EenRuMlB4aUFnSTl0ajhmWFRDTFVKcGo2ZmdKRHhPNExFUU01Z1pq?=
- =?utf-8?B?c1NSdG1UUGFPKzJUaUcwd0N6UkJOaEp0M0wyMTVsUXBuc3BHY0Nrc1N0RmZt?=
- =?utf-8?B?c3NGUkJKV3gvNjNIMFNVTGdVV1hGbjB3RkZVVGIwYTlXdXVJS2s1Uk5DanVt?=
- =?utf-8?B?UW8rYnJYWDBvTWp2dGdqMGdRcHd4ektzZDlzZ0VjbFlucEVQQ1duMkxXRm9h?=
- =?utf-8?B?SGlMaUZmUkhHRWU5Tk9NbEU1WERrY3Bab2E3UUg1bDVMbVJsTyszRkEzdWsy?=
- =?utf-8?B?VjlVeFdDbDFwRC9PYmcxVWk4ZmRBQUdrT2tNNnJRQXc5TzVLbXliQkNFWmRS?=
- =?utf-8?B?YmRKNXMxR0oxbzJ0c0dRT2p2R0ZLWnZhV1lvNjV0alQvN21ubzIwOVh2c2Iv?=
- =?utf-8?B?N2VSSFNZZ3BYLzlyL0VTSzk1MFI0ak1wVFJYZUlZL2I4OWJjSWhhd25HUmln?=
- =?utf-8?B?NWh4a013bUl5aVAzMklQZXFySmlsb3VqZ0lHVm1DVDlEOXpaMUs5R1dweFdt?=
- =?utf-8?B?ZytrSGRBOUlWNWZwektTQlZMd3pzMzMxL2F5NTZlUTZuYnVweklWRHZOSlB5?=
- =?utf-8?B?bWZUNThOSld5cTRKdHdZbk12cXd2bGorK0FlWEJoMU82bXZKZUpraUxVNHp0?=
- =?utf-8?B?UXUzVHZuYWNoUnNLamZkS2hyMjNyYUZGUEJvZTFCZWhITlhwT0I0bUFJZnht?=
- =?utf-8?B?R1huQzlaRzc3NXNNa2tQK0RMelZsZEY5QjhWMXJKWUoyZE1jVUg5NXlGRDh5?=
- =?utf-8?B?VENEUlRCTHE5ZWF4NEdXQWR4alI0Mzh0YjY2QUZkamtQbjdJcGZPdkp3R3J2?=
- =?utf-8?B?RTNGMEF3SlhzN2pRMmJNNnRad3RRRXhDT1V5WXY4SDhweTJqWGpPU3JUOWxF?=
- =?utf-8?B?anR0M1BWZU1FY3U0TE9NWmdiSkh6RlRIMi9NNi81VjBWL2oya1V3VlJJL0tR?=
- =?utf-8?B?Qld3bDZVcmorUFc3Q08xY2VsdGVHSlE5L01zcGROR0hadmIrcnNOV1gwemdH?=
- =?utf-8?B?Nnd0UlFNVlV2ZmZvalYrVlJUblkrNHlUT25zb0xRclE2ZytVRFVxaVEzWnY3?=
- =?utf-8?B?Z2dOaWl0YlZ6dGswdzE4Z2xFbGo3YmdVZERCUXVLejRjWjVUamkwd1NyYjVS?=
- =?utf-8?B?T25lUVI4YW9aeitmNExuWkR5OHRJcVpNbFZTWGEvNUNEVUJFQUwwM3VSVjh5?=
- =?utf-8?B?S1lYQWRYaCtjTmNyMzIyWFFQVEc5dFd5WmJ5OHdvNHNxTm0xUENhRkt6QWpE?=
- =?utf-8?B?eU5Ba2ZHdjRZa2ZkcEFQMWI4Y1NJS0N5bmRNRHo4OEpiaGJnTncxeTVubjhY?=
- =?utf-8?B?bENNSE1US243RTdlVFlDZmM2NnZCVzhnUzVFVGtpZUxTOU5tMFY2U2ptWEZn?=
- =?utf-8?B?bVppQ1ByeG5oYm1XTWdLQkVIOHM3M0JmbURDaWZlaVRreDBuenlKcGhpMWlM?=
- =?utf-8?B?eUFuSVBLd1JhamNHRHl6Qkk1dDN4QXlWTVVGbWlmNGgyTWVDTzVkb29BZzl2?=
- =?utf-8?B?NWhkTDBBSVZCS1NsSDk5SzI1Nm1ycDZpclVISzdHN05oSTg3RFlOVUFXZlND?=
- =?utf-8?Q?rdQKK4Zy4MqVyRXRxttkIfvwa?=
+	=?utf-8?B?V0lteWFURk1VSWFWRE1WR0htSEgrYjNzYnJ1U3k2Z1lHRXVhYWZNak0wdkhK?=
+ =?utf-8?B?K284cHlGMnRwb0ZJanRBUnFGQlEzOVV3Mk5aUUJLOWhTMWwvdDNMRHE2L3NM?=
+ =?utf-8?B?cWt6UFA2dGZaMzRSYTBvRUYvM1NONEprZWR5MmxhZVg1NStEcytSN0hUR0NH?=
+ =?utf-8?B?MEh3K0tkL1ROQmw1YTRqT2JVTElRZStoTzJkenUrS2lteWtZaUFmK1IyUUJk?=
+ =?utf-8?B?NExUOExNNlVtY0ZyOWtQN0FzdnBqc0lRcSt4VVZoZ2pyYjBrOGhYWGxrZEJr?=
+ =?utf-8?B?dXNnaDBIN09ZNWI1TUVLcWZsVVBlWWFjbUtyYy9aZlh0aDlJS01NYmdqMCtx?=
+ =?utf-8?B?d0VYNEQ5cUY3OGc2KzRSREFWcStZQ3pUNDZ6NEdnbHZBU2hPall1K3BTMXdt?=
+ =?utf-8?B?WjhOOHFLeW5yUEF1VllONkZabHpnMXJ4ZWNqSjkwNUZlc2UzZ2VqQ0hKb3pG?=
+ =?utf-8?B?RTY0bjZYb1VxNWFQZ0NPbTJicUdyU3NRSGp6b2kxald1dWV4UVRpRGVhQjVa?=
+ =?utf-8?B?OHZjYVBNL2FzclBVU0RGU3g5bU85eXdRVmtYdHJrRUIvaHR6ZlluaERXaTlh?=
+ =?utf-8?B?aGlvOFFHWStwcHpKNVhrck5LVXFqM1hpNXIxZUltR3pha3IyL1pTbDN5UEN2?=
+ =?utf-8?B?Q2tvZkRtcEJ2MVQ4Z3E4RzRvK2Y0bFVPTnhXTGR3WkZWMktNd2lCd21Fd0t2?=
+ =?utf-8?B?K3R5em9yZlh2QzB1aEdVVklndmVrN2t5TVVEMGx2QWhkOWo5aXBlU0hKQ3c5?=
+ =?utf-8?B?MkdYNWZ3eDAwNVZlVkpUSXBId1ExU3RqeEQrK3AvTW96N2Y5WjJXczlySFE4?=
+ =?utf-8?B?ZFZLbUdqV0JTcUthbFRHd2x3aitWTFRDMk91Y21uWERiR21XSWsxMWFWWmpl?=
+ =?utf-8?B?TFBVNGpSaW5MbVhlUStJZVdVREtkOTYyM3dJZTNHTFNJeGxrL0NRNC9iWjEv?=
+ =?utf-8?B?RHcyZm1XdS9CNDJ4TmQ0Tmp4UG5YTzU0TzVmK1pjczBzZzY4NFlmVDZwQTJz?=
+ =?utf-8?B?RjBVMVp3bnRYQnBDNXpOMkhCOXJsVlhBR3ErQnVtbHFoUDVXQmM5WmRRaElz?=
+ =?utf-8?B?K08zcHRzK2FTRHM1TzdSb1lYc3NXZ2hyTGVYZFV4WE1QV0FVOXlVMkdqL0xr?=
+ =?utf-8?B?eDJ3a3RaNHppQzE4NHo5a3lLY0xiYzdkWEFwdStiSzZxVTZwK21WZ2cvQVZO?=
+ =?utf-8?B?bldPOUdvcE40ZGNPUjduMEJZQlFJam9uNUpqYjRJRUh2eW5CWWZySHNFcXZX?=
+ =?utf-8?B?cVYwRzE4TmtZN1ladllHWTYxMVVuQ1VhZElZTzZEZDA1dDlYaWIraWUzYlYy?=
+ =?utf-8?B?aEhKYkxEcSsyb1hTd2hIRWJEbGNXUlZMRDRFSWwxV2ZkWkVkbVIwMzFIS20r?=
+ =?utf-8?B?d2lyYkpTcVkwUGNwaUJwZDlDTndGM0J0WDN4eW5kMzRMWTN2TGpGNmp0MGFK?=
+ =?utf-8?B?Q1JZUUNDMWYyMmpLU3lyL01SQ2o1UFNYdG0vcmd4R2RNa0JwV3ZkMkg1Uldh?=
+ =?utf-8?B?WXkrbjQ2QVRVUXlKZ0pwblV1dmRCaCtjRW96cm5jK0VMQlQ3WjdaQVZrZUV4?=
+ =?utf-8?B?U1FsazJwa0xiKzl5ZXZKTHZ0dHhUWFN1Tlg3d2I3TElERXJvVy9nMGpYdFBD?=
+ =?utf-8?B?NFEyK3ZIQ3FHaXNxR1hIUlM0c09UVUpRcjZDYUpYNWlIZTlNZE83WVJ3SUJK?=
+ =?utf-8?B?dnJxak43UUR3eFd3dkJwejlOVW9iTFBPcWMwYm5RMHEwSGxxU3dhcjdHK0RY?=
+ =?utf-8?B?R2UvV0c4N3I0WjFtS0FKbW03RDcwakFCMVUvSmk1RFczdE1Id0haRXdSdDNt?=
+ =?utf-8?B?R2lQdDM4aGpIaVNHeTVKVnl3akxCeTdlbFI4NVhVNmN3MFNVWGo2N0M5OXIx?=
+ =?utf-8?B?cFByWElCNHh3VXM2Rk5vREpNMlloaFNDUnExNHJuQ01mc1pJbUNLSUZYV3ZB?=
+ =?utf-8?B?RGtVelhjeXNRVExPQ25VclhwSmxpWUZiZDhaRkpyanJpNHRtMkhmQS9aUVlY?=
+ =?utf-8?B?QmJicnFoUHREV2ZCbU05NHV1dXFyUmM2NWppQ1IrNERhOGZ0UWw0VlMzd3oz?=
+ =?utf-8?B?TDhRRFZaQXFqdVZwRWVkdlpVT1pWSWIvZFRhQkVDbWFRM1ZDcWRCcWZRdGxW?=
+ =?utf-8?Q?U9aG9kVvLKArAGZRS4OurrqBe?=
 X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 74210945-7a30-44d4-d9c9-08db47293419
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a206ad3-fb8f-4777-57bf-08db472a8296
 X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2023 14:10:49.7754
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2023 14:20:10.9970
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9mt//fLC8KTOsS5E6Gyk+gCUi31FhwyYoW8KYmc27T3hr/KTwEJfuVtILRqoE6C4CIn5RY5UaFW6xbFaL8+gnA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BEZP281MB3108
-X-TM-AS-ERS: 104.47.7.168-0.0.0.0
+X-MS-Exchange-CrossTenant-UserPrincipalName: K72WJjup6NqriCnf33OtyN68Wwq4z0b6XaNix87iekBFmMjrl5ZTEYvPf8o1+DniDAAROAMubySvGvInK0JyNA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB3127
+X-TM-AS-ERS: 104.47.11.176-0.0.0.0
 X-TMASE-Version: StarCloud-1.3-9.1.1007-27592.000
-X-TMASE-Result: 10--28.837500-4.000000
-X-TMASE-MatchedRID: CxmI61mtwh//9O/B1c/Qy6n9fPsu8s0a9mojSc/N3QdRXC4cX65cJG4F
-	lM3eSv+GyuwPhdMTt8cYHz3lIGfv9tF2D+Q2NCgishZoVNAELFNRMEg8Dnr1ISIqpZjtBYB7r9u
-	RJkJ4WbcGddFSAB0+4rMTUjboGcLo36XbR6azseNZNYSHk3Zr0dG3Y6ijqBt3RZrOmBLNtw/d5v
-	bacDwdd3NIElf2cEvaw+/GhazHhGLXwvfllQQSgbPx3rO+jk2Q6y37p6CPIsDfUZT83lbkEIpSZ
-	pRfKeEHqlPqyPnNc5HugYf75qB+Mu407XMquNtmrdLFFKR7dulNLPQl0QAltNbZhgeyVPQjt3Am
-	Tg6pdxb2324nCPCVUZXBiw7NP4CJhFhuH8Sj5cVDk5poSYXNlzoSfZud5+GgzBnz0ZuJSWc3KV6
-	TwldBNzsxn9LKds/KRL/JBgHPRCqSvyayL9CyLjiEPRj9j9rvXKVjo8xZtT6gY3nWB9vQ8IA3MR
-	TuVD1MD4Vs6/oyaPL+5zqF/U5PvCD4cUUPKOZ3g9XZqJGXaHFqwd/sYtbRQMy2i0a2kXlWPzyfK
-	fkc7AHvPBXLPdbeHNPqUfhGuXCC7pTlG5Lbu4xhrfDkhK+Q/xyzHcgfiyrcgERCUWHwg4ds3SaN
-	vMeHp7VETMvJoI/qMH5cHrvff8zRTAZ5iUYfyYdlc1JaOB1TNZEftOVQtYbcJp3M4rP5Po1EI8A
-	Wiw6UVWYogWl8xmlehbG5gR/GLwNhs+ry1L3s+s0+QZYAcN+hCEsahX9YEqzswz3t7qTh4J21g7
-	IBeX27eaK9qrX3Gkc+YfLo55UjbSuhC0WauSx+yskgwrfsC30tCKdnhB581B0Hk1Q1KyLUZxEAl
-	FPo8/cUt5lc1lLgkU6UkIr/V+1nME/Jsn/m+g==
-X-TMASE-XGENCLOUD: 2a6b7135-2bf0-41a2-86f3-2eac8abe3090-0-0-200-0
-X-TM-Deliver-Signature: 0B3A53A8D519F6D39C01E9EBEF1D4342
-X-TM-Addin-Auth: sy78e/y23l1s1Co/262HRWXOxqutw49wOpYpdAPWznBgEr+jJ7VWtn2WS+d
-	phrO1IpRoMmRInv4S4M+q+LeF/G3ttJ138jHB3PmQzZkOLhDB7SinTC7JSxALXhgPxIlRWDMZwN
-	x7Oryw8WMfFrdicZOnJLFMDGILpTcZMku7YnAYPDqm7YklgqV3TLsa8/SyrxZoMWjYURsUWW3+K
-	JyNd5dyTst0ymOzh2tP72l2inXeIBaZ+EQqyv0b5nwpIPik6RCcXhqQVAY7czfxhPGCPaVIQ9IX
-	FVpXyGIVy9eRhFE=.ujynVIkWqKo3CV3jhOTlsJGlfYbrtSikpGKgGTSMuf2wjQx0I8AxWDq9wk
-	TsqaZw9Vq9+k0D2Le72YNns0RZIeH285sNW4dGgZiRNh9ed+UFyKEZgs/mv1lquVbN0x2Yy3TgI
-	bsNIPCTBxnvCRfMftvidoMwOCnBbaaMWt+LpPbygjQ0Gg2yu7uZ4NGOpvV6NxExX897HV4SUmBz
-	V0NWDvC47wXZtoyoHvX6873ukubluui3PvQCkeL4lOgKMdP9C3VbMp0aw5dED8kwx024miHucHa
-	yeuOyywbuX8gyeb9Wbal4FCrhfZZ1Oe3Gf48fxqlXlzC4ZdniOt1/+UrKSA==
+X-TMASE-Result: 10--28.527900-4.000000
+X-TMASE-MatchedRID: IeZYkn8zfFr/9O/B1c/Qy6n9fPsu8s0a9mojSc/N3Qc0C8Dp8kkTtehN
+	0jwIx2vHYGK3LJXf9mNkXWktuhCgQvd1SWcwQUIOn6y0mNkW0aQ10wJPYcToKEneIilVX/rqk66
+	/gtVjZsXOSDPNwDqJeAD2Qb9HgeXyvxpbh9elAJ0zoDR4ZVO2DARryDXHx6oXhg/Tt7otYdgIyZ
+	Ynq1RP52s+Dz00KoL2WbOLpgv9C7apy+eDOQsxEFcgCgDL49aaULuzkowEEtpSMvn7ehGotklMt
+	+G3BRybF8w4pXnSlT58kvfy7VW07t/K1ikJIsLOOGTV4fFD6yAjcJ6VBRs0HFhbZQcXLzLf90ib
+	xL4bz6BeKiBY7piwiBsrhSdUWpXHmf21d+GoFWzGsO9QyW2iBKVjgXyvS9c/PHMAbjuhwd9zCGq
+	Wg6PTinsxI/tIum4YjYbQU0iVlK8m2WWAELvR+R7hLNOPFFWiNmVjpriVEtl1HYgAgz5GJShd/M
+	bd1bBoNhlKKwjLwp7PYHNZ/BmJazsgePJmZUOfNcoW2wO1ntNx4XRZg8mla/P2659hRKRR6WkO5
+	pRtxMD0zdEdzHUxnxevMnLENyDpdnn0aUty3+UFxov+3JYvYzqu3dM+YhFRsLigDA/FpvXZKLf/
+	ti2lVIS/T4qLg53oMTqMsSzDIRGaYlNpIKBgCyrLqyE6Ur/jcWZEfrt7JgVa01qA/Hb6wEn0vje
+	eb/bZs1lTliPiUoeNjKy+fkrJaooQQQ8njMLsB7AFWMPZIMaUO3k9AyCPTeTAwJX5xURqujVRkD
+	gmq7PhA54Xxl0CK1uvVyEtOhoPEHR5W0xTkI1+yskgwrfsC30tCKdnhB581B0Hk1Q1KyLgfCfWl
+	nNb/1cppCzPq+1UkGUtrowrXLg=
+X-TMASE-XGENCLOUD: 59d1d870-b12f-4d4e-a4c9-54171dedc394-0-0-200-0
+X-TM-Deliver-Signature: C3D0A344D966A43CAE9E4BBCCB3D0CD6
+X-TM-Addin-Auth: /+TQxJHjIV3L+m8owLV26KqunY51bvMm3m5Zd1hRXLlmh1SSlWPaUxGVqnv
+	v8cBZjXOKRdepvpgU8H4uu+uri2BP0GRzig+gIVA6aOb18y2Rb5XzE6Kh7lK9DAv+Z+cZe/c70x
+	JCZ7Hizpfs5JTfIEOWuUCzsTAzIyYMJx+kgLt590VoDLwXn9KzhemH92WoRNFuhUlqN3ex24yQ5
+	pl/UldMXnI0XsNv+QiXNNWBFgflkKiKLkweW/LsR0L3wE3xydgZbhhNG8t3dHrpUENDd/vsD2hU
+	KauELLFOmSwj0Do=.qw0wlAPkkHg1Gss37LPK283nNMIiw2MYX5zdq0X2UWHVRT5+9tyKek29CC
+	eBHRZD3cqPYaMN0IRtC7jQxC4TYskoyK171b5VJM6VndL0gApGyXySgKOenVQ62eN3xClb1N3wb
+	65plZp5CPc84/NwHGzHCPCJ51G5lx8kcd1vnZb9WXxQIBO72jRBoe8rH9XNPBhTcClWHuaevwbA
+	vjEJRQfsQITRz+XdyMJcK/3bjtRIpJaMFYKe5gQZ1296gH11sD3pfzZmYtPPf66apMnZIjtlFSf
+	khwi4Etkiu3S0bzc2XiQJijn947YXgovI1qlnWWwpArJG+iW2iyXSFGe+6w==
 X-TM-Addin-ProductCode: EMS
 Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
  device specification
 
-On 25.04.23 18:04, Cornelia Huck wrote:
+On 26.04.23 07:52, Alexandre Courbot wrote:
+> On Mon, Apr 24, 2023 at 4:52=E2=80=AFPM Alexander Gordeev
+> <alexander.gordeev@opensynergy.com> wrote:
+>>
+>> On 21.04.23 18:01, Alexander Gordeev wrote:
+>>
+>>> On 21.04.23 06:02, Alexandre Courbot wrote:
+>>>
+>>>> * I am still not convinced that V4L2 is lacking from a security
+>>>> perspective. It would take just one valid example to change my mind
+>>>> (and no, the way the queues are named is not valid). And btw, if it
+>>>> really introduces security issues, then this makes it invalid for
+>>>> inclusion in virtio entirely, just not OpSy's hypervisor.
+>>>
+>>>
+>>> I'd like to start with this and then answer everything else later.
+>>>
+>>> Let's compare VIRTIO_VIDEO_CMD_RESOURCE_QUEUE with
+>>> VIDIOC_QBUF+VIDIOC_DQBUF. Including the parameters, of course. First,
+>>> let's compare the word count to get a very rough estimate of complexity=
+.
+>>> I counted 585 words for VIRTIO_VIDEO_CMD_RESOURCE_QUEUE, including the
+>>> parameters. VIDIOC_QBUF+VIDIOC_DQBUF are defined together and take 1206
+>>> words, they both use struct v4l2_buffer as a parameter. The struct take=
+s
+>>> 2716 words to be described. So the whole thing takes 3922 words. This i=
+s
+>>> 6.7 times more, than VIRTIO_VIDEO_CMD_RESOURCE_QUEUE. If we check the
+>>> definitions of the structs, it is also very obvious, that V4L2 UAPI is
+>>> almost like an order of magnitude more complex.
+>>
+>>
+>> I think, it is best to add all the steps necessary to reproduce my calcu=
+lations just in case.
+>>
+>> VIRTIO_VIDEO_CMD_RESOURCE_QUEUE is doing essentially the same thing as V=
+IDIOC_QBUF+VIDIOC_DQBUF, so we're comparing apples to apples (if we don't f=
+orget to compare their parameters too).
+>>
+>> To get the word count for the VIRTIO_VIDEO_CMD_RESOURCE_QUEUE I opened t=
+he rendered PDF of video section only from the first email in this thread. =
+Here is the link: https://drive.google.com/file/d/1Sm6LSqvKqQiwYmDE9BXZ0po3=
+XTKnKYlD/view?usp=3Dsharing . Then I scrolled to page 11 and copied everyth=
+ing related a text file. This is around two pages in the PDF. Then I remove=
+d page numbers from the copied text and used 'wc -w' to count words.
+>>
+>> To get the word count for VIDIOC_QBUF+VIDIOC_DQBUF I opened this link: h=
+ttps://docs.kernel.org/userspace-api/media/v4l/vidioc-qbuf.html . Then I se=
+lected all the text except table of contents and did followed the same proc=
+edure.
+>>
+>> To get the word count for struct v4l2_buffer and other types, that are r=
+eferenced from it, I opened this link: https://docs.kernel.org/userspace-ap=
+i/media/v4l/buffer.html#struct-v4l2-buffer . Then I selected all the text e=
+xcept the table of contents and the text above struct v4l2_buffer definitio=
+n. The rest is the same.
+>>
+>> Also it's quite obvious if you look at them how much bigger struct v4l2_=
+buffer (including the referenced types) is compared to struct virtio_video_=
+resource_queue.
 >
-> [I'm replying here, as that seems to be the last message in the thread,
-> and my reply hopefully catches everyone interested here.]
+> You are comparing not the complexity of the structures but the
+> verbosity of their documentation, which are written in a different
+> style, format, and by different people.
+
+I agree to some extent. At least this benchmark is simple and it
+provokes to actually go and look at the definitions, which IMO should be
+enough to already see the difference. What could be a better benchmark?
+Maybe counting the number of various fields and flags and enum cases,
+that one has to read through?
+
+> And the V4L2 page also
+> contains the description of memory types, which is part of another
+> section in the virtio-video spec.
+
+You mean only enum v4l2_memory? Or anything else too?
+
+> There is no way to draw a meaningful
+> conclusion from this.
 >
-> To do a very high level summary, we have (at least) two use cases for
-> virtio-video, that unfortunately have quite different requirements. Both
-> want to encode/decode video, but in different environments.
+> If you want to compare, do it with how the structures are actually
+> used. Here is how you would queue an input buffer with virtio-video:
 >
-> - The "restricted" case: Priority is on security, and the attack surface
->    should be kept as small as possible, for example, by avoiding unneded
->    complexity in the interface. Fancy allocations and management should
->    be avoided. The required functionality is also quite clearly defined.
-> - The "feature-rich" case: Priority is on enabling features, and being
->    able to re-use existing V4L2 support is considered a big plus. Both
->    device and driver implementations will be implemented in a full OS
->    environment, so all kind of helpers are already available.
+>    struct virtio_video_resource_queue queue_buf =3D {
+>        .cmd_type =3D VIRTIO_VIDEO_CMD_RESOURCE_QUEUE,
+>        .stream_id =3D 42,
+>        .queue_type =3D VIRTIO_VIDEO_QUEUE_TYPE_INPUT,
+>        .resource_id =3D 1,
+>        .timestamp =3D 0x10,
+>        .data_sizes =3D {
+>          [0] =3D 0x1000,
+>        },
+>    };
 >
-> (This is not to say that one case does not care about functionality or
-> security; it's mostly a case of different priorities and environments.)
-
-I'm thinking about the latter as more like a "compatibility" case, but
-the "feature-rich" is also a good name.
-
-> I had been hoping that it would be possible to find kind of a common
-> ground between the two cases, but reading the thread, I'm not quite as
-> hopeful anymore... if we really don't manage to find an approach to make
-> the different requirements co-exist, a separate virtio-v4l2 device might
-> be the way to go -- but I've not totally given up hope yet.
-
- From our side I can say, that moving from the current state even to a
-well-defined subset of V4L2 would require a lot of work, bring literally
-zero advantages for our use-case, while bringing some disadvantages. I
-think we had a good progress so far, we don't want to give up the
-achievements and now this is a great opportunity to do even better
-because our priorities will not collide anymore.
-
-On the other side I don't think Alexandre and his team are really
-interested in doing the extra work of clearly defining the subset of
-V4L2, writing larger specifications, going through all the hassle with
-making the guest pages sharing work (again) and supporting this case in
-their driver for us for something that is planned to be a very simple
-device and driver. Please correct me if I'm wrong here.
-
-And even if they say they agree to do the work with us... I'm sorry, but
-you can probably see, that our communication doesn't go smooth. My
-emails are forgotten, our use-case is clearly not a priority for
-Alexandre, my arguments seem to be considered as obstacles. If we have a
-single device, we have to cooperate actively. I have a lot of doubts
-that it is possible at the moment. In this case I'd prefer to just make
-room for everybody. Maybe we'll cooperate in a fruitful way again later.
-The priorities or use-cases might change, for example. For us this is an
-opportunity to finally update the virtio-video driver against the latest
-state and hopefully make it V4L2 compliant.
-
-> Some remarks from my side:
+> Now the same with virtio-v4l2:
 >
-> - I'm not totally convinced that counting words is always a good proxy
->    for complexity -- an interface might be simple on paper, but if the
->    actual implementation would need to be quite involved to get it right,
->    we'd again have a lot of opportunity for mistakes.
+>    struct virtio_v4l2_queue_buf queue_buf =3D {
+>        .cmd =3D VIRTIO_V4L2_CMD_IOCTL,
+>        .code =3D VIDIOC_QBUF,
+>        .session_id =3D 42,
+>        .buffer.type =3D V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
+>        .buffer.index =3D 1,
+>        .buffer.timestamp.tv_usec =3D 0x10,
+>        .buffer.memory =3D V4L2_MEMORY_MMAP,
+>        .planes =3D {
+>          [0] =3D { .bytesused =3D 0x1000 },
+>        }
+>    };
+>
+> In both cases, you pass a structure with some members set, and the
+> rest to 0. The host receives basically the same thing - it's the same
+> data! The only difference is how it is laid out.
 
-Well, I agree, that this is not the best possible benchmark. At least it
-is simple. My idea was that our output as spec writers is words. I hope
-at some point we'll have a better benchmark or just agree, that these
-structures have a lot of completely irrelevant stuff and it is not
-immediately clear, what is necessary and what is not. Maybe the number
-of different definitions (structs, struct fields, enum members, defines,
-etc) would be a better benchmark?
+How do I know this from the text? How do I verify, that this is correct?
+Can I be sure this code is going to work or not between any device and
+any driver?
 
-> - How much of v4l2 does actually need to be in the device specification
->    for a driver to make potentially good use of it? Sure, being able to
->    directly map to v4l2 really gives a huge benefit, but is there a way
->    to extract a subset that's not too complex, but can be easily wrapped
->    for interfacing with v4l2? (Both interface and functionality wise.)
->    Even if that means that a driver would need to implement some kind of
->    shim, a layer that easily maps to v4l2 concepts would still be much
->    easier to implement than one that needs to map two quite different
->    interfaces. [I'm really relying on the good judgement of people
->    familiar with the interfaces here :)]
+With virtio-video you can just go to the spec/header file, take the
+struct definition and simply set all the fields.
 
-I don't have an answer at the moment unfortunately.
+With V4L2 UAPI I don't see any other way except going through the whole
+buffer.html file, filtering potentially irrelevant stuff, then doing
+some trials, and maybe looking into the device or driver code. Maybe
+also asking you for an advice?
+I think it is worth trying to imagine you're a newcomer in the project.
+Or a security auditor.
 
-> - To which extent does security need to be baked into the device
->    specification? We should avoid footguns, and avoiding needless
->    complication is also a good idea, but while every new functionality
->    means more attack surface, it also enables more use cases. That
->    tension is hard to resolve; how much of it can we alleviate by making
->    things optional?
+So I think we can't draw conclusions about the spec quality from these
+code samples.
 
-My opinion is that it is best to not compromise on security right from
-the start and not give up what we already have. Because it is hard to
-add it back later. It is best to define clear granular interfaces from
-the beginning, use feature flags where possible and also have many
-different devices. Then it is easy both to add features and to reduce
-the attack surface by disabling them. No device, no problem. I think
-V4L2 does too many things with no clear way of disabling various
-features. Defining the stateful decoder and encoder interfaces is a
-great thing. We can already benefit from this. But I can see, that this
-work is not finished yet.
+> Also as mentioned by Bart, the apparent simplicity of
+> VIRTIO_VIDEO_CMD_RESOURCE_QUEUE, which does not require a dequeue
+> operation as the dequeue is sent with its response, is actually a
+> fallacy: that design choice makes the specification simpler, but at
+> the cost of more complexity on the device side and the potential to
+> starve on command descriptors. By contrast, adopting the V4L2 model
+> resulted in simpler code on both sides and no possibility to deadlock.
+> That point could be addressed by revising the virtio-video spec, but
+> then you get even closer to V4L2.
 
-> I hope I have not muddied the waters here, but I'd really like to see an
-> agreement on how to continue (with two different devices, if there is
-> really no other way.)
+Hmm, I understand, thanks. Well, I can fix this in the spec. I have some
+ideas. I think I'd better describe them in an answer to Bart's email.
 
-Thanks for your suggestions!
+>> Do we agree now, that V4L2 UAPI is not only marginally more complex?
+>
+> No, and I rest my case on the code samples above.
+>
+>>>
+>>>
+>>> Also please read:
+>>>
+>>> https://medium.com/starting-up-security/evidence-of-absence-8148958da09=
+2
+>>>
+>>
+>> This reference probably needs a clarification. You argued, that V4L2 has=
+ a good track record so far. Here is the quote:
+>>
+>>> FWIW V4L2 has been in use for a looong time (including in Chromebooks
+>>> that do secure playback) and I am not aware of fundamental security
+>>> issues with it.
+>>
+>> But absence of found major security issues doesn't tell us much about th=
+e number of not found ones. Absence of evidence is not an evidence of absen=
+ce. At the link above a former Director of Security at Facebook shares his =
+thoughts about what could be a good evidence of absence of major security p=
+roblems.
+>
+> You are just FUDing now.
+
+These are well established security concepts AFAIK. Are you gaslighting?
+
+> The exact same argument could be made about
+> virtio-video. If you want to borrow from the security world, I can ask
+> you how going with virtio-video when V4L2 exists is different from
+> rolling your own crypto.
+
+It is very different because obviously neither of them is a crypto.
+
+>> So a bug bounty program with high premiums that covers V4L2 would be a b=
+etter argument in favor of *already written code* in my opinion. Not for ne=
+w code. Also probably it is also an argument in favor of the spec, that is =
+the V4L2 UAPI. Like that it is polished enough. Not so sure about that thou=
+gh.
+>>
+>> There actually are several bug bounty programs, that cover the kernel. T=
+hese are Google's kctf, ZDI's pwn2own, and zerodium AFAIK. However the prem=
+iums are not even close to the ones mentioned in my reference. Anyway this =
+means, that using *the existing V4L2 code in the kernel* is probably OK. Bu=
+t this creates some limitations if we want the actual code to still be cove=
+red with these bug bounties, right? This means, that the host OS has to be =
+Linux and the actual hardware has to be exposed through a stable V4L2 drive=
+r, that is in mainline for some time, and there has to be no or little proc=
+essing on top. For us this is not possible unfortunately. In the end both t=
+hings could be secure:
+>>
+>> 1. V4L2 pass through can be secure because of the bug bounty programs an=
+d a lot of attention to the kernel in general.
+>> 2. For the new code this doesn't work, so the spec should be as simple a=
+nd device-centric as possible. Because, all other things being equal, there=
+ are fewer errors in simpler programs. So defining a subset of V4L2 UAPI in=
+cluding the data types looks like a good idea to me. The stateful decoder i=
+nterface, that you point to, does not define a subset in the data types.
+>
+> Wouldn't you have exactly the same problem by using a new guest-host
+> protocol?
+
+I think this is far-fetched. Especially if our new protocol is
+intentionally kept close to the reference protocol with a few things
+made better and simpler. That would be my preferred route.
+
+> Are you going to start a bounty program for virtio-video to
+> get an assurance that it is secure?
+
+I'm not sure it is possible because the device is proprietary. At least
+the driver is going to be covered hopefully. So for the device we're
+going to rely on simplicity, tests and audits. But who knows. I'm not
+the one to make this decision.
+
+>> This is basically my reasoning.
+>>
+>> Also these two specs don't need to compete with each other. They have di=
+fferent limitations and they are for different audiences. If you check the =
+XKCD's comic, it is about competing standards.
+>
+> They allow exactly the same thing (virtualization of video
+> decoding/encoding) and there isn't any use-case of virtio-video that
+> could not be covered equally well by V4L2. Reinventing a new video
+> specification is pointless and will lead to unneeded fragmentation.
+
+I don't agree with these statements.
+
+> We should also expect reticence from the Linux community to upstream
+> two virtual video drivers that basically do the same thing.
+
+This is hypothetical.
 
 --
 Alexander Gordeev
