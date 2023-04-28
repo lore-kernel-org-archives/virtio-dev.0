@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12481-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12482-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 029A8C77B60
-	for <virtio-dev@archiver.kernel.org>; Fri, 28 Apr 2023 10:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 466F4C77B7C
+	for <virtio-dev@archiver.kernel.org>; Fri, 28 Apr 2023 13:35:45 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 253EE3E307
-	for <virtio-dev@archiver.kernel.org>; Fri, 28 Apr 2023 10:43:30 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 73BB81462C6
+	for <virtio-dev@archiver.kernel.org>; Fri, 28 Apr 2023 13:35:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CD277986692
-	for <virtio-dev@archiver.kernel.org>; Fri, 28 Apr 2023 10:43:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 698BD9866A2
+	for <virtio-dev@archiver.kernel.org>; Fri, 28 Apr 2023 13:35:44 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id AF22D986682; Fri, 28 Apr 2023 10:43:29 +0000 (UTC)
+	id 5F313986692; Fri, 28 Apr 2023 13:35:44 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,271 +24,118 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9ABC4986686
-	for <virtio-dev@lists.oasis-open.org>; Fri, 28 Apr 2023 10:43:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 48A1898668F;
+	Fri, 28 Apr 2023 13:35:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: KcrM4hgNNqyXV4xCY-PEIg-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682678604; x=1685270604;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IQVmdT90OhXDpcSpwDoh82Tvt4g5mLAfat632QKI2HE=;
-        b=LzL/xdi1ZD7PIPWOWH1XXy+ZLPFMFtUEkumv44ZCzuAfgsyqc9DEQhjeVe2Pd7nyFn
-         C+cLuFD6dPOz9nmJcn7Afcp9dckgAHGGBG0uu7v9E1y4yf0STnoGcPizaH0iRhCFjsJk
-         gI0NCrdzMvSUtAK5xyhV+6Fir/L3M5Epbs7Jq5LcRD6k1Sfv2PDKDPfATTrGGsbgvuZB
-         IOu6FuOCXCJI+z/u/WZQXngJaIcek46toJjtoNWerYBVn2//oweqQWSt3JQe/0DCftGr
-         aV6303WL8uhVjOiQL/kquYI2fCFqwXwT5LGY3DuljTFrR6DIYIvEMwLpi49fr7l0SDWy
-         JL+w==
-X-Gm-Message-State: AC+VfDy77LRSho5Rb39PRLa2VANGMYrQbeHs0Bpvn6NyNftqZ6aRRDeM
-	u/7SflAk53zR6EJpcs0dSVaPZDdEs0nwxUcwhcpnXWd3Dtf0aaOe6HpXt30QI7+rUEzm+im6V4t
-	yfbDvFOTDv2Dnw0YWE6lEv6sne+Uf
-X-Received: by 2002:a5d:63cd:0:b0:2f4:e580:a72f with SMTP id c13-20020a5d63cd000000b002f4e580a72fmr3575473wrw.45.1682678604405;
-        Fri, 28 Apr 2023 03:43:24 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6sbbM9Zn4cTetz42fXKk9Z9F040Hk4rnRdGv4o6qnjbgUiSUoCwpa/D62xpuyoNmY1khznig==
-X-Received: by 2002:a5d:63cd:0:b0:2f4:e580:a72f with SMTP id c13-20020a5d63cd000000b002f4e580a72fmr3575451wrw.45.1682678604022;
-        Fri, 28 Apr 2023 03:43:24 -0700 (PDT)
-Date: Fri, 28 Apr 2023 12:43:09 +0200
-From: Stefano Garzarella <sgarzare@redhat.com>
-To: Bobby Eshleman <bobbyeshleman@gmail.com>
-Cc: linux-hyperv@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>, 
-	Bobby Eshleman <bobby.eshleman@bytedance.com>, kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>, 
-	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>, virtualization@lists.linux-foundation.org, 
-	Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, 
-	Bryan Tan <bryantan@vmware.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
-	Stefan Hajnoczi <stefanha@redhat.com>, Vishnu Dasa <vdasa@vmware.com>, 
-	Jiang Wang <jiang.wang@bytedance.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	"David S. Miller" <davem@davemloft.net>, virtio-dev@lists.oasis-open.org
-Message-ID: <yeu57zqwzcx33sylp565xgw7yv72qyczohkmukyex27rcdh6mr@w4x6t4enx6iu>
-References: <20230413-b4-vsock-dgram-v2-0-079cc7cee62e@bytedance.com>
- <ZDk2kOVnUvyLMLKE@bullseye>
- <r6oxanmhwlonb7lcrrowpitlgobivzp7pcwk7snqvfnzudi6pb@4rnio5wef3qu>
- <ZDpOq0ACuMYIUbb1@bullseye>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JKu/pi9USuU1vjnjdS2Aa7omAaRZkGGz6ZrG18BiLEg+s4tahqE1arT/kecOHlJg7lY1wz4dF8rhOuV0+Mv/qZKNPMoaQLN5bsYLLuXdpdvUAf3fQxzSzVbGm9ttceR9BGCBp8se6heF6pHDsy+ip43vKNB0Y57pvgO6UBiJLpihGppfZ//XIZhMHoBYOAAPiDQq7GihLNn/l7T3f46hyPx0ZD3ZBudathaTSHI6lQKssM+XOoBhlnFmxsP7+nr17bcRAFH0a4Zf1iEYTynabw81/hVfo0FgJxDnDTjHYRS/YSwRoE86lEF8xA0qhlom2Jmfic1E2DTdYi56RTQCnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sLLjNIi4S7GiF9rRzUD7YuKWHPHjUWKQ6BKwhTDJdPc=;
+ b=ARFGIZE2HA7piSFKAy5Ii9TLpKWjZfqza56cSvaBeL27efSYfQ0pRcbK6496inv/MTwgIU7DrQiW69uqositcLmWDWUVpQYKgsh2DQrU+/+kPvbOtUTzY5pXaApB65HoKgml/uwANBcIKkvsVENtKdRw/z7SM7P98VP+FxFLN9DhL0NZK/86VHKye9h2vB5euyrKSUXxRI3r3qUDHQd6J1on5oXWW2qMlJMkh15pXe0H0cSc7hDljW18/L/x+ctJg5W5hGjo2oUnVQWRy++qjlJiMOl0N78A4seYi9waTPJTEdB0uB2AC/o12C/t+koDokoftC+x+Efszn49nPo2HQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"pasic@linux.ibm.com" <pasic@linux.ibm.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH v3 0/2] transport-pci: msix register desc improve
+Thread-Index:
+ AQHZdGE6BcXrBONjlkOC0QSro05TaK83HJUAgAN5WOCABY/KsIAACjmAgAAATYCAAJNpMA==
+Date: Fri, 28 Apr 2023 13:35:31 +0000
+Message-ID:
+ <PH0PR12MB5481702B9992D7EC87045392DC6B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230421145434.83774-1-parav@nvidia.com>
+ <20230422061011-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54814D66357FCDAE3B3869DADC679@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <DM8PR12MB54809734DCE2820CA728AFA0DC6B9@DM8PR12MB5480.namprd12.prod.outlook.com>
+ <20230428004335-mutt-send-email-mst@kernel.org>
+ <20230428004638-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230428004638-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BY5PR12MB4097:EE_
+x-ms-office365-filtering-correlation-id: e81e1bf9-f85f-4169-eb0e-08db47ed702b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ wHpdVCg5iHVGiUwlOGUA5ksNqFM2TF11StHH/+AMgskwYoLwaTmcwmLsekRzd4Y6yeBd/p/TT0gf5wIJIX3rjHbDjn9P53MYLqMWkTPiLq/jIOuRaTOila2TypSfPgxZi9rdRFmcP+NKDaeNgmJwGcQmFWh5sPYyeJojtdLDJ5rcNTNWRy5xXfrYH3sv7CsB11AgFO1jWxjK8ZYFL5WzPLmyLS4MPoAI1XkmLUwYA0gZYYzX8+Zt1A8KSG8p8fryv4Vnz6z6N8oI4enzG0bxcsL9JhI8hs8OD90/hFsRfp2fNftHuPBmx3XRS9HBldgvTiPquBCPVwvzFLrY851RsY5SDctsHWEJco2eDpspgmF4lDCVCCvHBZdSFigQuJuHV6taNdgNhmKJCEypR5CabMOwMR35oDCXLuH/q7JxQT1R38ygATLu63a0OcnaODZ9p9lEMmPSeBfa0NpGS9ngOxp2FM9XLXLRsdCBuEkDcxLCpVLaBlixvFlc1xlLO7aDAuZf5Jmmce52bCsoKQ+ZEqZUGFxb4JST3JzZlOmem0pHA308Ge4QsAbNcXLX4KciE5mzZ0eQmH8lFwqga2CZnGAlILJ4c8jANTmfQtsNu9hcWXzhutHmz06mYbX/ncFsaV31EcoFfsOJkvSoJuuTiNVQqk87aVMmW89iMq5cEQE=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(366004)(346002)(39860400002)(396003)(451199021)(107886003)(6506007)(9686003)(83380400001)(186003)(55016003)(6916009)(76116006)(41300700001)(38070700005)(4326008)(5660300002)(8676002)(8936002)(4744005)(2906002)(66476007)(66556008)(66946007)(66446008)(64756008)(52536014)(26005)(316002)(54906003)(86362001)(478600001)(7696005)(966005)(122000001)(38100700002)(33656002)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?BZJ2OW8hB7A5BAchQFHExlTEm41Ka2ZIllN6vsHi2t95OtdEU/OwrLSE7WTl?=
+ =?us-ascii?Q?toH9ne4s7ja4q9utrxt7ZPxdmsZlkFUYqqbeMU7MrAXT3s+Je3ySYod3eHgC?=
+ =?us-ascii?Q?eAU6i+1+33I8Fazn5/Cz+rKmB6qdWiBlboppgWaSha/QFQOqqei7KY55D9XV?=
+ =?us-ascii?Q?TPdFzgAl0+nkwpKRV64SWvMqoqTtb9Q1PRCqhSyExLP2bzSMGGVKY/0gopxu?=
+ =?us-ascii?Q?32AAPeCOH8FT6JiC0aNfMZXoIfEHTp0gc5+TMaKlSxMuDQaIDa3pQHweo1wC?=
+ =?us-ascii?Q?YP4r0tQ1w2cP/H0CB89Zlnb2T7GXnE1sC6ubuThBjJnchgM9it2H13j+JI1v?=
+ =?us-ascii?Q?BiVJSAQhsmnlXPEal6o7S+XcrJe29Rc9KWahxO/SDpVM9I+wSlejfHxL1MJN?=
+ =?us-ascii?Q?SaFkVHa3VFRi21Ujlri8vNvcrMi0lZ5wNx/p8j1Q6qQqlDjKZohYlUMqKhqy?=
+ =?us-ascii?Q?14UZZqbfQpt0xX4PVrrDGid9rWJqZf8+xX+BMLQwzzHlhDK/n5Gs836KlbE5?=
+ =?us-ascii?Q?qPTjxXUjp3M3l/5Sr6r2wTRt/aQfIpToNnkHsxI15TJ3Z8/CWyFGXcBGBwDh?=
+ =?us-ascii?Q?mkuvm8l+8clGWu/Rqo1udC5VMQAeu1k2lHb+PahXnd1F1OdAzRr+/YPh0BAn?=
+ =?us-ascii?Q?pyH8LyiAwWUZXShZwhbgxW2X6Kj28bOIWbKaIikS96/WS7DmDO4UnAJ0E388?=
+ =?us-ascii?Q?XG8MNdrTMvWFW6cXFvAkMnPyMjU38N63lB+ba4xfvGMnz3ZgQT2cXBG3D6uM?=
+ =?us-ascii?Q?sR0WJHm4H3WY+Nf4AXz7OwEywpaoo26y+tK5UGGI6dfb/QVAGEJgWspBbVHg?=
+ =?us-ascii?Q?/hhJaLdtHO2F6PVO9/0OXG3luc5Srr+znUbyY+RU3VtJ6YSIQ+EmsT+OBrmY?=
+ =?us-ascii?Q?vkwjQczVEnrSloRoEc6iWRYo9NZjtL5kWK+lZ/CmGzC27wyk5WdXsjNYtaaR?=
+ =?us-ascii?Q?lF81JijCOA9goumg5nZaSf0xTbmsj1sH/udQ/OiKlbVPLnHuiNQnmb8rzv8U?=
+ =?us-ascii?Q?X3qqeSO+uGzKKBTuGz37vNWGC0mJT4UQSOQCJ2dyDnu+UwLof0tElbiP7VNR?=
+ =?us-ascii?Q?Wxy0IjBY8NOj+BLUyt4GAzkEELPoWVMw/9f2+cyIuNOaAfcHkJt6AgLZRWWU?=
+ =?us-ascii?Q?5/bJAV239+llTNPToIPaAoUOvk3HaoIB/IMM0BC18PIy+wxozsX6UscG93/C?=
+ =?us-ascii?Q?Ysv9qwWiGaAfKMsmqrVen16UgNu49Km1l3mHr5AeJdvb32HGS5dd7cR+EO3N?=
+ =?us-ascii?Q?zv8Jh256SXRipnaNfNjfD7qiPyXW4Q+uBeTzVAWQ8l8u1CMD4Yj2b0orfk5s?=
+ =?us-ascii?Q?5/mMfBbtL9hzxjWq9lwdjod/6h/fKYsQ9L49pR89BywPbYgKEHlWezjCV9wO?=
+ =?us-ascii?Q?RetZTV0LTmh0zm3CqQJBeKIL2w4yWmk3YMPSKRdToyfIQBRMFnSdnfgjyz4z?=
+ =?us-ascii?Q?rA/ptrhmfHg0zCNXyM10f2Z7dTVpHQt9g6Hd8qFFa9CdSVRQSlNtAsMPgUdw?=
+ =?us-ascii?Q?62jYKyeGWM1drY0sBg0xMlGUc+VO1m5oBB5VRAfXCyRYEEszYBjXtzFmsC7I?=
+ =?us-ascii?Q?P/UfWWu5/xz4Lq926Ro=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <ZDpOq0ACuMYIUbb1@bullseye>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH RFC net-next v2 0/4] virtio/vsock: support datagrams
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e81e1bf9-f85f-4169-eb0e-08db47ed702b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Apr 2023 13:35:31.7583
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: khnam+FXpRtP3KUZ8tmTPq0pyqJCjuWy/JzDupNi8GPbxrygzVC80WMjyFe/AApEMOaGzkAyLJTF/KoVmVZTog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4097
+Subject: [virtio-dev] RE: [PATCH v3 0/2] transport-pci: msix register desc improve
 
-On Sat, Apr 15, 2023 at 07:13:47AM +0000, Bobby Eshleman wrote:
->CC'ing virtio-dev@lists.oasis-open.org because this thread is starting
->to touch the spec.
->
->On Wed, Apr 19, 2023 at 12:00:17PM +0200, Stefano Garzarella wrote:
->> Hi Bobby,
->>
->> On Fri, Apr 14, 2023 at 11:18:40AM +0000, Bobby Eshleman wrote:
->> > CC'ing Cong.
->> >
->> > On Fri, Apr 14, 2023 at 12:25:56AM +0000, Bobby Eshleman wrote:
->> > > Hey all!
->> > >
->> > > This series introduces support for datagrams to virtio/vsock.
->>
->> Great! Thanks for restarting this work!
->>
->
->No problem!
->
->> > >
->> > > It is a spin-off (and smaller version) of this series from the summer:
->> > >   https://lore.kernel.org/all/cover.1660362668.git.bobby.eshleman@bytedance.com/
->> > >
->> > > Please note that this is an RFC and should not be merged until
->> > > associated changes are made to the virtio specification, which will
->> > > follow after discussion from this series.
->> > >
->> > > This series first supports datagrams in a basic form for virtio, and
->> > > then optimizes the sendpath for all transports.
->> > >
->> > > The result is a very fast datagram communication protocol that
->> > > outperforms even UDP on multi-queue virtio-net w/ vhost on a variety
->> > > of multi-threaded workload samples.
->> > >
->> > > For those that are curious, some summary data comparing UDP and VSOCK
->> > > DGRAM (N=5):
->> > >
->> > > 	vCPUS: 16
->> > > 	virtio-net queues: 16
->> > > 	payload size: 4KB
->> > > 	Setup: bare metal + vm (non-nested)
->> > >
->> > > 	UDP: 287.59 MB/s
->> > > 	VSOCK DGRAM: 509.2 MB/s
->> > >
->> > > Some notes about the implementation...
->> > >
->> > > This datagram implementation forces datagrams to self-throttle according
->> > > to the threshold set by sk_sndbuf. It behaves similar to the credits
->> > > used by streams in its effect on throughput and memory consumption, but
->> > > it is not influenced by the receiving socket as credits are.
->>
->> So, sk_sndbuf influece the sender and sk_rcvbuf the receiver, right?
->>
->
->Correct.
->
->> We should check if VMCI behaves the same.
->>
->> > >
->> > > The device drops packets silently. There is room for improvement by
->> > > building into the device and driver some intelligence around how to
->> > > reduce frequency of kicking the virtqueue when packet loss is high. I
->> > > think there is a good discussion to be had on this.
->>
->> Can you elaborate a bit here?
->>
->> Do you mean some mechanism to report to the sender that a destination
->> (cid, port) is full so the packet will be dropped?
->>
->
->Correct. There is also the case of there being no receiver at all for
->this address since this case isn't rejected upon connect(). Ideally,
->such a socket (which will have 100% packet loss) will be throttled
->aggressively.
->
->Before we go down too far on this path, I also want to clarify that
->using UDP over vhost/virtio-net also has this property... this can be
->observed by using tcpdump to dump the UDP packets on the bridge network
->your VM is using. UDP packets sent to a garbage address can be seen on
->the host bridge (this is the nature of UDP, how is the host supposed to
->know the address eventually goes nowhere). I mention the above because I
->think it is possible for vsock to avoid this cost, given that it
->benefits from being point-to-point and g2h/h2g.
->
->If we're okay with vsock being on par, then the current series does
->that. I propose something below that can be added later and maybe
->negotiated as a feature bit too.
 
-I see and I agree on that, let's do it step by step.
-If we can do it in the first phase is great, but I think is fine to add
-this feature later.
 
->
->> Can we adapt the credit mechanism?
->>
->
->I've thought about this a lot because the attraction of the approach for
->me would be that we could get the wait/buffer-limiting logic for free
->and without big changes to the protocol, but the problem is that the
->unreliable nature of datagrams means that the source's free-running
->tx_cnt will become out-of-sync with the destination's fwd_cnt upon
->packet loss.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Friday, April 28, 2023 12:47 AM
 
-We need to understand where the packet can be lost.
-If the packet always reaches the destination (vsock driver or device),
-we can discard it, but also update the counters.
+> > > > [1] https://github.com/oasis-tcs/virtio-spec/issues/169
+> > >
+> > > Can you please raise the ballot for this?
+> >
+> > ok if you put in link to lore, not to oasis archive, then please also
+> > include date and subject so people can still locate it in the oasis
+> > archive if they need to.
+>=20
+> Also please link to virtio-comment archive. virtio-dev is for device/driv=
+er
+> developers not for comments.
 
->
->Imagine a source that initializes and starts sending packets before a
->destination socket even is created, the source's self-throttling will be
->dysfunctional because its tx_cnt will always far exceed the
->destination's fwd_cnt.
-
-Right, the other problem I see is that the socket aren't connected, so
-we have 1-N relationship.
-
->
->We could play tricks with the meaning of the CREDIT_UPDATE message and
->fwd_cnt/buf_alloc fields, but I don't think we want to go down that
->path.
->
->I think that the best and simplest approach introduces a congestion
->notification (VIRTIO_VSOCK_OP_CN?). When a packet is dropped, the
->destination sends this notification. At a given repeated time period T,
->the source can check if it has received any notifications in the last T.
->If so, it halves its buffer allocation. If not, it doubles its buffer
->allocation unless it is already at its max or original value.
->
->An "invalid" socket which never has any receiver will converge towards a
->rate limit of one packet per time T * log2(average pkt size). That is, a
->socket with 100% packet loss will only be able to send 16 bytes every
->4T. A default send buffer of MAX_UINT32 and T=5ms would hit zero within
->160ms given at least one packet sent per 5ms. I have no idea if that is
->a reasonable default T for vsock, I just pulled it out of a hat for the
->sake of the example.
->
->"Normal" sockets will be responsive to high loss and rebalance during
->low loss. The source is trying to guess and converge on the actual
->buffer state of the destination.
->
->This would reuse the already-existing throttling mechanisms that
->throttle based upon buffer allocation. The usage of sk_sndbuf would have
->to be re-worked. The application using sendmsg() will see EAGAIN when
->throttled, or just sleep if !MSG_DONTWAIT.
-
-I see, it looks interesting, but I think we need to share that
-information between multiple sockets, since the same destination
-(cid, port), can be reached by multiple sockets.
-
-Another approach could be to have both congestion notification and
-decongestion, but maybe it produces double traffic.
-
->
->I looked at alternative schemes (like the Datagram Congestion Control
->Protocol), but I do not think the added complexity is necessary in the
->case of vsock (DCCP requires congestion windows, sequence numbers, batch
->acknowledgements, etc...). I also looked at UDP-based application
->protocols like TFTP, DHCP, and SIP over UDP which use a delay-based
->backoff mechanism, but seem to require acknowledgement for those packet
->types, which trigger the retries and backoffs. I think we can get away
->with the simpler approach and not have to potentially kill performance
->with per-packet acknowledgements.
-
-Yep I agree. I think our advantage is that the channel (virtqueues),
-can't lose packets.
-
->
->> > >
->> > > In this series I am also proposing that fairness be reexamined as an
->> > > issue separate from datagrams, which differs from my previous series
->> > > that coupled these issues. After further testing and reflection on the
->> > > design, I do not believe that these need to be coupled and I do not
->> > > believe this implementation introduces additional unfairness or
->> > > exacerbates pre-existing unfairness.
->>
->> I see.
->>
->> > >
->> > > I attempted to characterize vsock fairness by using a pool of processes
->> > > to stress test the shared resources while measuring the performance of a
->> > > lone stream socket. Given unfair preference for datagrams, we would
->> > > assume that a lone stream socket would degrade much more when a pool of
->> > > datagram sockets was stressing the system than when a pool of stream
->> > > sockets are stressing the system. The result, however, showed no
->> > > significant difference between the degradation of throughput of the lone
->> > > stream socket when using a pool of datagrams to stress the queue over
->> > > using a pool of streams. The absolute difference in throughput actually
->> > > favored datagrams as interfering least as the mean difference was +16%
->> > > compared to using streams to stress test (N=7), but it was not
->> > > statistically significant. Workloads were matched for payload size and
->> > > buffer size (to approximate memory consumption) and process count, and
->> > > stress workloads were configured to start before and last long after the
->> > > lifetime of the "lone" stream socket flow to ensure that competing flows
->> > > were continuously hot.
->> > >
->> > > Given the above data, I propose that vsock fairness be addressed
->> > > independent of datagrams and to defer its implementation to a future
->> > > series.
->>
->> Makes sense to me.
->>
->> I left some preliminary comments, anyway now it seems reasonable to use
->> the same virtqueues, so we can go head with the spec proposal.
->>
->> Thanks,
->> Stefano
->>
->
->Thanks for the review!
-
-You're welcome!
-
-Stefano
-
+Added OASIS virtio comment link.
+Updated lore link to virtio-comment as well.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
