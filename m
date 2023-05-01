@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12484-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12485-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07ADBC77B7C
-	for <virtio-dev@archiver.kernel.org>; Mon,  1 May 2023 22:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC913C77B7C
+	for <virtio-dev@archiver.kernel.org>; Mon,  1 May 2023 22:45:08 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8724C3DF5A
-	for <virtio-dev@archiver.kernel.org>; Mon,  1 May 2023 22:44:51 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 83A7142A6F
+	for <virtio-dev@archiver.kernel.org>; Mon,  1 May 2023 22:44:53 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 544B49864A5
-	for <virtio-dev@archiver.kernel.org>; Mon,  1 May 2023 22:44:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 78F09986495
+	for <virtio-dev@archiver.kernel.org>; Mon,  1 May 2023 22:44:53 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3BDF298484C; Mon,  1 May 2023 22:44:51 +0000 (UTC)
+	id 6BF9D986461; Mon,  1 May 2023 22:44:53 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2119B986466;
+	by lists.oasis-open.org (Postfix) with ESMTP id 450ED986488;
 	Mon,  1 May 2023 22:44:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kCvDBoJ9QEMNLegvSmBPJc/ZN/+1kQX4Z18vkT+WVBDPjydpZSJk7FBSpBnDA4EJLos7ANRj38wBsEfCzKsXu4ZwLIkQuOaZBWTSlhX4e1CNXXXP3MsIdi84+LmO8Ru2+BTzxRB+UXdGMxX2gRiJGUeQOqMWvN45s/8mmg+s+hoHwn4b29YzgLv49CzaYaPiMhD4OMF+kUAtvGU0JN5YZv/BvdR7NPSeK+eaa5KuGs2ilqycLt9GSQFpUYrqoUNG+Y61letI79MKq10/L9lORfBxwh6QxEmF4E2SqYdp73qlbFPjLcwp4sYbX6k/JG7gTT/9lvJX/qbyK5E+oSzPnw==
+ b=WI9WuZkXEOegd2LDnx6Y4RYhgH7D0ySYudazAX6y9I5nR92C/8I1ZDl1/MOAwdRFUdukHhtA8fVbw7KQj6lnXR0AMrqeO4JlIpTVxqEjaTqVQO8rC1zpgD71XMcyUwKr8OHleJCaoqzFGi5FijQR20mHT4g7pPFI3z2Ypxq5yDNU1JEi+1GSzQFDJw13EDAPqv0hP7pT3SuQujv2dyR8cGPy51MVvtBF7gSLAJyh9uO1U52BAvP2WpqAF4SIScb73FH3kFLgbDds9YSOS7/gLIQVupfgvStCKCPPDyUuFpKfKXKcmzdppApPs6719HWGlz764R04ZbN4hLVuSHBjmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XH3peg9pvZ7K5S2i8tF5D9wpezi9poGWYek1G1dH4V4=;
- b=B2ppCmjwlqq84gX8g6WCXS9l2DF/chk0Yv/d/X3XIfyLQkAnxJwJgZIt92+6kfXyJ3TYjG3EBuNfwzqbo0WAIU5IV/h1pGuLSnbuFblf9sBFrJjBs9Gx0EEpBDd1wzg3VwPrJDZBGjry+7D9t1DRerXrwOopGNoeD0v5Dsmc8grClEsHdi0KWjpe42Mes+FKEYszGXQZ+31faXWdf9m2Eg1fCnuaJ4bu74W63Rpz/aUxGE3OkBdI9AZa1g9ZFgR56Ang7ooxBytdTBPx//YqmQj8eNzH4Wsyv46o7VQRiPIZXQvX/x72tJO2dhcUEx3tgdnxmC4pAhw0WUzbPHzzug==
+ bh=0PeBenuFvYXsXbS7VGyIx0Hy5zCrwxfVy2S4QDIB4zM=;
+ b=YGoNAA521Kot3dV/q8Mpg2zy1h3wdfQZlqZzFdlzJ4VIiuBSWZDjsmuxbqaGvTwpFSjZUDdocWm3WSMDdCU51iDvcZEFnfa98SJKMahHKeHBarFhosvRvMtAOGT1JPaWPB6Ih/L4oz/yYbx0oXNdDvCHO2jPHJkrLjS2DFH7NuZqAbOMWsG/1kRlBZkka4sRk9e+yepm3ZbIiMtW6jyUQdjFb7vo0iiCa8c+lwuRCPuMm7DscLlxd/wgR2tUo7rUJU2ltTiCYbzqf/wPNyQC2+xHl/JBWfLOUpJpAlVVSIxd06PA3g3CwkVNcXDfnbpgna2R6cNXJhjD1AZAv3a+Bg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -48,11 +48,9 @@ From: Parav Pandit <parav@nvidia.com>
 To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
 CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
 	<parav@nvidia.com>
-Date: Tue, 2 May 2023 01:44:29 +0300
-Message-ID: <20230501224430.485139-2-parav@nvidia.com>
+Date: Tue, 2 May 2023 01:44:28 +0300
+Message-ID: <20230501224430.485139-1-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230501224430.485139-1-parav@nvidia.com>
-References: <20230501224430.485139-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -61,75 +59,47 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E63E:EE_|MW4PR12MB7216:EE_
-X-MS-Office365-Filtering-Correlation-Id: be1df04f-7038-4c69-c236-08db4a95aa67
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E63E:EE_|CY8PR12MB7124:EE_
+X-MS-Office365-Filtering-Correlation-Id: 934c95e3-d5ef-4184-2b97-08db4a95a9cf
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	i55o3AovPHaVHWI8bSpi+dFOiZcOIoC0mJKyCqxH5wP2CvAgRoTg31+FrC2be6PYCwLOxE9qHZ9J6hjUSzDq29x5k+yKx2ZmYrBMHoZ0kqu2UljUjrc+fxDH8Vlh1qs/mVKwlih4GO1tekJbk0XEG7ujpnxZs8LsbFKoX2iFdsoygwhfPWezUMcntBIHczSyNbfAQ+pCte0/Z4wmphpz01qOILTHg63jbu7BWWFo/3YYM6B5V8+Nh8Wn1rSPKlXbQd9YNvoY6BpWcitvGaycko+3mD6a0wRCbyyhy3/VBe8ejf2qJpcs5L8TxYRiVfX0moLdpBiaNtuURQuG4D2g2h3znZ1UA8BazehoHNVSS14vuMrNXNSFZpDT/6VR1fJWYUH4tc0vpDyodcb5cAR1EluR6p0nQEaf4W7/j5gZz6/UQ4QtUrEFXjQe77cMhu4VMPBnuoOpcbRlE1l2QtzBJ8M9eFJsf/jYnQZfAyAmahqMwPlLnhD438xGEsMu8ihbCQ0q2FfWB8ElE2U+WIw1cvOf/QlUgmJZqqNvTV9UJXq+F/AeJ88En95Yl2IIoe3yAiG6KHnplbF4GK8V9nNMYRqx4ONQuCfCWQKUxUY9dW5TbsAjODdMZMbZstwonJY3VrZIzH3IcOmJ+dBcWWXXAussV7Y27cO7cECLfllRlXuJ8Wy+bTvWdFqP0WkdW1nXajArAoYipuC36HgFuN2Ezq27S4M5TC5zMWwig1KjkgYBpWYiGhtsNUR3FN3hl5f/
+	4jWex+aRbn7FjL1cgv5b5Vgdx1QTG4Nv2KkNDpeun2Ooyy+ftGlr0xK/Lng49mddOLMyGrr4JEHbdoZ07pFwJowz6mzYl2Go3IoOVFEpVWMKF1cTLiDtD7PeF0T7NwDqCzN7yrtwGNDXfmM0MHW2jnLPJwawXSaaK74wcpd/wWteoz1R3b+kYXuX0inBhQzbRXomtqwIV6sBBD8xwyQDlqPmP8yAdxWmpvDIYXhAFV9dnV+V837gLaY2zeJXkGsiFCP/s/kkDfoGOrYaCKp12MZV5j+nF7C1spD+Wo59qphI5uOkxVi9iaMzLX9dIArP2joh3aHVQd+T0QUoDOXad+retSSxzZUsknEWDj+/osItq6Y0uPd4JNYJI9kQYEFMHUUIdyEQeKE5PHaoKU15F0PSxNV9BNrWuDFn9mDV3/Q26UHHT5co2xbE3x5tpeZgfW/gc4DDkTgN9i9B5S6J+N6eH5Zr6x86WJcQ5nICluCF2UXEOJreqo7tsIE/u1c9+fn86uclLY9okLUwRfXjTxiM40VWN1WZ8OJqEZxp5ASf7VVozs6RYBT5Qum0Q7ZR2ALAwJ2uUf0RrsOm4drAGZxNYDnasd/lUf268LlWyytH1SRSuy6Gtcd/2StvJII/nK1ZiEl7BWD2iweJmrsqE6PpLOEaRZb1eexL4D2nhSxYOlAxSM6AESaHuilIMPYODCvLYSITbDDsY67PFvWwqO2eenUuxTABZf8lfoeZDCJ5ZA+JUXpjCcOCSVSysDaf
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(40460700003)(316002)(26005)(82310400005)(1076003)(40480700001)(8936002)(5660300002)(8676002)(86362001)(186003)(16526019)(478600001)(110136005)(70206006)(70586007)(336012)(426003)(2616005)(36860700001)(47076005)(83380400001)(41300700001)(107886003)(54906003)(356005)(36756003)(7636003)(2906002)(82740400003)(6666004)(4326008)(966005);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(346002)(396003)(376002)(451199021)(40470700004)(36840700001)(46966006)(40480700001)(41300700001)(82740400003)(356005)(107886003)(7636003)(4744005)(2906002)(40460700003)(86362001)(36756003)(8936002)(8676002)(54906003)(4326008)(316002)(5660300002)(70586007)(70206006)(110136005)(478600001)(2616005)(966005)(47076005)(426003)(336012)(83380400001)(1076003)(26005)(6666004)(36860700001)(82310400005)(186003)(16526019);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2023 22:44:47.1003
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2023 22:44:46.1160
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: be1df04f-7038-4c69-c236-08db4a95aa67
+X-MS-Exchange-CrossTenant-Network-Message-Id: 934c95e3-d5ef-4184-2b97-08db4a95a9cf
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	DS1PEPF0000E63E.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7216
-Subject: [virtio-dev] [PATCH 1/2] admin: Remove dependency on the deprecated register
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7124
+Subject: [virtio-dev] [PATCH 0/2] admin virtqueue fixes
 
-'VF Migration Capable' is already deprecated as per
-PCI base specification 6.0.1 section 9.3.3.2.1.
-It was long ago deprecated which was meant for MR-IOV.
 
-Hence, remove virtio PCI specification to not depend
-on such deprecated bits.
+Hi Michael,
 
-This patch is on top of [1].
+Please review these two small fixes for the admin virtqueue patches.
+They are on top of your work of v12 at [1].
+
+Patch summary:
+patch-1 removes PCI transport dependency on deprecated migration bit
+patch-2 fixes admin command command data type to be u8 similar to result
 
 [1] https://lore.kernel.org/virtio-comment/cover.1682354275.git.mst@redhat.com/T/#t
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- admin.tex | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+Parav Pandit (2):
+  admin: Remove dependency on the deprecated register
+  admin: Make optional command data type to u8
 
-diff --git a/admin.tex b/admin.tex
-index 2efd4d7..037e2e6 100644
---- a/admin.tex
-+++ b/admin.tex
-@@ -372,9 +372,8 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
- \field{status} set to VIRTIO_ADMIN_STATUS_EINVAL and
- \field{status_qualifier} set to
- VIRTIO_ADMIN_STATUS_Q_INVALID_MEMBER;
--\field{NumVFs}, \field{VF Migration Capable}  and
--\field{VF Enable} refer to registers within the SR-IOV Extended
--Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
-+\field{NumVFs} and \field{VF Enable} refer to registers within the
-+SR-IOV Extended Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
- 
- \drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
- 
-@@ -423,11 +422,9 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
- the driver specify a value for \field{group_member_id}
- between $1$ and \field{NumVFs} inclusive,
- the driver MUST also make sure that as long as any such command
--is outstanding, \field{VF Migration Capable} is clear and
--\field{VF Enable} is set;
--\field{NumVFs}, \field{VF Migration Capable}  and
--\field{VF Enable} refer to registers within the SR-IOV Extended
--Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
-+is outstanding, is clear and \field{VF Enable} is set;
-+\field{NumVFs} and \field{VF Enable} refer to registers within the
-+SR-IOV Extended Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
- 
- \section{Administration Virtqueues}\label{sec:Basic Facilities of a Virtio Device / Administration Virtqueues}
- 
+ admin.tex | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
 -- 
 2.26.2
 
