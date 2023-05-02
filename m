@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12493-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12494-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 859DFC77B73
-	for <virtio-dev@archiver.kernel.org>; Tue,  2 May 2023 11:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A507C77B7E
+	for <virtio-dev@archiver.kernel.org>; Tue,  2 May 2023 11:29:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B406942563
-	for <virtio-dev@archiver.kernel.org>; Tue,  2 May 2023 11:13:06 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8EF12F4C
+	for <virtio-dev@archiver.kernel.org>; Tue,  2 May 2023 11:29:10 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A613A986491
-	for <virtio-dev@archiver.kernel.org>; Tue,  2 May 2023 11:13:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 821979864C3
+	for <virtio-dev@archiver.kernel.org>; Tue,  2 May 2023 11:29:10 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 90633986479; Tue,  2 May 2023 11:13:06 +0000 (UTC)
+	id 76540986488; Tue,  2 May 2023 11:29:10 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,239 +24,130 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 799BC986485
-	for <virtio-dev@lists.oasis-open.org>; Tue,  2 May 2023 11:13:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 61C9E986485;
+	Tue,  2 May 2023 11:29:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1683025980.536000
-X-TM-MAIL-UUID: ee24246f-0601-4eaa-9f39-38bdd8c5511d
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gh/Ko69oSPz/sN0WBkkBMQZicF7wGiUlla/J7Z5jEy1YLkrz+EUq7kHDh9HYRGhA08ke5PRCbE53ol4egPPPIj3oKnSE8ar7pQ2J1KDdkzTyVGuyqrNIa4KXlnKLpYepAgfzW6eIsaa9pKMbtLDzb2mBujOybiD/w7Alman0X7SjMXMak3ZP0RS55khYKDGJrQdjYnUYs8RZK3lLDWVl9X4IzAsd0Se7y8K1lE3KFm5OAD68BEM3JEveLAl3JUCtU3i/CHaoZo7ZQhAPWVgfPzIW0zpffESc/o5sUks0Kv7szCsmzWtJpDyvvE2b8sDKzy8UGnttnbHhca7ZVzyvKA==
+ b=j5J3nfsWRlpoZXfaoneLcLeRMbMckEIGm1JsJzbkaGn1tnllFZZGMa4ro15Mk+jXbxq7BpVbzSFegFg14Vo4HknzJcanqRf29vuFG/6wZ3RdpyPNre32bV3rxzHIFeFvPqsVNe5EIgyt/kN3c5iIOm23/NrDZCPKdnJn1E/U61gKwjiphKMOInOpH7scSrWbrNnjV+dvWggzi0QGfXjx1+Y+fl5Y7mD39CflEbIi/e1RgMoM2t4aPCyU3VqumR0g004LkrVXjlzMOKPOiVxam904POLABEDm7B41Aw/5b6R0MiALR/bUIKFD11OWBOrqJNM85++0MAQ54oSO4rDUIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RJxVOvg/vsjr01im6I353K+C5oR1YVHqLzpe0dKCe9s=;
- b=UJZEYjQvgPZf/0p5fQmaSv9YKT5TDouxsvt9imLG9HXeu0T0JpWfeBCx6m6F5AWxBhGk/MLmJ4coql8VK93cOBumSWX96RIYhgLLQqvq0svJ7xZFmc9AER8gHfCNT15eyMKhudKsDJPZ/yxhI2GWpBnofqHlifWBkuyNIRNFkhYLHC9czZReHpCzlB8z0G67665rasKMRvtOwt1ycxYEtblhjIqnyRCZNI53RdAOoF2R9J9oVVOZbNcwlOFS9T84SxGesmOo+I4K8WBP0ji7ITOkHQRQyFKkCNhffg/ls1tuHcR4kopg29wBwMZIaZCdkAJ98BmUxbJNDfUalUZqEg==
+ bh=vhP2AhRjQdkmzYFA1wbXGVjWC+1LUXlGJVhjQvmmmaw=;
+ b=an2NKbvCY2GgTCW+kvhxj1I/L2W5V4P7IbCtzjnPvtJW+HOh088uKSWPyFC9Z0nbgVOtmnONfFCAYYe3gA7NCuKWSD7N9aTg+VRzmbbU/lJiDDOHLmKMXCDGe3kIR0jfVTrSoT3LA5yGpogTtC8cBU5hIxMnm1ewPaJExESbBmcPGMfHdDvIMF0TFngEBI1iSk17nVMiQDShX1MCX6aqW4xA4JUfQTJS9W//HvngVUGcsQ+A1xqr9OKnSrJ9IWZhBa4LRjOdilQKZKau7B5wCg8eu/6mp9XSbWKLSO67lV1h3RvJY0KG6AnrrrlzAkuhaF8CiLNmbbG0I+5aTRogHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <78997945-f7fe-56cd-b8d8-a2b429ac4a07@opensynergy.com>
-Date: Tue, 2 May 2023 13:12:57 +0200
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH 2/2] admin: Make optional command data type to u8
+Thread-Index: AQHZfH6Ll9D3zH45GkaYn7RfQMElMa9GmQMAgABAUXA=
+Date: Tue, 2 May 2023 11:29:03 +0000
+Message-ID:
+ <PH0PR12MB54813C5953966EAAB740C882DC6F9@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230501224430.485139-1-parav@nvidia.com>
+ <20230501224430.485139-3-parav@nvidia.com>
+ <20230502033510-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230502033510-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
 Content-Language: en-US
-To: Alexandre Courbot <acourbot@chromium.org>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org,
- Keiichi Watanabe <keiichiw@chromium.org>,
- =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>,
- Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=c3=b6ll?=
- <Matti.Moell@opensynergy.com>,
- Andrew Gazizov <andrew.gazizov@opensynergy.com>,
- Enrico Granata <egranata@google.com>,
- Gustavo Padovan <gustavo.padovan@collabora.com>,
- Peter Griffin <peter.griffin@linaro.org>,
- =?UTF-8?Q?Bart=c5=82omiej_Grzesik?= <bag@semihalf.com>,
- Tomasz Figa <tfiga@chromium.org>,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Enric Balletbo i Serra <eballetb@redhat.com>,
- Albert Esteve <aesteve@redhat.com>
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <87a60kg9rh.fsf@redhat.com>
- <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
- <877cvog030.fsf@redhat.com>
- <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
- <ca84a8f5-71ed-aea8-5751-60403d167283@opensynergy.com>
- <CAPBb6MUDWVK87_kGFen36tDJQoR-Les6djcKVihjuTKQBjweEQ@mail.gmail.com>
- <b5c9d69a-fbec-8046-225f-bdb5850bbd54@opensynergy.com>
- <87o7nmk1rs.fsf@redhat.com>
- <96978ce8-0837-2e08-f5ca-66587807798b@opensynergy.com>
- <CAPBb6MUHXh0XYLH=8anWLNQaS+p6_VhMRki+qSqFQGeYQzBSSA@mail.gmail.com>
- <2d5df33a-c246-81ee-92e7-a44712600e62@opensynergy.com>
- <590378d1-83e0-b058-7eeb-2dbe5963670e@opensynergy.com>
- <87354okkx5.fsf@redhat.com>
- <c1658889-0a90-5681-6afb-7160cdf1bf77@opensynergy.com>
- <CAPBb6MXNUHJuq40-RQO-0aa6UU0R_ZOHvB48B_t_knpK4Uw0eQ@mail.gmail.com>
- <0f67a3ac-4995-154f-142f-d49d1684aa3c@opensynergy.com>
- <CAPBb6MUEtC1oyEVq4iwdBG0vMj3FwJ2+Xr+-d99ygCZjp6f39g@mail.gmail.com>
-From: Alexander Gordeev <alexander.gordeev@opensynergy.com>
-In-Reply-To: <CAPBb6MUEtC1oyEVq4iwdBG0vMj3FwJ2+Xr+-d99ygCZjp6f39g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CY8PR12MB7243:EE_
+x-ms-office365-filtering-correlation-id: 0ba79563-48dd-4636-a106-08db4b006ed7
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ tIdydVOAp0ukdb7Y53/uRybLa6ptDnVgaP8tNdkARfiynDe0b+2zKjEFhpobJWvEgYwGCGYJyUCYYF+AQvU7jKpS+uq4q0kVMUirbaiWIhgoJ2pw6LthBfg31+rXO5Q0phAGUWTssehbb0JHn7PHGKX6LLmeZi0HlclTWHT444dhEcNO/iivV8VNtIyP0WS6VxnccWwZX7mq1x9HKf92H71VQh0DuAutmBKRwiTuNc4zI8Y9j8/3AqQ+cTP5QuEcvnOH7tHMrJIWRG0RcQ1yjSAzVLvZ1bUST6SESraMvn2VUh9Qn4SkihNmq2wV/MLe9ekTV2oXlClFtQYp6PUaVDQDlwLUtkOWVCAcnsNnpTG8wBFl1lsFYgJiPQts1EaS1k2ojcElajheqwtjs6I2HHdAJbTwgSKvkFqxIeIQHuie3wlAuh6E6VIhi6nCn3yJCgRzUah25l723J/A991JSSk6m+5n5jKjfj1/w1D4WqvhP/rtAMjLqs/H/kJ1z1EPlvzoTdvT319MN/0VU+ZHo3lhiI0WsZBo71rUMBH6wxcnK1onIY2A88CYtYn+Xs95/6KC1KwNi6lNyU8OvpwQSiH5RSzmMiHDJ98saezY7ZevWycYNOMb0K3TELgsK5L9
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(376002)(39860400002)(136003)(396003)(451199021)(83380400001)(6506007)(9686003)(107886003)(54906003)(478600001)(71200400001)(6916009)(26005)(186003)(7696005)(86362001)(4744005)(2906002)(52536014)(8936002)(8676002)(66446008)(38100700002)(33656002)(66946007)(76116006)(5660300002)(38070700005)(122000001)(55016003)(66476007)(66556008)(41300700001)(64756008)(316002)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?E0SxHqfzZgk2/uLcxd+SRG+VMZVGcDafnSoDnlS3DZpNYsXrsc19UwnEnXvH?=
+ =?us-ascii?Q?WAIGxitSdxvdUD4Q/+m8jK3t3B6ITTmiOQkjRpIEDGiew517plc4wPNkD2ZO?=
+ =?us-ascii?Q?nKhNULvh6CSZJLARbV5tAxKM3wAcK2IOTxEjwtgvLHFiB+nuBRZ4fG3CzfiV?=
+ =?us-ascii?Q?L6Id1eNDG2I/6x2MoDe8XfOuVQhINhbKPZGH8DV7NP0IC8Ws1WWXR5DiNKh1?=
+ =?us-ascii?Q?VJBhhksrRdSorgk3VJ43i0FaDQWRs42uQQqbjL7023HSyYRTOHmdmp6oXC0k?=
+ =?us-ascii?Q?+Xi3AJw20Oa387FGdO2og7i55Bjv2XpWl3768xDVomaxqZPnVJQMnEk2Ze6T?=
+ =?us-ascii?Q?ycnbnSb+CWFa2JUKXChQtQeb5ydZ4+Hv3hw7u+uQqJelpOu7M5kV/wV5cavZ?=
+ =?us-ascii?Q?+R5hveOjI7HeykEStcOpC80d4m0y5qJP45jIrPwOXTP/gy58+ledjyIApypL?=
+ =?us-ascii?Q?7Ivm+7SkGaipJYr5gQJ7sZmGB/R1AGKjkzYaM7sFQ38H36KdicbGJqIk1AiE?=
+ =?us-ascii?Q?gVEu+SKhsaP3G1tHZgio3z4evJ2Xfsha7daJu0l8O0TXkr9O5S4Z4d9GQQwW?=
+ =?us-ascii?Q?d7hLjBloofXjLUu6nhfDPt/pUJS5wTb3tbhxwY3Al9jNFS6Wvc5Qh3/IbRIO?=
+ =?us-ascii?Q?C3PPC5zO7PzSK3KChPIe6l041dmlyp8nITK5StHupxQzgJA4J9rC4bZZoXHY?=
+ =?us-ascii?Q?Fy0om1qDq7D0/LV6EGgy5wNkT9s5kdahPLMOtqCftIKRuf8thgNjKCic+lAf?=
+ =?us-ascii?Q?ac0X8oRPsLdVlBzkua2suOVvFS9BIiMM3IfVdhCdYpg8NtNDbASvhYijHjNw?=
+ =?us-ascii?Q?zPziWu7fKt98GlG/ECX8DnK0Q1mHvS0Up2GlkaiSqlCWetME5Dp9B9l23dFE?=
+ =?us-ascii?Q?XwNquuqfTEgJsw0sMhU95mYM7djXWVJ8mm2P19S3F9x/oQcw/a+UFJXTl9Oc?=
+ =?us-ascii?Q?YKrcaZmXj+cIt/9OZR7SW5IB85fUx/f1u9yI9QVYiSlLV+8gxeImA6mK6e9X?=
+ =?us-ascii?Q?u6U+F2qe7T3vq0e7tyiNuqN8G0ZtyvZQDEz+ANk21pDOPxCyGYEGquxalQlw?=
+ =?us-ascii?Q?/rLtggyr+imd+iZTFsv/BPzmjvnXX8LDKYtWLypLQ2voAlw1DWBU78V/ydzZ?=
+ =?us-ascii?Q?xuVtsW2yESxZ1AnR1pbmap7uCiFEw3RNJr8Jo/xMi170lIsbFD7ccHFT/rTn?=
+ =?us-ascii?Q?2O/RXGErNP2IT9cWs7oawgnsdBJlha5O3B3/3szjqbYyBWXnjncGIfnrSJT0?=
+ =?us-ascii?Q?AiE1GkfTdrvY/iG/TIALmQTlY/4fpeLydtJpjDOjZ0WdAZ1gPBp84pxrmmLr?=
+ =?us-ascii?Q?jj4W4ut9yxSLQLwXTeZ4m4zcMSwsLuqNoC5jJnwi0vxLfhfU/1z+USxF9vLY?=
+ =?us-ascii?Q?tnxOn8JOh4CHWBxaXvb2zSvNCrgGSkUUVppu3auk2Elf+36V+xx3+1aFVvZ6?=
+ =?us-ascii?Q?qefDEw+rBMNva36mz6G2q5v2C+sM9OYn+nmpIm/pKtgEvs644wNH6BfK6/3R?=
+ =?us-ascii?Q?Eixk6Eb+Mgq23NDdxTHPVvuOQ6S7vEib+SsNX1KBWdzsySQmf9vh/DRMRpEm?=
+ =?us-ascii?Q?Uxn+zL8bEcX4qvmPxnI=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: BE1P281CA0300.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:8a::9) To BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:4d::9)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BE1P281MB2663:EE_|BE1P281MB1716:EE_
-X-MS-Office365-Filtering-Correlation-Id: b5e3d5e2-564e-4493-5ada-08db4afe2fe8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	qv0uiWBgcsxBh8kQmqYjN5tFwLK6cHuKgVgJnouNTeaoWug4mhu6xzaLLLOn2MjWExARQqtVvoSWnPPkc+7EWLwvucR/W1OpPcXNlyKKB6cpdEFCrPZOk+pcg6Q+HUlDN1zISLvSnu64nTD6tEWeTI92h9AUbMR9bzYDX15siV/rBu5vAUu3cGF2zdbhgKb0CyNm1FPcMKSBH0r0QD9lWeQN8gOFomc1nX/p0K7E3KBPNvqJ1ETErEvEiM4bazuCCtnI9xDWlEZNhxWZ4oaDhO1D1UyQDPVRw/v6sCEbCRiYVuvYdEnHxChEZz6PX7pjPxhFQiEwboHALl7hbDzcAzquUaqKGwqPj8cbYXQynlZxmN8A62KhMdzStt9gq7yd/ngiGDCcYoQCATblPmdg8Xh9WdaDkkk9d1FstW9pHGYb/62lHBggk98Lb8icc56APAjIw6tGUfcYqbtvvaMcrHGubVeTOyd9/vbN8EzZj2o75O4hSY/bJxe6dB9Kj5JfwbtKNdGWC6LaVlYJ5DQkP8sX9WxNJaEp/NU18Wezr7esGYF8X4tnyYM4wEbBvfTTVrqYIMjwLM6aWUI9OsRR6g==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(376002)(136003)(366004)(396003)(346002)(39840400004)(451199021)(42186006)(2906002)(38100700002)(66899021)(8676002)(7416002)(44832011)(41300700001)(8936002)(5660300002)(15974865002)(36756003)(86362001)(31696002)(26005)(966005)(54906003)(478600001)(53546011)(2616005)(66574015)(83380400001)(186003)(31686004)(316002)(66476007)(4326008)(66556008)(6916009)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?U2M4Y0JMRjE5bjROcFhtaWlybXNUdmlsWmMwa3hORlZGRTh5ODQ5T3RKcHhD?=
- =?utf-8?B?T0lyc2hOOFJsYUtzYjlwaG9wbnpnSWp4dExwS2tsSDYzdDdDQmVPdGFseW1O?=
- =?utf-8?B?dFFRNUZPZHNvc2ZSbjRMYlQ5aHFlVnd1djJNNWJuWk5ja2Y1bnRCeExXbm9p?=
- =?utf-8?B?UEV2eTdkandJbDBTcGxSQWRMZHNOUDVaclRRZXFZU05WejljZHMyUHAxMVMx?=
- =?utf-8?B?RkNUQXBLb1V0VVFJQy9wNjJhaHUwUk9Wam9ZWFdYUDFlc3dyeGZLeXUzNnJK?=
- =?utf-8?B?V1QrZGFHbTA1R0tvMndxRE44VEJUUGhlcUllUzNnNG1PbWhmZVMrMmREL2Zp?=
- =?utf-8?B?VGdleUNSc3V6N1VnRmtRUGdVL0pHaDFkMGhqR09XVWFLeWM4cFRhc2FDK2c3?=
- =?utf-8?B?dDFjbDh3WGVPbFhYaS85TWsySm9Cc3piK3BJVlpTRzFYWEIxc2FqRUVEbDdk?=
- =?utf-8?B?cUpwTUdnSnVhM0phOCtjTFFEQkx5V3VHN205RnVJdnQwdmkzdFgxR2o5ckl4?=
- =?utf-8?B?VjdCeWlZTERHQlp4MHg5clVBNmZQTlBEdTFGaFZXaXZ2RmdPTnR0cnRZTVRB?=
- =?utf-8?B?QU4waUNpRnBWb0NKa0l0UDV4eHlzNndRZVh5em42cnY2TFQrdFdXcDdiZlJw?=
- =?utf-8?B?aGFhcjNOSk1nWk1QSGpSQVcwUG9vM3FIalNHVG16S0c0MVhaSXZsUkQ2dmF0?=
- =?utf-8?B?OC9obHVGQmNMUjVPcFZuSFBtVkk4c2U4d3U5OTdTbmNkZEVsc1RRbDVjbnd0?=
- =?utf-8?B?SDNSeTl4ZVB3N0lMakkyNUgzNVlzZ055MFdSVm1QK1NKWTZSOFdiTVlLNWV5?=
- =?utf-8?B?QitXcXNzeXB3LzM1eDg0RmNEd1hPZmFVeDNQelF6T1p2WDF1aC9tUVM5cDZU?=
- =?utf-8?B?NG9jQlBsNEd3R1p3emhWMzZnTXBQTzk2RGx3eVFEdGpmc2pjOWNDaGdVcXV1?=
- =?utf-8?B?Y2ZTTzQ5elNnUHRpenYwOVNvZitiR2ZFRFNzY3VmTFNSam5XRzQvMG1GYk9j?=
- =?utf-8?B?MGY2MFR4ZFpBY2dzb1NMelpnZ2VZTnlXWENLYjFEQTdmMVFleldJcmlRNTl3?=
- =?utf-8?B?amtmT2E1bmNUZWpveklTUkhXOXY3NW5FSmlyTWxtSVhGSVl6NDdLQVZUUGlN?=
- =?utf-8?B?VE56ZVgyZmFYYitGMEJMT0dZV1VzK0k0a3poVU84ZmxremdtUWdIdWRsRG1z?=
- =?utf-8?B?UkhwWVBVQnVpRXN4ek9DRlZNZDdGQU5hRVpneWpkTjEzVVJmWHJwKzlLbSsr?=
- =?utf-8?B?MUM4eElPWC8vaUVzMXpRWW9sUnNsUGt6VTdnb3Y3NGhYWng2dC82WEV2eStr?=
- =?utf-8?B?Z05haVEvWGs0SnhqMnZmQTFkSldtUVp4d2pxOTdEQ0tOeWFLdFlkZTlmMGla?=
- =?utf-8?B?NzAxZE03WjZBY05vZFlTYTA2UEdLbXNyMVJsRFIvQUdkRGlIcjRHd0pMT291?=
- =?utf-8?B?bmpmSlFvY0cwcnlEUGp1V3NYOFNtbHNNU3owaDJQTGxZZG02OVhyUDI5cVNL?=
- =?utf-8?B?Z0pDNElFdGs2eEhNNHRIbkdORDJlODBRakt6Nm9Qd0F0UE4xNVd1MWo1M0kx?=
- =?utf-8?B?aWZmZUJDUXBaeURYeS9BV0h3eUxKdXJYSUJWaUd0QXhTRytVOG4zTTM4MFB6?=
- =?utf-8?B?cnJBNFUwSXJlRzl4emNHMktPRnhLN2oyQjhhZWZrcDNDQmJoOXh4bHpMT2dS?=
- =?utf-8?B?VEZSTVZycUtnTGI3d2tSdERiblJCTFB3SEtuS3c1ekFNTU4rWHBDekM0QU9m?=
- =?utf-8?B?cnZUUll0UWJHY1lac0Z3Nm8xUWptWE1GbXcxcnVsSVcyUXRScXlOWFM2b0hQ?=
- =?utf-8?B?RExLeGhoMVFkSVhwVCsvdjQ2QkVHbS83NTl3ZE80cmo3MmpySlhQblhQamx3?=
- =?utf-8?B?RCt5ZElZeVNPbVBDQzd2V2phcU8vV3pUbVVWbHBvR0pVUm96cUVjWU1hWloy?=
- =?utf-8?B?cVlucDMvVHAxVGJDeUJaQzBheUt5ancxd3dTdzVvZi9xWnF5OFZQWi9xWGZr?=
- =?utf-8?B?TEhweDJuTFh6Z0NJbCtWdDFHeWgwelhZdVpvYVBHazlLZFFlNFJaZEFJck9I?=
- =?utf-8?B?V0YyRWI5MDMxZ3pQVU14MXZ0WUtoTERMTUx3bXRRVmJjVi96cjI4ekxNSGRa?=
- =?utf-8?Q?6LJFSlj6httVUMv1p6HBdqvS5?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5e3d5e2-564e-4493-5ada-08db4afe2fe8
-X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
+X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2023 11:12:59.0640
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ba79563-48dd-4636-a106-08db4b006ed7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2023 11:29:03.4245
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9OGolEhmJPeBEGFblMWS+4k1bd+LtwpQSr+VLRfu6LiiIOSXn3q2YWGTSTEO2z5jUO+JnBwsPuJcHCY9USQDZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB1716
-X-TM-AS-ERS: 104.47.11.168-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1007-27600.005
-X-TMASE-Result: 10--22.804700-4.000000
-X-TMASE-MatchedRID: u6ojmU07PKz/9O/B1c/Qy6n9fPsu8s0a9mojSc/N3QeqvcIF1TcLYG1A
-	+PyfVi9VXnkEfGIdlzfErKZVJCtGzsEElERnDJHCshZoVNAELFPkzWxwXGSAYT+B/tp8itBTwmq
-	SW0kcMLatVnlxd5OEdNwoJ74c3x8zKyefC7mVhWGIf3m0sUfx5za9tZoo+dDb9mqZiOfja89yAu
-	/UL6iDH2gZMh5YZNgQPXzXTYVZQI0v9901qElB+t5x7RpGJf1alKvhkP88iXSwuKAMD8Wm9VDOm
-	RheGpIyh0hur+k9vDOpaNKvECOILA3NgVL679KbmIe0I1iNyQwuH+p7/wumBtP7VmP7Drr6Ck/v
-	hGfHFeSFW+x5HzbUdquxWtAe4PJpOrPgsAyL7VGW7zl29p1xdcMFDjMfv7kD8f3rOEwXzqcrqUy
-	AbIF+KapudRsisNuFijy4xFF9LdTjFqkZIdiuS/QAclqqmRB80w14HFJQjaP8/1ypXUBGlc65Qe
-	rn2w9CywMD+nV5RTgOpmVTrU4wTF8+dSqKgz8/dhkilCSjv7UNW4va9iqt3pC/BCs92qoiINgIp
-	AA8LuOKXPHHXDmlw+I/i7CQzrdqqJIiwhbq5S9M0MpnLn+G9C62GA8VkuOa/e5hRw9VtK5S3eAH
-	zSfkkLs8IMNI7NJ6uXFEQJaCEz6/WXZS/HqJ2sC4UUZr4lSF3Mh122xXdCt4N1jhRVQFLbxAi7j
-	PoeEQftwZ3X11IV0=
-X-TMASE-XGENCLOUD: 61b002bf-b4e8-45c0-9672-04d4de2a91b7-0-0-200-0
-X-TM-Deliver-Signature: 9ACF573D0F1632022A38FE34A30B13A2
-X-TM-Addin-Auth: 9aWZ5bwbMy4s8ak0lTHEYKrF/yLvC8Yl6bSjkUWYGxCK0xk7v5F2dzWW7vC
-	gcEE5ucwmIjJydktg5pjETbkzCHwsznZXR0VmMhF9rsBfsOw0TceDfMloFZ4KXFzBrRmhCEzvR6
-	1kWAmK0scFRqStBC9rthL5a3Kqr+7m6HKxYLo/1Lqt0UUhBTO1NLQetHp8HpwoZh3SnHrXzUqRA
-	3BltKuwEE3KYeQjaW/oIKS4a7RDyKZzlMCt5GdHiqHPoOH6VPx/ZLh4WaLfQB3SQnfzAAu4QmGu
-	/Erzg5ewyJoRd2E=.LQRjYR74T0loo1Qe9YeAyxWXTVVchZyYqfYCBIXzAxII4paw142jHbrjhN
-	eBNKSJNWB9CqdIQkpK90Qi7vrBaDX7eLWbJNo0VFP59JIXbi9zYyg7bnOPelFRTNN1IjGZ3SksQ
-	KHt4Fb1E8Vq8P19yv+OhYuuyMkTfWy5TMorCkAbg27tkoMolRh5zlcMOtHLbgHFXJLHxzv+ERoa
-	iO6AmesOZaeoJaUE217hiP8Fx2XtIrFI4Ant5vOgl/bGMQ26+29dU1OqWJWS9RWiTi+OHNeCKEr
-	VzwnMOIdKJBNbd0kcDiMh5DR2CNwnviHCB6q60j3LbQ9p38r+DsNnvoOcdQ==
-X-TM-Addin-ProductCode: EMS
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P0upKz/aOpE+SPkiMZkvJpiVA7s9nh5qqwo/dSMS9TOsK7U4xEMGHZ2xu2sAO8C5Tjghbag3/txqRdLppSlzsw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7243
+Subject: [virtio-dev] RE: [PATCH 2/2] admin: Make optional command data type to u8
 
-On 02.05.23 03:07, Alexandre Courbot wrote:
-> On Fri, Apr 28, 2023 at 5:55=E2=80=AFPM Alexander Gordeev
-> <alexander.gordeev@opensynergy.com> wrote:
->>
->> On 28.04.23 06:02, Alexandre Courbot wrote:
->>> This is going to be my last answer to this thread ; I don't think I
->>> have more technical arguments to give than I already have and the
->>> discussion is drifting into territory I am not interested in engaging.
->>> At the end of the day it's up to the virtio folks to make a decision
->>> about what the best course of action is. If we end up with
->>> fragmentation, so be it, it will still be better than the current
->>> situation anyway.
->>
->> I agree with the summary. I think we have discussed all the things in
->> depth and even reached some understanding.
->> Could you please at least share your feedback on my proposal for the
->> QUEUE/DRAIN completion handling?
->
-> Well I've re-read your email once more and again I confirm, this is
-> exactly what virtio-v4l2 does. Here is the code that sends the dequeue
-> buffer event on the event queue after a buffer is dequeued on the
-> host: https://github.com/Gnurou/crosvm/blob/virtio-v4l2/devices/src/virti=
-o/v4l2/worker.rs#L1114.
->
-> IOW, there are no VIDIOC_DQBUF or VIDIOC_DQEVENT (or any command that
-> can block) taking place between the guest and host, these are sent to
-> the guest as events.
->
-> And yes, this design simplifies things quite a bit vs. retaining
-> command descriptors until some operation completes. Beyond the
-> increased potential for deadlock, there is also added complexity as
-> the descriptors must eventually be returned to the guest, even if the
-> requested operation is interrupted. This increases the amount of state
-> on the host which must keep track of pending operations and cancel
-> some on occasion (which is pretty error-prone), whereas having all
-> commands complete without delay could theoretically let us function
-> even with a single command descriptor. Retaining the descriptors was
-> supposed to reduce host/guest traffic a bit, but at that level of
-> interaction (60 ops/second for a high framerate video) I don't think
-> it's worth the cost.
 
-Thanks for the clarification! So this was a misunderstanding on my side.
-Indeed I'm still thinking of virtio-v4l2 as a V4L2 UAPI pass through. So
-of course I thought you have VIDIOC_DQBUF and VIDIOC_DQEVENT. The
-design, that you have in fact, indeed looks better to me compared to
-having these ioctls passed through on the commandq. So doing the same
-thing in virtio-video shouldn't break anything. I'm happy we agree on
-that. I totally agree with you arguments in favor of the events.
-So virtio-v4l2 is going to have quite a few patches on top of the V4L2
-UAPI: the memory types, the way events are passed, maybe also more
-restrictions on the data types (this can be upstreamed hopefully). Did I
-miss something else? So probably it is better to present and think of
-virtio-v4l2 as something like "patched V4L2 UAPI" to avoid confusion.
-Now I'm really curious what the virtio-v4l2 spec would look like. I
-don't say, that I'd like to give up on virtio-video. Please don't get me
-wrong. I still think it is much better to have a readable clean spec and
-to avoid all the patches, because they will certainly cause a lot of
-confusion (like what we can see right now). I'm just glad, that we're
-going in the same direction from different starting points. This
-probably means, that we both do the right thing. Good!
 
---
-Alexander Gordeev
-Senior Software Engineer
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Tuesday, May 2, 2023 3:38 AM
+> Thanks for the patch. It was like this originally but readers were confus=
+ed.  The
+> point of marking it le64 is to make it clear it's size is a multiple of 8=
+ bytes, thus
+> 64 bits. And format of fields inside it is generally LE.
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
+If it is supposed to be le64, the result should be same data type too, isn'=
+t it?
 
-Phone: +49 30 60 98 54 0 - 88
-Fax: +49 (30) 60 98 54 0 - 99
-EMail: alexander.gordeev@opensynergy.com
+>=20
+> > ---
+> >  admin.tex | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/admin.tex b/admin.tex
+> > index 037e2e6..648253c 100644
+> > --- a/admin.tex
+> > +++ b/admin.tex
+> > @@ -85,7 +85,7 @@ \subsection{Group administration
+> commands}\label{sec:Basic Facilities of a Virti
+> >          /* unused, reserved for future extensions */
+> >          u8 reserved1[12];
+> >          le64 group_member_id;
+> > -        le64 command_specific_data[];
+> > +        u8 command_specific_data[];
+> >
+> >          /* Device-writable part */
+> >          le16 status;
+> > --
+> > 2.26.2
 
-www.opensynergy.com
-
-Handelsregister/Commercial Registry: Amtsgericht Charlottenburg, HRB 108616=
-B
-Gesch=C3=A4ftsf=C3=BChrer/Managing Director: R=C3=A9gis Adjamah
-
-Please mind our privacy notice<https://www.opensynergy.com/datenschutzerkla=
-erung/privacy-notice-for-business-partners-pursuant-to-article-13-of-the-ge=
-neral-data-protection-regulation-gdpr/> pursuant to Art. 13 GDPR. // Unsere=
- Hinweise zum Datenschutz gem. Art. 13 DSGVO finden Sie hier.<https://www.o=
-pensynergy.com/de/datenschutzerklaerung/datenschutzhinweise-fuer-geschaefts=
-partner-gem-art-13-dsgvo/>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
