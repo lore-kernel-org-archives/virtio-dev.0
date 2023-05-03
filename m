@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12513-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12514-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A095C77B75
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 14:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D4181C77B78
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 15:24:55 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8409D157EE9
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 14:57:50 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 20D992AEDE
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 15:24:55 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 766C09866C0
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 14:57:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 08DB09866B4
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 15:24:55 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 6AE7A9865A1; Wed,  3 May 2023 14:57:50 +0000 (UTC)
+	id E121B98658B; Wed,  3 May 2023 15:24:54 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,228 +24,153 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 56A6B986594;
-	Wed,  3 May 2023 14:57:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CD75D986594
+	for <virtio-dev@lists.oasis-open.org>; Wed,  3 May 2023 15:24:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CjXlx+g5FuHZJzztjDVFjOzK0qV9Q22RQdh4GhtnkujK4sIzFZaGpIcIH+F6wJi4tRB/BVA87zC6olzKuotun3cBGKzkULalUVFkEmELZZEuaMjdWLtW4cUireWuKidKeLRTl4RSSiA32T3sZ6aaQwTMGojeuh5J9KNcgzcyyw6HP1I6yjxmqxZLLJdoQ/PlLKr7ISOCcey6z2/2wzxON6DzygG/wqqcHhheIs0+IMYj5pLysNs5qFSOZkbxnSd7OomaOR9IEfLSU14qc8I5fYyf/rJXDTeM/nsO8b11b/MMn9JNaR0BFgzXQZlWOckc8PBMzSlobD0cE1KJ8Z+FcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=inbVKr8bJPzTGODgfLNbWPn8zIz6Nxs5DQdjWp4pOUk=;
- b=oZRT9OmRYzZzej/U2pMWCthy95zg7f2SPGbREQV5hcI6Txinoqyo+M6FSFyb/M8Wo9qKfk2ICbEhA4XqFqE3AUO7DND+bLjvpaRNQxgiq5rzd0exwGMulayIOMhVP4hXXw3Z5RNl7hZRe90v8wpdFKHVZtqHTItWWzkeqA3QHVNxXLlyqQ1SSlSedkaEMEdi/8bGEO7JnW+PkU69xIY4pAyQu/Zf5qab1OkyBOHbiK78KiPM5QhrgNL/+7gcQpfMtm97MEFxgUbNo/7PGRK/jmk1ZxSVcDvHSQc7PdClmb+nEjpqTaNg7lMSDnTjf7EDHnwqQ7XROKyeisXfgLLKOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Message-ID: <5d2eb229-c07d-0476-60b3-cfc2f5316fb2@nvidia.com>
-Date: Wed, 3 May 2023 10:57:39 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
- david.edmondson@oracle.com, sburla@marvell.com, jasowang@redhat.com,
- virtio-comment@lists.oasis-open.org, shahafs@nvidia.com,
- Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>
-References: <20230503032659.530330-1-parav@nvidia.com>
- <20230503060538-mutt-send-email-mst@kernel.org>
-From: Parav Pandit <parav@nvidia.com>
-In-Reply-To: <20230503060538-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SA9PR13CA0176.namprd13.prod.outlook.com
- (2603:10b6:806:28::31) To PH0PR12MB5481.namprd12.prod.outlook.com
- (2603:10b6:510:d4::15)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683127493; x=1685719493;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=CX7LSQLj6tFGf70Kbrl01YR+gVCmXlmExb7QrPNQ0GE=;
+        b=MXibesMUy9RiLDnnHYcqbu4so6AXE+w2ElDMNH0ABSRhq9cokggQW7zl4Ky00D3N+i
+         7aTXJ6ivxk5t+qI1bSNkDl+PMJqsaOIzJpytFbeiY8+vJH58REi7r60hHVolmWmqk4IL
+         WRwgDsTJVY/gyow4GGcYXoWvWOrTRwEksHmb9VzttbX7TyaRe+gB21TUqGxFqwfWMEMi
+         Qt79J9+29V7moekGPTI9p5UPUQ8HLDOxO4ArORXLu0c5biehcq94VOMh7FcwpkDy8H8I
+         /Nd7EEmQUJ88J9mSxAcehpHsIX01dqYkLPhNr0ZQs6L+HiiM6H+0YhfP91wRXser019v
+         FdwA==
+X-Gm-Message-State: AC+VfDx+hbIQxR7Xbos/f0+TD8VkasKcHZZ2/lEkaY05dvtVRM96wP4k
+	EM4faNz17bWkAeDkPNuaJ3jQfQ==
+X-Google-Smtp-Source: ACHHUZ57SrWUiHY4R3AJKaZ+GsTjO30lwFxdsgFRAGp0HOr9pTfD16CAwSw5P7WXwQ/3Vp+F9w7CWw==
+X-Received: by 2002:adf:e84f:0:b0:306:2ba4:909d with SMTP id d15-20020adfe84f000000b003062ba4909dmr238062wrn.11.1683127492867;
+        Wed, 03 May 2023 08:24:52 -0700 (PDT)
+References: <20221208072325.2259940-1-acourbot@chromium.org>
+ <8ec36252-97c6-0378-e25b-fc972ea3a66d@opensynergy.com>
+ <CAPBb6MVDKfKOyDFPiOL3fRp4Jn6WwMpSZt6V32EJ1CYW_+rw+w@mail.gmail.com>
+ <909867c6-b66c-1281-45a7-38fd0aa32123@opensynergy.com>
+ <87cz6mnaqk.fsf@redhat.com>
+ <CAPBb6MWNfPH+e8=4zUcq2dV-59OdzTYSuN04Cg2rRPWao-nseQ@mail.gmail.com>
+ <877cwttw2x.fsf@redhat.com> <87a60kg9rh.fsf@redhat.com>
+ <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
+ <877cvog030.fsf@redhat.com>
+ <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
+ <ca84a8f5-71ed-aea8-5751-60403d167283@opensynergy.com>
+ <CAPBb6MUDWVK87_kGFen36tDJQoR-Les6djcKVihjuTKQBjweEQ@mail.gmail.com>
+ <b5c9d69a-fbec-8046-225f-bdb5850bbd54@opensynergy.com>
+ <CAPBb6MUFbZzTTPqztVXQpcPN+PtqrmCoyaD5dySYdP_7EbRDdQ@mail.gmail.com>
+ <11372cda-a766-ef50-45d7-ed637b72a31c@opensynergy.com>
+ <CAPBb6MVRPn6dM8ap9uDvX_ZHdHGvooq+LB7UGDaWBEuUtK3x=A@mail.gmail.com>
+ <cbed366a-7f12-8642-18ef-350981279241@opensynergy.com>
+ <87a5ylzf34.fsf@redhat.com>
+User-agent: mu4e 1.11.4; emacs 29.0.90
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Alexander Gordeev <alexander.gordeev@opensynergy.com>, Alexandre Courbot
+ <acourbot@chromium.org>, virtio-dev@lists.oasis-open.org, Keiichi Watanabe
+ <keiichiw@chromium.org>, Marcin  Wojtas <mwojtas@google.com>, Matti
+ =?utf-8?Q?M=C3=B6ll?=
+ <Matti.Moell@opensynergy.com>, Andrew Gazizov
+ <andrew.gazizov@opensynergy.com>, Enrico Granata <egranata@google.com>,
+ Gustavo Padovan <gustavo.padovan@collabora.com>, Peter Griffin
+ <peter.griffin@linaro.org>, =?utf-8?Q?Bart=C5=82omiej?=  Grzesik
+ <bag@semihalf.com>, Tomasz
+ Figa <tfiga@chromium.org>, Daniel Almeida <daniel.almeida@collabora.com>,
+ Enric Balletbo i Serra <eballetb@redhat.com>, Albert Esteve
+ <aesteve@redhat.com>
+Date: Wed, 03 May 2023 16:11:20 +0100
+In-reply-to: <87a5ylzf34.fsf@redhat.com>
+Message-ID: <87354dtp30.fsf@linaro.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5481:EE_|DM4PR12MB6110:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6f677ec7-6cc5-4ff0-a49f-08db4be6bfc8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ySjyt6XjjxU4VDT8INbium5G11lIQf/5j3DSsrq0Xs4T3/5A04sp3rhWUE0r939SkVoKHEZg++lrb3APaJLcC7v1VjuXoMiknaPx6DR4Moo0RYSn7zzKINKuVWL+BjRgmcwfj3NvayFUqBF2ZI18JQFl6NBkby2LjM6oCN568kwDyMUG6J58REXcDKncAjouSEz6JAyFoMvjdN5S0x2QJjhn69De5H6K5srOe9CVmZl9kTJVCQevOG0c+zmriUN4wNyM3qSS/k5ErgaUKVEW3j1nD+mfD/W55hfjk3HJ5+bcGJhnUeADB/E6s/s+wYJR6nAl50LPc64t/dHe3SKJwa86P1RQLGIalgZIKxC4dMCq4NEk7sKPoJduvkyZz8b9iERiFP+eatAwgZ1ZGwmHxMwjSISXpDwfevrPSmTcx4FDXwHS5UggWj3seNUgdGQncQHgM8BOo6TTbfEaVtzOvC015NQJ57Z7L3wLkwJIRtvoinM36sqNOXs7UzFu3mlkwe9JQSbI1czOxtRqQ+AqRwoTuk11pNGHFd+88wHsGTSCHBRmInX1Zz04Bv4K++AEuC2X0qXER46n/16xR267W26rT9Fm5PAKsEp5GFgzckjcC9c5KcjLg0hVlSxnbZg6+MvoaWRHGiJPTLm1xs9skPThqXlWc7vpNBZYt4MvLFvM/fFFJWQA3wHkzaRREnA9TNmvEyhKi3kcY7dB6rjE4RUW2ph0b3ejFnkESXVQyeE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(366004)(376002)(136003)(396003)(451199021)(6506007)(186003)(26005)(966005)(38100700002)(107886003)(53546011)(83380400001)(2616005)(5660300002)(8676002)(8936002)(2906002)(36756003)(6666004)(31696002)(54906003)(86362001)(6486002)(478600001)(6512007)(316002)(41300700001)(4326008)(66476007)(6916009)(66946007)(66556008)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Q21NRDQwdkJNVXhadDhjRmw4a1RxK0x2cWR5MWNic00rbm9ub0RQQ1JyVWRl?=
- =?utf-8?B?QVdWN0ZWbWMvRThweU10NVRESUwweTJxUEhSdFZsZ284eWk1RXhxRW0vT05l?=
- =?utf-8?B?dCtvdnN4bWM3QlZ2WHRWVEVmVkN3RE5MUlNRN0JRMWNXN3dNeERGNkQvTG5o?=
- =?utf-8?B?SXFFbCtpeUorWnE3YUZRQWZPTlladERKS1pjS3JyMjJzV25nS0dBd3BnNlls?=
- =?utf-8?B?d2NjOGtXeDBVV2c4YjFZTmNpeWhUYis2MGozcHVZQkIrbEtDcmp4TmlLNnZU?=
- =?utf-8?B?N2F1eXl6UkkxZ0krYmd3OENUUFFaS1ZYN0FFRFJ6cm80RU5DTnpyVWtHbk9y?=
- =?utf-8?B?eXo1enFIM0hSNnozWlgwVUN6cGpHZDlPRkJ1VTZ1dnp4a1c2YUVkR1YrcnJr?=
- =?utf-8?B?YzlmbnhWb0lrMGJUcnN0aVVWZS8wdDRUN1J0Y0lya2ZBeEpqbFd4VWRTQzl2?=
- =?utf-8?B?YXM4czFjQ0FsMnJiL25ucEJ4RU12c3o3WmFycmFhRlJHSTd5VlZXRlFWSUph?=
- =?utf-8?B?Tys3elNOYzNxQVhlRGJ3VThqeXJvcXIxM3graEs4eERuajVqMTFKcjJGdVdB?=
- =?utf-8?B?MHlBQkZWNEZKcEhjM1BDTWU4WTcrdXYzSmRMTUo5blBIdFQzSzIrU2tCYVVI?=
- =?utf-8?B?aFQ5d0gwLzBmdWVGdUMrY0xCZURlcm4rRGhjOC95RE15N0Q5eWY3M0xyLzNG?=
- =?utf-8?B?Z1pOZjc4SUhRNVZTTW4weG1lMk5KTHpJQXRyYnRwL3c5anljTzdROVk1dEYy?=
- =?utf-8?B?a09IOU15MHU5RkdJZ3FtWSt4VWs0ZWlvNXBoRElQRnhydEl6UXB5L2RiSlFp?=
- =?utf-8?B?dFd6UW5lc0YyOTkrRHF4a1IxTmtXR1N0UjlVamJiSVlya2oxU3N3MXJoYTNj?=
- =?utf-8?B?WFloSGM1alhXK3lTK0sxWEQrTDZockxVak1jZVpIZ2dTdENkbHNLSisxY2hl?=
- =?utf-8?B?R3o4enBCUmcvZnlwa2NRYjF5cVpLZHBxMzI2UVl4ZTl3NzhnTnc0eFFlMTVs?=
- =?utf-8?B?OHJ1a1pTK2tXVE51cHhXc0REcWs3VEZyMnFvaENZYnBFK1Mrbkl0SDlneHNt?=
- =?utf-8?B?bFdwaStuRnR1Z25CcEJ4azNoek5rOG9wVkFKSFBZTjlnNm5NK3RkUkVLK20x?=
- =?utf-8?B?cUY0KzNtZlpRSmtxUWxtak9yOWErQXNOY2poWG13aHJKUCsyVHpQZlBYcFVK?=
- =?utf-8?B?VEg4QSsza0FnSHFyL292WEliTitvMFdsKzFWdElNc0hNVFBCajBzSWtkK1FL?=
- =?utf-8?B?NGFYZlZIdEg3V3FDdjF1elYrMU5OdEFNSFNHb1p5R05NcjBCU0VnTFpFeHVj?=
- =?utf-8?B?QUlJbGxqbW00Y3RLaFBxY2hjWnQxUTc3TEtybFVHY3VtVHl0dW5kMU5DbEVv?=
- =?utf-8?B?N0F2b0dPTXdxZDNDVWdyUlhJWU1uWjd6cGprM3pNVE8xbTZDRXQ1dVR5dlJY?=
- =?utf-8?B?QTBEQitNbUp0d05IamxYQkNZY3lPVWRXR1Z4eWwxUGdHQ2owZkR4Ynl1ZXhS?=
- =?utf-8?B?elIvSUIvWkovRkJ1WTNZcWxlS200dWFnalA4M3A4WE5zU0haMk52aTBrNjlF?=
- =?utf-8?B?eHBOVWxpd3h3eEdiVmwreUM1b1hUVDJhdXF5c291c0I4Z1hya1hJU2tGSU05?=
- =?utf-8?B?K2dGd1dVYUN0aEEwdVdwU2wwNEtVMzQ4MnpPSVdCQmQzVzFmcWpGQURwK2xr?=
- =?utf-8?B?N3lPWXpFaksvNlhZYW8yYzliTERHdEZTN0VXN3lQUXhlZWRvMlRQRGMwTmFC?=
- =?utf-8?B?aGozNHJnRlA1R1ZaZUhpWGZyWXJRY3Z6Ulpsd3ZkZ24wZFp6cHZvanZvTmVQ?=
- =?utf-8?B?R1NNWmUwRWk1ejU0ZjZRcjlDRlpHRkhqdGlBMWQ2dGJ0UUpvd0xRTEd2YmNU?=
- =?utf-8?B?WnZTTjJ1T3UzZVZXZGY0bUlVN1R1ODlodVBhKzlacTMrRVFzbTJJQ3ZJdi9F?=
- =?utf-8?B?ZzMvMi9NUnhkVC9GNUNYMVRkSytMYTNmVWwyNzMvTnFmWEN4MGk2NDJVc29r?=
- =?utf-8?B?UjVOZEJSbzRCd2FLLzM1RzJTQjdkdWZBbHMvNGQyTDFPd2FUSTRlRHUrTjA4?=
- =?utf-8?B?alBuQkxFTzhJWU9HMHg1NW85UHJaZjROcmNtb2ZyNEdoZC8wa3hEbmFTM1hV?=
- =?utf-8?Q?V6OC5UPLpSBByiOJxU5uUqJud?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f677ec7-6cc5-4ff0-a49f-08db4be6bfc8
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 14:57:43.7328
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lEL6MAl/bJ2nh8wKMizU04ypyizWIpbIP23ZNcKTXKI3Tla9iHvGp4MrAJ/3l6RHNeLoMEvZdAfmvu9D7jCgmA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6110
-Subject: [virtio-dev] Re: [PATCH v1 0/2] transport-pci: Introduce legacy registers access
- using AQ
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
+ device specification
 
 
+Cornelia Huck <cohuck@redhat.com> writes:
 
-On 5/3/2023 6:16 AM, Michael S. Tsirkin wrote:
-> On Wed, May 03, 2023 at 06:26:57AM +0300, Parav Pandit wrote:
->> This patch introduces legacy registers access commands for the owner
->> group member PCI PF to access the legacy registers of the member VFs.
+> On Fri, Apr 28 2023, Alexander Gordeev <alexander.gordeev@opensynergy.com=
+> wrote:
+>
+>> On 27.04.23 15:16, Alexandre Courbot wrote:
+>>> But in any case, that's irrelevant to the guest-host interface, and I
+>>> think a big part of the disagreement stems from the misconception that
+>>> V4L2 absolutely needs to be used on either the guest or the host,
+>>> which is absolutely not the case.
 >>
->> If in future any SIOV devices to support legacy registers, they
->> can be easily supported using same commands by using the group
->> member identifiers of the future SIOV devices.
-> 
-> Absolutely, but maybe we should not create work for this
-> case by repeating PF/VF terminology everywhere?
-> 
-If we omit the PF, VF it is kind of hard to explain things without any 
-tangible objects.
-For example in your series lot of documentation of AQ is around SR-IOV 
-and VFs. If you take out that notion of VFs for inclusion of undefined 
-SIOV objects its hard as well.
+>> I understand this, of course. I'm arguing, that it is harder to
+>> implement it, get it straight and then maintain it over years. Also it
+>> brings limitations, that sometimes can be workarounded in the virtio
+>> spec, but this always comes at a cost of decreased readability and
+>> increased complexity. Overall it looks clearly as a downgrade compared
+>> to virtio-video for our use-case. And I believe it would be the same for
+>> every developer, that has to actually implement the spec, not just do
+>> the pass through. So if we think of V4L2 UAPI pass through as a
+>> compatibility device (which I believe it is), then it is fine to have
+>> both and keep improving the virtio-video, including taking the best
+>> ideas from the V4L2 and overall using it as a reference to make writing
+>> the driver simpler.
+>
+> Let me jump in here and ask another question:
+>
+> Imagine that, some years in the future, somebody wants to add a virtio
+> device for handling video encoding/decoding to their hypervisor.
+>
+> Option 1: There are different devices to chose from. How is the person
+> implementing this supposed to pick a device? They might have a narrow
+> use case, where it is clear which of the devices is the one that needs to
+> be supported; but they also might have multiple, diverse use cases, and
+> end up needing to implement all of the devices.
+>
+> Option 2: There is one device with various optional features. The person
+> implementing this can start off with a certain subset of features
+> depending on their expected use cases, and add to it later, if needed;
+> but the upfront complexity might be too high for specialized use cases.
+>
+> Leaving concrete references to V4L2 out of the picture, we're currently
+> trying to decide whether our future will be more like Option 1 or Option
+> 2, with their respective trade-offs.
+>
+> I'm slightly biased towards Option 2; does it look feasible at all, or
+> am I missing something essential here? (I had the impression that some
+> previous confusion had been cleared up; apologies in advance if I'm
+> misrepresenting things.)
+>
+> I'd really love to see some kind of consensus for 1.3, if at all
+> possible :)
 
-So I think we can continue to talk about PF and VFs as is. When SIOV 
-enters, it will be easier to talk about it as VF or SIOV VDEV or 
-something similar.
+I think feature discovery and extensibility is a key part of the VirtIO
+paradigm which is why I find the virtio-v4l approach limiting. By
+pegging the device to a Linux API we effectively limit the growth of the
+device specification to as fast as the Linux API changes. I'm not fully
+immersed in v4l but I don't think it is seeing any additional features
+developed for it and its limitations for camera are one of the reasons
+stuff is being pushed to userspace in solutions like libcamera:
 
->> More details as overview, motivation, use case are further described
->> below.
->>
->> Patch summary:
->> --------------
->> patch-1 adds administrative virtuqueue commands
->> patch-2 adds its conformance section
->>
->> This short series is on top of [1].
->> It uses the newly introduced administrative virtqueue facility with 3 new
->> opcodes and uses the existing virtio_admin_cmd.
->>
->> It is expected to go another rebase once v13 for [1] is rolled out and merged.
->>
->> [1] https://lore.kernel.org/virtio-comment/cover.1682354275.git.mst@redhat.com/T/#t
->>
->> Usecase:
->> --------
->> 1. A hypervisor/system needs to provide transitional
->>     virtio devices to the guest VM at scale of thousands,
->>     typically, one to eight devices per VM.
->>
->> 2. A hypervisor/system needs to provide such devices using a
->>     vendor agnostic driver in the hypervisor system.
->>
->> 3. A hypervisor system prefers to have single stack regardless of
->>     virtio device type (net/blk) and be future compatible with a
->>     single vfio stack using SR-IOV or other scalable device
->>     virtualization technology to map PCI devices to the guest VM.
->>     (as transitional or otherwise)
->>
->> Motivation/Background:
->> ----------------------
->> The existing virtio transitional PCI device is missing support for
->> PCI SR-IOV based devices. Currently it does not work beyond
->> PCI PF, or as software emulated device in reality. Currently it
->> has below cited system level limitations:
->>
->> [a] PCIe spec citation:
->> VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
->>
->> [b] cpu arch citiation:
->> Intel 64 and IA-32 Architectures Software Developer’s Manual:
->> The processor’s I/O address space is separate and distinct from
->> the physical-memory address space. The I/O address space consists
->> of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
->>
->> [c] PCIe spec citation:
->> If a bridge implements an I/O address range,...I/O address range will be
->> aligned to a 4 KB boundary.
->>
->> Above usecase requirements can be solved by PCI PF group owner enabling
->> the access to its group member PCI VFs legacy registers using an admin
->> virtqueue of the group owner PCI PF.
->>
->> Software usage example:
->> -----------------------
->> The most common way to use and map to the guest VM is by
->> using vfio driver framework in Linux kernel.
->>
->>                  +----------------------+
->>                  |pci_dev_id = 0x100X   |
->> +---------------|pci_rev_id = 0x0      |-----+
->> |vfio device    |BAR0 = I/O region     |     |
->> |               |Other attributes      |     |
->> |               +----------------------+     |
->> |                                            |
->> +   +--------------+     +-----------------+ |
->> |   |I/O BAR to AQ |     | Other vfio      | |
->> |   |rd/wr mapper  |     | functionalities | |
->> |   +--------------+     +-----------------+ |
->> |                                            |
->> +------+-------------------------+-----------+
->>         |                         |
->>    +----+------------+       +----+------------+
->>    | +-----+         |       | PCI VF device A |
->>    | | AQ  |-------------+---->+-------------+ |
->>    | +-----+         |   |   | | legacy regs | |
->>    | PCI PF device   |   |   | +-------------+ |
->>    +-----------------+   |   +-----------------+
->>                          |
->>                          |   +----+------------+
->>                          |   | PCI VF device N |
->>                          +---->+-------------+ |
->>                              | | legacy regs | |
->>                              | +-------------+ |
->>                              +-----------------+
->>
->> 2. Virtio pci driver to bind to the listed device id and
->>     use it as native device in the host.
->>
->> 3. Use it in a light weight hypervisor to run bare-metal OS.
->>
->> Please review.
->>
->> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
->> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> 
-> I don't see an overview here though.
-> 
-I will add it in v2.
+  How is libcamera different from V4L2?
+
+  We see libcamera as a continuation of V4L2. One that can more easily
+  handle the recent advances in hardware design. As embedded cameras have
+  developed, all of the complexity has been pushed on to the developers.
+  With libcamera, all of that complexity is simplified and a single model
+  is presented to application developers.
+
+That said its not totally our experience to have virtio devices act as
+simple pipes for some higher level protocol. The virtio-gpu spec says
+very little about the details of how 3D devices work and simply offers
+an opaque pipe to push a (potentially propriety) command stream to the
+back end. As far as I'm aware the proposals for Vulkan and Wayland
+device support doesn't even offer a feature bit but simply changes the
+graphics stream type in the command packets.
+
+We could just offer a VIRTIO_VIDEO_F_V4L feature bit, document it as
+incompatible with other feature bits and make that the baseline
+implementation but it's not really in the spirit of what VirtIO is
+trying to achieve.
+
+--=20
+Alex Benn=C3=A9e
+Virtualisation Tech Lead @ Linaro
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
