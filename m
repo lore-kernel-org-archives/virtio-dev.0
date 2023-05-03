@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12499-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12500-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D48DC7EE22
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 03:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A98E5C77B7F
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 03:27:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2B026370F1
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 03:27:41 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4D12741EE9
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 03:27:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 198E098657E
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 03:27:41 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 363919866D9
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 03:27:42 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0DE399864E1; Wed,  3 May 2023 03:27:41 +0000 (UTC)
+	id 0C4419864EB; Wed,  3 May 2023 03:27:42 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id ECD219864C4;
-	Wed,  3 May 2023 03:27:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EA2FC9864C5;
+	Wed,  3 May 2023 03:27:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gj1Ujc9jCJVM3jwuKzEf/hfeRPCjz4R3qLC7rxjFk6tC8U0rr55Nm+6p+1IX0tc2ELIbK8P6BCX45Zl1JOGRFKVImn/gRv0HOsLfqsoKEAAixQrz5PioEpc/gSKd6nfupg3rC7Iw67nfR3CvR/pthSj1WF2+SMa2b9Nkt1+Psl1Bpu4gzuOil+tWyGU67hX5/cCQbEN2Ix4BKyuZhoIrrC8moC7biSF93+fHqkvbPgxGKV5PXw3yJdNliHPLH77DKrCaIuvMNajwDt2pBpEQ9YoBM9XkxA0DoPo4A+icc8XXJ7iZb9aXFSXgCzK11alG98lDeOszWhPLm2nIYTIVWw==
+ b=a2sDL2nGMfOSdVw9NoMYXIy3MVPTO5TZBIpd+DifWLCr6g7Op1ENwhkAUFnWcuku1IRsHCxk7+V1rbmH4De2TZVa8AAP1OBQ1yb34h7Q01bQI/3hnRfvD2ipuKFec4IHPESREYGGRcgZqkzeVF4X+TjdLvsRpT0XRobANiwgGdF6WkhggRUS2zRLXsHyz9EgtIgA6knLs+WlqqGLQ9mkrDKXSPz8X2xTcgGgNjcx4jF4VXLvsC67/vn+U/JjHPAcd6D+Kpx7ofGsd/3SPdGlEULCZQBpfNNbt6l5UU2yImiWVYT1Z0s1R1czHwebuwNDgmAMm+/eSZCC2gC5T8Sihw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UN6uPy0Zc5tlskukJ2f/UdlzqKeHB+/b5I+KZZfdNP4=;
- b=K6t9fOnYcb+4y2fXFfHN6NS9dc0taqq1s3S7YN4C8ZLTmR5AbqVzqQbn47VPBqsKfUe/Jsx2/rwHIXa+m1srql5r6Q83UQcX/VEIYVYU5AVHgS5UvicFV2roo6OorgEf0Ux2VGgsdA1OO64fl9K4a6sWkedBgc5LNvzt/TYkODoHIEGeyCorkTpV3jPfggXiX+s8kKDdgVB56evdb/+rHEzvrwD+KV9nSyL1KYWCLF2UDBbFmgNXNXgmCH71/L0JOcBVkviPWEwcj8ExRhpm3ajPuzR/wNjlGBaH8h/qKMgQHnfH5LQFdxIqZq0rf7sGhvJf+STW2P8vevL9izz6pQ==
+ bh=/oXnfDueqr40aHNxjk9w5+uvyfjql8KLTZ7FvMd06uE=;
+ b=crgdpIGua+ulG9cz4qb+7/xDEUi3XVV+DhgYEsOXn9/i7GGFwWBvLBRHSR+kupHR6VJ+GJcuQ8m901e6/L+6IG4vAq3MRA3ia9f/QVB8DAkMkaNsuaqLgDXGcJhPfmmb0tGzwAhWjtjFZCAxFInA8/zS0Ycs47ANe0OgvVUsfpyo+ntsPNuDmiI3flYZjnfoq64Eku+i4NmhkPVEkrdpPMa0+UuO58gxjdPEerg58w75dm/Nzi7+c+DFeTJdNPWlwxMgiF2qbqXzAW8QZwGh7uTAzKAtRyYWd6nuebUEZVttYuPi+hM9cOUcrUpLMynME/EpJUOJQodtYCuMYYdv5A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -50,11 +50,9 @@ To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>,
 CC: <sburla@marvell.com>, <jasowang@redhat.com>,
 	<virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
 	<parav@nvidia.com>
-Date: Wed, 3 May 2023 06:26:58 +0300
-Message-ID: <20230503032659.530330-2-parav@nvidia.com>
+Date: Wed, 3 May 2023 06:26:57 +0300
+Message-ID: <20230503032659.530330-1-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230503032659.530330-1-parav@nvidia.com>
-References: <20230503032659.530330-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
@@ -63,27 +61,27 @@ X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT059:EE_|PH7PR12MB5925:EE_
-X-MS-Office365-Filtering-Correlation-Id: 458f0151-5115-48b0-7cbc-08db4b865633
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT061:EE_|IA1PR12MB6330:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0d8cdeb8-d19f-4edb-930d-08db4b8655aa
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	oiSCkN/rogqIPwpQ3KR/2whUPuk5XpJr4sipNKkqRVZ5d+kgCNxUdLxY3aXwqAxPH9iszvyiqJ9cvuZKOcaUovNAhtW/fL4G48xTI+F1MNFM3TDoywRpAjNb2ouldBE0qbjVKrzJc2N49ILFwr1iSWjvYOByja95ubdm3XAuMhi8oQagEMmb+MftDPASk8JWtyhXaLev3WuFLcrTu/7TPBMA9Y/jTdFhZZg0FEq4OkU1oDaTzGIYB5NnMkk4wvlVILIrQh0ubika5Fr6TughF7VqQ91X/+elCM0f3Z8FA1j7YjDjDFnJND3bk1iGhkTY5GIVjq2UsVkAXePNeD6tt7MnLstGLRxFNBBtGoH19jpM9eJlZHEl83ePW3XdsloIqnQtmSQcjTac2OQIt7TTBJJvCeRmhBcRRORxVwEzALJZrVOt2w0bnxHhH0W3Wtq3rUZ+gmFgVVLUZS9swgbUnQp57Ibcs+HaN5e1pybo78gAZanbgIUr7RRM0ogK2Wco4tywiU7tUn35DaByYyTAUMTafGs2z7RqB8sc3kkbOjHc044KCfC+nPruc12/nk9fusMTQ4xkT1z8XY943G3oskoDV+qGJYbJZ5NsYhZEcxPc64TEwYsgbWa/z867KMaak9RoDEFrgVUEJULxxwYSNaypLTtb6TTT1Zq3xG86a92rZPL9KrcDbNbtLiCwKiAMh3kYv0sriPAsxMwQidtBlAvbhviUOIxKWYp8x63Z+JRuSiLk9zItu8nHwmgbYfDw
+	s0LGcihF31fv04HksoJgj4u4KRcmr01MxKeuR6txEj6oTU0v9f4GSlKDglCZBSAo9QXEY3A62DyGlixQpo5cmXyV/Neb51m3fgr/RkF8dGR8uUofwAKAaYH4OQJROXHDisfZQAnfjdIwmTAUrhCFT7SFJ2Q+Fcl1PFboA11Wwig4+eMLXXp3b5K0nCM2eXMg3I8O71FLN2jhon9DSmSw7VSpxJMBmqUzhhL6R3xCneFqajJNc9NXFRGIvYuoBD1ZIWY353eIz2PoYar/lJDtkMsIcN8sKtx3oL5h0fODMd8+7o54NWy/Xae5tD952HPHSHWY2p1Go4xOgYdkJo//THKQESUOLOu5MSQv/mD4OO/WQ1yALSyGUW4W5kwePuM2C9+W5QiWxuYqI7N4ySZb2hU4e0mgK3WSwXQVfbs7AksRqkcy9gQxVJw5tToWFpD91rHpNEsfoLSV6mogNxFImo66lXYXIkD0Cs5PMr6D3rY/efLtvlOmlyPIzaSXBLwtJ4HiUKGw4ZY/IlCz1XZOQCdUNMoy0kMEdMGWc19JrkTOYC7Qox3R8kND6WQeDRael/GKJVsk/IRkt1qQ3UOi/hWwHAwYbdC2TjTA2e4RIWVyezhgPlyK1FiTqCS9Jqts/llrJDBkoWr2MnciNvtaz54Tx1ChTSrqsDyAwH/qe2gP7wVkwo5/Id9WuS4rGHiNUWAcIHI1EhY4Ea5j5eIynK1PaRaGxT+pJqnPVKcFKfk+CGUEHwumaNS1hTlPOqccKOKCs6ZOSpnZ+p91bGZWcJKConO+7m0eTlxJ5WOVi8o=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(136003)(396003)(376002)(451199021)(36840700001)(40470700004)(46966006)(36860700001)(83380400001)(47076005)(2616005)(107886003)(426003)(336012)(16526019)(26005)(1076003)(478600001)(186003)(40480700001)(110136005)(966005)(6666004)(54906003)(2906002)(8936002)(86362001)(8676002)(356005)(7636003)(36756003)(5660300002)(41300700001)(70206006)(70586007)(82740400003)(4326008)(316002)(40460700003)(82310400005);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(346002)(376002)(451199021)(36840700001)(40470700004)(46966006)(40460700003)(40480700001)(82310400005)(316002)(1076003)(26005)(336012)(47076005)(36860700001)(41300700001)(83380400001)(4326008)(54906003)(426003)(110136005)(186003)(2616005)(70586007)(70206006)(966005)(6666004)(82740400003)(36756003)(356005)(7636003)(107886003)(2906002)(86362001)(5660300002)(8936002)(8676002)(16526019)(478600001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 03:27:34.5566
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 03:27:33.6437
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 458f0151-5115-48b0-7cbc-08db4b865633
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d8cdeb8-d19f-4edb-930d-08db4b8655aa
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5925
-Subject: [virtio-dev] [PATCH v1 1/2] transport-pci: Introduce legacy registers access commands
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6330
+Subject: [virtio-dev] [PATCH v1 0/2] transport-pci: Introduce legacy registers access using AQ
 
 This patch introduces legacy registers access commands for the owner
 group member PCI PF to access the legacy registers of the member VFs.
@@ -94,6 +92,19 @@ member identifiers of the future SIOV devices.
 
 More details as overview, motivation, use case are further described
 below.
+
+Patch summary:
+--------------
+patch-1 adds administrative virtuqueue commands
+patch-2 adds its conformance section
+
+This short series is on top of [1].
+It uses the newly introduced administrative virtqueue facility with 3 new
+opcodes and uses the existing virtio_admin_cmd.
+
+It is expected to go another rebase once v13 for [1] is rolled out and merged.
+
+[1] https://lore.kernel.org/virtio-comment/cover.1682354275.git.mst@redhat.com/T/#t
 
 Usecase:
 --------
@@ -188,129 +199,19 @@ v0->v1:
   added, a pci device still needs to have existing capabilities
   in the legacy configuration space and hypervisor driver do not
   need to access them
----
- admin.tex                 |  5 ++-
- transport-pci-vf-regs.tex | 84 +++++++++++++++++++++++++++++++++++++++
- transport-pci.tex         |  2 +
- 3 files changed, 90 insertions(+), 1 deletion(-)
+
+
+Parav Pandit (2):
+  transport-pci: Introduce legacy registers access commands
+  transport-pci: Add legacy register access conformance section
+
+ admin.tex                 |   5 +-
+ conformance.tex           |   2 +
+ transport-pci-vf-regs.tex | 115 ++++++++++++++++++++++++++++++++++++++
+ transport-pci.tex         |   2 +
+ 4 files changed, 123 insertions(+), 1 deletion(-)
  create mode 100644 transport-pci-vf-regs.tex
 
-diff --git a/admin.tex b/admin.tex
-index 648253c..852ee04 100644
---- a/admin.tex
-+++ b/admin.tex
-@@ -115,7 +115,10 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
- \hline \hline
- 0x0000 & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
- 0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
--0x0002 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
-+0x0002 & VIRTIO_ADMIN_CMD_LREG_WRITE & Write legacy registers of a member device    \\
-+0x0003 & VIRTIO_ADMIN_CMD_LREG_READ & Read legacy registers of a member device    \\
-+0x0004 & VIRTIO_ADMIN_CMD_LQ_NOTIFY_QUERY & Read the queue notification offset for legacy interface \\
-+0x0005 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
- \hline
- 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
- \hline
-diff --git a/transport-pci-vf-regs.tex b/transport-pci-vf-regs.tex
-new file mode 100644
-index 0000000..16ced32
---- /dev/null
-+++ b/transport-pci-vf-regs.tex
-@@ -0,0 +1,84 @@
-+\subsection{SR-IOV VFs Legacy Registers Access}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access}
-+
-+As described in PCIe base specification \hyperref[intro:PCIe]{[PCIe]} PCI VFs
-+do not support IOBAR. A PCI PF device can optionally enable driver to access
-+its member PCI VFs devices legacy common configuration and device configuration
-+registers using an administration virtqueue. A PCI PF group owner device that
-+supports its member VFs legacy registers access via the administration
-+virtqueue should supports following commands.
-+
-+\begin{enumerate}
-+\item Legacy Registers Write
-+\item Legacy Registers Read
-+\item Legacy Queue Notify Offset Query
-+\end{enumerate}
-+
-+\subsubsection{Legacy Registers Write}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access / Legacy Registers Write}
-+
-+Legacy registers write admin command follows \field{struct virtio_admin_cmd}.
-+This command writes legacy registers of a member VF device. Driver should write
-+appropriate register \field{size} depending on the width of the legacy
-+common registers or device specific registers.
-+Driver sets command \field{opcode} to VIRTIO_ADMIN_CMD_LREG_WRITE.
-+Driver sets \field{group_type} to 1 for VFs.
-+Driver sets \field{group_member_id} to a valid VF number.
-+
-+The \field{command_specific_data} has following listed structure format:
-+
-+\begin{lstlisting}
-+struct virtio_admin_cmd_lreg_wr_data {
-+	u8 offset; /* Starting byte offset of the register(s) to write */
-+	u8 size; /* Number of bytes to write into the register. */
-+	u8 register[];
-+};
-+\end{lstlisting}
-+
-+This command does not have any command specific result.
-+
-+\subsubsection{Legacy Registers Read}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access / Legacy Registers Read}
-+
-+Legacy registers read admin command follows \field{struct virtio_admin_cmd}.
-+This command reads legacy registers of a member VF device. Driver should write
-+appropriate register \field{size} depending on the width of the legacy
-+common configuration registers or device specific registers.
-+Driver sets command \field{opcode} to VIRTIO_ADMIN_CMD_LREG_READ.
-+Driver sets \field{group_type} to 1 for VFs.
-+Driver sets \field{group_member_id} to a valid VF number.
-+
-+The \field{command_specific_data} has following listed structure format:
-+
-+\begin{lstlisting}
-+struct virtio_admin_cmd_lreg_rd_data {
-+	u8 offset; /* Starting byte offset of the register to read */
-+	u8 size; /* Number of bytes to read from the registers */
-+};
-+\end{lstlisting}
-+
-+When command completes successfully, command result contains following
-+listed content:
-+
-+\begin{lstlisting}
-+struct virtio_admin_cmd_lreg_rd_result {
-+	u8 registers[];
-+};
-+\end{lstlisting}
-+
-+\subsubsection{Legacy Queue Notify Offset Query}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access / Legacy Queue Notify Offset Query}
-+
-+This command returns the notify offset of the member VF for queue
-+notifications. This command follows \field{struct virtio_admin_cmd}.
-+Driver sets command opcode \field{opcode} to VIRTIO_ADMIN_CMD_LQ_NOTIFY_QUERY.
-+There is no command specific data for this command.
-+Driver sets \field{group_type} to 1.
-+Driver sets \field{group_member_id} to a valid VF number.
-+
-+When command completes successfully, command result contains the queue
-+notification address in the listed format:
-+
-+\begin{lstlisting}
-+struct virtio_admin_cmd_lq_notify_query_result {
-+	u8 bar; /* PCI BAR number of the member VF */
-+	u8 reserved[7];
-+	le64 offset; /* Byte offset within the BAR */
-+};
-+\end{lstlisting}
-diff --git a/transport-pci.tex b/transport-pci.tex
-index ff889d3..b187576 100644
---- a/transport-pci.tex
-+++ b/transport-pci.tex
-@@ -1179,3 +1179,5 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
-         re-examine the configuration space to see what changed.
-     \end{itemize}
- \end{itemize}
-+
-+\input{transport-pci-vf-regs.tex}
 -- 
 2.26.2
 
