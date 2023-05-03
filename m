@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12502-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12503-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 357E4C77B75
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 05:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7222FC7EE22
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 05:48:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4BA661462CA
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 05:43:01 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AD0731CA262
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 05:48:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 254E89865A3
-	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 05:43:01 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A1E179866B3
+	for <virtio-dev@archiver.kernel.org>; Wed,  3 May 2023 05:48:40 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 07B1B98657E; Wed,  3 May 2023 05:43:01 +0000 (UTC)
+	id 94A5E986572; Wed,  3 May 2023 05:48:40 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,328 +24,136 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E2A1A986585
-	for <virtio-dev@lists.oasis-open.org>; Wed,  3 May 2023 05:43:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 805EC986585
+	for <virtio-dev@lists.oasis-open.org>; Wed,  3 May 2023 05:48:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 9vmXiL5DN9SxdWUlTjITtA-1
+X-MC-Unique: WovaD7KjOzehU7E64tIZTQ-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683092576; x=1685684576;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=otYMSB7SlM5kaGC/a+nC0of/hrbyW7GWhqCzqBm7Gpo=;
-        b=hCLQDikYcKGgdhyT7Hr7mtn3yODtcKTIzmyK9h50H/DLsXjHNi3IIZHGvlVKEhhXV2
-         3+lPnnxhTalprsc4KDwDqy7/9pDRb90npYxJaG4TLjtoeCGATYdM6vSgSQqiZLBkWQyL
-         wXFc3jgUyHTrU2WDnI+eRDbLrzitt7U3D3T3Qs6iyhP8epJtniLF5k5UNiGVS8W55C7f
-         6ZaVlEjtUqk74i/r84yzXMrrr7SIYLUCM2VGsZlXvr1tMfmI1X82rlpViY4BKO0zQDGr
-         p6Md9qiQD5Ed7QG1YzvwD1S16lTjniWs3tNKGQnDtswtLZLvjnj36XtvPorr47z/sBQ4
-         5w1Q==
-X-Gm-Message-State: AC+VfDwTQCCClc1N3m02coN4l0U076C0ZBw++m8apHlTBK6JYWUfbM/0
-	m40e7eHXokBQdwRMQDv23R0QJlUPLWU9u/NOXNNpGDtImc1m5T5465mExwkfnGMJ2QrgiBFjbOs
-	XGQm/PsOY2OQdJViHLCfA2YgidBoc
-X-Received: by 2002:a05:600c:228f:b0:3f2:5999:4f3d with SMTP id 15-20020a05600c228f00b003f259994f3dmr13391559wmf.29.1683092576472;
-        Tue, 02 May 2023 22:42:56 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6ya6Ns3P8LynSeX8VaMslixy8Rn3l+Mr671Ma6SQyB0njAHfDQp0wCFhDuCM+m2lIFO06yEQ==
-X-Received: by 2002:a05:600c:228f:b0:3f2:5999:4f3d with SMTP id 15-20020a05600c228f00b003f259994f3dmr13391545wmf.29.1683092576043;
-        Tue, 02 May 2023 22:42:56 -0700 (PDT)
-Date: Wed, 3 May 2023 01:42:52 -0400
+        d=1e100.net; s=20221208; t=1683092915; x=1685684915;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nYZE8ckgH+3ek6iI+MkKxdHjDTn+63UC+te7BQvKrco=;
+        b=Cv5EHrnnYVcteaTJlq2Zhoxu2zPGMpusS7lRuQN8BRSTXr2o1U2PKL9C4nmXLOcrZw
+         xdB707dXB2WskQsOA3scdAzl/bEDXLO1ZrBhu0MFvwkdvEuIq2ZifzR7jevJIGEKod0L
+         UBdPJfzHPkyD7PhV1ey4sI8WlZ8jUzRqyudBOR1AXEhpjzoEQbQicUCjtT+O7uGb8or/
+         ZqP+4gqDsUSpAImRMW3Lp0oud0O4ax9NAxOxLQHoXRZokpQTnFTUHxq8PvlNHjQxfZxz
+         3OnnY6Sts9lJcbc2AauoQzxrkYco+YkmwWu0Gtm+0P+5cs5HWvOstTS3F+gIkw/dz+9F
+         D+pg==
+X-Gm-Message-State: AC+VfDxCSlUbGw+YnjY/LbsFwGMe0s/WqiDvVqyuhAbnlVKKUSZylVYJ
+	nKlsj33qfy98oaWvzQ/H05jmUEX/WuAoqaJ8L7k7qNcOnPrkra19m79pQUVx7BV53JTr9tgL0T0
+	GM5Ye4RksVyCASDLx9cGKSiMeiQjD
+X-Received: by 2002:a5d:540c:0:b0:306:2c5e:2311 with SMTP id g12-20020a5d540c000000b003062c5e2311mr7654053wrv.40.1683092915205;
+        Tue, 02 May 2023 22:48:35 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7ytsXznlBZBJdlfkmsBT1nPrGhXGSKYeMlOWtT8sepfDU/ZySm/q1v+q0Dx7k0HSUKpzxC8g==
+X-Received: by 2002:a5d:540c:0:b0:306:2c5e:2311 with SMTP id g12-20020a5d540c000000b003062c5e2311mr7654044wrv.40.1683092914893;
+        Tue, 02 May 2023 22:48:34 -0700 (PDT)
+Date: Wed, 3 May 2023 01:48:31 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
 Cc: virtio-dev@lists.oasis-open.org, cohuck@redhat.com,
 	david.edmondson@oracle.com, sburla@marvell.com, jasowang@redhat.com,
 	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
-Message-ID: <20230503011627-mutt-send-email-mst@kernel.org>
+Message-ID: <20230503014259-mutt-send-email-mst@kernel.org>
 References: <20230503032659.530330-1-parav@nvidia.com>
- <20230503032659.530330-2-parav@nvidia.com>
+ <20230503032659.530330-3-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230503032659.530330-2-parav@nvidia.com>
+In-Reply-To: <20230503032659.530330-3-parav@nvidia.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH v1 1/2] transport-pci: Introduce legacy registers access
- commands
+Subject: [virtio-dev] Re: [PATCH v1 2/2] transport-pci: Add legacy register access
+ conformance section
 
-On Wed, May 03, 2023 at 06:26:58AM +0300, Parav Pandit wrote:
-> This patch introduces legacy registers access commands for the owner
-> group member PCI PF to access the legacy registers of the member VFs.
-> 
-> If in future any SIOV devices to support legacy registers, they
-> can be easily supported using same commands by using the group
-> member identifiers of the future SIOV devices.
-> 
-> More details as overview, motivation, use case are further described
-> below.
-> 
-> Usecase:
-> --------
-> 1. A hypervisor/system needs to provide transitional
->    virtio devices to the guest VM at scale of thousands,
->    typically, one to eight devices per VM.
-> 
-> 2. A hypervisor/system needs to provide such devices using a
->    vendor agnostic driver in the hypervisor system.
-> 
-> 3. A hypervisor system prefers to have single stack regardless of
->    virtio device type (net/blk) and be future compatible with a
->    single vfio stack using SR-IOV or other scalable device
->    virtualization technology to map PCI devices to the guest VM.
->    (as transitional or otherwise)
-> 
-> Motivation/Background:
-> ----------------------
-> The existing virtio transitional PCI device is missing support for
-> PCI SR-IOV based devices. Currently it does not work beyond
-> PCI PF, or as software emulated device in reality. Currently it
-> has below cited system level limitations:
-> 
-> [a] PCIe spec citation:
-> VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
-> 
-> [b] cpu arch citiation:
-> Intel 64 and IA-32 Architectures Software Developer’s Manual:
-> The processor’s I/O address space is separate and distinct from
-> the physical-memory address space. The I/O address space consists
-> of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
-> 
-> [c] PCIe spec citation:
-> If a bridge implements an I/O address range,...I/O address range will be
-> aligned to a 4 KB boundary.
-> 
-> Above usecase requirements can be solved by PCI PF group owner enabling
-> the access to its group member PCI VFs legacy registers using an admin
-> virtqueue of the group owner PCI PF.
-> 
-> Software usage example:
-> -----------------------
-> The most common way to use and map to the guest VM is by
-> using vfio driver framework in Linux kernel.
-> 
->                 +----------------------+
->                 |pci_dev_id = 0x100X   |
-> +---------------|pci_rev_id = 0x0      |-----+
-> |vfio device    |BAR0 = I/O region     |     |
-> |               |Other attributes      |     |
-> |               +----------------------+     |
-> |                                            |
-> +   +--------------+     +-----------------+ |
-> |   |I/O BAR to AQ |     | Other vfio      | |
-> |   |rd/wr mapper  |     | functionalities | |
-> |   +--------------+     +-----------------+ |
-> |                                            |
-> +------+-------------------------+-----------+
->        |                         |
->   +----+------------+       +----+------------+
->   | +-----+         |       | PCI VF device A |
->   | | AQ  |-------------+---->+-------------+ |
->   | +-----+         |   |   | | legacy regs | |
->   | PCI PF device   |   |   | +-------------+ |
->   +-----------------+   |   +-----------------+
->                         |
->                         |   +----+------------+
->                         |   | PCI VF device N |
->                         +---->+-------------+ |
->                             | | legacy regs | |
->                             | +-------------+ |
->                             +-----------------+
-> 
-> 2. Virtio pci driver to bind to the listed device id and
->    use it as native device in the host.
-> 
-> 3. Use it in a light weight hypervisor to run bare-metal OS.
-> 
-> Please review.
+On Wed, May 03, 2023 at 06:26:59AM +0300, Parav Pandit wrote:
+> Add device and driver conformanace section for legacy registers access
+> commands interface.
 > 
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
 > Signed-off-by: Parav Pandit <parav@nvidia.com>
-
-
-A bunch of grammar mistakes below. We have actual interface to figure
-out so I didn't bother correcting but pls try to run this through some
-checker. The one in microsoft word is actually not bad :)
-
 > ---
-> changelog:
-> v0->v1:
-> - addressed comments, suggesetions and ideas from Michael Tsirkin and Jason Wang
-> - far more simpler design than MMR access
-> - removed complexities of MMR device ids
-> - removed complexities of MMR registers and extended capabilities
-> - dropped adding new extended capabilities because if if they are
->   added, a pci device still needs to have existing capabilities
->   in the legacy configuration space and hypervisor driver do not
->   need to access them
-> ---
->  admin.tex                 |  5 ++-
->  transport-pci-vf-regs.tex | 84 +++++++++++++++++++++++++++++++++++++++
->  transport-pci.tex         |  2 +
->  3 files changed, 90 insertions(+), 1 deletion(-)
->  create mode 100644 transport-pci-vf-regs.tex
+>  conformance.tex           |  2 ++
+>  transport-pci-vf-regs.tex | 31 +++++++++++++++++++++++++++++++
+>  2 files changed, 33 insertions(+)
 > 
-> diff --git a/admin.tex b/admin.tex
-> index 648253c..852ee04 100644
-> --- a/admin.tex
-> +++ b/admin.tex
-> @@ -115,7 +115,10 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->  \hline \hline
->  0x0000 & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
->  0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
-> -0x0002 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
-> +0x0002 & VIRTIO_ADMIN_CMD_LREG_WRITE & Write legacy registers of a member device    \\
-> +0x0003 & VIRTIO_ADMIN_CMD_LREG_READ & Read legacy registers of a member device    \\
-> +0x0004 & VIRTIO_ADMIN_CMD_LQ_NOTIFY_QUERY & Read the queue notification offset for legacy interface \\
-> +0x0005 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
->  \hline
->  0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
->  \hline
-> diff --git a/transport-pci-vf-regs.tex b/transport-pci-vf-regs.tex
-> new file mode 100644
-> index 0000000..16ced32
-> --- /dev/null
-> +++ b/transport-pci-vf-regs.tex
-
-I'd like the name to reflect "legacy". Also I don't think this has
-to be SRIOV generally. It's just legacy PCI over admin commands.
-Except for virtio_admin_cmd_lq_notify_query_result
-which refers to PCI? But that
-one I can't say for sure what it does.
-
-
-> @@ -0,0 +1,84 @@
-> +\subsection{SR-IOV VFs Legacy Registers Access}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access}
-> +
-> +As described in PCIe base specification \hyperref[intro:PCIe]{[PCIe]} PCI VFs
-> +do not support IOBAR. A PCI PF device can optionally enable driver to access
-> +its member PCI VFs devices legacy common configuration and device configuration
-> +registers using an administration virtqueue. A PCI PF group owner device that
-> +supports its member VFs legacy registers access via the administration
-> +virtqueue should supports following commands.
-
-As above. It actually can work for any group if we want to.
-
-
-> +
-> +\begin{enumerate}
-> +\item Legacy Registers Write
-> +\item Legacy Registers Read
-> +\item Legacy Queue Notify Offset Query
-> +\end{enumerate}
-> +
-
-Pls add some theory of operation. How can all this be used?
-
-> +\subsubsection{Legacy Registers Write}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access / Legacy Registers Write}
-> +
-> +Legacy registers write admin command follows \field{struct virtio_admin_cmd}.
-> +This command writes legacy registers of a member VF device. Driver should write
-> +appropriate register \field{size} depending on the width of the legacy
-> +common registers or device specific registers.
-> +Driver sets command \field{opcode} to VIRTIO_ADMIN_CMD_LREG_WRITE.
-> +Driver sets \field{group_type} to 1 for VFs.
-> +Driver sets \field{group_member_id} to a valid VF number.
-> +
-> +The \field{command_specific_data} has following listed structure format:
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_lreg_wr_data {
-> +	u8 offset; /* Starting byte offset of the register(s) to write */
-> +	u8 size; /* Number of bytes to write into the register. */
-> +	u8 register[];
-> +};
-> +\end{lstlisting}
-> +
-> +This command does not have any command specific result.
-> +
-> +\subsubsection{Legacy Registers Read}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access / Legacy Registers Read}
-> +
-> +Legacy registers read admin command follows \field{struct virtio_admin_cmd}.
-> +This command reads legacy registers of a member VF device. Driver should write
-> +appropriate register \field{size} depending on the width of the legacy
-> +common configuration registers or device specific registers.
-> +Driver sets command \field{opcode} to VIRTIO_ADMIN_CMD_LREG_READ.
-> +Driver sets \field{group_type} to 1 for VFs.
-> +Driver sets \field{group_member_id} to a valid VF number.
-> +
-> +The \field{command_specific_data} has following listed structure format:
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_lreg_rd_data {
-> +	u8 offset; /* Starting byte offset of the register to read */
-> +	u8 size; /* Number of bytes to read from the registers */
-> +};
-> +\end{lstlisting}
-> +
-> +When command completes successfully, command result contains following
-> +listed content:
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_lreg_rd_result {
-> +	u8 registers[];
-> +};
-> +\end{lstlisting}
-> +
-> +\subsubsection{Legacy Queue Notify Offset Query}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access / Legacy Queue Notify Offset Query}
-> +
-> +This command returns the notify offset of the member VF for queue
-> +notifications.
-
-What is this notify offset? It's never explained.
-
-> This command follows \field{struct virtio_admin_cmd}.
-> +Driver sets command opcode \field{opcode} to VIRTIO_ADMIN_CMD_LQ_NOTIFY_QUERY.
-> +There is no command specific data for this command.
-> +Driver sets \field{group_type} to 1.
-> +Driver sets \field{group_member_id} to a valid VF number.
-
-I think ATM the limitation for this is that the member must be a pci
-device, otherwise BAR is not well defined. We will have to
-find a way to extend this for SIOV. But that is all, please do
-not repeat documentation about virtio_admin_cmd header, we have that in
-a central place.
-
-> +
-> +When command completes successfully, command result contains the queue
-> +notification address in the listed format:
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_lq_notify_query_result {
-> +	u8 bar; /* PCI BAR number of the member VF */
-> +	u8 reserved[7];
-> +	le64 offset; /* Byte offset within the BAR */
-> +};
-> +\end{lstlisting}
-> diff --git a/transport-pci.tex b/transport-pci.tex
-> index ff889d3..b187576 100644
-> --- a/transport-pci.tex
-> +++ b/transport-pci.tex
-> @@ -1179,3 +1179,5 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
->          re-examine the configuration space to see what changed.
->      \end{itemize}
+> diff --git a/conformance.tex b/conformance.tex
+> index 01ccd69..dbd8cd6 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -109,6 +109,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / PCI configuration access capability}
+>  \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+>  \item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
+> +\item \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access}
 >  \end{itemize}
+>  
+>  \conformance{\subsection}{MMIO Driver Conformance}\label{sec:Conformance / Driver Conformance / MMIO Driver Conformance}
+> @@ -194,6 +195,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / MSI-X Vector Configuration}
+>  \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+>  \item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Notification of Device Configuration Changes}
+> +\item \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access}
+>  \end{itemize}
+>  
+>  \conformance{\subsection}{MMIO Device Conformance}\label{sec:Conformance / Device Conformance / MMIO Device Conformance}
+> diff --git a/transport-pci-vf-regs.tex b/transport-pci-vf-regs.tex
+> index 16ced32..7d0574b 100644
+> --- a/transport-pci-vf-regs.tex
+> +++ b/transport-pci-vf-regs.tex
+> @@ -82,3 +82,34 @@ \subsubsection{Legacy Queue Notify Offset Query}\label{sec:Virtio Transport Opti
+>  	le64 offset; /* Byte offset within the BAR */
+>  };
+>  \end{lstlisting}
 > +
-> +\input{transport-pci-vf-regs.tex}
+> +\devicenormative{\paragraph}{SR-IOV VFs Legacy Registers Access}{Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access}
+> +
+> +If the PCI PF device supports legacy registers access, it SHOULD set
+> +corresponding bits for commands VIRTIO_ADMIN_CMD_LREG_WRITE,
+> +VIRTIO_ADMIN_CMD_LREG_READ and VIRTIO_ADMIN_CMD_LQ_NOTIFY_QUERY in 
+> +command result of VIRTIO_ADMIN_CMD_LIST_QUERY in
+> +\field{device_admin_cmd_opcodes}.
 
-As simple as it is, I feel this falls far short of describing how
-a device should operate.
-Some issues:
-	- legacy device config offset changes as msi is enabled/disabled
-	  suggest separate commands for device/common config
-	- legacy device endian-ness changes with guest
-	  suggest commands to enable LE and BE mode
-	- legacy guests often assume INT#x support
-	  suggest a way to tunnel that too;
-	  though supporting ISR is going to be a challenge :(
-	- I presume admin command is not the way to do kicks? Or is it ok?
-	- there's some kind of notify thing here?
+Don't repeat documentation of VIRTIO_ADMIN_CMD_LIST_QUERY please.
+just say all these must be supported.
+In fact what are you saying here? That all 3 are supported
+or none at all? What about just
+VIRTIO_ADMIN_CMD_LREG_READ/VIRTIO_ADMIN_CMD_LREG_WRITE?
+Looks like a slower but working way to do notifications
+is through a common config write, no?
 
-I expected to see more statements along the lines of
-        command ABC has the same effect as access
-        to register DEF of the member through the legacy pci interface
+> +
+> +The device MUST support legacy configuration registers to its defined width.
 
+what is this?
 
+> +
+> +The device MAY fail legacy configuration registers access when either the 
+> +access is for an incorrct register width or if the register offset is incorrect.
 
+with which error code?
 
+> +
+> +The device MUST allow access of one or multiple bytes of the registers when
+> +such register is defined as byte array, for example \field{mac} of \field{struct
+> +virtio_net_config} of the Network Device.
+
+so which accesses need to be supported then?
+
+> +
+> +\drivernormative{\paragraph}{SR-IOV VFs Legacy Registers Access}{Virtio Transport Options / Virtio Over PCI Bus / SR-IOV Legacy Registers Access}
+> +
+> +The driver MUST access legacy configuration registers to its defined width.
+> +
+> +The driver MUST access device specific registers to its defined width
+> +
+> +The driver MAY access one or multiple bytes of the device specific registers
+> +which are defined as byte array, for example \field{mac} of \field{struct
+> +virtio_net_config} of the Network Device.
+> +
+> +The driver SHOULD access all the bytes of a device specific registers in a
+> +single access when accessing a byte array, for example \field{mac} of
+> +\field{struct virtio_net_config} of the Network Device.
 > -- 
 > 2.26.2
 
