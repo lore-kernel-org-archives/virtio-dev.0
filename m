@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12548-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12549-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 687DFC7EE21
-	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4727CC7EE21
+	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:28:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B4BC83263B
-	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:28:31 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AE9383F54D
+	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:28:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AC2559866C2
-	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:28:31 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A2CF99866BC
+	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:28:43 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 9BDC29866B5; Thu,  4 May 2023 14:28:31 +0000 (UTC)
+	id 97FBE9866B1; Thu,  4 May 2023 14:28:43 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 884E39866B2;
-	Thu,  4 May 2023 14:28:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 86A1F9866B4;
+	Thu,  4 May 2023 14:28:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZYCVh8anWX0tmoJqeR71wPeQKhCPTuwf00GVZ7xYD888WTyYQaIposAj0mPGT/Fp2P4XgVcA7f13tllUcOMt8QJuO6giptoWvaS0i8fUEiTRKZ+27MiMbzlDED5DQLzzldiK2AmWhu9QdcO5RiBwMiHq2lKWVcdJZNRPe3ih32KW3lf0X0Npr0JUnzt4Bo3v8I2Q5I/MwZf9I2aO4LRGG+L/e0wIIJPQpIZoUJQ+M2cJGeUHvQJe5qrZ1JhABZB/1FsyGN//4kPE2SI1KYQqvc6mwe4NGOd0sNjuDb3XbGL9BgHm16D7/dTsvy+r2cZwBEXv2LrTRSoV931oWLQ9lA==
+ b=LMW2eohW0Z0Ajp/2tnPrUiuUOUb4KBFQdso/UNcIlJ5JCarp/0A+pHrpat//SmB/3siSWgZSQFyGUwfnQxpEhzrZnk2qJpYNDI2FAWGgetxX1s0INSpx1RIQXnzSJWDl8j5VUOGFZgVbUJLkigUhcGUU10BZVD5Cp+W17GaL82K6R0438aLyB2tsNQ0s1LowOZxEi40ep3c7j1jIP6zEYpIivt3ikXup92SKnHQCmShvBU4h+mnuSmym7C0wsm8s5gtj0bBo3uLFOAXjlaKmkFjqDf4efOrVg6e22iHhW0aSti//9J8cgkQrDN1jNmsbWtTg18EEz7hx2djFpd3RrQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/o0qShZAbI1CcMU4oaMUis7kZDxbCH6nyrxqAl/pIso=;
- b=ExBih+NRMBA9wosi5SnMzD7+IZuZEIm5o1LCp6U41diCG+6UtmcduNyh9jyqRLd4pC8j1ul/CvDKpOUSunr4oL13Q/EK7uc7OULFOM2jDmEJrr0hic2J0QAOUn1q8qLDC3UeUSV3a5PkQeNlZJ4bgAEm2v/DKfH+b1xdTh6JkcP1rnf6lLEZsva5yB/uWBMRP2Xh+aoDZ8z/QcZD/LS/g4GVyOnpKBEbQbb4kXcbeL2lMk78Bb4t/DEdH2h4uorCs68dbz2OU86poyIwPCzuUkoIfDd8ws5HK9H9KA4L6BIzXwfLLayrWXAqwewNhzTr1aIw1aZ8D9NSbZR9DppZYQ==
+ bh=+1rEOLVHG3CjowLHxiOncdFBXMoSq60Mh/9oAx8Nkkw=;
+ b=JPARAA6PR3+Tj3HobKH4froTtaMKxmeZ0u8Yjt/KYhGv7EWBknZR73tHgD7igtbqvdk2C++8lMfcYeOdCiQtQV8nU9feAsPWg1ADsOAT0OLWgiJsLjeb7ECVFVqtbGz0PIPn2VtZmWqRDtYTAsYfMHwoYLZAcR8vZ9x5Y57FK1cvTRTDiz3i1q+uCkiZC4lspauqy+U+yeSABCWJ/YOJNIMY6GlIRhVMm7i2db5CGkbvVF+2VnveWNrREvIyL7cemfODXcghZQCzY+suGnnCGSyt9W4O9SyLSUaMeyrvvtkTcxU/IiCLJDz7dYM7cYJuwsrq6GBCLKedEA6DS3WDwQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
@@ -44,69 +44,69 @@ Cc: sgarzare@redhat.com, pasic@linux.ibm.com,
         virtio-comment@lists.oasis-open.org, shahafs@nvidia.com,
         Parav Pandit
  <parav@nvidia.com>
-In-Reply-To: <20230504022959.547025-4-parav@nvidia.com>
+In-Reply-To: <20230504022959.547025-5-parav@nvidia.com>
 References: <20230504022959.547025-1-parav@nvidia.com>
- <20230504022959.547025-4-parav@nvidia.com>
-Date: Thu, 04 May 2023 15:28:06 +0100
-Message-ID: <m21qjw5fyh.fsf@oracle.com>
+ <20230504022959.547025-5-parav@nvidia.com>
+Date: Thu, 04 May 2023 15:28:30 +0100
+Message-ID: <m2wn1o41dd.fsf@oracle.com>
 Content-Type: text/plain
-X-ClientProxiedBy: LO2P265CA0390.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:f::18) To DS7PR10MB4926.namprd10.prod.outlook.com
+X-ClientProxiedBy: LO4P123CA0696.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:37b::10) To DS7PR10MB4926.namprd10.prod.outlook.com
  (2603:10b6:5:3ac::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|SN7PR10MB7073:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0d97e06e-fffd-499d-3027-08db4cabcb7e
+X-MS-Office365-Filtering-Correlation-Id: 70ed35a4-8e72-44e4-49b4-08db4cabd861
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info: 
-	yh0vssgHNdhUhM4qvuk1xyLjVS2Zc5q9+BV/q3VYCitIDnV8J8ZgByFu8zze3KMKcxm5lVq6GAfRghi0KP09UHiacbaRexcoNZsjIJKou4GOyhPtGWllQw0XyLsdiFbw+KTivdjJpvlP7Ticc5g6b5ShAJ1CfRAwjVCQKqfbfg/TlOkbZlInU2ppCi2SOrFgyjFqE+5Hv5ZlwqUYqKZxl294YSgkmMdcp0JxZmzc8DczwFuMSpnMGPAo54QPsGF1lcbBOBojAxeQOgU4SMjIyMBSCvOrGi/5rW78W7RD8lPILftuf04OM7v314e225xXuTiA8IdtxXWLJdV1kwjjGluk42UyHPYTpZq26zaAC9tay4WHx31cZ8LhAeRHuTWGBjwboQUBa8MOmrGWq5F5T2aH4cmNqb4u/v8t8SbqS+6DwcyCEwD1+9cmfyVnxkpqX6dgbiDma90t83H7OrPXBR91b0KbbLnH7X8ej0waFUZbbvjIzrD0ef3iLLpiCbll0Hj6e9zIWt9YObRjVvdqqNjq1Lr5g9zP/nw+1OpVCxM=
+	UdP5Eqwkq5Irz7e8kgEuXWTYBBo+HYnw/fum40sARbOXmWsIkHRa8wqVClCVH8v8Hz56EtM6HAhuKJ2lvlZfUOfHJtUc2RDzTF6vO9snTsa9gBcV9rnve409L3WGpVMhUUl/kSIWp8A5lvf78LNUnTEOUT1KUQjEJJLCZasstOHvYRb/YNngBVis/OSE9XkYshJHRCA2SQnnSAYwUhHYv3cCWSyRJMj41PNgyn7kD+KdM4++SMEmTgZxKBtVVDnpcILBRC308W9zZNXkrZ6JnXHJUQYL+3WC8j09Ea/XRM6spjHsWHGucaD91DViaxFS/esekL4dmzbkWQqoEeKrdfXllS5udte950nxiJAA60hJddj1QxoUNNTbtOc35qc3Px18yTqZarMjmK8YcYnw0alzPsGjOKQOO2rkHKDpiwpeyO4mKInf7GZnAETvfaPDILrAudXR/GIyl5mq3T7q/bnv9WMaR/TFSICWgrzrmGRXI4ZyxcnfKXoYQGafUnw8cxIY1h4E/aKKbAircZnkHDNF/ipUN25vEJlkiltrySI=
 X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(39860400002)(366004)(136003)(346002)(451199021)(83380400001)(8936002)(38100700002)(41300700001)(26005)(2616005)(86362001)(6506007)(6512007)(44832011)(5660300002)(8676002)(186003)(30864003)(478600001)(2906002)(36756003)(66556008)(316002)(66946007)(4326008)(66476007)(966005)(6666004)(6486002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(39860400002)(366004)(136003)(346002)(451199021)(83380400001)(8936002)(38100700002)(41300700001)(26005)(2616005)(86362001)(6506007)(6512007)(44832011)(5660300002)(8676002)(186003)(478600001)(2906002)(36756003)(66556008)(316002)(66946007)(4326008)(66476007)(966005)(6666004)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?JWv0pC0qHtIn/qeLqVviFyhiJNpxlsH+y3FzMSIk7qca67dVoxhUcnWZpXLI?=
- =?us-ascii?Q?ZRDRDHfqOen9c/SjOQw1k19k2ZvQLQdwTy3plKarzsME1PhWmpBgRf8aMm0Z?=
- =?us-ascii?Q?pVIHW0WZ5yMPa+f1dxHy27j0J82UZlqKBDcEWwxGgkPCvPw+3Heq/nZXPeEl?=
- =?us-ascii?Q?o8QdbAhB4JW6EaHrSYcaLVlxmAeqmuAKHler+51LQDutqQXqohFjrVkHDe/q?=
- =?us-ascii?Q?eW91Qe5My6HvcOrJ67uixlm6YAIOxZTupV5Qb/MI00d6UbRBienC9FBain8b?=
- =?us-ascii?Q?qYrc4m5jziXsAxieQBjT2Pl6Z8pUK3oHJ2u6GojJjt63cyTRH6IZTVK+wTwk?=
- =?us-ascii?Q?I9YRjAMFu+pMI/aZGBRieHlkwNWA+C9XlZs9NJ/yGeoSrYZ2jwj/qHK7u29q?=
- =?us-ascii?Q?t+le0B6i0uDN0TjQf7qGQUQIQSSIoVP32hQuZxB7gFid4zSS1RaUooYa/5cl?=
- =?us-ascii?Q?gGBqkozeZgmlJFqZRmk1ew0IFf09Rw0bBnPNCm96nN+ZKs7p67YvcLvq1bZP?=
- =?us-ascii?Q?/GAedlbYjrrzbuV6FGXwwoTFAFfvt/tVK8UUszxcNvFNDS/c03FA+X+KmbfK?=
- =?us-ascii?Q?m06TleDhAKHsxwzFF8GBmWnzy4fM6uQz5pFtIJLjMcdRhUL5cGfF5+k4qKbt?=
- =?us-ascii?Q?24GBCoums5WBIxIn4U0UG1k3UYpNCe0hHrSnfSo2tOPsLDX9cz39h7ZH0SH4?=
- =?us-ascii?Q?OCZB9ZRFdd4Uh6Sui5i/3l0KCZSTV9OjbY30yaFyemErLTyVxq/gg9XRT1uo?=
- =?us-ascii?Q?CWU0bjJ3op3cnpM7JUNeCXFki6uriQXajqU0XttrdtWAVOS+xhu6jmlQeoZe?=
- =?us-ascii?Q?doCGsvQf2mWr98ket1VJaCVOVCIf/Xkt33zWAM/66cb0kqJLlznpFdVJODhh?=
- =?us-ascii?Q?bkuwaNb/4ABhywWPVmDXQpnNuWLSIhnNyzvOM8cRPlhV4igqq7Rh8xdwxXN3?=
- =?us-ascii?Q?IUf2RQPIgJrWilHWk3xl86UkZye4oswZn6XYtTHcCuJA16lzXfVza3WuQzx6?=
- =?us-ascii?Q?7O6XeZamrAoS14kf7U6AzwkVmvaRvtRWGbAlAvL5l9LJlg4SFV7Dzgd2bW4y?=
- =?us-ascii?Q?xRB146GqzQJ3DzhVySV48Zjmkxwx6gXGtX9xRayIhxqlZnXMbajRwoZCnoXY?=
- =?us-ascii?Q?eSXI0FPquk5WgV04cN/bsKfYumpMP2nWY/O3dhYAYsM5d3ypJ9ByO7nUFTJh?=
- =?us-ascii?Q?maqHZYmJER+M3Gx7hwqld7O1U6mnq+mlIh59pVpxagnm7EzhTVAnpJ8UNajB?=
- =?us-ascii?Q?XaVbvs0M1uVbdA9SEOwTWpU3HB5WhThoyiOQrq6m4OOFqze2Vh8EYxpdWMat?=
- =?us-ascii?Q?senCVpvloFf5z83/Oz5qXIipClNYkRIFtEXXOQr9u9LqF4k/e5pnLrhpOEUE?=
- =?us-ascii?Q?JPFJEpkIRss2/zJjWKlmMT1+4EtdkfEkIbquQ2R7EmhKOFOf8uS3NnBBXzOO?=
- =?us-ascii?Q?r2J4u09cG7ZUaDWshQ7iWc23sOThHGOwERj95GqY1PpbMvclFljoBOgE7ktP?=
- =?us-ascii?Q?5MJOGbL1E9AUP83nmvJwfuUI3Ce6NzbcZRyBp7NquZuMNGFF2m1jggsQ1Ik+?=
- =?us-ascii?Q?WdvwpvO6VGdKMFh9Xpo0IS5jq1gBTrGJ15E09zE+xxr+cSRhMxCEbax/3mjn?=
- =?us-ascii?Q?hA=3D=3D?=
+	=?us-ascii?Q?wI3iUb/Cl2fwM+GXgsoWOBbz7mCl6FVE4p3pT3LMByXMzCeWvvF+VMY3Xw/c?=
+ =?us-ascii?Q?FJLIn8+KgwUkT0ZAfAofDA1sQuNUgS2JE/lzdA6DHW0Hw8gtsiydH66xSTmj?=
+ =?us-ascii?Q?D9TSGz7aSchudavPIpx9pjUAJgUltx0qg6quBQM/6hnhKoGrTHGrxieeXn95?=
+ =?us-ascii?Q?SxrDZj/j0/Bmg0UoObjJZXfT0yna7OOVLkyGLiYfa6D5c3ta10CLWgstSjSb?=
+ =?us-ascii?Q?MbF4Wk6nprFBlFjSYx1tRKiU+mpEUAZTaisQPlyXXFZn7b6VUIwrY5XRWyXv?=
+ =?us-ascii?Q?4O76H48nJmxN3M8EQrNpeyvBqQ+XSkZswmF4dfnmrxx8TMy7X/dO4qSZobNA?=
+ =?us-ascii?Q?UlqBjumv8YdPWRUBWVGz3Qu5aukar0hAWiQNHB7RK8hETuH806U2LO3NbISL?=
+ =?us-ascii?Q?EVEesi4T8MDE4Oa+eqOyB0ykDkpNKsrTuwhb25vCLS27pRNik0+jhCLv8TxN?=
+ =?us-ascii?Q?rtV9dd0WQuQPvDbSzbyq67H68Xx9M3/zPdjCqqoBMqFRF7vRQGYfBCia4iRj?=
+ =?us-ascii?Q?jld8YY+dVhR5TPiAlfg5bYHqC/K3wRhfTq/fLMu0dyQZQGhabp+Wm9I77T8H?=
+ =?us-ascii?Q?xwFV98Jaiv87r9M4ETA6PP5qLLC8ukk50SSU+B6abba2LUSqcQL9Va4B2Gsb?=
+ =?us-ascii?Q?66TywehoSlBF5SBPdWnrT4Xu3RsJ9V1Ci87a05QNv1HzkK+iWT8AGVC8gNsR?=
+ =?us-ascii?Q?qhCkm3+3ywC9Ukkj+oONW1aGIVcYkajDnlhEz+SagHM2YKWQbe5H+e74B6wW?=
+ =?us-ascii?Q?mYeZnFEVDTYO+3GutFbSOQZyJ+fBCmDsUTL81ttdqBjuk7e3I+5zDih5N1R5?=
+ =?us-ascii?Q?VdpERUGzNkjmuJ1G7Y6tvJI1U+g1NMqoIjRGicfht+SynyY5P0xKLcedeVSs?=
+ =?us-ascii?Q?uro4mbCCfn6l8W7CyNVQTda/DAkcQdg9ZW5mKAadmlY+gyKqr7Xa+6H8jpzz?=
+ =?us-ascii?Q?SGE38EvUeYLw8QlExDDgKttu3C0PgYpCTcoxV2dzyZsdnXyf8C8i+Tdq8Z41?=
+ =?us-ascii?Q?QV3/9o/rkbAwc0abGADWUexaBHC2noleiHegBASX+MpxXvSMZaNipb2mf/WI?=
+ =?us-ascii?Q?tmY791WudJrkFdR9FEvvtyT43UnYm4QdB5psSLKkUYCP7z2IfvGvA75KINbP?=
+ =?us-ascii?Q?favwAsXkCYP2JBAIMJSR1D7x1ReKRZ3XJ8UJyjuRcdutb7Sba8hgzgT19qJz?=
+ =?us-ascii?Q?a//jtX97orhRlrWAiWwdtFAt0hcSoyIdvPyZozDL9oopYhO8J3ZnxGbKgvNO?=
+ =?us-ascii?Q?MGZirIwIzOFzPSny1r2d8tJ7BU0jCJ13VBiOtI7FqG25v8E0P6gLW5fcQan2?=
+ =?us-ascii?Q?/wmkAazFlaoPBiEw8iL0z+UBNr/1EC4Cx5I7vSqOKQGV4WDDQ54quNkNO8tw?=
+ =?us-ascii?Q?ATaOWf0nW2KXsrczE95w37b/db/1iU6xXKySZXi3+i+yAHrji3Nzt5Ex07wr?=
+ =?us-ascii?Q?ecuDIvmw+9LcJpOdJ2j4Y0Zkj0wRYiBdMx3XMn3MktcJov5wgb+3qRRsON+o?=
+ =?us-ascii?Q?IhDYNWEm50eccDs9LxFk/gwxsPX5HTYBOsf1y0Ciapyrc2QYTjdKQYJJz4wi?=
+ =?us-ascii?Q?6DIC0+c7OG9om1h5TXziO8uL1sx9Zke0tqhFiZPzLTquy8yk/AQ7gJhlasKr?=
+ =?us-ascii?Q?NQ=3D=3D?=
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	sziKnFENFxXCWdfQOgTkNqBXQv613b326ZB0b4UM8yS/zQmy5QHYKt6yyqwKv+8PjBNsL5kq4lMNxyM33X1f7pzXKKEk0OzNq3Y/sPbVKgWdRad4ceSNZD06x1dzOSNL6pgyi9GII9wAewQkQuPGKxw25sVJh/wh9uO4tEyR99tFCVcvVmeaXs4SkxVvhm0TLODFbg0u2LUq5bcYVYOIs9F7o+PGcBJsUE6NfXIL4foOpMEDTMPjkVOZhjHNah7Py6rzjbVDfb0QeeqsDZ3Pc9W5vSctmHCp/N71uh3rEkwCz9SprMkFqaNsfbc43UASdIHki8FK7iLpN0wnYdWOWVKOvLA/7QY06dIjGIg3015+duUxvTwbxc0ptEjOc5uknbA7cmP9Ddl7iu53cfbLa7iXBihernqGk56Txcw6SRNp7/oeeJGh1vp/t/LQLZ3vHAG5UQhKryDSssHOJGXL5gLq3+mbXwZ6rw9bAGE4ygTOgMpGAceN4eXaiTlDBUl7fmOP6YDGNOqeWVg0UN6WS1cQJDgX0hQ5e0Fl6G6brx3Vw8tYqzIvbH4Sm3qhx9lpUWymYMXd7IPeK93bnKKpjuT8H1PgWQgZHGiVUUx4RywAdhTeJUemGq6QM5Xd2ibCgRP+8dVt3NuGmpt0MifOjQ1PbiqpQtYo42CLVCNlG74ijTevf3QrB6PNK0S80XPjQeF85I7lGttkbGQrVJd/1Jkr+dv1fopgndrZCJDBq1lSuDugJyMNz6u+EZtP1MJAy8dysezGoAgJYwiuvIGrNY/1mP8itNGjYOzL7PNDgoYGDLzis8vcf69V8++/VOpGE+PDQWCvgsZUo4D7CB5w/N0ZkyJpd7rO3E3drm52MiRswX2f/mQNkdV2I/qjuE9W
+	CpfHKUiQC3HETdZNdRaELHqeZSZhGe53P4D4Jyr/M9QnaWCSAfBjm9OC1erz/RZ2W7Oud1nqcUolJ4jN6okm6aM7ApyZ2zExwkjIySiD3DquweY7L0N8Zw5iXa+g0FMJrCD+nbGE+9YLlLdFwhagmbRC3xnBzvaYbQUlY66Q5Ks7JeOZMeylGoMXimI5kyIsKeKxBbvltxiPyvr/FlRD1nn83Z+M7tL4lBJ3hscKDx8+cNqccifdkc0vVi0k+6talpF2beJlcxnT1dbl2AoSH9c5LesqlUWD/SL4T6WLtbBpEK9ZZy6J88y71yVlHJ4XpyED+lqQjJ/+VlCPFkzlLAfOpcD9nA0JS88DqJkpDkEg7H3qlXzNYohusqVoFE4RAD8RWNgb14ROmlgPn04uOfHR50TsLDgtYMaIVOjws5Z0bZ7h95yROrFDIOX2TrNBFtNU9Y6/rCNjeN1BkwAGyjH3+lxgSF4VFOxcm1wLXEk2Xm8fJzc/2QbN901DyT+Q34jpu42W41jJpYfcA6eoKwc/MF+on7+HXO5SuNj9/V7L0z+KZX+1bQ+us2CoQLHd5FDPMnSDQ3ASAy9hNPhGvGbRNoZONpZ57tSOgyR/sWSCA34FfRqnbeLAOeJHxh07sERq3S6Uap/P1Bo3WhVbOFmFlz7FSh+refRB68LPdRTRdr3pGV0n1oohVeReTJQuChH+8INf3RySBI4HvVirj4FiuD7iV9QFV53zPEkYNTVPcDhXUAvQcUsV9GzuVP37aqHklpSqPUsTOP2NYRq03etLyt9gdeeqPCvWfaSWNJirncPT8Z/ySW1uNw5bPjQlG6w96PNdzCOdV7RqN3bPwz6DOokM0bsC/Cu31P7QI+kWqw8CBVLRQpkb8aPRT9nK
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d97e06e-fffd-499d-3027-08db4cabcb7e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70ed35a4-8e72-44e4-49b4-08db4cabd861
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB4926.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 14:28:14.1491
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 14:28:35.7543
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZTJrX5LMnnRrtdqR+9EAwIWP/bKO2xVIkv9oQfGsyvb6pflyq0KEZfis3/vNfRteYaq1bshYyfcOTZQE0gmTzKvcBbzyG+FitHAfNOOy8Pk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: mjcHmdBNeiOpf4/z3ImWwKXEMComG49eD++u7XM/4MOy8sNanagGng6LzrfLQuESOYk2SIG66esbRKZ+bqHTa3Ppx4y4Yyk4jErj4P0yfZU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB7073
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
@@ -115,274 +115,63 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxsc
  mlxlogscore=999 phishscore=0 malwarescore=0 adultscore=0 suspectscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
  definitions=main-2305040119
-X-Proofpoint-GUID: BwbMA7F37qApABiAVJ06C373w9hY1oxM
-X-Proofpoint-ORIG-GUID: BwbMA7F37qApABiAVJ06C373w9hY1oxM
-Subject: [virtio-dev] Re: [PATCH v16 03/11] content: Rename confusing queue_notify_data
- and vqn names
+X-Proofpoint-GUID: 7d7lAHvaMus5l3Tmvp9LXfAHxD9bfbye
+X-Proofpoint-ORIG-GUID: 7d7lAHvaMus5l3Tmvp9LXfAHxD9bfbye
+Subject: [virtio-dev] Re: [PATCH v16 04/11] transport-pci: Avoid first vq index reference
 
 Parav Pandit <parav@nvidia.com> writes:
 
-> Currently queue_notify_data register indicates the device
-> internal queue notification content. This register is
-> meaningful only when feature bit VIRTIO_F_NOTIF_CONFIG_DATA is
-> negotiated.
->
-> However, above register name often get confusing association with
-> very similar feature bit VIRTIO_F_NOTIFICATION_DATA.
->
-> When VIRTIO_F_NOTIFICATION_DATA feature bit is negotiated,
-> notification really involves sending additional queue progress
-> related information (not queue identifier or index).
->
-> Hence
-> 1. to avoid any misunderstanding and association of
-> queue_notify_data with similar name VIRTIO_F_NOTIFICATION_DATA,
->
-> and
-> 2. to reflect that queue_notify_data is the actual device
-> internal virtqueue identifier/index/data/cookie,
->
-> a. rename queue_notify_data to queue_notif_config_data.
->
-> b. rename ambiguous vqn to a union of vq_index and vq_config_data
->
-> c. The driver notification section assumes that queue notification contains
-> vq index always. CONFIG_DATA feature bit introduction missed to
-> update the driver notification section. Hence, correct it.
+> Drop reference to first virtqueue as it is already
+> covered now by the generic section in first patch.
 >
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
 > Acked-by: Halil Pasic <pasic@linux.ibm.com>
 > Signed-off-by: Parav Pandit <parav@nvidia.com>
->
+
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+
 > ---
 > changelog:
-> v15->v16:
-> - fixed adding article
-> - replaced is with was
-> - fixed incorrect type of 'not'
-> v14->v15:
-> - fixed white spaces at the end of lines
-> - fixed next listed comments from Michael and Halil
-> - renamed notifications-pci-le.c to notifications-data-le.c
-> - removed unwanted \item tag
-> v13->v14:
-> - added pci transport specific union structure
-> - added normative lines for case when VIRTIO_F_NOTIF_CONFIG_DATA
->   is not negotiated.
-> - added normataive lines for clarify bit-width for driver notification
-> - replace left over _id with _config_data
-> - use _notif_config_data name to align to feature name
-> v12->v13:
-> - replace _id with _config_data
-> - dropped vq identifier
-> - dropped the idea of union as description is for config data feature
 > v11->v12:
-> - new patch
+> - drop changes related to vq number
+> v9->v10:
+> - updated commit log to drop reference to old patch
+> v8->v9:
+> - reword the sentence to avoid future tense, like rest of the other
+>   fields description
+> - reword the sentence to avoid multiple verbs use and put -> uses
+> - use shorter name 'vq number' instead of 'virtqueue number'
+> v7->v8:
+> - remove note about first virtqueue number
+> - skipped Max's comment to put word 'structure' in same line as its
+>   crosses 65 chars limit per line
+> - reworded queue_notification data set line, as '=' and vq number
+>   wording was odd
+> v2->v3:
+> - addressed comments from Michael
+> - changed vqn to virtqueue number in the Note
+> - refer to vqn field instead of virtqueue number
 > ---
->  content.tex             | 11 +++++--
->  notifications-be.c      |  2 +-
->  notifications-data-le.c |  8 +++++
->  notifications-le.c      |  2 +-
->  transport-pci.tex       | 71 ++++++++++++++++++++++++++++++-----------
->  5 files changed, 70 insertions(+), 24 deletions(-)
->  create mode 100644 notifications-data-le.c
+>  transport-pci.tex | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/content.tex b/content.tex
-> index 9cf938c..8c5b07a 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -405,8 +405,12 @@ \section{Driver Notifications} \label{sec:Basic Facilities of a Virtio Device /
->  notification to the device.
->  
->  When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
-> -this notification involves sending the
-> -virtqueue index to the device (method depending on the transport).
-> +this notification contains either a virtqueue index if
-> +VIRTIO_F_NOTIF_CONFIG_DATA is not negotiated or device supplied virtqueue
-> +notification config data if VIRTIO_F_NOTIF_CONFIG_DATA is negotiated.
-> +
-> +The notification method and suppling any such virtqueue notification config data
-> +is transport specific.
->  
->  However, some devices benefit from the ability to find out the
->  amount of available data in the queue without accessing the virtqueue in memory:
-> @@ -417,7 +421,8 @@ \section{Driver Notifications} \label{sec:Basic Facilities of a Virtio Device /
->  the following information:
->  
->  \begin{description}
-> -\item [vqn] VQ number to be notified.
-> +\item [vq_index_config_data] Either virtqueue index or device supplied
-> +      queue notification config data corresponding to a virtqueue.
-
-vq_index_config_data doesn't exist.
-
-Given that this is an anonymous union, perhaps:
-
-\item [vq_index or vq_notif_config_data] Either ...
-
->  \item [next_off] Offset
->        within the ring where the next available ring entry
->        will be written.
-> diff --git a/notifications-be.c b/notifications-be.c
-> index 5be947e..bf6d1cd 100644
-> --- a/notifications-be.c
-> +++ b/notifications-be.c
-> @@ -1,5 +1,5 @@
->  be32 {
-> -	vqn : 16;
-> +	vq_index: 16; /* previously known as vqn */
->  	next_off : 15;
->  	next_wrap : 1;
->  };
-> diff --git a/notifications-data-le.c b/notifications-data-le.c
-> new file mode 100644
-> index 0000000..3ee80e4
-> --- /dev/null
-> +++ b/notifications-data-le.c
-> @@ -0,0 +1,8 @@
-> +le32 {
-> +	union {
-> +		vq_index: 16; /* Used if VIRTIO_F_NOTIF_CONFIG_DATA not negotiated */
-> +		vq_notif_config_data: 16; /* Used if VIRTIO_F_NOTIF_CONFIG_DATA negotiated */
-> +	};
-> +	next_off : 15;
-> +	next_wrap : 1;
-> +};
-> diff --git a/notifications-le.c b/notifications-le.c
-> index fe51267..8a19389 100644
-> --- a/notifications-le.c
-> +++ b/notifications-le.c
-> @@ -1,5 +1,5 @@
->  le32 {
-> -	vqn : 16;
-> +	vq_index: 16; /* previously known as vqn */
->  	next_off : 15;
->  	next_wrap : 1;
->  };
 > diff --git a/transport-pci.tex b/transport-pci.tex
-> index 524bfff..aa9842f 100644
+> index aa9842f..cfe3fe2 100644
 > --- a/transport-pci.tex
 > +++ b/transport-pci.tex
-> @@ -319,7 +319,7 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
->          le64 queue_desc;                /* read-write */
->          le64 queue_driver;              /* read-write */
->          le64 queue_device;              /* read-write */
-> -        le16 queue_notify_data;         /* read-only for driver */
-> +        le16 queue_notif_config_data;   /* read-only for driver */
->          le16 queue_reset;               /* read-write */
->  };
->  \end{lstlisting}
-> @@ -388,17 +388,21 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
->  \item[\field{queue_device}]
->          The driver writes the physical address of Device Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+> @@ -1011,7 +1011,7 @@ \subsubsection{Device Initialization}\label{sec:Virtio Transport Options / Virti
+>  The driver typically does this as follows, for each virtqueue a device has:
 >  
-> -\item[\field{queue_notify_data}]
-> +\item[\field{queue_notif_config_data}]
->          This field exists only if VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated.
-> -        The driver will use this value to put it in the 'virtqueue number' field
-> -        in the available buffer notification structure.
-> +        The driver will use this value when driver sends available buffer
-> +        notification to the device.
->          See section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}.
->          \begin{note}
->          This field provides the device with flexibility to determine how virtqueues
->          will be referred to in available buffer notifications.
-> -        In a trivial case the device can set \field{queue_notify_data}=vqn. Some devices
-> -        may benefit from providing another value, for example an internal virtqueue
-> -        identifier, or an internal offset related to the virtqueue number.
-> +        In a trivial case the device can set \field{queue_notif_config_data} to
-> +        the virtqueue index. Some devices may benefit from providing another value,
-> +        for example an internal virtqueue identifier, or an internal offset
-> +        related to the virtqueue index.
-> +        \end{note}
-> +        \begin{note}
-> +        This field was previously known as queue_notify_data.
->          \end{note}
+>  \begin{enumerate}
+> -\item Write the virtqueue index (first queue is 0) to \field{queue_select}.
+> +\item Write the virtqueue index to \field{queue_select}.
 >  
->  \item[\field{queue_reset}]
-> @@ -468,7 +472,9 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
->  
->  \drivernormative{\paragraph}{Common configuration structure layout}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Common configuration structure layout}
->  
-> -The driver MUST NOT write to \field{device_feature}, \field{num_queues}, \field{config_generation}, \field{queue_notify_off} or \field{queue_notify_data}.
-> +The driver MUST NOT write to \field{device_feature}, \field{num_queues},
-> +\field{config_generation}, \field{queue_notify_off} or
-> +\field{queue_notif_config_data}.
->  
->  If VIRTIO_F_RING_PACKED has been negotiated,
->  the driver MUST NOT write the value 0 to \field{queue_size}.
-> @@ -1035,13 +1041,22 @@ \subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Option
->  
->  When VIRTIO_F_NOTIFICATION_DATA has not been negotiated,
->  the driver sends an available buffer notification to the device by writing
-> -the 16-bit virtqueue index
-> -of this virtqueue to the Queue Notify address.
-> +only the 16-bit notification value to the Queue Notify address of the
-> +virtqueue. A notification value depends on the negotiation of
-> +VIRTIO_F_NOTIF_CONFIG_DATA.
->  
-> -When VIRTIO_F_NOTIFICATION_DATA has been negotiated,
-> -the driver sends an available buffer notification to the device by writing
-> -the following 32-bit value to the Queue Notify address:
-> -\lstinputlisting{notifications-le.c}
-> +If VIRTIO_F_NOTIFICATION_DATA has been negotiated, the driver sends an
-> +available buffer notification to the device by writing the following 32-bit
-> +value to the Queue Notify address:
-> +\lstinputlisting{notifications-data-le.c}
-> +
-> +\begin{itemize}
-> +\item When VIRTIO_F_NOTIF_CONFIG_DATA is not negotiated \field{vq_index} is set
-> +to the virtqueue index.
-> +
-> +\item When VIRTIO_F_NOTIFICATION_DATA is negotiated,
-> +\field{vq_notif_config_data} is set to \field{queue_notif_config_data}.
-> +\end{itemize}
->  
->  See \ref{sec:Basic Facilities of a Virtio Device / Driver notifications}~\nameref{sec:Basic Facilities of a Virtio Device / Driver notifications}
->  for the definition of the components.
-> @@ -1050,12 +1065,30 @@ \subsubsection{Available Buffer Notifications}\label{sec:Virtio Transport Option
->  for how to calculate the Queue Notify address.
->  
->  \drivernormative{\paragraph}{Available Buffer Notifications}{Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Available Buffer Notifications}
-> -If VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated:
-> +
-> +If VIRTIO_F_NOTIFICATION_DATA is not negotiated, the driver notification
-> +MUST be a 16-bit notification.
-> +
-> +If VIRTIO_F_NOTIFICATION_DATA is negotiated, the driver notification
-> +MUST be a 32-bit notification.
-
-The above two should be inside itemize?
-
-> +
-> +If VIRTIO_F_NOTIF_CONFIG_DATA is not negotiated:
-> +\begin{itemize}
-> +\item If VIRTIO_F_NOTIFICATION_DATA is not negotiated, the driver MUST set the
-> +notification value to the virtqueue index.
-> +
-> +\item If VIRTIO_F_NOTIFICATION_DATA is negotiated, the driver MUST set the
-> +\field{vq_index} to the virtqueue index.
-> +
-> +\end{itemize}
-> +
-> +If VIRTIO_F_NOTIF_CONFIG_DATA is negotiated:
->  \begin{itemize}
-> -\item If VIRTIO_F_NOTIFICATION_DATA has not been negotiated, the driver MUST use the
-> -\field{queue_notify_data} value instead of the virtqueue index.
-> -\item If VIRTIO_F_NOTIFICATION_DATA has been negotiated, the driver MUST set the
-> -\field{vqn} field to the \field{queue_notify_data} value.
-> +\item If VIRTIO_F_NOTIFICATION_DATA is not negotiated, the driver MUST set
-> +the notification value to \field{queue_notif_config_data}.
-> +
-> +\item If VIRTIO_F_NOTIFICATION_DATA is negotiated, the driver MUST set the
-> +\field{vq_notify_config_data} to the \field{queue_notif_config_data} value.
->  \end{itemize}
->  
->  \subsubsection{Used Buffer Notifications}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Used Buffer Notifications}
+>  \item Read the virtqueue size from \field{queue_size}. This controls how big the virtqueue is
+>    (see \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}~\nameref{sec:Basic Facilities of a Virtio Device / Virtqueues}). If this field is 0, the virtqueue does not exist.
 > -- 
 > 2.26.2
 -- 
-Why does it have to be like this? I can never tell.
+I'm in a backless dress on a pastel ward that's shining.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
