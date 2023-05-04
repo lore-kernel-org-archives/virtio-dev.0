@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12550-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12551-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0FF94C7EE21
-	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E5056C7EE21
+	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:31:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 67E9677EB
-	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:29:51 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4588271C92
+	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:31:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6149A9866B6
-	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:29:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 339DD9866B9
+	for <virtio-dev@archiver.kernel.org>; Thu,  4 May 2023 14:31:48 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 552299866B1; Thu,  4 May 2023 14:29:51 +0000 (UTC)
+	id 261D29866B1; Thu,  4 May 2023 14:31:48 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 446879866B2;
-	Thu,  4 May 2023 14:29:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 122FC9866B2;
+	Thu,  4 May 2023 14:31:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mVfHARjcjmWcvBuh6/nY668Qk5clOH866oEK03dzGWlQwh04acfsZdpPSOtb2IGEw6I6Fsld8jpyjQL9p58mGWwEkPnOsjF3nhTJ1q3bSR1NQNOnmwp9Kh9hKWVxMahx3fP2w76chIIl7nvTDqppQAtpZ1o2x10H2gxTwEhcJLBDVRoyj8SfXduxI4waY4Q5DwMjBSf+/jltF75s6kwb5oJWs8wiS+wfmpd7jPM3No/sznIZjgBsJo4LeG3vpTL6aAia7O5PCO5CVAU12sXfH+R87sKP6TaSXrCWFSBW7FeBGSCDhpoWJYxYDQCUN1zyT1+dbPItFHb3JNDIvpf3+A==
+ b=DKQ2p0wVyBkJ234l/IagjHz27NbC7s+oQr13qrtQMrdPalsY+xjsp8BleMmfGl9uCuptGPixEpkLof7vKvZJf8uIQRQngSXdrWQE7SLC+CK0sCDKd2guwY/kA3OFgEurLxiJPSVtjD1W+J2OjvIaczdC9yDks9KfOhDboHretndzS0Dnu1LC/BQX0QKmLp3ZwJLHlUO0AYKKBBE0jpCFw2Lvi6cyi3X2SyOnnZ/CfRxq52sof+B5bKDoT9QPultmvaS9gFKpsTeGxHJny3QPchlCKKuJa9Q1ZSVMeV+Q7+aeGhA6avx/2wuMJjgEVQznAhDBrQJSkVhBFFwXrJNPdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vhWR589CGWFQHeXjwyV0YOXn3DRJr5R9sdlg7Z3kt6w=;
- b=HEa+ZCWYa8dyWjuyJzwN6ureQVMr4A2p48OZalYr+jM1lJSChHRBu9EJJeB3eAv8HZasrO92OjQK3mP8aO2kuKFXaCHhx32V0SZLyMwl0rDDUCGSOzFKMUVGQlGUJ+KX7c+tSCvxnV76FB7WKbocK8lz7gaASeXW4BfRAF3LUhL7zU0hE9JC6IHwoQeYTXxTeMhC5eMHo7O35k4fw3ufycPnsAHPrMWYt44FguibpRqthBAmMM0LjAAzuzpHACz7nXZAG9tj6c8BU+3pkiFnHH4/rIQukqSAPuQEOmzkgSYjvf55s8yDnQkhgq+6S2y4tAnxTxW+E/cx73e6xL37nA==
+ bh=kK0qMbIvmogW75UJ3MJb3WYtmc9X308MvKEqWdFElGM=;
+ b=LcXYeiaBK/FrpECr4m+H63jbmdx/oMlBdyRsVKjMuAPguGVMik2k2u0gPYfOKcJg1+djbGLxDTxPGGgLwevqt5n1C04wuxn7kE7B9WohzgcCvCZZl4nYcaLvp4rIqPfQPvqbcjO2VHHQrPouvOGS+qZIkEjHxzEyR0hPz/vpAnMntK7NyjziZ0syv2+uIn0X05EH1yBTojkq/5jT+9/oKDnqbdeeIvXSLRfyhkc0LjCT+37jdVtm5OLHcyTb0fIB4UPI5AGpyN4mirOV1rmUGcAwXJG6NeyxT3oCIFLAL5QQWK3MySw3tsbSOHDWc3A/avlKrgFBvSAFb5FE+TzBUg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
@@ -44,89 +44,86 @@ Cc: sgarzare@redhat.com, pasic@linux.ibm.com,
         virtio-comment@lists.oasis-open.org, shahafs@nvidia.com,
         Parav Pandit
  <parav@nvidia.com>
-In-Reply-To: <20230504022959.547025-7-parav@nvidia.com>
+In-Reply-To: <20230504022959.547025-12-parav@nvidia.com>
 References: <20230504022959.547025-1-parav@nvidia.com>
- <20230504022959.547025-7-parav@nvidia.com>
-Date: Thu, 04 May 2023 15:29:38 +0100
-Message-ID: <m2ttws41bh.fsf@oracle.com>
+ <20230504022959.547025-12-parav@nvidia.com>
+Date: Thu, 04 May 2023 15:31:35 +0100
+Message-ID: <m2o7n04188.fsf@oracle.com>
 Content-Type: text/plain
-X-ClientProxiedBy: LO2P265CA0297.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a5::21) To DS7PR10MB4926.namprd10.prod.outlook.com
+X-ClientProxiedBy: LO2P265CA0475.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a2::31) To DS7PR10MB4926.namprd10.prod.outlook.com
  (2603:10b6:5:3ac::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|SN7PR10MB7073:EE_
-X-MS-Office365-Filtering-Correlation-Id: 06fb1e3a-acdc-4bfb-9a93-08db4cac0152
+X-MS-TrafficTypeDiagnostic: DS7PR10MB4926:EE_|MW4PR10MB6557:EE_
+X-MS-Office365-Filtering-Correlation-Id: ad1de65e-7f78-48ec-e0c4-08db4cac4694
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info: 
-	zgrP8BPz539bHNDkx9juDpvj1zlfdugH1gnY4+vdsn5uTMeT5cmIkmTQpuBEVHAagRKG59AnPRH+UNi9nJsDaVDWFgzqv1rtCTnzTbzGqP9qh6uI8mOAb+WF4PWeGHosySDPsmGlBMdpxIJ/xmkVn/K56j5aRBizNo63a4bWIs/QayS/LczMDnc83Xyvi1CW9aFHy2IY1ka+X01xSAktyjE+zFqQER/KWKlVAseqWduVuQwTGx/aI01rp8pBl7JDWLX4YBY3ugvBGSnRkbUxh6QZ99033NnWA3E9m5uuk37gakt+c5rrW8wobziDdCAizdhZEwIiBXq0YbYDoPLx0lsBf5TpGalEOv8cjGdqFQqBEQV7Qa5BDJS0MsboQficPUAaxR0W2SRAol2OAaQGRgbgUP3X5l0dwaWpUUpnZPkYsEeamQzYYcCr6JRhc0lqXUYvRdnF5JqA1rfyQdgOGNsv9IlA6RhFbm2DhpuyKw+LScHLbpmka4lPreLky9FnaLgaF+gFttWFj45TbgtbzkQrO2ZWo6qAvA+S12ad0YU=
+	/NWrH+rTaz4w8Bc9wKiWbIBhkVsyEX4BddXm/vqeaDtG+dFzoKdCjBLrySEtuHFQ/WExC/fcCzB+uyyjwO5vkyX3NHk/ai6gX0fzrOB9papkYl96O6ybbgSZ4ymBi0xtuqlLjSvnoWbxm7lEk4vZUAVi1DC33YipN/x7Zr+CAAwXKNCrcn5Q6V3YRxc4ITO/swEACnrr+xwE6x+/SzojcIjAgLLbELNYVMF0EzLyhfNaV3vKJ5cTGJiFcXFFrhVryimMM23Rlzu2+SC42ThjunPZoiApxYqbO9tHRcbLS8ZyRi5wmm7eZSHMqfimY8vubOjLZjn8oT1RkrpibZxk4P0xBv+LYa7t58DkQLPD+Dy02ykpgoL6OfjXpMlC+mO50ny5PIXJA/a7EwtGsjqlSl2LO/3+q1VLXgfquZbbP56UBjXxO3X2iflGYxwRToF56Vjz3etypNmWC8WtSR1onddrHbeP326jY321iLogsLsGXQmtRVIKMEwBrmuBKik9/YXU6lF3+oDf3xo2yTJtzxuCx74t0cDWc6QnNhusDJc=
 X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(39860400002)(366004)(136003)(346002)(451199021)(83380400001)(8936002)(38100700002)(41300700001)(26005)(2616005)(86362001)(6506007)(6512007)(44832011)(5660300002)(8676002)(186003)(478600001)(2906002)(36756003)(66556008)(316002)(66946007)(4326008)(66476007)(966005)(6666004)(6486002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(376002)(346002)(396003)(136003)(366004)(451199021)(6512007)(2906002)(2616005)(186003)(44832011)(83380400001)(6506007)(26005)(15650500001)(478600001)(5660300002)(66476007)(38100700002)(66556008)(66946007)(966005)(8676002)(8936002)(41300700001)(6486002)(6666004)(36756003)(316002)(86362001)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?QzqzCH01KRQwBB6IaJaxV4AkkerDJd6ccC9U3bec2/PgPAohOfQt2wsk8yAt?=
- =?us-ascii?Q?uRFWHenXO4bRDIkrVRnV3aGVotMnsEG+KGKAKMXD/iuYJtXLhC4nLFDzYLD8?=
- =?us-ascii?Q?22v+7cTszIfLCa14T++uN4cTa9YMwY0VOc8g3bTcMTXasKfgTHEWaAHdWLPz?=
- =?us-ascii?Q?kNkWESiVna57YyEivzOMwEQczYTjTY+YI+kXOZ2Yvz2sayFGDOnQPBUJ6ur6?=
- =?us-ascii?Q?OtQrCCY4PFMfxYmw4JRu6YD0r6k9kDlH/qcfzyez2JqE7dZNTD6oHRwFO9ec?=
- =?us-ascii?Q?YQjpix3Jwli7S0mta6ewLOxKxJBgj2LIdTDjLrCxKAP0gL+/J3dT1oOLKaoS?=
- =?us-ascii?Q?Ow/vs62Kg+zQmqNeLOwm7OgkH7YNX72Tlo6unJq5bEyKpBqTnlyOmKk13lRP?=
- =?us-ascii?Q?XsqMJySgnBd/JwYULTxZmD2/PtjlQmMCjdZxroqfqfkKaRdQeKDtKItysDxW?=
- =?us-ascii?Q?8JoaEjT6QqEZrzkHnDVRJa8GtRYSorco7rbs5KdLcKIJdGVgmXPys+qVcRlT?=
- =?us-ascii?Q?mzY7ko/TBNueS9KJuM4Mt+A2Idu4uScxkJF8vZVMOS747wpsSdSLSvrKeUjT?=
- =?us-ascii?Q?dQ7yKF4xGmGAq6S35pDsUVWMLVod2VjrdvHl7pI/pFLDQNhpOVYr6uqjehQ8?=
- =?us-ascii?Q?LxozK81FaBW8kob+80cmkbaKxu/jVhNmkX2BrNXMdM94+Ah7WBcswMybNXtj?=
- =?us-ascii?Q?xXm7pmTSz/7Rj4ZsFc8qaiGeW7qVPKIx/wcMnD/DysySd9IVHh3H7WPnd5lY?=
- =?us-ascii?Q?X0iYrwf0gGLQJuVDEC63XFCkWYnYexhcNp9fsQuAGT8fCgBShVFKyoXu0UrB?=
- =?us-ascii?Q?sDV+GTzGhPCABRcWKBZXrKpTuE/btfNz0TKYMiCCpCUHtLECQUdm6pR8Hi6P?=
- =?us-ascii?Q?hbjD3mVkCwoyyuYK+B/H8EUvAhenQ1jIdg8m9dAbMW9X2w38+7iFcOhBo41p?=
- =?us-ascii?Q?0mGVK8sAuoltwu9VEbA9i5jsTMGGATygn/cyT+pz1VXLiY/4GcyOG3X13ZQ2?=
- =?us-ascii?Q?Bew4thKK6HbjjyGAi60dJOQ3imN2EQgCRIgKK7N7WKoMCvpKahOAPwg3ciaY?=
- =?us-ascii?Q?YaQkA3poFmPFANxU6s3wzO/GcZXf5WNqFeFYVgZ+Fyf+rOwInJO+IsVMhCZc?=
- =?us-ascii?Q?izyrylXXeeB9gw5YzRr1AK5XQEi/b7e0rlqVk6h1763VJr2bjttx1wSX8pat?=
- =?us-ascii?Q?BkGhmyFA1uB1mAELLygJs472gAPuVMnInIIkm6aZPwZXwm1qLQGz5l2DsUIj?=
- =?us-ascii?Q?mYR3oEKdPu6UOMhq//IySgSfEAPsVafUeIZd3Huk14/MzCkCIK8xyqGZVKVE?=
- =?us-ascii?Q?JoX9CGlF8/neN2QdJML46F/ywx/H84q47foA8pMqBwAru2FlcArRLCT8mH0N?=
- =?us-ascii?Q?268QBa6mmiJFX4qPdrKQ6883QwZKgDl2eT7qrYS0QcRF1gK3uODiVVxPYPND?=
- =?us-ascii?Q?nSoQn6AaF4Ub/UnacZZHW3aJ8iCZUNzZffSTXaB0wwypau3GRqsWRosLoP7E?=
- =?us-ascii?Q?0PekPI9uHTh9eV+tvBX8NCxLA6Xu1V6U9Msgzdif5RF8DDGFNh3SkhVMguiZ?=
- =?us-ascii?Q?ON8YEgwZIstn7nJvTJwWlB5WvMFAlTwXz/828EGJHqdJnbOb5rYTMKIxXRMi?=
- =?us-ascii?Q?pg=3D=3D?=
+	=?us-ascii?Q?ClDlLFsquj3fyqS7JeVskduHSrHxUAo95uMSCPBLAv6hlvD/8znHsWUWrbq3?=
+ =?us-ascii?Q?T0dbMosg9Dd8LlpwrS5aAk6461sXFytulhFqhtnIcdYBjFlGwBJ4K7nmf00i?=
+ =?us-ascii?Q?4g/rPuGXGPgoP1r9JR7NmMUj5OIQymvZ0XzJkFWV7pldCRyqmWgYySMhUj6E?=
+ =?us-ascii?Q?rR5aLxiomTC0gs0LnmDPzyY/WCJZr6mHdUfkhkd6e64k5WhNuUv+ikgfpcCu?=
+ =?us-ascii?Q?hbq6x36onHQ/1bkcrQGMBNBMBpE2sAiDynPTvI9hqIsNe1ZKBnDtxNEO1wcQ?=
+ =?us-ascii?Q?V25qKE4272vscWhUVDAMlDrmrTqqXz80ofF2PyImEis/RcpKl1QZ9dOYWkkP?=
+ =?us-ascii?Q?gkdASDPw86fq7EwsufhToYxstuNiJ2YhX/mAQoE/26+6oIb5mwsmTnNo13sD?=
+ =?us-ascii?Q?IXpFydpn1CSymRlxmZt8qBRhVJ03b/cVDG/rbXhVyYE0oUWIjFIjFpfaftOm?=
+ =?us-ascii?Q?b4PmOe1jM/YEErVeV9H1QzcydL07HwGBxcPGhDixsSV6s0OUhRr1C9gSwSAw?=
+ =?us-ascii?Q?LFneAuaPFDEnBirbRNDHHOtxlr/Mkni6twSfkDdD7CCTyjT072JPqCJZNNbU?=
+ =?us-ascii?Q?Bs6GHF7AEo9aHt/ATT7rhUDL+Joagu8zZU+c7X9G5VUVWH9AI5gTMxIeMh5k?=
+ =?us-ascii?Q?LiLRuqQ1fXkAdbJJdc/t+s6wW5jwZEfQSGBabMro0PnYizrmfFRjEB8jA192?=
+ =?us-ascii?Q?HqXTp/g/MPKv5Kx59+/rynfkojutZ0SuLsiEvrMXJCh7cy74VfT6jDQQrqya?=
+ =?us-ascii?Q?hnOmJ2wV17ns+fZryIQ6dUR6ZFnHX9tuaXx2U3P9eaIpeYOkoKuSTVdKLu+J?=
+ =?us-ascii?Q?0kXE+EqgkFsRWbwtlEdDpDv46wIW1vKl+zyn2zz8WqgFNg9Iq6knt9vei23Y?=
+ =?us-ascii?Q?0vp5h0Tt6IjCrmbMazjPGklnuLLOVHuvSaTPqT1hhg3xBFlCv9SUwLN7heMN?=
+ =?us-ascii?Q?u+qQYG7Ksye+g+JSZnpMl4EkOKFYyAnsiDmx38d044+R6bs3+EGwV67QCpAn?=
+ =?us-ascii?Q?grKofM2MeG41QcFxa07CMqO58UmgG/03Q9dfky2yg9hS94duUQb1e6OtNctz?=
+ =?us-ascii?Q?U1p2yDE3EkcTFwwNSWiLPfj5wSaK1FB5/2GLNhHl1X869ojvIH5++hmVLtKR?=
+ =?us-ascii?Q?ynmeWXq/7al4CjQkR4fmnRguNJ6vLh80TqniYEmdc19xP0RmnU/EUzHNpThd?=
+ =?us-ascii?Q?YD+mOH1E+4W3ZT2sFjKhuALKYsL8n2BXPliLjHegafh+Z0HfPbk6iQHZCRTM?=
+ =?us-ascii?Q?t15WgzRSLkMLW/1QetRR/p6NlLZoxIhU0m6wG5IOuUq/LktIEIdKJRIjoiWW?=
+ =?us-ascii?Q?LSgKoFqd1G4XtLUY+whSCebEPAsem9Z0LdnBIC8urXLmCc6GHjIELtNc0LqW?=
+ =?us-ascii?Q?Y9+/ST1MdcormihsDN7xeD2Fc1JoXuRpo2tGBKZJ56lNgocWz0OoxcUTUOTj?=
+ =?us-ascii?Q?G8WFnQq1ZKI+QcHiwPE+C++/ZE05V/Kiv2sMrAE+P46XgHkrlTIEyz24EiEH?=
+ =?us-ascii?Q?8dsgtNuc27ngeelcuqtWyiJtPq1lZpm8kVSZG1SNacVVcKbqaWqi510q4KCv?=
+ =?us-ascii?Q?KxwMpWcHB5uCgPsniz8kChuOIvhPh/ZLWnGVpgWP6aYFiSiZ731KgEhh/XK/?=
+ =?us-ascii?Q?eQ=3D=3D?=
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	ZlIjCxD1k+Yf0BynrXRdRd3gVSwQxdGC5YjdkRivd7+MAGgl2tc59798Fhl1CekzAsd/HmI4u4zfOzD5fYgZOeAJuh005oeyAXshllX7VWla/NBRzZVuA2AbrqVxr6ArSsiuagv8haNdCCm529u4bd2xud7gKIB9IHIEaUZYkrdSz7cmCX7K072EXSS+wWzB2V4XBYHNTwH5kVE/rtJr61lZ3MM54FqqK0plZxi5ISZWbUo/MzPeYKk0VUJOj3MzVzzy9DGkWfPvMdnOLXAh8BDH18xxSomCPDJ0szx+IeU1poky5U3tGNwGbkqn2nmwwAYoN3MxPui3wyVw1I9wjZhTBYRCDx7TWLeOdvv10jGswnbZsP3F8OaRW0DJUEF0HEPEVTO/uUyvsxuPJoOCIXOG4h9r9FmBpHF25gi99NkJaIZlIiR+eJlfnGdl9AhaHM+mohd04lz/HHQQSDaUEoqQGLBEaD73rJjI3k+UK9g9+FtHVfpLU+mgKjKlqgDr+9ihRJEjnBsS4gFrtilrt/0SqUel6gUqGPVvzhZ+zZMFW1lMqinxXvS16ThfyJOvKZOSFdO7dM+mRS5WjgAED49DmZSTmNeTYd5AupQKX2scigRDyBRAtYZWeim5BEb1OfGi5eeQfPqX2ipLeIOQdi+vcfd7RfW8U5mVRXFfhaZwGDe1HhDSoX/XbLdUz5+mRSR9jzPUgaSDSomteOlZSUuEKXr8ClCPZAw9K3DqW/65RRSJ4LYxtZkVic92RtVaSYJpGLRyWawSea5gHNxmlvjeLgSakPPfKWXGRJwRDaCXfVSzMjpfus/WTSkvlXkKrSgTKZdSr39j+BFs+zCxUQSTc0yDCCVGYZMHlPinUB5etipkHEzBlU10IrNy2YkM
+	lv9J3ijGdFUC877uxfC09NzHxeRXVHl9KfiYA8Zus1I3dxztlT3wQXWqw/5c6Ibu+hUXqTePP4N8fINU2pqg4/ssd80pLCG2P/o+CY/j7zi9283Jk/UIugegM+o/ahfAfGhLftHq9Cx0pZXIFtNFvoa+a1GkP2B7br5NnlADwupGraHZb68itNgNeXoWm9WARPqxD4qq7Yu8i7xxTRRM+kKyDH+P9njwwDAel2+XMdGUGG//FVKe+Vt/MSx21EO7dB1c2e6QuoXoVFIfyrCdqLKNthWIR0TLpS++SO1lmZ4t0OvWqPt4+SvNOtQ+SHrG1pSxWiZPwms5eW+mVePrxK3YmXHOVHIGJxD9siKxYz09In0xId2oO/DItFN7bkKUQrKkkj/FPDrGXZYqL35UJ/KfSJXJwlvDTEQS9w056BpLlfwmsi1L9H8JLIAQkXhZ4+JOLY5kgKKYaLz7KWtSygakkW6cUINcxva1zII13i6pXvlLz1Tikre2mw8l876mM3h2c0Mz7gxc3k3tGECbquWxqQ+aZwAfGtC6SoPAALG+MVCdilOzPAVcpHpHDa0pz+VuiP5Csmw7bd1M2KJwqEZzMWJee5o5HEQqQsFJx9cbU0f1PGlpOsqi4cGKt4m7bG/8v77wqJr1K++wHEn2wN/328U6/FBazwFu9L2n369t/QE+eLuyQGJYFIumMqz8YRQ0WpeZcEebFQdpoYLuXf3ftPboZgKagh35Zy+GlL+TPUT2ns4a2Uu0V5c81bAsmfS9oPcNj4mwyLaqHiYEb07KTN/7pfkr96//y5LySS7Nzi654w7tlCYrVzTF/TITSTqlerWnpKbqOWuEX051karHyXlPjiR16yNeRoEmvppWyEEJE9o/w9hdv0WurUCF
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06fb1e3a-acdc-4bfb-9a93-08db4cac0152
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad1de65e-7f78-48ec-e0c4-08db4cac4694
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB4926.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 14:29:44.5672
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 14:31:40.7545
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TQbPqFAefM7Ru7fWv3lPZyFHuATd6ZmNAqm02lRJGoPVhLMztRendBqBt3Hyd5zvOZeBfeQxDn+lF/6tqOvdvxJNTRF7B1UP4Hgx9X3ebpY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB7073
+X-MS-Exchange-CrossTenant-UserPrincipalName: T+e+vvJGzzfs7VLYcFq8EfM1fPU4PCr7vMX4XZdgpfFjIEsKiyes6Jefi8gBGH+O8+rkRsn/0BhOifbbPJmOCBVSYnSsVVIf16IZsKfkYak=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6557
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-05-04_10,2023-05-04_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 spamscore=0
- mlxlogscore=999 mlxscore=0 adultscore=0 phishscore=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 malwarescore=0 adultscore=0 suspectscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
  definitions=main-2305040119
-X-Proofpoint-GUID: _7edBMdKsIDaag9y6KVZoAQvIkSXt62M
-X-Proofpoint-ORIG-GUID: _7edBMdKsIDaag9y6KVZoAQvIkSXt62M
-Subject: [virtio-dev] Re: [PATCH v16 06/11] transport-mmio: Avoid referring to zero based
- index
+X-Proofpoint-ORIG-GUID: z6_eXeLxG5QmRwp8MWQ00zD5UMowwxz7
+X-Proofpoint-GUID: z6_eXeLxG5QmRwp8MWQ00zD5UMowwxz7
+Subject: [virtio-dev] Re: [PATCH v16 11/11] virtio-net: Update vqn to vq_index for cvq cmds
 
 Parav Pandit <parav@nvidia.com> writes:
 
-> VQ range is already described in the first patch in basic virtqueue
-> section. Hence remove the duplicate reference to it.
+> Replace field name vqn to vq_index for recent virtqueue level commands.
 >
 > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/163
-> Acked-by: Halil Pasic <pasic@linux.ibm.com>
 > Signed-off-by: Parav Pandit <parav@nvidia.com>
 >
 
@@ -135,69 +132,86 @@ Reviewed-by: David Edmondson <david.edmondson@oracle.com>
 > ---
 > changelog:
 > v12->v13:
-> - corrected number to index
-> v11->v12:
-> - remove changes related to 'vq number'
-> v8->v9:
-> - added 'by' at two places
-> - replaced 'queue number' with 'vq number'
->
-> v6->v7:
-> - remove text around first vq as it is already covered in the basic
->   virtqueues facility section
+> - new patch
 > ---
->  transport-mmio.tex | 13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
+>  device-types/net/description.tex | 24 ++++++++++++------------
+>  1 file changed, 12 insertions(+), 12 deletions(-)
 >
-> diff --git a/transport-mmio.tex b/transport-mmio.tex
-> index 164e640..2d24b4c 100644
-> --- a/transport-mmio.tex
-> +++ b/transport-mmio.tex
-> @@ -113,8 +113,7 @@ \subsection{MMIO Device Register Layout}\label{sec:Virtio Transport Options / Vi
->      following operations on \field{QueueSizeMax},
->      \field{QueueSize}, \field{QueueReady},
->      \field{QueueDescLow}, \field{QueueDescHigh}, \field{QueueDriverlLow}, \field{QueueDriverHigh},
-> -    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to. The index
-> -    number of the first queue is zero (0x0).
-> +    \field{QueueDeviceLow}, \field{QueueDeviceHigh} and \field{QueueReset} apply to.
->    }
->    \hline
->    \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
-> @@ -363,8 +362,7 @@ \subsubsection{Virtqueue Configuration}\label{sec:Virtio Transport Options / Vir
->  The driver will typically initialize the virtual queue in the following way:
+> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+> index 83bdaef..3030222 100644
+> --- a/device-types/net/description.tex
+> +++ b/device-types/net/description.tex
+> @@ -1560,7 +1560,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  };
 >  
->  \begin{enumerate}
-> -\item Select the queue writing its index (first queue is 0) to
-> -   \field{QueueSel}.
-> +\item Select the queue by writing its index to \field{QueueSel}.
+>  struct virtio_net_ctrl_coal_vq {
+> -    le16 vqn;
+> +    le16 vq_index;
+>      le16 reserved;
+>      struct virtio_net_ctrl_coal coal;
+>  };
+> @@ -1574,7 +1574,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
 >  
->  \item Check if the queue is not already in use: read \field{QueueReady},
->     and expect a returned value of zero (0x0).
-> @@ -474,9 +472,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
->      Writing to this register selects the virtual queue that the
->      following operations on the \field{QueueSizeMax},
->      \field{QueueSize}, \field{QueueAlign}
-> -    and \field{QueuePFN} registers apply to. The index
-> -    number of the first queue is zero (0x0).
-> -.
-> +    and \field{QueuePFN} registers apply to.
->    }
->    \hline
->    \mmioreg{QueueSizeMax}{Maximum virtual queue size}{0x034}{R}{%
-> @@ -550,8 +546,7 @@ \subsection{Legacy interface}\label{sec:Virtio Transport Options / Virtio Over M
+>  Coalescing parameters:
+>  \begin{itemize}
+> -\item \field{vqn}: The virtqueue number of an enabled transmit or receive virtqueue.
+> +\item \field{vq_index}: The virtqueue index of an enabled transmit or receive virtqueue.
+>  \item \field{max_usecs} for RX: Maximum number of microseconds to delay a RX notification.
+>  \item \field{max_usecs} for TX: Maximum number of microseconds to delay a TX notification.
+>  \item \field{max_packets} for RX: Maximum number of packets to receive before a RX notification.
+> @@ -1587,7 +1587,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  \begin{itemize}
+>  \item For commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET, the structure virtio_net_ctrl_coal is write-only for the driver.
+>  \item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure virtio_net_ctrl_coal_vq is write-only for the driver.
+> -\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vqn} and \field{reserved} are write-only
+> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vq_index} and \field{reserved} are write-only
+>        for the driver, and the structure virtio_net_ctrl_coal is read-only for the driver.
+>  \end{itemize}
 >  
->  The virtual queue is configured as follows:
->  \begin{enumerate}
-> -\item Select the queue writing its index (first queue is 0) to
-> -   \field{QueueSel}.
-> +\item Select the queue by writing its index to \field{QueueSel}.
+> @@ -1596,9 +1596,9 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  \item VIRTIO_NET_CTRL_NOTF_COAL_TX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all transmit virtqueues.
+>  \item VIRTIO_NET_CTRL_NOTF_COAL_RX_SET: use the structure virtio_net_ctrl_coal to set the \field{max_usecs} and \field{max_packets} parameters for all receive virtqueues.
+>  \item VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET: use the structure virtio_net_ctrl_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
+> -                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
+> +                                        for an enabled transmit/receive virtqueue whose index is \field{vq_index}.
+>  \item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
+> -                                        for an enabled transmit/receive virtqueue whose number is \field{vqn}.
+> +                                        for an enabled transmit/receive virtqueue whose index is \field{vq_index}.
+>  \end{enumerate}
 >  
->  \item Check if the queue is not already in use: read \field{QueuePFN},
->     expecting a returned value of zero (0x0).
+>  The device may generate notifications more or less frequently than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
+> @@ -1608,12 +1608,12 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  with two pairs of virtqueues as an example:
+>  Each of the following commands sets \field{max_usecs} and \field{max_packets} parameters for virtqueues.
+>  \begin{itemize}
+> -\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueues having vqn 0 and vqn 2. Virtqueues having vqn 1 and vqn 3 retain their previous parameters.
+> -\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 0 sets coalescing parameters for virtqueue having vqn 0. Virtqueue having vqn 2 retains the parameters from command1.
+> -\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 0, the device responds with coalescing parameters of vqn 0 set by command2.
+> -\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vqn} = 1 sets coalescing parameters for virtqueue having vqn 1. Virtqueue having vqn 3 retains its previous parameters.
+> -\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueues having vqn 1 and vqn 3, and overrides the parameters set by command4.
+> -\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vqn} = 1, the device responds with coalescing parameters of vqn 1 set by command5.
+> +\item Command1: VIRTIO_NET_CTRL_NOTF_COAL_RX_SET sets coalescing parameters for virtqueues having index 0 and index 2. Virtqueues having index 1 and index 3 retain their previous parameters.
+> +\item Command2: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vq_index} = 0 sets coalescing parameters for virtqueue having index 0. Virtqueue having index 2 retains the parameters from command1.
+> +\item Command3: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vq_index} = 0, the device responds with coalescing parameters of vq_index 0 set by command2.
+> +\item Command4: VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET with \field{vq_index} = 1 sets coalescing parameters for virtqueue having index 1. Virtqueue having index 3 retains its previous parameters.
+> +\item Command5: VIRTIO_NET_CTRL_NOTF_COAL_TX_SET sets coalescing parameters for virtqueues having index 1 and index 3, and overrides the parameters set by command4.
+> +\item Command6: VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET with \field{vq_index} = 1, the device responds with coalescing parameters of index 1 set by command5.
+>  \end{itemize}
+>  
+>  \subparagraph{Operation}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing / Operation}
+> @@ -1663,7 +1663,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  
+>  \drivernormative{\subparagraph}{Notifications Coalescing}{Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+>  
+> -The driver MUST set \field{vqn} to the virtqueue number of an enabled transmit or receive virtqueue.
+> +The driver MUST set \field{vq_index} to the virtqueue index of an enabled transmit or receive virtqueue.
+>  
+>  The driver MUST have negotiated the VIRTIO_NET_F_NOTF_COAL feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET.
+>  
 > -- 
 > 2.26.2
 -- 
-Up eighty flights of stairs to a basement flat.
+"Can I take you out to the pictures, Joan?"
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
