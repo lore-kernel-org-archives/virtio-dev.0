@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12593-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12594-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 085FFC77B7C
-	for <virtio-dev@archiver.kernel.org>; Fri,  5 May 2023 16:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F59EC77B7F
+	for <virtio-dev@archiver.kernel.org>; Fri,  5 May 2023 16:37:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2AC1D370E8
-	for <virtio-dev@archiver.kernel.org>; Fri,  5 May 2023 16:11:52 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6E63F2B244
+	for <virtio-dev@archiver.kernel.org>; Fri,  5 May 2023 16:37:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 105E99866CB
-	for <virtio-dev@archiver.kernel.org>; Fri,  5 May 2023 16:11:52 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 657C69866E4
+	for <virtio-dev@archiver.kernel.org>; Fri,  5 May 2023 16:37:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id EE6589866C4; Fri,  5 May 2023 16:11:51 +0000 (UTC)
+	id 59DAD9866C4; Fri,  5 May 2023 16:37:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,262 +24,132 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DC79F9866C5
-	for <virtio-dev@lists.oasis-open.org>; Fri,  5 May 2023 16:11:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4672B9866C5;
+	Fri,  5 May 2023 16:37:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683303110; x=1685895110;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=uTfhzAVWKaXokrhvCpcbRfNUPp73K3VFBBQt45y7FTE=;
-        b=R+vfxVqmBzTm9WGC+ubkCTm0nU31Lm1VzjF/Yf7x1vfmuxVFwEn6/u2qLzoJB0QxxJ
-         BDAlSPNtcRRPV+EOYsmHjdxaNpavsmlS8Aav7QdXGGayp6cMGxHDf/T0UTY9Y24lowWe
-         9JC6Mf9E/tW2KrnCzJAlaWqS/hUTaM6u25+Y7bpnYuEqbTGk37Ae1hU0I2p9QBCX3gGP
-         TFAnH4BN/MuH8HWwEBtJlDe/4LiUzVWcKC1x9zs0XB3c+h3zY/95R6w9u6tlUeCoNGHT
-         HmzZ3Kvn+1yvDQHhaDdKSTbl5o0/L5QBcyyhmyw3FWu7DqTtYBEs1+0WOXNwlu3sQCbY
-         kbIw==
-X-Gm-Message-State: AC+VfDyTHh69R6cWb/W7JjjyVX5c42KlFSZNuhU93rpBq3JgeArcZ+WO
-	UGSRB4z5CjeuyMYTjbpnbjnq/g==
-X-Google-Smtp-Source: ACHHUZ4DkCvYUkMeUYMZ0MuuRAlHx668wJdtAKqubMQ8aX/Q6e1JGDPPfb9DyiRDwtbU4U7AhjF2HQ==
-X-Received: by 2002:a5d:5191:0:b0:306:2a21:b5ff with SMTP id k17-20020a5d5191000000b003062a21b5ffmr1420781wrv.17.1683303109675;
-        Fri, 05 May 2023 09:11:49 -0700 (PDT)
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <b5c9d69a-fbec-8046-225f-bdb5850bbd54@opensynergy.com>
- <CAPBb6MUFbZzTTPqztVXQpcPN+PtqrmCoyaD5dySYdP_7EbRDdQ@mail.gmail.com>
- <11372cda-a766-ef50-45d7-ed637b72a31c@opensynergy.com>
- <CAPBb6MVRPn6dM8ap9uDvX_ZHdHGvooq+LB7UGDaWBEuUtK3x=A@mail.gmail.com>
- <cbed366a-7f12-8642-18ef-350981279241@opensynergy.com>
- <87a5ylzf34.fsf@redhat.com> <87354dtp30.fsf@linaro.org>
- <87bkj1h0nf.fsf@redhat.com>
- <a3607ef3-ffd9-345b-0191-5bc946f4be19@opensynergy.com>
- <168329085253.1880445.14002473591422425775@Monstersaurus>
-User-agent: mu4e 1.11.4; emacs 29.0.90
-From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-To: Kieran Bingham <kieran.bingham@ideasonboard.com>
-Cc: Alexander Gordeev <alexander.gordeev@opensynergy.com>, Cornelia Huck
- <cohuck@redhat.com>, Alexandre Courbot <acourbot@chromium.org>,
- virtio-dev@lists.oasis-open.org, Keiichi Watanabe <keiichiw@chromium.org>,
- Marcin Wojtas <mwojtas@google.com>, Matti =?utf-8?Q?M=C3=B6ll?=
- <Matti.Moell@opensynergy.com>, Andrew Gazizov
- <andrew.gazizov@opensynergy.com>, Enrico Granata <egranata@google.com>,
- Gustavo Padovan <gustavo.padovan@collabora.com>, Peter Griffin
- <peter.griffin@linaro.org>, =?utf-8?Q?Bart=C5=82omiej?= Grzesik
- <bag@semihalf.com>, Tomasz
- Figa <tfiga@chromium.org>, Daniel Almeida <daniel.almeida@collabora.com>,
- Enric Balletbo i Serra <eballetb@redhat.com>, Albert Esteve
- <aesteve@redhat.com>, libcamera-devel@lists.libcamera.org
-Date: Fri, 05 May 2023 16:55:33 +0100
-In-reply-to: <168329085253.1880445.14002473591422425775@Monstersaurus>
-Message-ID: <87v8h6dagr.fsf@linaro.org>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lxO7mZz5Va7toprT473OWNVVWl5bWrEHLc1HCLTTJkX76U6zWWwjDfTt7A5IkM4+lOZcTiylRZkP8Q/nIpd9NLlCimBfeOIt9N1ob6ylTOk9x1A6qub8/GcACRzzq6j/ATyeiU/msxV5B9qvGgBkncyyVk3Etpq5ivjKYuPGPtKnkU1xLg47k38jXtQaEeT2rFgGdqZeUDz/bIUME/fN9CE6yX6AqWIW6uzJp2GWeehIVl7d4SPkBRnageEPjzXdSA1tKG65/cB0C3bcqdVEwF/Dzqotnz8yuJPiTZwJoNbTP3g4tsxHVhlotZZIA7QS1c3qEW+1jPysGOA12Z06VQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z0KXRSwAj7ubXimFSlsVzT0pDHI7PDBa9uKq+bmR1P0=;
+ b=NgkLTNKD1rEJ5DwR45PKWd89Fab2BYb3+juHftamhc1yQuG/EvnoVA/Xi1ROaGvZXtq6woWkNNYB+kZ1Uemd40dBcL8RFYad6khPVWNgwogch/OEBUPEbZyI5VwgbKQgJpAuGgABhBEt6SLY6qycnkZs2qeHxYhr0pKSBpL3U9KdLW4v5qBLwEN1suOYn3OvsdyAjSyzOFu70H8n5ClfONKtPM87jc9xKk7lIMWbRWuD9r+HCsydlntZcNHiOXzZu+jUzu4P6hPOxqAoFgPHWLC+m7BwRxalImrUqF/ULoZjby/I18NIeyCLBLgfg9czwHUrE6as2EFp2WdVMgdC7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+From: Parav Pandit <parav@nvidia.com>
+To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>
+CC: <virtio-comment@lists.oasis-open.org>, <shahafs@nvidia.com>, Parav Pandit
+	<parav@nvidia.com>
+Date: Fri, 5 May 2023 19:37:12 +0300
+Message-ID: <20230505163712.589460-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT056:EE_|BN9PR12MB5241:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9355572b-b40d-4fa1-9dde-08db4d8706c5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6MDuOnBy6kNeJNS8M8mNr+5q7axvlsuEgA8MOSGry0Vnw82LLpN5GTP2YwQFzHXrkdcme6zo3Y34VoiPyJquvqgqvDrONHu7W6LeKWXv+LV+qcrOwKbAHN13Th2POfCgIoErRUUgTRhfXTRNDgVTELzO9uKBPIbQfKGl1NIlvBpG55RmZ+GhEe3H1W1eONH4DUMwFDe9p1hjaL/75QqahlJCcJ8HMoUwUFSON6xuIT+bKCBdPZ6apf8mFV+BHXVfFZq2zUhTM5CVqhbsRao6xy0SeSrEsaWe0M+g66GH9qM2KtQ4VJH7HQehNh443J7b4i1qzsZvNZ9Ua0cYhQyfrjNxwDZ/zewyFra8U/0wV6UyDSwNzXTZUM1uFrpTgz2cqYOAWItnXVs+IK716omtbwU6PbcCo3bxjZ0f3Te0HGwQ40Cua5O/PLdHJUOAhL2AXyDgQNwIcV6Fp46Cc7RQVV3Wjq3eY9OTBLDey1xv8NUyGtHpinNDjNvG1op9CHYswK+QZgEUD/QNiLqsxHOqBg7do2q93bqHjkDGtapQ+QdKQ8AgoItAZLAH8yloQ7PpKzcTs5+Hs4zhxGNevG+K+kYwNFKjfH71e0/rpVBOvP8xYRcOMz59XDuXW87IWcIQmcIC7uNII5rskwkUhcMT+OcCl8ccOHQQNwP1+a2nOKfIaAHocua5jcee684sBLGu+6NVqfnggEiOFlmSzSPSkifLntCmH+sWJuRDqYV1RIvFLZC3wtyoymNt6QzwjMEs
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(376002)(396003)(451199021)(40470700004)(36840700001)(46966006)(36756003)(86362001)(316002)(110136005)(54906003)(4326008)(70586007)(70206006)(966005)(6666004)(478600001)(41300700001)(82310400005)(40480700001)(5660300002)(8936002)(8676002)(2906002)(82740400003)(356005)(7636003)(16526019)(186003)(107886003)(2616005)(26005)(36860700001)(1076003)(426003)(47076005)(83380400001)(336012)(40460700003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2023 16:37:33.0720
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9355572b-b40d-4fa1-9dde-08db4d8706c5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5241
+Subject: [virtio-dev] [PATCH] admin: Fix reference and table formation
 
+This patch brings three fixes.
 
-Kieran Bingham <kieran.bingham@ideasonboard.com> writes:
+1. Opcode table has 3 columns, only two were enumerated. Due to this
+pdf generation script stops. Fix it and also have resizeable description
+column as it needs wrap.
 
-> Hi All,
->
-> Coming in late, thanks to lei/lore spotting the libcamera keyword.
->
-> + Cc: libcamera-devel to raise awareness of the discussion there.
->
-> Quoting Alexander Gordeev (2023-05-05 10:57:29)
->> On 03.05.23 17:53, Cornelia Huck wrote:
->> > On Wed, May 03 2023, Alex Benn=C3=A9e <alex.bennee@linaro.org> wrote:
->> >
->> >> Cornelia Huck <cohuck@redhat.com> writes:
->> >>
->> >>> On Fri, Apr 28 2023, Alexander Gordeev <alexander.gordeev@opensynerg=
-y.com> wrote:
->> >>>
->> >>>> On 27.04.23 15:16, Alexandre Courbot wrote:
->> >>>>> But in any case, that's irrelevant to the guest-host interface, an=
-d I
->> >>>>> think a big part of the disagreement stems from the misconception =
-that
->> >>>>> V4L2 absolutely needs to be used on either the guest or the host,
->> >>>>> which is absolutely not the case.
->> >>>>
->> >>>> I understand this, of course. I'm arguing, that it is harder to
->> >>>> implement it, get it straight and then maintain it over years. Also=
- it
->> >>>> brings limitations, that sometimes can be workarounded in the virtio
->> >>>> spec, but this always comes at a cost of decreased readability and
->> >>>> increased complexity. Overall it looks clearly as a downgrade compa=
-red
->> >>>> to virtio-video for our use-case. And I believe it would be the sam=
-e for
->> >>>> every developer, that has to actually implement the spec, not just =
-do
->> >>>> the pass through. So if we think of V4L2 UAPI pass through as a
->> >>>> compatibility device (which I believe it is), then it is fine to ha=
-ve
->> >>>> both and keep improving the virtio-video, including taking the best
->> >>>> ideas from the V4L2 and overall using it as a reference to make wri=
-ting
->> >>>> the driver simpler.
->> >>>
->> >>> Let me jump in here and ask another question:
->> >>>
->> >>> Imagine that, some years in the future, somebody wants to add a virt=
-io
->> >>> device for handling video encoding/decoding to their hypervisor.
->> >>>
->> >>> Option 1: There are different devices to chose from. How is the pers=
-on
->> >>> implementing this supposed to pick a device? They might have a narrow
->> >>> use case, where it is clear which of the devices is the one that nee=
-ds to
->> >>> be supported; but they also might have multiple, diverse use cases, =
-and
->> >>> end up needing to implement all of the devices.
->> >>>
->> >>> Option 2: There is one device with various optional features. The pe=
-rson
->> >>> implementing this can start off with a certain subset of features
->> >>> depending on their expected use cases, and add to it later, if neede=
-d;
->> >>> but the upfront complexity might be too high for specialized use cas=
-es.
->> >>>
->> >>> Leaving concrete references to V4L2 out of the picture, we're curren=
-tly
->> >>> trying to decide whether our future will be more like Option 1 or Op=
-tion
->> >>> 2, with their respective trade-offs.
->> >>>
->> >>> I'm slightly biased towards Option 2; does it look feasible at all, =
-or
->> >>> am I missing something essential here? (I had the impression that so=
-me
->> >>> previous confusion had been cleared up; apologies in advance if I'm
->> >>> misrepresenting things.)
->> >>>
->> >>> I'd really love to see some kind of consensus for 1.3, if at all
->> >>> possible :)
->> >>
->> >> I think feature discovery and extensibility is a key part of the Virt=
-IO
->> >> paradigm which is why I find the virtio-v4l approach limiting. By
->> >> pegging the device to a Linux API we effectively limit the growth of =
-the
->> >> device specification to as fast as the Linux API changes. I'm not ful=
-ly
->> >> immersed in v4l but I don't think it is seeing any additional features
->> >> developed for it and its limitations for camera are one of the reasons
->> >> stuff is being pushed to userspace in solutions like libcamera:
->> >>
->> >>    How is libcamera different from V4L2?
->> >>
->> >>    We see libcamera as a continuation of V4L2. One that can more easi=
-ly
->> >>    handle the recent advances in hardware design. As embedded cameras=
- have
->> >>    developed, all of the complexity has been pushed on to the develop=
-ers.
->> >>    With libcamera, all of that complexity is simplified and a single =
-model
->> >>    is presented to application developers.
->> >
->> > Ok, that is interesting; thanks for the information.
->> >
->> >>
->> >> That said its not totally our experience to have virtio devices act as
->> >> simple pipes for some higher level protocol. The virtio-gpu spec says
->> >> very little about the details of how 3D devices work and simply offers
->> >> an opaque pipe to push a (potentially propriety) command stream to the
->> >> back end. As far as I'm aware the proposals for Vulkan and Wayland
->> >> device support doesn't even offer a feature bit but simply changes the
->> >> graphics stream type in the command packets.
->> >>
->> >> We could just offer a VIRTIO_VIDEO_F_V4L feature bit, document it as
->> >> incompatible with other feature bits and make that the baseline
->> >> implementation but it's not really in the spirit of what VirtIO is
->> >> trying to achieve.
->> >
->> > I'd not be in favour of an incompatible feature flag,
->> > either... extensions are good, but conflicting features is something
->> > that I'd like to avoid.
->> >
->> > So, given that I'd still prefer to have a single device: How well does
->> > the proposed virtio-video device map to a Linux driver implementation
->> > that hooks into V4L2?
->>=20
->> IMO it hooks into V4L2 pretty well. And I'm going to spend next few
->> months making the existing driver fully V4L2 compliant. If this goal
->> requires changing the spec, than we still have time to do that. I don't
->> expect a lot of problems on this side. There might be problems with
->> Android using V4L2 in weird ways. Well, let's see. Anyway, I think all
->> of this can be accomplished over time.
->>=20
->> > If the general process flow is compatible and it
->> > is mostly a question of wiring the parts together, I think pushing that
->> > part of the complexity into the Linux driver is a reasonable
->> > trade-off. Being able to use an existing protocol is nice, but if that
->> > protocol is not perceived as flexible enough, it is probably not worth
->> > encoding it into a spec. (Similar considerations apply to hooking up t=
-he
->> > device in the hypervisor.)
->>=20
->> I very much agree with these statements. I think this is how it should
->> be: we start with a compact but usable device, then add features and
->> enable them using feature flags. Eventually we can cover all the
->> use-cases of V4L2 unless we decide to have separate devices for them
->> (virtio-camera, etc). This would be better in the long term I think.
->
-> Camera's definitely have their quirks - mostly because many usecases are
-> hard to convey over a single Video device node (with the hardware) but I
-> think we might expect that complexity to be managed by the host, and
-> probably offer a ready made stream to the guest. Of course how to handle
-> multiple streams and configuration of the whole pipeline may get more
-> difficult and warrant a specific 'virtio-camera' ... but I would think
-> the basics could be covered generically to start with.
->
-> It's not clear who's driving this implementation and spec, so I guess
-> there's more reading to do.
->
-> Anyway, I've added Cc libcamera-devel to raise awareness of this topic
-> to camera list.
->
-> I bet Laurent has some stronger opinions on how he'd see camera's exist
-> in a virtio space.
+2. Status description column content needs to wrap. Without it pdf
+   does not read good. Fix it by having resizeable description column.
 
-Personally I would rather see a separate virtio-camera specification
-that properly encapsulates all the various use cases we have for
-cameras. In many ways just processing a stream of video is a much
-simpler use case.
+3. Fix the broken link to the Device groups.
 
-During Linaro's Project Stratos we got a lot of feedback from members
-who professed interest in a virtio-camera initiative. However we were
-unable to get enough engineering resources from the various companies to
-collaborate in developing a specification that would meet everyone's
-needs. The problem space is wide from having numerous black and white
-sensor cameras on cars to the full on computational photography as
-exposed by modern camera systems on phones. If you want to read more
-words on the topic I wrote a blog post at the time:
+This fix is for [1].
 
-  https://www.linaro.org/blog/the-challenges-of-abstracting-virtio/
+[1] https://lore.kernel.org/virtio-comment/cover.1683301091.git.mst@redhat.com/T/#t
 
-Back to the topic of virtio-video as I understand it the principle
-features/configurations are:
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+ admin.tex | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-  - All the various CODECs, resolutions and pixel formats
-  - Stateful vs Stateless streams
-  - If we want support grabbing single frames from a source
+diff --git a/admin.tex b/admin.tex
+index 6bfc1c9..47556f3 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -109,7 +109,7 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \field{opcode} specifies the command. The valid
+ values for \field{opcode} can be found in the following table:
+ 
+-\begin{tabular}{|l|l|}
++\begin{tabularx}{\textwidth}{ |l||l|X| }
+ \hline
+ opcode & Name & Command Description \\
+ \hline \hline
+@@ -119,11 +119,11 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \hline
+ 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
+ \hline
+-\end{tabular}
++\end{tabularx}
+ 
+ The \field{group_type} specifies the group type identifier.
+ The \field{group_member_id} specifies the member identifier within the group.
+-See section \ref{sec:Introduction / Terminology / Device group}
++See section \ref{sec:Basic Facilities of a Virtio Device / Device groups}
+ for the definition of the group type identifier and group member
+ identifier.
+ 
+@@ -155,7 +155,8 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ is reserved and set to zero by the device.
+ 
+ The following table describes possible \field{status_qualifier} values:
+-\begin{tabular}{|l|l|l|}
++
++\begin{tabularx}{\textwidth}{ |l||l|X| }
+ \hline
+ Status & Name & Description \\
+ \hline \hline
+@@ -177,7 +178,7 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \hline
+ 0x08-0xFFFF   & -    & reserved for future use \\
+ \hline
+-\end{tabular}
++\end{tabularx}
+ 
+ Each command uses a different \field{command_specific_data} and
+ \field{command_specific_result} structures and the length of
+-- 
+2.26.2
 
-My main concern about the V4L approach is that it pegs updates to the
-interface to the continuing evolution of the V4L interface in Linux. Now
-maybe video is a solved problem and there won't be (m)any new features
-we need to add after the initial revision. However I'm not a domain
-expert here so I just don't know.
-
---=20
-Alex Benn=C3=A9e
-Virtualisation Tech Lead @ Linaro
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
