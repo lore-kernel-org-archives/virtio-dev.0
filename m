@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12615-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12616-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0B8FC77B7C
-	for <virtio-dev@archiver.kernel.org>; Tue,  9 May 2023 03:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77ABCC7EE22
+	for <virtio-dev@archiver.kernel.org>; Tue,  9 May 2023 03:56:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 19BCC29FC9
-	for <virtio-dev@archiver.kernel.org>; Tue,  9 May 2023 03:45:26 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B00DF3F547
+	for <virtio-dev@archiver.kernel.org>; Tue,  9 May 2023 03:56:46 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0686798652B
-	for <virtio-dev@archiver.kernel.org>; Tue,  9 May 2023 03:45:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A5EB4986547
+	for <virtio-dev@archiver.kernel.org>; Tue,  9 May 2023 03:56:46 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id EF06F9864BD; Tue,  9 May 2023 03:45:25 +0000 (UTC)
+	id 9B5839864BD; Tue,  9 May 2023 03:56:46 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,315 +24,185 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DB1969864EE
-	for <virtio-dev@lists.oasis-open.org>; Tue,  9 May 2023 03:45:25 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 890A19864EE;
+	Tue,  9 May 2023 03:56:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 3vZi_1RaPBOPma1ccftF-Q-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683603882; x=1686195882;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=b/tgXildGYPyqkBdfkiMWxj+Tpw7GuTTkN7HnD3sUpQ=;
-        b=PXcvOelJrV8PJfQGa9eAiukHXVc2KO978yN/eQVwSAmRFDp9hmpz1u6P7OG185tiCB
-         lwXU0iGv96MSX4HdvRHzQTZheAKFFqti9JMB59LBjHI69tCNPLdegsVcQ12G2a6WxNey
-         6BHJVaT2hBgpIBgkVRtqX1hi85SemCojaq72v5xy7yoNCk3BDMKNoP9w8qm9WSHvGLr9
-         QPkzhJf+fOPKul4iwKD6LrPtHt5GAXopZX5ZCWlE1aU/PCYKujkZ1tBrk14QXwP90zSj
-         pQZRVAMzsL7hmuzTv70pqZUfSTOONjCxYCL0ZFhRLMF8Pfpo5UU4ZGOop/+TjnR2UGM5
-         Bz1g==
-X-Gm-Message-State: AC+VfDyqa4zDYPVdUw2tkIMedwgnGp+I0E0HyCaV8WsqMT8hbsAOyLwQ
-	s4Ck4yuGXHv5gcg6F2Y6/0HTDUo3nZUiY9gR7n99aKFS/n7nD0pNRDxEDliZlw+v0cuv3GhDVgv
-	dtHpfhI6HLNVnfRLF8J2FbNrnTuWmABCywDvDY6EDM6ID
-X-Received: by 2002:a19:f602:0:b0:4f1:8dfa:aec9 with SMTP id x2-20020a19f602000000b004f18dfaaec9mr243399lfe.69.1683603881697;
-        Mon, 08 May 2023 20:44:41 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6FneR99vJ5sEagOZTErpPVYVJEuml+WOgdMhtj6m2RMSfwJyqFtK0Itu8d9OcbskpYddG2R/530JOzdpZefgs=
-X-Received: by 2002:a19:f602:0:b0:4f1:8dfa:aec9 with SMTP id
- x2-20020a19f602000000b004f18dfaaec9mr243390lfe.69.1683603881289; Mon, 08 May
- 2023 20:44:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230506000135.628899-1-parav@nvidia.com> <CACGkMEt_2B68a+BZ4-vfeDf_eYj5ZhxrDNd6dxuiF85qr0yN2g@mail.gmail.com>
- <20230507093959-mutt-send-email-mst@kernel.org> <CACGkMEtfMbcu2OPsH6P2tA1aHh2FKygv=xkJ-e1XQzb62nE1vQ@mail.gmail.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=br2LF3PWpYEFQSiSlGgW8ef5EILhzJm8r+HElPpn32j/PVJfHrmxgtCupR6x3R3C6HVhrNuBetUz6czagvPf1u3y6areBPtXuMMRSgYEGQyBwRlr7EFdmGZNiId9Dv8hnYvzefQDWCTEwrTL0F62x+H4C7pY3Cy0ymUT4uPTJ4KpjZOInAE514qd0g5MtCVopJm+Bfd0pGOVjfOgYvl7LX+kpxpwM5d41emx/0GIBCxKNOxM8hLTUDWoEfwvGAukLIDgWTyBxCeb6GI3AaDjQq/q8pxlR5Qw/eaMWKa8fta6KGtWaDd32qCzZJZUUmKxJRkSTi3/mLe5YgOdiG4N9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0W3wq88j9PUlULDv5p4EOPSMsceNepvWhSNrSZLU0ao=;
+ b=EVS60pE0/jA50DvawAAgtRI62Y5bHlv+pIosgIZb+UMvgIVxZ0Ysn9MhrwDE1bZiYQU9ydC4UgiwAOuT6mooDjfCCYy11MRk1lEZzq9yiWXWAqLYKoTAnluGrzGSIoWXAtsuu7vDCeFkfj50DCj8uzZG6zuFnclhAHHmkk/HH5WtBqeR1OxMSWWu15dSg/OM2SxDm1zd0GZ31MpYzP4WDIzdgeN7I/SdysiazKgsaW/PMhq4d1CN71aE4ejXtp4Fqgs0QqLxchUAE1oBNnXWz88B22loo8wO1tpCfA6w9zaJqWYdYdiBAYf0O4OhrmwpjgQrcNQEg3LxvHD2uMrDfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: Jason Wang <jasowang@redhat.com>
+CC: "Michael S. Tsirkin" <mst@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
+	"sburla@marvell.com" <sburla@marvell.com>, Yishai Hadas <yishaih@nvidia.com>,
+	Maor Gottlieb <maorg@nvidia.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+ using AQ
+Thread-Index:
+ AQHZf637tzEcVLD5bUyVf2EjaUYU3K9Mhl4AgAJOSwCAANQugIAA9w4AgACx3QCAAADx0A==
+Date: Tue, 9 May 2023 03:56:38 +0000
+Message-ID:
+ <PH0PR12MB5481AC52CCAE9636E17C7565DC769@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230506000135.628899-1-parav@nvidia.com>
+ <CACGkMEt_2B68a+BZ4-vfeDf_eYj5ZhxrDNd6dxuiF85qr0yN2g@mail.gmail.com>
+ <20230507093959-mutt-send-email-mst@kernel.org>
+ <CACGkMEtfMbcu2OPsH6P2tA1aHh2FKygv=xkJ-e1XQzb62nE1vQ@mail.gmail.com>
  <b33fe999-8491-30b4-5021-589a2fe87398@nvidia.com>
-In-Reply-To: <b33fe999-8491-30b4-5021-589a2fe87398@nvidia.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 9 May 2023 11:44:30 +0800
-Message-ID: <CACGkMEsSJVG8mzuo3BH1xQzz5TyNbO+o3GcYwoXchcYVOczTTg@mail.gmail.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org, cohuck@redhat.com, 
-	david.edmondson@oracle.com, sburla@marvell.com, yishaih@nvidia.com, 
-	maorg@nvidia.com, virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+ <CACGkMEsSJVG8mzuo3BH1xQzz5TyNbO+o3GcYwoXchcYVOczTTg@mail.gmail.com>
+In-Reply-To:
+ <CACGkMEsSJVG8mzuo3BH1xQzz5TyNbO+o3GcYwoXchcYVOczTTg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH7PR12MB6660:EE_
+x-ms-office365-filtering-correlation-id: 7b79ea83-b3f5-4340-c149-08db50416458
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ C/vkdJ+H4qjlT9Ok8kKd6jTBbFt+va1fyIWS6Ptw5KZlkF+IDGtiDiFs8GTHvZ8d5AoJjJFm/VML/BmM2MOs28FLM8qAcOiXG/LrxHJ4LG4pmdQF4b6WXFMAWO///lM+8OrsI2f4Jx2i7xapNOgkODXe64lo2V6jCM65PtCQNTME5DYySIiJxFZ+85CX+tjaLi92EbkcC0TYJNQZHV4GSDHuLQd9idG/pRt+PvBw4VyWbAiNW8jSQAMcJTOLANGBueAAFGEKi4TQLI2TE3MaqXJQ5cxdKcG4evsy1ewKFeUlgQKPqrTJIV8KGFe3ixWhAv7whrKhCf3Vvn0HArNCEHi4MfyvKZNMz62GmxdaRHziqxGFtJGhPi4mKQCrKt/Do9WS6A7vKXog4jMhj5I4tnvLaRdvG2h+56OXzbehCd0Vx9s3BfMTMKrv4LzK/lxZoRNq6TD6ih5LyzIxWejBHD7PQ4turO5zvZbJUWc06xSkY6oqQ+IGWCLNGTTp0YQ+FuvhFE2qGcKR9X2p0yKQ6YO0DIe779r7gQWWfgR5IU93KJIdkctstuWm2RPRmX5fPJwXcEK1buDrV2SekEFxMra1UXjSrRz6w0P4E0C8uFuf73s6wghHvnHrmIFah5di
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(396003)(376002)(136003)(451199021)(86362001)(66476007)(33656002)(54906003)(66946007)(316002)(478600001)(76116006)(66556008)(66446008)(64756008)(6916009)(4326008)(7696005)(55016003)(5660300002)(52536014)(2906002)(71200400001)(41300700001)(8676002)(8936002)(122000001)(38100700002)(38070700005)(186003)(26005)(107886003)(9686003)(6506007)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?SjlHUTFPc1RpNFU2RHhHM3RURTVNbGF5VDFHcWw4T2lTbUVuVzBPQXUzTjNx?=
+ =?utf-8?B?WDdKZHBpTlo1LzBRU3JqRWdLSm1QcC91Q1dwNFpKQ2ROc1ZyYTFxWWpCSGgy?=
+ =?utf-8?B?OUltMGRsOGQ1NVU5MmxsMlNHNC9jSVllYjA2OTQ1UFVHMEtEM2ZJN1RnQ0ZL?=
+ =?utf-8?B?aDBQeFYzaXN1TGY0d1JDWFpTdGF1WVZMUUwxcEJlQ09NWHdSR0VwUlVlSmk2?=
+ =?utf-8?B?UjVwQ0ZxWFQvNGYrZmFIWmN0bFVTUDhqekJ4bDVlUmluclhmV0hKUTIvRjJy?=
+ =?utf-8?B?bUpvc1dtcnlqTGJVUnVPcVN5ME9sWTBPUnZsTFhNejRJY0NGZUJPMHVPUjBm?=
+ =?utf-8?B?OWVRL25kTGo1bFBBNmE4YVA5K2xhZ1VGUllPT28yenJnRzM1SEY2VW9YY01s?=
+ =?utf-8?B?cXNaWVVZdWlWMWh0RGNwQzF0bWV1ZzZxN0t1Q1UzOVRZOWxldTdua2FTVlVz?=
+ =?utf-8?B?ZEpjeDBNejZjVGdvd1JhWnNoMnZleXVLTG8xVTQ5KzR1VEpseDlvWDJvaXIz?=
+ =?utf-8?B?V2tTRmNtZ2dnVVlkYjlidlQ0YkJtT0ZPQTFsc1lUaUZiU0dEdGp1a01VdFNt?=
+ =?utf-8?B?SS9Nd25vNHBJQkVVakRJZWtITXFIVVByOUU4TkltYU44dGc0dlpLMDZQamE0?=
+ =?utf-8?B?NzhKU2VpTUNkVDlwY0EzNlBPYXlDbDhnalJwM3VqR1U5RENFc1p0cmxKbzZt?=
+ =?utf-8?B?T1lyRTdwK0xVTHlYVFgxeURiTXpJRDl5RDlDMFU4dEV0Mk45aTY5MUx0UTZC?=
+ =?utf-8?B?YklpVmp1TUNzRkZaeEtZc1ZncVplYU1OT24zUUVDd2NEVjIydWJzNFNkRWhO?=
+ =?utf-8?B?V0xmd0pCM0dRWUlVUjFLckE1L3ZtRlp4NENTdnlidDV2Wk1sYjI1cFpIdG04?=
+ =?utf-8?B?WWs1dGwvL29VYStwakhmOWVkdThVZ0xTNkVGOUNWM1AxeFkvd2lkbzJVaE82?=
+ =?utf-8?B?cjFNeExlU0dPajVpY2tBRkptRStielBzdHdJRDNDalkyQ01QYjc1QnN2NWtM?=
+ =?utf-8?B?Zlh1bWdBckgyUDlJNlNueTZVc1BBVSt5Mzl1cE1IZFhkTmJpQW5pdWFMTHYz?=
+ =?utf-8?B?ZkFFTVNieWtoNkNXMWZNOWZ0NitncUJWaVJRblJrUnpJTlJqUWNBMGxHQVBr?=
+ =?utf-8?B?NjdUYncxSVRlN0ZFK1VTQVNOT1BFVmh2S05TbmRoc0FGQWNVb2JYVCtmNlRz?=
+ =?utf-8?B?Qzl1aDMrZmRqamxUOWo4c00wTlhJVUFoRElScjRSTW4xam15RlF1Y1d6aUh2?=
+ =?utf-8?B?YnByS3RidmhWbXU4a3EzWnRZREU5aE9MWVZJczhZVkNpbTlCczRUeXhvTGdh?=
+ =?utf-8?B?YnIwdTVsR3kwL2tJRXpPNm9xdDlUa210dmt4UWppS3hnajl6NnpRcmxkZzBs?=
+ =?utf-8?B?OHVmUjNYSGRmeVFpRHFVVHpuZTJvZUg1QnAvT3BIRlo5TzNVV2VYZ21jblVt?=
+ =?utf-8?B?bEhZRUVTQ2UxekMyU213Z1NmOHR2aU1ZU0FmbHM3MElCOFluMFlxKzZCZGtt?=
+ =?utf-8?B?UlJOMjc2ZU9yKzZBT2MxUEx5cERiU21LOGY2Q2NLWUs2dzd2M20vTkdFNWxw?=
+ =?utf-8?B?NTd3VWRsTTY2ZUc3Wmt5d0VaOGtRa1hURTJLQzczOHp6UVpRQ1ljNW5BWEVl?=
+ =?utf-8?B?eDlNWjVrWFk3OVNjbGp4OXNGYUhYamFTSHJITjNQdkZCK3VQVUFtM0dWeUlV?=
+ =?utf-8?B?cWIxeVliQUxzZTA2cUlSUkViUVFjbnE2RHJyNGxGR2x5aXFNWmJ5RFV1UGdn?=
+ =?utf-8?B?ZW92c05mMnl5VEx6L3JLK3MzTU5tYmVmN09Fd082RzNvaXRmSEZ2NjYzU2Uv?=
+ =?utf-8?B?WXAyYVZ4R1RLUUVUQXhYZ0xUWjRnSnVINy9HZkMyUHhHbkhhWFFFMytVdlNV?=
+ =?utf-8?B?NTdUK0hibGh4WVdhMHdvcmRRNDJpQ2dXMkRxK2FoWVVsSnMwZDlQekthekpS?=
+ =?utf-8?B?SXo0WS90MWVtZ25VMkZSTnBkK1RpYUMvZ1BrejZLM1lKNXlOUkJ3QUFWOXFG?=
+ =?utf-8?B?VVVPcldaQ0NxaVp6SVJTNUgxb3FLSHhXeDgvMDF4ZkRLMlV5UUQwOThwc3ZP?=
+ =?utf-8?B?ZkpabkNNVDlUY1NJZVdpNFp2WStQUmFVeG8vYXVMb0ZqQ2VDdWp6ZnNoRitl?=
+ =?utf-8?Q?QVsA=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b79ea83-b3f5-4340-c149-08db50416458
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2023 03:56:38.9658
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fBQk+nQwCZl4IeC3brmRiu9Ha64mszYdgPsM7m+MJpo5H43v7y8mQ/gN/Z6sf5Yju+KvNm6KVnd5j0JNBfOTig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6660
+Subject: [virtio-dev] RE: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
  using AQ
 
-On Tue, May 9, 2023 at 1:08=E2=80=AFAM Parav Pandit <parav@nvidia.com> wrot=
-e:
->
->
->
-> On 5/7/2023 10:23 PM, Jason Wang wrote:
-> > On Sun, May 7, 2023 at 9:44=E2=80=AFPM Michael S. Tsirkin <mst@redhat.c=
-om> wrote:
-> >>
-> >> On Sat, May 06, 2023 at 10:31:30AM +0800, Jason Wang wrote:
-> >>> On Sat, May 6, 2023 at 8:02=E2=80=AFAM Parav Pandit <parav@nvidia.com=
-> wrote:
-> >>>>
-> >>>> This short series introduces legacy registers access commands for th=
-e owner
-> >>>> group member PCI PF to access the legacy registers of the member VFs=
-.
-> >>>>
-> >>>> If in future any SIOV devices to support legacy registers, they
-> >>>> can be easily supported using same commands by using the group
-> >>>> member identifiers of the future SIOV devices.
-> >>>>
-> >>>> More details as overview, motivation, use case are further described
-> >>>> below.
-> >>>>
-> >>>> Patch summary:
-> >>>> --------------
-> >>>> patch-1 adds administrative virtuqueue commands
-> >>>> patch-2 adds its conformance section
-> >>>>
-> >>>> This short series is on top of latest work [1] from Michael.
-> >>>> It uses the newly introduced administrative virtqueue facility with =
-3 new
-> >>>> commands which uses the existing virtio_admin_cmd.
-> >>>>
-> >>>> [1] https://lists.oasis-open.org/archives/virtio-comment/202305/msg0=
-0112.html
-> >>>>
-> >>>> Usecase:
-> >>>> --------
-> >>>> 1. A hypervisor/system needs to provide transitional
-> >>>>     virtio devices to the guest VM at scale of thousands,
-> >>>>     typically, one to eight devices per VM.
-> >>>>
-> >>>> 2. A hypervisor/system needs to provide such devices using a
-> >>>>     vendor agnostic driver in the hypervisor system.
-> >>>>
-> >>>> 3. A hypervisor system prefers to have single stack regardless of
-> >>>>     virtio device type (net/blk) and be future compatible with a
-> >>>>     single vfio stack using SR-IOV or other scalable device
-> >>>>     virtualization technology to map PCI devices to the guest VM.
-> >>>>     (as transitional or otherwise)
-> >>>>
-> >>>> Motivation/Background:
-> >>>> ----------------------
-> >>>> The existing virtio transitional PCI device is missing support for
-> >>>> PCI SR-IOV based devices. Currently it does not work beyond
-> >>>> PCI PF, or as software emulated device in reality. Currently it
-> >>>> has below cited system level limitations:
-> >>>>
-> >>>> [a] PCIe spec citation:
-> >>>> VFs do not support I/O Space and thus VF BARs shall not indicate I/O=
- Space.
-> >>>>
-> >>>> [b] cpu arch citiation:
-> >>>> Intel 64 and IA-32 Architectures Software Developer=E2=80=99s Manual=
-:
-> >>>> The processor=E2=80=99s I/O address space is separate and distinct f=
-rom
-> >>>> the physical-memory address space. The I/O address space consists
-> >>>> of 64K individually addressable 8-bit I/O ports, numbered 0 through =
-FFFFH.
-> >>>>
-> >>>> [c] PCIe spec citation:
-> >>>> If a bridge implements an I/O address range,...I/O address range wil=
-l be
-> >>>> aligned to a 4 KB boundary.
-> >>>>
-> >>>> Overview:
-> >>>> ---------
-> >>>> Above usecase requirements can be solved by PCI PF group owner acces=
-sing
-> >>>> its group member PCI VFs legacy registers using an admin virtqueue o=
-f
-> >>>> the group owner PCI PF.
-> >>>>
-> >>>> Two new admin virtqueue commands are added which read/write PCI VF
-> >>>> registers.
-> >>>>
-> >>>> The third command suggested by Jason queries the VF device's driver
-> >>>> notification region.
-> >>>>
-> >>>> Software usage example:
-> >>>> -----------------------
-> >>>> One way to use and map to the guest VM is by using vfio driver
-> >>>> framework in Linux kernel.
-> >>>>
-> >>>>                  +----------------------+
-> >>>>                  |pci_dev_id =3D 0x100X   |
-> >>>> +---------------|pci_rev_id =3D 0x0      |-----+
-> >>>> |vfio device    |BAR0 =3D I/O region     |     |
-> >>>> |               |Other attributes      |     |
-> >>>> |               +----------------------+     |
-> >>>> |                                            |
-> >>>> +   +--------------+     +-----------------+ |
-> >>>> |   |I/O BAR to AQ |     | Other vfio      | |
-> >>>> |   |rd/wr mapper  |     | functionalities | |
-> >>>> |   +--------------+     +-----------------+ |
-> >>>> |                                            |
-> >>>> +------+-------------------------+-----------+
-> >>>>         |                         |
-> >>>>    +----+------------+       +----+------------+
-> >>>>    | +-----+         |       | PCI VF device A |
-> >>>>    | | AQ  |-------------+---->+-------------+ |
-> >>>>    | +-----+         |   |   | | legacy regs | |
-> >>>>    | PCI PF device   |   |   | +-------------+ |
-> >>>>    +-----------------+   |   +-----------------+
-> >>>>                          |
-> >>>>                          |   +----+------------+
-> >>>>                          |   | PCI VF device N |
-> >>>>                          +---->+-------------+ |
-> >>>>                              | | legacy regs | |
-> >>>>                              | +-------------+ |
-> >>>>                              +-----------------+
-> >>>>
-> >>>> 2. Virtio pci driver to bind to the listed device id and
-> >>>>     use it as native device in the host.
-> >>>>
-> >>>> 3. Use it in a light weight hypervisor to run bare-metal OS.
-> >>>>
-> >>>> Please review.
-> >>>>
-> >>>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
-> >>>> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> >>>>
-> >>>> ---
-> >>>> changelog:
-> >>>> v1->v2:
-> >>>> - addressed comments from Michael
-> >>>> - added theory of operation
-> >>>> - grammar corrections
-> >>>> - removed group fields description from individual commands as
-> >>>>    it is already present in generic section
-> >>>> - added endianness normative for legacy device registers region
-> >>>> - renamed the file to drop vf and add legacy prefix
-> >>>> - added overview in commit log
-> >>>> - renamed subsection to reflect command
-> >>>
-> >>> So as replied in V1, I think it's not a good idea to invent commands
-> >>> for a partial transport just for legacy devices. It's better either:
-> >>>
-> >>> 1) rebase or collaborate this work on top of the transport virtqueue
-> >>>
-> >>> or
-> >>>
-> >>> 2) having a PCI over admin virtqueue transport, since this proposal
-> >>> has already had BAR access, we can add config space access then it is
-> >>> self-contained so we don't need to go through every corner case like
-> >>> inventing dedicated commands to accessing some function that is
-> >>> duplicated with capabilities. It will become yet another transport an=
-d
-> >>> legacy support is just a good byproduct.
-> >>>
-> >>> Thanks
-> >>
-> >>
-> >> I thought so too originally. Unfortunately I now think that no, legacy=
- is not
-> >> going to be a byproduct of transport virtqueue for modern -
-> >> it is different enough that it needs dedicated commands.
-> >
-> > If you mean the transport virtqueue, I think some dedicated commands
-> > for legacy are needed. Then it would be a transport that supports
-> > transitional devices. It would be much better than having commands for
-> > a partial transport like this patch did.
-> >
-> >> Consider simplest case, multibyte fields. Legacy needs multibyte write=
-,
-> >> modern does not even need multibyte read.
-> >
-> > I'm not sure I will get here, since we can't expose admin vq to
-> > guests, it means we need some software mediation. So if we just
-> > implement what PCI allows us, then everything would be fine (even if
-> > some method is not used).
-> >
-> > Thanks
->
-> The fundamental reason for not accessing the 1.x VF and SIOV device
-> registers, config space, feature bits through PF is: it requires PF
-> device mediation. VF and SIOV devices are first class citizen in PCIe
-> spec and deserve direct interaction with the device.
-
-Unless I miss something obvious, SIOV requires mediation (or
-composition) for sure. Otherwise you break the compatibility.
-
->
-> Hence, the transport we built is to consider this in mind for the coming
-> future.
-
-For transport virtqueue, it's not specific to PCI. It could be used in
-a much broader use case.
-
-> So if each VF has its own configq, or cmdq, it totally make sense to me
-> which is bootstrap interface to transport existing config space interface=
-.
-> The problem is: it is not backward compatible;
-> Hence a device has no way of when to support both or only new configq.
-
-Providing compatibility in software is much more simpler than
-inventing new hardware interfaces. Isn't it? (e.g if we want to
-provide compatibility for VF on a SIOV device). And inventing a new
-hardware interface for compatibility might not always work, it may
-break the advantages of the new hardware (like scalability).
-
->
-> So eve growing these fields and optionally placement on configq doesn't
-> really help and device builder to build it efficiently (without much
-> predictability).
-
-Config queue is not the only choice, we have a lot of other choices
-(for example PASID may help to reduce the on-chip resources).
-
->
-> Instead of we say, that what exists today in config space stays in
-> config space, anything additional on new q, than its deterministic
-> behavior to size up the scale.
-
-Just to be clear, if we have PCI over adminq, VF's config space could
-be the minimal one for PCI spec complaint. The real config space is
-accessed via the admin virtqueue.
-
->
-> For example, a PCI device who wants to support 100 VFs, can easily size
-> its memory to 30 bytes * 100 reserved for supporting config space.
-
-Those capabilities (30 bytes) can be accessed via admin virtqueue. So
-we don't need to place them in the config space.
-
-> And new 40 bytes * 100 fields doesn't have to be in the resident memory.
->
-> If we have optional configq/cmdq for transport, than 30*100 bytes are
-> used (reserved) as 3000/(30+40) =3D 42 VFs.
->
-> Only if some VFs use configq, more VFs can be deployed.
-
-I don't understand here.
-
-> It is hard to
-> build scale this way. Therefore suggestion is to place new attributes on
-> new config/cmd/transport q, and old to stay as-is.
-
-Just to be sure we're on the same page. The proposal of both you and
-mine are based on the adminq for PF not VF. The reason is obvious:
-adminq per VF won't work without PASID, since it would have security
-issues.
-
->
-> The legacy infra is unfortunately is for the exception path due to the
-> history; hence they are different commands as Michael suggests.
->
-
-Thanks
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+PiBGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPg0KPiBTZW50OiBNb25kYXks
+IE1heSA4LCAyMDIzIDExOjQ1IFBNDQoNCj4gPiBUaGUgZnVuZGFtZW50YWwgcmVhc29uIGZvciBu
+b3QgYWNjZXNzaW5nIHRoZSAxLnggVkYgYW5kIFNJT1YgZGV2aWNlDQo+ID4gcmVnaXN0ZXJzLCBj
+b25maWcgc3BhY2UsIGZlYXR1cmUgYml0cyB0aHJvdWdoIFBGIGlzOiBpdCByZXF1aXJlcyBQRg0K
+PiA+IGRldmljZSBtZWRpYXRpb24uIFZGIGFuZCBTSU9WIGRldmljZXMgYXJlIGZpcnN0IGNsYXNz
+IGNpdGl6ZW4gaW4gUENJZQ0KPiA+IHNwZWMgYW5kIGRlc2VydmUgZGlyZWN0IGludGVyYWN0aW9u
+IHdpdGggdGhlIGRldmljZS4NCj4gDQo+IFVubGVzcyBJIG1pc3Mgc29tZXRoaW5nIG9idmlvdXMs
+IFNJT1YgcmVxdWlyZXMgbWVkaWF0aW9uIChvcg0KPiBjb21wb3NpdGlvbikgZm9yIHN1cmUuIE90
+aGVyd2lzZSB5b3UgYnJlYWsgdGhlIGNvbXBhdGliaWxpdHkuDQo+IA0KU0lPViBkb2VzIG5vdCBy
+ZXF1aXJlIG1lZGlhdGlvbi4NCkNvbXBvc2l0aW9uIGlzIG9wdGlvbmFsIGxpa2UgVkZzLg0KDQo+
+ID4NCj4gPiBIZW5jZSwgdGhlIHRyYW5zcG9ydCB3ZSBidWlsdCBpcyB0byBjb25zaWRlciB0aGlz
+IGluIG1pbmQgZm9yIHRoZQ0KPiA+IGNvbWluZyBmdXR1cmUuDQo+IA0KPiBGb3IgdHJhbnNwb3J0
+IHZpcnRxdWV1ZSwgaXQncyBub3Qgc3BlY2lmaWMgdG8gUENJLiBJdCBjb3VsZCBiZSB1c2VkIGlu
+IGEgbXVjaA0KPiBicm9hZGVyIHVzZSBjYXNlLg0KPiANCk1heSBiZS4NCk1vcmUgYmVsb3cuDQoN
+Cj4gPiBTbyBpZiBlYWNoIFZGIGhhcyBpdHMgb3duIGNvbmZpZ3EsIG9yIGNtZHEsIGl0IHRvdGFs
+bHkgbWFrZSBzZW5zZSB0bw0KPiA+IG1lIHdoaWNoIGlzIGJvb3RzdHJhcCBpbnRlcmZhY2UgdG8g
+dHJhbnNwb3J0IGV4aXN0aW5nIGNvbmZpZyBzcGFjZSBpbnRlcmZhY2UuDQo+ID4gVGhlIHByb2Js
+ZW0gaXM6IGl0IGlzIG5vdCBiYWNrd2FyZCBjb21wYXRpYmxlOyBIZW5jZSBhIGRldmljZSBoYXMg
+bm8NCj4gPiB3YXkgb2Ygd2hlbiB0byBzdXBwb3J0IGJvdGggb3Igb25seSBuZXcgY29uZmlncS4N
+Cj4gDQo+IFByb3ZpZGluZyBjb21wYXRpYmlsaXR5IGluIHNvZnR3YXJlIGlzIG11Y2ggbW9yZSBz
+aW1wbGVyIHRoYW4gaW52ZW50aW5nIG5ldw0KPiBoYXJkd2FyZSBpbnRlcmZhY2VzLiBJc24ndCBp
+dD8gKGUuZyBpZiB3ZSB3YW50IHRvIHByb3ZpZGUgY29tcGF0aWJpbGl0eSBmb3IgVkYgb24NCj4g
+YSBTSU9WIGRldmljZSkuIEFuZCBpbnZlbnRpbmcgYSBuZXcgaGFyZHdhcmUgaW50ZXJmYWNlIGZv
+ciBjb21wYXRpYmlsaXR5IG1pZ2h0DQo+IG5vdCBhbHdheXMgd29yaywgaXQgbWF5IGJyZWFrIHRo
+ZSBhZHZhbnRhZ2VzIG9mIHRoZSBuZXcgaGFyZHdhcmUgKGxpa2UNCj4gc2NhbGFiaWxpdHkpLg0K
+PiANCldoYXQgSSBwcm9wb3NlZCBiZWxvdyBpcyBuZXcgaGFyZHdhcmUgaW50ZXJmYWNlIGZvciBu
+ZXcgZmVhdHVyZXMuDQpOb3QgZm9yIGNvbXBhdGliaWxpdHkuDQpDb21wYXRpYmlsaXR5IGlzIGNv
+bWluZyBhdCBhIGNvc3Qgd2hpY2ggaXMgbm90IHNjYWxpbmcuDQpJZiB5b3UgYXR0ZW1wdCB0byBz
+Y2FsZSwgaXQgYnJlYWtzIHRoZSBmdXR1cmUgcGF0aCBmb3J3YXJkIHRvIGdvIHdpdGhvdXQgbWVk
+aWF0aW9uLg0KDQo+ID4NCj4gPiBTbyBldmUgZ3Jvd2luZyB0aGVzZSBmaWVsZHMgYW5kIG9wdGlv
+bmFsbHkgcGxhY2VtZW50IG9uIGNvbmZpZ3ENCj4gPiBkb2Vzbid0IHJlYWxseSBoZWxwIGFuZCBk
+ZXZpY2UgYnVpbGRlciB0byBidWlsZCBpdCBlZmZpY2llbnRseQ0KPiA+ICh3aXRob3V0IG11Y2gg
+cHJlZGljdGFiaWxpdHkpLg0KPiANCj4gQ29uZmlnIHF1ZXVlIGlzIG5vdCB0aGUgb25seSBjaG9p
+Y2UsIHdlIGhhdmUgYSBsb3Qgb2Ygb3RoZXIgY2hvaWNlcyAoZm9yIGV4YW1wbGUNCj4gUEFTSUQg
+bWF5IGhlbHAgdG8gcmVkdWNlIHRoZSBvbi1jaGlwIHJlc291cmNlcykuDQo+IA0KUEFTSUQgaXMg
+Zm9yIHByb2Nlc3MgaXNvbGF0aW9uIHNlY3VyaXR5IGNvbnN0cnVjdCwgaXQgaXMgbm90IGZvciB0
+cmFuc3BvcnRhdGlvbi4NCg0KPiA+DQo+ID4gSW5zdGVhZCBvZiB3ZSBzYXksIHRoYXQgd2hhdCBl
+eGlzdHMgdG9kYXkgaW4gY29uZmlnIHNwYWNlIHN0YXlzIGluDQo+ID4gY29uZmlnIHNwYWNlLCBh
+bnl0aGluZyBhZGRpdGlvbmFsIG9uIG5ldyBxLCB0aGFuIGl0cyBkZXRlcm1pbmlzdGljDQo+ID4g
+YmVoYXZpb3IgdG8gc2l6ZSB1cCB0aGUgc2NhbGUuDQo+IA0KPiBKdXN0IHRvIGJlIGNsZWFyLCBp
+ZiB3ZSBoYXZlIFBDSSBvdmVyIGFkbWlucSwgVkYncyBjb25maWcgc3BhY2UgY291bGQgYmUgdGhl
+DQo+IG1pbmltYWwgb25lIGZvciBQQ0kgc3BlYyBjb21wbGFpbnQuIFRoZSByZWFsIGNvbmZpZyBz
+cGFjZSBpcyBhY2Nlc3NlZCB2aWEgdGhlDQo+IGFkbWluIHZpcnRxdWV1ZS4NCj4gDQpZZWFoIEkg
+dW5kZXJzdG9vZCB3aGF0IHlvdSBhcmUgc2F5aW5nLiBXZSBkb27igJl0IHNlZSBhIHBhdGggZm9y
+d2FyZCB3aXRoIHN1Y2ggbWVkaWF0aW9uLg0KVkYgYW5kIFBGIHRvIGhhdmUgc2FtZSBsZXZlbCBv
+ZiBkaXJlY3QgYWNjZXNzIHRvIHRoZSBkZXZpY2UuDQoNCj4gPg0KPiA+IEZvciBleGFtcGxlLCBh
+IFBDSSBkZXZpY2Ugd2hvIHdhbnRzIHRvIHN1cHBvcnQgMTAwIFZGcywgY2FuIGVhc2lseQ0KPiA+
+IHNpemUgaXRzIG1lbW9yeSB0byAzMCBieXRlcyAqIDEwMCByZXNlcnZlZCBmb3Igc3VwcG9ydGlu
+ZyBjb25maWcgc3BhY2UuDQo+IA0KPiBUaG9zZSBjYXBhYmlsaXRpZXMgKDMwIGJ5dGVzKSBjYW4g
+YmUgYWNjZXNzZWQgdmlhIGFkbWluIHZpcnRxdWV1ZS4gU28gd2UgZG9uJ3QNCj4gbmVlZCB0byBw
+bGFjZSB0aGVtIGluIHRoZSBjb25maWcgc3BhY2UuDQo+IA0KU2FtZSwgU0lPViBhbmQgVkZzIGRv
+IG5vdCBwcmVmZXIgbWVkaWF0aW9uIGdvaW5nIGZvcndhcmQgaW4gdGhlIHVzZSBjYXNlcyB3ZSBj
+b21lIGFjcm9zcy4NCg0KPiA+IEFuZCBuZXcgNDAgYnl0ZXMgKiAxMDAgZmllbGRzIGRvZXNuJ3Qg
+aGF2ZSB0byBiZSBpbiB0aGUgcmVzaWRlbnQgbWVtb3J5Lg0KPiA+DQo+ID4gSWYgd2UgaGF2ZSBv
+cHRpb25hbCBjb25maWdxL2NtZHEgZm9yIHRyYW5zcG9ydCwgdGhhbiAzMCoxMDAgYnl0ZXMgYXJl
+DQo+ID4gdXNlZCAocmVzZXJ2ZWQpIGFzIDMwMDAvKDMwKzQwKSA9IDQyIFZGcy4NCj4gPg0KPiA+
+IE9ubHkgaWYgc29tZSBWRnMgdXNlIGNvbmZpZ3EsIG1vcmUgVkZzIGNhbiBiZSBkZXBsb3llZC4N
+Cj4gDQo+IEkgZG9uJ3QgdW5kZXJzdGFuZCBoZXJlLg0KPiANCkxldHMgZmlyc3QgY2xhcmlmeSB0
+aGUgbm9uLW1lZGlhdGVkIHBhc3N0aHJvdWdoIG1vZGVsIG9mIHRoZSBWRiBmaXJzdCB0aGFuIGNv
+bWUgdG8gYWJvdmUgc2NhbGUgZXhhbXBsZS4NCg0KPiA+IEl0IGlzIGhhcmQgdG8NCj4gPiBidWls
+ZCBzY2FsZSB0aGlzIHdheS4gVGhlcmVmb3JlIHN1Z2dlc3Rpb24gaXMgdG8gcGxhY2UgbmV3IGF0
+dHJpYnV0ZXMNCj4gPiBvbiBuZXcgY29uZmlnL2NtZC90cmFuc3BvcnQgcSwgYW5kIG9sZCB0byBz
+dGF5IGFzLWlzLg0KPiANCj4gSnVzdCB0byBiZSBzdXJlIHdlJ3JlIG9uIHRoZSBzYW1lIHBhZ2Uu
+IFRoZSBwcm9wb3NhbCBvZiBib3RoIHlvdSBhbmQgbWluZSBhcmUNCj4gYmFzZWQgb24gdGhlIGFk
+bWlucSBmb3IgUEYgbm90IFZGLiBUaGUgcmVhc29uIGlzIG9idmlvdXM6DQo+IGFkbWlucSBwZXIg
+VkYgd29uJ3Qgd29yayB3aXRob3V0IFBBU0lELCBzaW5jZSBpdCB3b3VsZCBoYXZlIHNlY3VyaXR5
+IGlzc3Vlcy4NCj4gDQpUaGUgY3VycmVudCBwcm9wb3NhbCBmb3IgbGVnYWN5IHNob3VsZCBiZSBz
+ZWVuIGFzIHNlcGFyYXRlIGFuZCBub3QgdG8gaW50ZXJtaXggd2l0aCBwZXIgVkYgYmFzZWQgY29u
+ZmlndXJhdGlvbiBxdWV1ZS4NCg0KYWRtaW52cS9jb25maWcvY29udHJvbCB2cSBwZXIgVkYgYW5k
+IFNJT1YgYm90aCBkZXZpY2VzIHdpbGwgd29yayB3aXRob3V0IFBBU0lEICh1bnJlbGF0ZWQgdG8g
+bGVnYWN5KS4NCkJlY2F1c2UgdGhleSBhcmUgbGlrZSBhbnkgb3RoZXIgcXVldWUsIHN1Y2ggYXMg
+dHhxLCByeHEsIGN2cS4gQWxsIG9mIHRoZXNlIHF1ZXVlcyBhcmUgbm9uLW1lZGlhdGVkIHRvZGF5
+IGZvciBQRiwgVkYgZGV2aWNlcy4NCihBbmQgc28gYWRkaXRpb25hbCBjb25maWdxIGZvbGxvd3Mg
+dGhlIG5hdHVyYWwgbW9kZWwgZm9yIGNvbmZpZyBzcGFjZSBhY2Nlc3MpLg0K
 
