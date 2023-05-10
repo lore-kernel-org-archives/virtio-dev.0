@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12637-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12638-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 418DEC77B7C
-	for <virtio-dev@archiver.kernel.org>; Wed, 10 May 2023 21:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2A6EC77B7D
+	for <virtio-dev@archiver.kernel.org>; Wed, 10 May 2023 21:48:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 78133370EE
-	for <virtio-dev@archiver.kernel.org>; Wed, 10 May 2023 21:33:30 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0C757728F
+	for <virtio-dev@archiver.kernel.org>; Wed, 10 May 2023 21:48:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 571D09865E1
-	for <virtio-dev@archiver.kernel.org>; Wed, 10 May 2023 21:33:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0164D9865E0
+	for <virtio-dev@archiver.kernel.org>; Wed, 10 May 2023 21:48:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3CB839865AB; Wed, 10 May 2023 21:33:30 +0000 (UTC)
+	id E98FA98631E; Wed, 10 May 2023 21:48:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,42 +24,34 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 295469865B0
-	for <virtio-dev@lists.oasis-open.org>; Wed, 10 May 2023 21:33:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CE9519865AB;
+	Wed, 10 May 2023 21:48:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: tgGbq1PyPUqqq1mheBq7_g-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683754407; x=1686346407;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zHYeZvBW9jpQpfASRfTmDjnO7YsmxLm4WS36TcwZgls=;
-        b=kNExNuJUqqZe6DJx2u6hcI+1uVI39F2YknL3I7WcxrCmdnOdOYoFBuzrCzrRBhnDmd
-         vT8o1OKvxCj12cVSHoBlOiVlzApPFNCvz/BN5TO/eeP61wsQO7dTGO8d7L0hhCXoM/J3
-         aNy9rhgrb0CIC66xDAgzRLgYs7C6K4tJ6pbUGOv3enrzP04nP4lygDsXCSqkf3+zKetz
-         IY2eG3nlmttF0LsV1YuAhUqCsPzDDyziluQyifZBf9AUXDHeGSkkkC2ACF1QGwFuyabe
-         i7afGxV+d5l9bpdxrem5BiQI07jiWGLC0VK/gnnkLee84KbUcWNlVumjA6l1H25l9AUf
-         z2ng==
-X-Gm-Message-State: AC+VfDxMT4wF2Y8pCQHE5GaSi6DljziTaOwNp+n+3jno/S8ReZ142tND
-	X95o+van6mmq/mpHo0FO5TNu864Tg/Dns4vxF/+qtIyc2WDY8Fm9mxxF7I1erZ/5LfI78rguzYi
-	Hkr5IJvYyVGkcpV80qB/JE757kCrc
-X-Received: by 2002:a05:600c:231a:b0:3f1:789d:ad32 with SMTP id 26-20020a05600c231a00b003f1789dad32mr13368645wmo.11.1683754406806;
-        Wed, 10 May 2023 14:33:26 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5VqAaqw9XSGh7/LkGDPp+Swh5YE/UJvV0FrVSuDGgpQ42fPpHVJLoRie94ntSL+KFlcAL8Hg==
-X-Received: by 2002:a05:600c:231a:b0:3f1:789d:ad32 with SMTP id 26-20020a05600c231a00b003f1789dad32mr13368634wmo.11.1683754406487;
-        Wed, 10 May 2023 14:33:26 -0700 (PDT)
-Date: Wed, 10 May 2023 17:33:21 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: Jason Wang <jasowang@redhat.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GNM4spc/6M1qWa/Ou9AFr7iqjf8gTIOzSzqVY/7VFrXGKWbGM3PBxehKGqqjr3sZmUoMmCpUlwwG4Zc3C2Vk8kNYKg1aRsgxHHDCgX3AVciF6N01YcqHZmTBaCv/lrxqgT3ZdFld4c75AXFUJcmRR9r8NXAAuUZ7dlrLUbsFIvefdbP8FcaWShXWZafi4HwIslyGw+NnmKUB3eslIyrE+a05F7CKuKMRuuxp0BWHC3/QRxyEYf1SDNeAlPSnSgJC7cvUkp/gW7uWI52Vv/vcGh+6sQr1wiLXoiEE3I1G+UfKA007PFZKWZkW92rLL9aRPcvpgQRYFlkJfFuEOqftNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=76m4X5Rybl3s0gOnM3WGof64C6gYu/b+Pm5UNGRUc0s=;
+ b=KAAeCxwEIk0RbcmGyertCd6aNX+LC0R0EWUI8L/Nl20qpwd17QSOolz+nbM6CWiWx/i4SfyvllfMCLuPOCe3i9wf9r8JU58nUHkrDH+ItWcXm+HaMfkr/wESM/BvmmcbOhZ74e/JTEArIeCdpm2eGCRjdSLj1U+EN8WcB1IQl/Jq/hDRfy9RG/QxF9ng9WHycqeSkwIyXDNh6O9ZUmv/3KtYC44CwOdU5KHpRZh/8l+c7rbuc5yBa47xswRW96zrLHY8wqnKWQIFHyB0MMvDrUbVdGEjbbKvv1XlDNXOiJHSZEztVyp9UqaKWZNQuKtAsCvNubaw1ZOlko80CNaACQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: Jason Wang <jasowang@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
 	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
-	"sburla@marvell.com" <sburla@marvell.com>,
-	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230510173301-mutt-send-email-mst@kernel.org>
+	"sburla@marvell.com" <sburla@marvell.com>, Yishai Hadas <yishaih@nvidia.com>,
+	Maor Gottlieb <maorg@nvidia.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+ using AQ
+Thread-Index:
+ AQHZf637tzEcVLD5bUyVf2EjaUYU3K9Mhl4AgAJOSwCAANQugIADYnEAgACpnQCAAAFGAIAAENkwgAA311CAAA/egIAAAXpw
+Date: Wed, 10 May 2023 21:48:22 +0000
+Message-ID:
+ <PH0PR12MB5481E74D5108C1F78B1C9F4FDC779@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230506000135.628899-1-parav@nvidia.com>
  <CACGkMEt_2B68a+BZ4-vfeDf_eYj5ZhxrDNd6dxuiF85qr0yN2g@mail.gmail.com>
  <20230507093959-mutt-send-email-mst@kernel.org>
@@ -69,133 +61,80 @@ References: <20230506000135.628899-1-parav@nvidia.com>
  <20230510121417-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481F030A76141320F03956EDC779@PH0PR12MB5481.namprd12.prod.outlook.com>
  <PH0PR12MB5481CEB307F413E53B03D502DC779@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230510173301-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230510173301-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BY5PR12MB4067:EE_
+x-ms-office365-filtering-correlation-id: 49529dfb-484b-4ca6-2b04-08db51a0469c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ I7HeZFL5bguzv4fzhEBSIuUbHIsHa0eqzVh+PCWGj5gOwILmCm+1FT1P4+5IMdZuK8QSCruiYDVgJO1t8PAUw5E0f/qvZo7Dcaj9HfbU3RSmwUoFeBVQum9cWy1W4v6YdoXggQjcYzEKzlJ4mXhBk0pSGn0v6NaNDcQMFsWyyh6zTOdhzbKPyr2vAZRubCggWPZz8IRxE0Kta6dkz51VKQM1wdKw2UCTpo/gkWBzCMuidQZi5Iykj+PrtEwaUJ2KRt3lwMALloauKEb/Ib91ZxQR8ByPXM9ombPcRhZMnRo1JvhDpHdk105eJ+H8tniyoWtGuKH3aVdZ1Xn1nrDeWARDSqw0N16VzvF3dF3lWBrHtulwbkv2u7QntGsIHVkONoCZlWlXFyT9CmWNCOwUa6rUMM1208Ml7sOK6gMN4Jnzo9CH4JfQxhjFwKDNJOcmh9qfb5Ik4gZWVS/VKVXZLupgkCbxrzH9t6Jp7V84ojJcRBMZEJuw2otlDucPkyzUVsmhnHLa3vXmN0mrRu3a7IG4awyhBJD5bSkgz/GBb+CXK+4rwkKeiUP2eW3+unWa5h8MAu25xK7UwVvHGeBAU5K+lVK+rxg5IX4UAZX4RTuJKnpj1ITLR5sWLwViW5Cw
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(376002)(39860400002)(366004)(451199021)(6916009)(54906003)(86362001)(38070700005)(316002)(71200400001)(66556008)(7696005)(4326008)(66946007)(66446008)(66476007)(64756008)(41300700001)(76116006)(5660300002)(8936002)(8676002)(52536014)(478600001)(186003)(107886003)(38100700002)(6506007)(2906002)(33656002)(4744005)(9686003)(122000001)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?EnSibXTxyUjSL9X3iv6MVFb25s5GNnvOEvG1EAnK+1H7irt3peRsBBmHzv9d?=
+ =?us-ascii?Q?ORmMpSeLL7tbn4mtlOJeXQsUM8trrAoMx+ggOJZe1UbOgwEGHwO2TRoKUQTp?=
+ =?us-ascii?Q?bSVMO3WOxnwexLVe3kUek1DaQs3LpOQuHQ7A8uo5g44kygl75sv/lJ2mECT3?=
+ =?us-ascii?Q?QLNeAG2jSKmoIXhjDPJEPvR9Wi8Fu+qPdbJDSpXMqqZyq+UGGAXI28A/9l+y?=
+ =?us-ascii?Q?lpPF0Qqy58La80O3CTUUUnUaI2Q+REWoJxmeMIqYpvqbSjTf+UgVcYkpnFwA?=
+ =?us-ascii?Q?hDFt8SoOQxAcDWOPvfef3Pa63w3K0CtF2spbiCAvrGs2behjLHF/m+LXM8sM?=
+ =?us-ascii?Q?Nrf6O1MpVYhr4d6w7piuvzBk+WW00N6dwe39Slli94EatHcVOSqAGlcuS4L2?=
+ =?us-ascii?Q?9C3DZ26AJOjZElQahbJwlF7DRAatT0oRxwOa1QVY0KOZuSAXEbrIcV+LFazy?=
+ =?us-ascii?Q?WAGlQfqjeEU8dWtRzBXchoWtqvyFA9+ZqIJD5pq5QcAXcG5LZeYSZvFYNWkx?=
+ =?us-ascii?Q?zMgacr5DfsbS1Jz7qr5tCZpvkMxMBLPZacoA2ogRCL5RZn5/P5TSSgIQaqc8?=
+ =?us-ascii?Q?3VzxLQGkW1Ln6bG7NU2VD8nmeA+H9DLvbvVw2CaYn/uTF72+ih9iJgmrBnGe?=
+ =?us-ascii?Q?rDt+DmmStg2d5ea/fhRZndCYbJOVvK+rOu/tZ1/DCcjLfVLuqhdwGzLTgN7U?=
+ =?us-ascii?Q?gl4+j8k9+LfHunG6wNMPprvHHEzm8a7XIW/wmeWOBDOo0j3esRjB1h5Gq1el?=
+ =?us-ascii?Q?u2N4O4OwpqlfaoHAh3ojnZ+/ZkN7VckVTVvHOeITn0DvLTjTYvHViOfTR/ko?=
+ =?us-ascii?Q?qOOjE2t+x91fX2r5+t00f59LihXShUEdxU14X8iZvR1/boUJ64P7emu7JOfK?=
+ =?us-ascii?Q?KS+TeFiEpjgD+nhWiGvK/FJGmH4ca9vsWkRxzC0sAUCbhGuCWQTb24XMKUEk?=
+ =?us-ascii?Q?/MnHizdUcRsCybjSvryhvVfcTc1NgVfQqYkZgeMjqx2A99zUnfuwVyats5pZ?=
+ =?us-ascii?Q?xj4nDvbvKNtz0ISLdyxuPD+7dgLR7Me9tDtNZzPQp6B6t8/Pzh6NGhRRj1sT?=
+ =?us-ascii?Q?pTzc/+zlVyDdOBQo3/QO+3lUVap7eOe1M3f4o2ymV5Zy9ZrpMB4daFOA06VS?=
+ =?us-ascii?Q?+hmVNLXyJvcQfV8f9LShaOu9ij2ROeqINZcJELmfJ8Czs1IRX87PXv3IYDdM?=
+ =?us-ascii?Q?KZ1qOKKFQhwrIDqHDkBo/1dL3fTmLXLIDPwPWAyOSipABc5jKN+j4cvAAi4m?=
+ =?us-ascii?Q?2annnl5CF57Vi+U534bDeUMZluWIu2MYIBJ+KnSy57qVnEupthYFo9SLCwYx?=
+ =?us-ascii?Q?hqSJT38Z3CjnJZqwX4yGvbUE+ITHSuHhamW5OS/aRMiq+UVgikUaTFCqYTgj?=
+ =?us-ascii?Q?A7lyVnHlN65EmLBFeP6HKOuA/1DHBtyA2KGJR3iBmDsRkQhZls1+/h0oEQTb?=
+ =?us-ascii?Q?/VKapxpsmAPJQbcn7YGGbQvO4UITcRC1gAok1Pynx5Ud1IuYq2AjSduW5WrT?=
+ =?us-ascii?Q?pa2SPCRakf0Gz1Q47rBHn2IqUCfpCv8l/ZaC37dxYLi4wa6rn8NnImjT2Gz4?=
+ =?us-ascii?Q?CttE7eVVfU0kypaC5D0LOsTyCGDv6gAkQoRKACVEqFwUGjSp7furGq+jAnaS?=
+ =?us-ascii?Q?TPQUgniQB3ncpPwLdTpyCxg=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481CEB307F413E53B03D502DC779@PH0PR12MB5481.namprd12.prod.outlook.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49529dfb-484b-4ca6-2b04-08db51a0469c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2023 21:48:22.4208
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LeheAKKALOL9cOeWaErwsuTJ27glbwi56KPiuSQY5HsuYmf9Be8TYjSk5OGhx58sPhdUoZk5JNaDUJ/PYbA8pA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4067
+Subject: [virtio-dev] RE: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
  using AQ
 
-On Wed, May 10, 2023 at 09:08:44PM +0000, Parav Pandit wrote:
-> Hi Jason, Michel,
-> 
-> > From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
-> > open.org> On Behalf Of Parav Pandit
-> > Sent: Wednesday, May 10, 2023 1:34 PM
-> > 
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Wednesday, May 10, 2023 12:16 PM
-> > >
-> > > On Wed, May 10, 2023 at 12:11:50PM -0400, Parav Pandit wrote:
-> > > >
-> > > >
-> > > > On 5/10/2023 2:04 AM, Michael S. Tsirkin wrote:
-> > > > > On Mon, May 08, 2023 at 10:23:39AM +0800, Jason Wang wrote:
-> > > > > > > I thought so too originally. Unfortunately I now think that
-> > > > > > > no, legacy is not going to be a byproduct of transport
-> > > > > > > virtqueue for modern - it is different enough that it needs dedicated
-> > commands.
-> > > > > >
-> > > > > > If you mean the transport virtqueue, I think some dedicated
-> > > > > > commands for legacy are needed. Then it would be a transport
-> > > > > > that supports transitional devices. It would be much better than
-> > > > > > having commands for a partial transport like this patch did.
-> > > > >
-> > > > > OK I am beginning to get what you are saying.  So your criticism
-> > > > > is
-> > > > > this: what if device supports vq transport for modern, and we want
-> > > > > to build a transitional device on top.  how will that look. yes?
-> > > > > A reasonable thing to include at least in the commit log. Parav?
-> > > > >
-> > > > I am still trying to understand what is "vq transport for modern"?
-> > > > Do you mean transporting currently defined config space access over vq?
-> > > > If so, is this VQ belong to the guest or hypervisor?
-> > >
-> > > https://lore.kernel.org/all/20220826100034.200432-2-
-> > > lingshan.zhu%40intel.com/t.mbox.gz
-> > 
-> > The gz link is not accessible.
-> > But I got the right link [1].
-> > 
-> > [1] https://lore.kernel.org/all/20220826100034.200432-2-
-> > lingshan.zhu@intel.com/
-> > 
-> > 1. Above patch cover letter [1] is missing the basic objective/problem
-> > statement.
-> > i.e. why a transport virtqueue is needed?
-> > But I probably get the idea of [1] as we did the AQ.
-> > 
-> > 2. Commit log says about
-> > a. querying resource of management device (aka group owner in AQ now) b.
-> > creating and destroying the managed device  (aka group owner creating group
-> > member devices) c. configure the managed device (aka group owner
-> > configuring/composing group member devices such as VFs, SFs, SIOV).
-> > 
-> > So, all above 2.a to 2.c belongs to the admin group owner and group
-> > management commands like how it is defined in the AQ proposal.
-> > 
-> > So, 3 out of the 4 motivations are achieved by AQ proposal.
-> > This AQ belongs to the hypervisor. I am clear on this part.
-> > 
-> > 4th point in cover letter is: "config virtqueues of the managed device".
-> > 
-> > This work belongs to the driver -> device direct communication using a queue
-> > from driver to device.
-> > So, I imagine this work can be done using a queue by the guest driver and
-> > serviced by the device like how a guest driver configures the queue today
-> > without any mediation.
-> > For PCI, MMIO transport, surely this can be done by the PCI device directly
-> > being is PF, VF or SIOV.
-> > (Instead of config register, using a new queue interface). Looks fine to me.
-> > 
-> > Can this new cfg queue mediated like CVQ that is done in a sw? May be yes.
-> > Should it be always mediated when it is of VF, SIOV Device? Mostly no because
-> > it is yet another VQ for PF, VF, SIOV.
-> > 
-> > I am yet to parse rest of the 4 patches, please give me some time to review it.
-> 
-> I went over the past work of [1], [2].
-> 
-> [1] https://lore.kernel.org/all/20220826100034.200432-2-lingshan.zhu@intel.com/
-> [2] https://lists.oasis-open.org/archives/virtio-comment/202208/msg00141.html
-> 
-> The "virtio q as transport" in [2] is bit misleading as its only role is to transport the _registers_ of the SIOV_R1 device through its parent PF.
-> Rest of the work is the pure management work to manage the life cycle of SIOV devices (create/delete/configure/compose).
-> 
-> And the motivation is also clear is to provide composing a virtio device for the guest VM for the backward compatibility for 1.x part of the specification.
-> 
-> It seems fine and indeed orthogonal to me that: it is for backward compatibility for already defined config fields for existing guest VM driver.
-> 
-> It does not conflict with the cfgq/cmdq idea whose main purpose is for the new config fields, new use cases that doesn't require any mediation.
-> Such cfgq works across PF, VF, SF/SIOV devices in uniform way without mediation.
-> It also scales device register memory also very well in predictable way.
-> 
-> The registers and feature bits access described in [2], can certainly be done using new non_legacy new AQ commands.
-> Both legacy and non-legacy command have different semantics as Michael mentioned.
-> 
-> The AQ semantics that Michael did as opposed to "virtqueue as transport" fits well for the use case described in [1].
-> 
-> There are changes on going in MSI-X area and SIOV, so you might want to wait for it.
-> Or proposed command in [1] should be tagged as siov_r1, then things will be cleaner.
-> 
-> With that I don't see legacy 3 commands anyway conflict with [1].
-> Some commands functionality is common between [1] and this proposal.
-> But that's how the legacy is. It is confined to legacy emulation.
-> So [1] can be done as follow_on to AQ and these series.
-> 
-> A small note about [2].
-> virtio_transportq_ctrl_dev_attribute should be detached from CREATE call and split to two commands.
-> So that VF and SF/SIOV can both utilize it. 
-> SF/SIOV_R1 can use the creation and config part.
-> VFs will use only the device features + config space.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Wednesday, May 10, 2023 5:33 PM
+>=20
+> I think some kind of "enable" command for VFs might have value. No?
 
-I think some kind of "enable" command for VFs might have value. No?
-
--- 
-MST
-
+Unlike the SIOV devices, VFs life cycle is under PF control, not sure how t=
+he enable command can help.
+After SR-IOV is enabled, VF is short of enabled, it may not be ready, but t=
+hat is guarded by the device reset flow.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
