@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12646-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12647-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9A162C77B7F
-	for <virtio-dev@archiver.kernel.org>; Thu, 11 May 2023 11:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4845DC77B7C
+	for <virtio-dev@archiver.kernel.org>; Thu, 11 May 2023 12:54:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B8B3B60047
-	for <virtio-dev@archiver.kernel.org>; Thu, 11 May 2023 11:35:33 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4A3CC8668E
+	for <virtio-dev@archiver.kernel.org>; Thu, 11 May 2023 12:54:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9D2899865EC
-	for <virtio-dev@archiver.kernel.org>; Thu, 11 May 2023 11:35:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 32AD99865F9
+	for <virtio-dev@archiver.kernel.org>; Thu, 11 May 2023 12:54:49 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 888959865CE; Thu, 11 May 2023 11:35:33 +0000 (UTC)
+	id 1D65D9865D0; Thu, 11 May 2023 12:54:49 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,121 +24,202 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 75AC69865DB
-	for <virtio-dev@lists.oasis-open.org>; Thu, 11 May 2023 11:35:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0A4F69865E0
+	for <virtio-dev@lists.oasis-open.org>; Thu, 11 May 2023 12:54:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: jlgq4jMRPNaTy_-e6NtnVg-1
+X-MC-Unique: zZ6qLWUDOrKAJVJw9zGHcQ-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683804929; x=1686396929;
+        d=1e100.net; s=20221208; t=1683809685; x=1686401685;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lZSBfXuFCGG+LmOZLKmSUzz6FTumra09/CTJfJIUl5Q=;
-        b=MDIoI28FtfwD9SSAESTr514EwaxhR1dhj2uhKz9AFugsqifbPXPF1lo/ON58hpMAXz
-         YRJc4HAwJkkRcdGpox9eGogonZ0dkKssI+kQcFEr9vs0sT02/gXKfGQs+eFwiMf1SBZD
-         fN7XKoYsozRMGUoJ9m83ThiX0+a5rx/691Ps3COfr0jAthiqICIUpT5W03dq2C9EZ9xo
-         AVbCOpEo7DyLyqjFSKdPvFpBhJWQkgCOO9gdt5DnChviOGbKytwPnvrx4rXfb8TUIbF1
-         NSoSx7kfUF1WxkXT6rwbtfrCAgEmhT6RIhbqba5+WkRLfkHQjnSpWDMcQ1oz6zzhOSSd
-         OTSA==
-X-Gm-Message-State: AC+VfDxTlHkCxgFtAnDc1GZYG8AsXF/3BR51x5UEVeOypyg3CGnY/5dd
-	3DhueauSzXiV5XmCGcfDd0S7fT11Y9lcA0AJB1J9H+6AaxSO8VH0gtwuMa9MYgsqwN7Kol+1Yjt
-	6JJrU1V7ualQQN4UzNPjovusICmzV
-X-Received: by 2002:adf:f407:0:b0:307:c1cb:425b with SMTP id g7-20020adff407000000b00307c1cb425bmr2744595wro.70.1683804929770;
-        Thu, 11 May 2023 04:35:29 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4zajKACV+/fdUTNWuZOa65upK7+xg5UW3Mw/jGg8pHje/ZAsY861Ej9VN2umwJdiO+oMyTJA==
-X-Received: by 2002:adf:f407:0:b0:307:c1cb:425b with SMTP id g7-20020adff407000000b00307c1cb425bmr2744558wro.70.1683804929483;
-        Thu, 11 May 2023 04:35:29 -0700 (PDT)
-Date: Thu, 11 May 2023 07:35:24 -0400
+        bh=8k5+aZE86sGUiGUD6r0E9sJ4ItGnt3aSoV1iKFEsiwA=;
+        b=S9Kk3RaqjNqkC6JzJ25x9WZM5qE87y11nayESwGp8vPI9+RFErCuQFhMSAedzPOV/T
+         c5LwgWWaGG48mIjBJBdyg06c67VWveuvo/qRhbcjzbxsee0u/MbjoW28XpvswSgo11AN
+         QMijJ5CnZgvK4h+tNgB4D3r0qrnHj3nsleWQ6lUPAcqsWv0uBCWaIYJkSROQhauPwyt5
+         uaHp7L3q6Jr48kYc8S9kgi3JBZr8628NoXZhBjBxNDLSckFSvJ8s2674358fADqVNDY0
+         r3hH/B/g7SM+DFjpCfCL1JpZc2icBaPBpn7mjbsLJS08h0FJRZQv2mXCxWVIaW8Q0o+0
+         F52A==
+X-Gm-Message-State: AC+VfDxXZEhRYJS5h7H3GrAItB9R1TlNd0FTHjSRZnO1F+YvbV+YOyUn
+	7JxsEflH7MDnOYTu5gvTC3Iz4S3VwExm33PHrbalWvghoEtO9+A5cKYczOYHyNiNThmNKScfi2I
+	7McJ/tM8peGjxch4V3YZUB/kRbrzN
+X-Received: by 2002:a5d:4685:0:b0:306:4063:1afe with SMTP id u5-20020a5d4685000000b0030640631afemr16703531wrq.71.1683809685007;
+        Thu, 11 May 2023 05:54:45 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5Ie1PgjJoVQ1ya0Rl+U/QguSka/mdtWQuC3nmFrzHSeCTYKHnTB80osR3KUMUNB8VFndHo1Q==
+X-Received: by 2002:a5d:4685:0:b0:306:4063:1afe with SMTP id u5-20020a5d4685000000b0030640631afemr16703502wrq.71.1683809684613;
+        Thu, 11 May 2023 05:54:44 -0700 (PDT)
+Date: Thu, 11 May 2023 08:54:39 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Jason Wang <jasowang@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
-	"sburla@marvell.com" <sburla@marvell.com>,
-	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230511073218-mutt-send-email-mst@kernel.org>
-References: <CACGkMEt_2B68a+BZ4-vfeDf_eYj5ZhxrDNd6dxuiF85qr0yN2g@mail.gmail.com>
+Cc: Parav Pandit <parav@nvidia.com>, virtio-dev@lists.oasis-open.org,
+	cohuck@redhat.com, david.edmondson@oracle.com, sburla@marvell.com,
+	yishaih@nvidia.com, maorg@nvidia.com,
+	virtio-comment@lists.oasis-open.org, shahafs@nvidia.com
+Message-ID: <20230511085205-mutt-send-email-mst@kernel.org>
+References: <20230506000135.628899-1-parav@nvidia.com>
+ <CACGkMEt_2B68a+BZ4-vfeDf_eYj5ZhxrDNd6dxuiF85qr0yN2g@mail.gmail.com>
  <20230507093959-mutt-send-email-mst@kernel.org>
  <CACGkMEtfMbcu2OPsH6P2tA1aHh2FKygv=xkJ-e1XQzb62nE1vQ@mail.gmail.com>
- <b33fe999-8491-30b4-5021-589a2fe87398@nvidia.com>
- <CACGkMEsSJVG8mzuo3BH1xQzz5TyNbO+o3GcYwoXchcYVOczTTg@mail.gmail.com>
- <PH0PR12MB5481AC52CCAE9636E17C7565DC769@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEu1oU0wzygicS0bApoWuRaWkWsPivKRiq-ghezB=hg+Fw@mail.gmail.com>
- <CACGkMEuqGtJP3vXoHrXOBgvPz3woo900+U9kYX1xZnM5h_qXWg@mail.gmail.com>
- <03c8f7ca-8235-a5a7-5367-b6fd59ad0447@nvidia.com>
- <CACGkMEv3XBXB_i_PUwxgvY8_UWipGVu8xuGQATp+kHOx3Vdnsg@mail.gmail.com>
+ <20230510014534-mutt-send-email-mst@kernel.org>
+ <CACGkMEvTs9oMewgrQpYZu1v1wdUXtxsvjqB6CPRf+y4C8EN_KQ@mail.gmail.com>
+ <20230510033812-mutt-send-email-mst@kernel.org>
+ <CACGkMEsp0i7EyyBBp06wJzrVBLNbH7MP_TT-j7b5c_yavgAmqw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEv3XBXB_i_PUwxgvY8_UWipGVu8xuGQATp+kHOx3Vdnsg@mail.gmail.com>
+In-Reply-To: <CACGkMEsp0i7EyyBBp06wJzrVBLNbH7MP_TT-j7b5c_yavgAmqw@mail.gmail.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v2 0/2] transport-pci: Introduce
- legacy registers access using AQ
+Subject: [virtio-dev] Re: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+ using AQ
 
-On Thu, May 11, 2023 at 03:20:52PM +0800, Jason Wang wrote:
-> On Thu, May 11, 2023 at 12:08 AM Parav Pandit <parav@nvidia.com> wrote:
+On Thu, May 11, 2023 at 03:04:40PM +0800, Jason Wang wrote:
+> On Wed, May 10, 2023 at 3:43 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> >
-> >
-> > On 5/10/2023 12:22 AM, Jason Wang wrote:
-> > > On Wed, May 10, 2023 at 11:51 AM Jason Wang <jasowang@redhat.com> wrote:
-> >
+> > On Wed, May 10, 2023 at 03:01:25PM +0800, Jason Wang wrote:
+> > > On Wed, May 10, 2023 at 2:05 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Mon, May 08, 2023 at 10:23:39AM +0800, Jason Wang wrote:
+> > > > > > I thought so too originally. Unfortunately I now think that no, legacy is not
+> > > > > > going to be a byproduct of transport virtqueue for modern -
+> > > > > > it is different enough that it needs dedicated commands.
+> > > > >
+> > > > > If you mean the transport virtqueue, I think some dedicated commands
+> > > > > for legacy are needed. Then it would be a transport that supports
+> > > > > transitional devices. It would be much better than having commands for
+> > > > > a partial transport like this patch did.
+> > > >
+> > > > OK I am beginning to get what you are saying.  So your criticism is
+> > > > this: what if device supports vq transport for modern, and we want to
+> > > > build a transitional device on top.  how will that look. yes?
 > > >
-> > > Just to make sure we are at the same page.
+> > > Yes. I think it needs to be done through the transport virtqueue
+> > > otherwise the transport is not self-contained.
+> >
+> > I mean, any feature can be done over transport vq.
+> >
+> > But there is value in adding legacy commands to an otherwise
+> > modern device without reworking it completely to
+> > switch to a different transport.
+> 
+> There's probably no need for a rework since legacy is not complicated.
+> More below.
+> 
+> >
+> >
+> > > > A reasonable thing to include at least in the commit log. Parav?
+> > > >
+> > > > You are also asking what if the device uses transport vq,
+> > > > and we want transitional on top of that.
+> > > > It's a fair question but I don't exactly get why would
+> > > > this legacy support feature be wanted for the vq transport
+> > > > and not for other transports.
 > > >
-> > > 1) if the hardware has configq and we need to make it work for current
-> > > virtio-pci driver, hypervisor needs to trap guest PCI access and
-> > > translate it to configq command. This means the hypervisor needs to
-> > > hide the configq from guests. In this case the configq needs a
-> > > dedicated DMA address which is what PASID can help.
+> > > Not sure I get the question, but all the existing transport support
+> > > legacy, if we want to have another, should the legacy support be a
+> > > must or not?
 > >
-> > > 2) if the hardware can report the device states, unless we want to
-> > > migrate L2 guest, hypervisor should hide it from L1, so PASID is
-> > > required to isolate the DMA for guest traffic and device state.
+> > This specific proposal is for tunneling legacy over admin vq.
+> > It can live alongside a normal modern VF, with hypervisor
+> > combining these to create a transitional device.
+> 
+> Exactly, but what I meant here is
+> 
+> If we decide to use the admin vq, is there any good reason to tie it
+> to PCI if we don't want to tunneling PCI over adminq?
+> 
+> Why not simply invent individual commands to access legacy facilities
+> like commands to access like what transport virtqueue did for modern
+> device?:
+> 
+> 1) device features
+> 2) driver features
+> 3) queue address
+> 4) queue size
+> 5) queue select
+> 6) queue notify
+> 7) device status
+> 8) ISR status
+> 9) config msix
+> 10) queue msix
+> 11) device configuration space
+> 
+> It focuses on the facilities instead of transport specific details
+> like registers (we don't even need legacy registers in this case), I
+> gives more deterministic behavior so we don't need to care about the
+> cross registers read/write.
+
+This needs thought, it is definitely more work.  Effort that could be
+maybe spent on new features.  What is the motivation
+here? supporting legacy mmio guests?
+
+
 > >
-> > A configq negotiates + discovers new fields for the PCI PF, VF, SF/SIOV
-> > devices over PCIe or other transports.
-> > So no need to hide/mediate for hw based devices, like cvq and like data vqs.
+> > > >
+> > > >
+> > > >
+> > > >
+> > > > > > Consider simplest case, multibyte fields. Legacy needs multibyte write,
+> > > > > > modern does not even need multibyte read.
+> > > > >
+> > > > > I'm not sure I will get here,
+> > > >
+> > > > What does this mean?
+> > >
+> > > I meant I don't get what the issue if "modern does not even need
+> > > multibyte read".
+> >
+> > parse error again. reword?
 > 
-> As discussed, I may misunderstand the function of the configq. If it
-> works like cvq, then yes. We don't need PASID.
+> I meant we need two sets of command for legacy and modern. We can
+> choose not to expose multibyte reads for modern commands.
 > 
-> But if we want to report device state via let's say migration q, it
-> requires PASID since it is used by the hypervisor.
+> >
+> > > >
+> > > > > since we can't expose admin vq to
+> > > > > guests, it means we need some software mediation. So if we just
+> > > > > implement what PCI allows us, then everything would be fine (even if
+> > > > > some method is not used).
+> > > > >
+> > > > > Thanks
+> > > >
+> > > > To repeat discussion on one of the previous versions, no it will not be
+> > > > fine because legacy virtio abuses pci in fundamentally broken ways.
+> > > > So yes you need a mediator on the host but even giving this
+> > > > mediator a chance to be robust on top of hardware
+> > > > means the hardware interface can not simply mirror legacy
+> > > > to hardware.
+> > > >
+> > > > For example, host mediator needs to trap writes into mac,
+> > > > buffer them and then send a 6 byte write.
+> > > > Now, pci actually does allow 6 byte writes, but legacy
+> > > > guests instead to 6 single byte writes for portability reasons.
+> > >
+> > > It's a known race condition, so PCI over adminq doesn't make it worse.
+> >
+> > it can however make it better - you can do a single 6 byte write command.
+> >
+> 
+> It would be tricky to detect when a legacy guest has finished writing
+> to the mac.
+> 
+> > > The mediator can just mirror what guests write over the admin
+> > > commands.
+> >
+> > and this "just" just isn't good enough, or we end up with hacks
+> > in hardware.
+> 
+> Yes but this "issue" exists in this proposal as well.
 > 
 > Thanks
-
-I don't exactly get this part. With SRIOV migration q normally would be
-part of the PF, accessing hypervisor memory.
-
-
-
-
-
+> 
 > >
-> > For vdpa kind of use case it can work like cvq mediation, which I
-> > believe is happening without PASID today.
-> >
-> > This publicly archived list offers a means to provide input to the
-> > OASIS Virtual I/O Device (VIRTIO) TC.
-> >
-> > In order to verify user consent to the Feedback License terms and
-> > to minimize spam in the list archive, subscription is required
-> > before posting.
-> >
-> > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > List help: virtio-comment-help@lists.oasis-open.org
-> > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> > List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> > Committee: https://www.oasis-open.org/committees/virtio/
-> > Join OASIS: https://www.oasis-open.org/join/
+> > > Thanks
+> > >
+> > > > --
+> > > > MSr
+> > > >
 > >
 
 
