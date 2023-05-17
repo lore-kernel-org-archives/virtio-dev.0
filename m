@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12747-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12748-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5530C77B75
-	for <virtio-dev@archiver.kernel.org>; Wed, 17 May 2023 11:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 60381C77B75
+	for <virtio-dev@archiver.kernel.org>; Wed, 17 May 2023 11:43:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id D71642AC5C
-	for <virtio-dev@archiver.kernel.org>; Wed, 17 May 2023 11:05:29 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 77A591FF8A
+	for <virtio-dev@archiver.kernel.org>; Wed, 17 May 2023 11:43:19 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3DACD9865ED
-	for <virtio-dev@archiver.kernel.org>; Wed, 17 May 2023 11:05:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 52D249865BA
+	for <virtio-dev@archiver.kernel.org>; Wed, 17 May 2023 11:43:19 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0E2A6986343; Wed, 17 May 2023 11:05:29 +0000 (UTC)
+	id 368F1986343; Wed, 17 May 2023 11:43:19 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,188 +24,322 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AD2B8986369
-	for <virtio-dev@lists.oasis-open.org>; Wed, 17 May 2023 11:04:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 18E53986369
+	for <virtio-dev@lists.oasis-open.org>; Wed, 17 May 2023 11:43:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1684321448.112000
-X-TM-MAIL-UUID: 2f652bb6-03d3-4443-9322-5eb72cec0e7f
+X-TM-MAIL-RECEIVED-TIME: 1684323795.580000
+X-TM-MAIL-UUID: 43e18823-e96a-4ac1-921f-df65a679380f
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b9/dPC3a1RfjcpKHJGnM1cxh3hDiCpIV/2QyonikWjqlWan0UO9T5x7T92Aavg++2C/GyxVCn65e9zHdwuE2CqjaiVF7BD2PGfFyM9cUWa4fggcZ2FMhrSAfq4fZLzJdq2owwMOEZDIN+21KfB+WCpFKhUdWjKAv3Aax2vIezFEDYwPw/TzD26hBlERt6hfDwUFFuWHogF9bnbX3XFKJ5QOiINJvudKbbZ3O/B/eGcAxd0CrrfGrcdvEQUqvLUk8ROqKzYFfKYhtyz7k9KGnj4f4ZL8C0cb3qlIye9gA1hNQ9JxspJeiRT5FvW0SAU6HPJkSzklokIzFEMCB9kEGyA==
+ b=A115MMsZQ3NmJXV8KZgsW+yfDyOVo/jwHb6T8pE71qwBGjjTI95h2v5FBHNi0PyeSqeVZ7rQhZnEBsq4I88/Gv/X0/8GCL6IGDV3RTjryATJwmCyYZWkzV/3BHDH44lEyHVfGryEO9B5gl52FMjZsTcv+uILMZDlPVgEApFeQ0+IAAR1BWmEEhxpoLc6qU9FQ+9rwqYZE++Z+lMpvidyZ+xl2mVvbrNIw74ZGbYhRtl9e6h/DfcCnsNEB1IhaugFe7iQyb76aCxL1xNeinIM+MCHiVohjD2zYlXElVoGqyDyml3nv4SySwx1RupCuao6HH6tlMm/9SLS59IHWoUnfQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QcHfkYYcOxYVizQRGAi5e3wuy8nOR6agjtzdUoogsAI=;
- b=GkBAl88FwMmcZl/Z/PgAwgPEnLc/+epDWpt6MPxGO+YwoBI3Cv+Xfbh9X0MygyTXfVKBtcOXdrgBCh19EhiSsf/NW9v+Ejq3+2Ob9bpVfkd//yzeckArzs2eAaT3HX0fSTZC3hRErDgPnH4+IVIpTpZoiLA/GbFXZVTb2VY7a1xFYJEpiK6h82PclhLNqMl9/fGCU7kUCGdjGXvmMqegkvPQD4KzPujCDr7zn3kYdCd1T8L4r8dDuTNzgFHZ9As2G/QSo2CGenYetpzWME47ozyc8R/coKHAGhyngi513otKSPsG8nxtLvxvJ+8uctUC5TYh1wKmg4sJvVQjJ65bww==
+ bh=ETHlDGDJ9pMTX45FkafU0+hb1doMR1mTLiBsqHKT5Zw=;
+ b=Rc9deBOGWJeaqCz7IWnhFEo8IW9DGPcLIiQCyhnm/mfHzGLPynkoIDG09hMSB66nK/bWgE6RRBlnaKPVzivovJLJeSXD+PbSlvEQTMg+VCLRQ658zDXLeZTjUtDOeEXZ/74ZL1eJSp5HYLyg9YesyKLwBl5e/FuC5sziILBg7rED/emwQPyWp4L5JbjFpNUR4nh6UV/eS54mafYbiRqAYKZBhsGUe3smO0R1YpDH/RLqC1pCN8hyNHMH0bvwdV1Np3eGKvhZz0xsiZ0y2JZM1PyXTywoYG9NfzbJKUZYfTl+/bOu9EZSOC4DmVvpfZRIz3gKT+kJP1xGAbjjmcUZ5Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=opensynergy.com; dmarc=pass action=none
  header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <7d745243-1796-150b-3cf0-e43679611cca@opensynergy.com>
-Date: Wed, 17 May 2023 13:04:03 +0200
+Message-ID: <1e281a04-cc9b-fbf1-5171-5b0ddfadefb9@opensynergy.com>
+Date: Wed, 17 May 2023 13:43:10 +0200
+To: Vincent Mailhol <vincent.mailhol@gmail.com>,
+ Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ Marc Kleine-Budde <mkl@pengutronix.de>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>,
+ Damir Shaikhutdinov <Damir.Shaikhutdinov@opensynergy.com>
+References: <20221104172421.8271-1-Harald.Mommer@opensynergy.com>
+ <20221104172421.8271-2-Harald.Mommer@opensynergy.com>
+ <4782632.31r3eYUQgx@steina-w>
+ <CAMZ6RqLALOYFWQJ4C4HTaRw7y-waUbqOX0WzrWVNiQG51QexHw@mail.gmail.com>
 Content-Language: en-US
-To: Alexandre Courbot <acourbot@chromium.org>
-Cc: Cornelia Huck <cohuck@redhat.com>, virtio-dev@lists.oasis-open.org,
- Keiichi Watanabe <keiichiw@chromium.org>,
- =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>,
- Marcin Wojtas <mwojtas@google.com>, =?UTF-8?Q?Matti_M=c3=b6ll?=
- <Matti.Moell@opensynergy.com>,
- Andrew Gazizov <andrew.gazizov@opensynergy.com>,
- Enrico Granata <egranata@google.com>,
- Gustavo Padovan <gustavo.padovan@collabora.com>,
- Peter Griffin <peter.griffin@linaro.org>,
- =?UTF-8?Q?Bart=c5=82omiej_Grzesik?= <bag@semihalf.com>,
- Tomasz Figa <tfiga@chromium.org>,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Enric Balletbo i Serra <eballetb@redhat.com>,
- Albert Esteve <aesteve@redhat.com>
-References: <20221208072325.2259940-1-acourbot@chromium.org>
- <877cwttw2x.fsf@redhat.com> <87a60kg9rh.fsf@redhat.com>
- <CAPBb6MX+R-bDgJzracbZq6DE7B0WO=rtqS6GE1QDugdrFLryXw@mail.gmail.com>
- <877cvog030.fsf@redhat.com>
- <CAPBb6MWyVoEuXJoKvJhP-5zp-x5WrDwVWe8mxbXbCwyzfgqW1g@mail.gmail.com>
- <ca84a8f5-71ed-aea8-5751-60403d167283@opensynergy.com>
- <CAPBb6MUDWVK87_kGFen36tDJQoR-Les6djcKVihjuTKQBjweEQ@mail.gmail.com>
- <b5c9d69a-fbec-8046-225f-bdb5850bbd54@opensynergy.com>
- <CAPBb6MUFbZzTTPqztVXQpcPN+PtqrmCoyaD5dySYdP_7EbRDdQ@mail.gmail.com>
- <11372cda-a766-ef50-45d7-ed637b72a31c@opensynergy.com>
- <CAPBb6MVRPn6dM8ap9uDvX_ZHdHGvooq+LB7UGDaWBEuUtK3x=A@mail.gmail.com>
- <cbed366a-7f12-8642-18ef-350981279241@opensynergy.com>
- <87a5ylzf34.fsf@redhat.com>
- <8ee0075c-2604-9fc2-27c0-f68e32e2a923@opensynergy.com>
- <CAPBb6MWePYtAvEzrL2VD7ssjaJfR+JENJp33FbbwQJxxQSqPWQ@mail.gmail.com>
- <c3518814-022d-9c59-7209-5cb236f61176@opensynergy.com>
- <CAPBb6MXGk-j9_hdU0DCSWoo=cUOFSxRjmLyoXObC8u2BmKeRdg@mail.gmail.com>
-From: Alexander Gordeev <alexander.gordeev@opensynergy.com>
-In-Reply-To: <CAPBb6MXGk-j9_hdU0DCSWoo=cUOFSxRjmLyoXObC8u2BmKeRdg@mail.gmail.com>
+From: Harald Mommer <harald.mommer@opensynergy.com>
+In-Reply-To: <CAMZ6RqLALOYFWQJ4C4HTaRw7y-waUbqOX0WzrWVNiQG51QexHw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: BE0P281CA0030.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:14::17) To BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:4d::9)
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM4PR0902CA0021.eurprd09.prod.outlook.com
+ (2603:10a6:200:9b::31) To BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:4a::9)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BE1P281MB2663:EE_|FR2P281MB3374:EE_
-X-MS-Office365-Filtering-Correlation-Id: fb9eae4d-4b91-4979-8b75-08db56c66ef5
+X-MS-TrafficTypeDiagnostic: BE1P281MB3400:EE_|FR2P281MB1945:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f8eb59a-7445-4e1c-081e-08db56cbe510
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	EjD+bjTDocRdarMVUK5lJ49ymKe7vPjifRRpjCTtQk2nve1kN7+nwl6VV2grBJ3Ql+sV/ysnwbbrlPCm4C0grpT1ACPYPZyHLHRMongYW5YBtuR9tCEYd2iwAGamUBhej1lmA80hoelpGxixVuAJ7RcskVAIZZ+euKDJtK32YD61AXZA2FiEDX0Im4jGtgzycCzGoEPmPMxxBZ4XT4GYGo8B1fGB2sb9VqKoY0CsMXc/i1DVAqpVe3IlMkhvODuhrNXzf/vYXO33H9YRkebR/FFTa9yEiCGBLy5iu0jIED9BDoPVRt99RpCKAJ9OT/KwVNFiUfEGOmELfxWVujFQ3zTqzbrpwasK6i/fyEg1kSJirW6TvD6EDn1g+YK5l/WOcCjNLlWFB/b8x5sMhOrn5nJIJLcQlClSdebTNF+N9ldCRUdQ2nu8Ykxp80HWR2M8s4Uw3ieIaNdHSWdb9bJDJFjUbSKvAA6y1qQp+kgdJDqgX6tti+Caa5+c/W05dmGz783Yy5LhGpOMuIDEMNyFop5fxvod5bcz1tXKvqvatek=
+	iStAIarQr2i4N/apznuOfb3Ue8txBbO2+igVSawL9ERIMtjXEoMB7nNnJsKVI4XudtEh+MTN90aMG1i2VKDf6yzhY13FWssvLj2nrhaIniyJCnHGezIO2vDQuAZAyvQ38McRpHzSQLB0RAcfbO0HhcHUV2HE2/zYbvfgKu78y0UM41n/Z7kNkRWtNye/vFvp/6r96562mP8owi3p/4HRMi+AMrlKCWkbqS+RqnlL4EdewKdbPo3yGiEGCO5eBGRed1r6ETHsgBEdkqK5sLlTlUixLKtQ8FCX28Oh5B4OYPU2pPJgH5uktbd4cOZ37Ro/ynr5AzSSNrKwPrJqJ0EL4J+jAeVy4qCRaCG63EnUG57JhLMA0dfWYPmc9h0SXDC+eo7vzL/WuBtWdBYTTxKSesap3RVA1u2yyOYmp9LXXPNBhiBXwnO99/a63GbDtFbHRBKikNBijR/bkvg+nL3ydHlo6leYbkfUlA+M1nK8fbJweOUBs5gL7kw91jtLBO7NwbeaTdkV2jvBNCUL3dpSDhAUl0Q8ybrQeDl61ql0T6c=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(396003)(366004)(346002)(136003)(376002)(39840400004)(451199021)(5660300002)(8936002)(8676002)(7416002)(44832011)(66574015)(26005)(53546011)(86362001)(2616005)(31696002)(186003)(83380400001)(38100700002)(66946007)(478600001)(36756003)(4326008)(6916009)(15974865002)(66476007)(41300700001)(66556008)(316002)(42186006)(54906003)(2906002)(31686004)(66899021);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(366004)(136003)(39840400004)(346002)(396003)(376002)(451199021)(8676002)(5660300002)(8936002)(41300700001)(66476007)(66556008)(66946007)(2906002)(31686004)(478600001)(54906003)(42186006)(110136005)(316002)(44832011)(7416002)(4326008)(966005)(53546011)(26005)(107886003)(186003)(83380400001)(36756003)(86362001)(2616005)(38100700002)(31696002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YVcwTUliZ2lwOWwyVnVPTmJEVVh1MTYyYytnRDRvNm5ycEN0eVM1Qjk1Z2Vr?=
- =?utf-8?B?ZWpGMmg4Wm5XTG5iWE03bG1PSVFkcklkR2VhQm1qd3Z1QklNVVgxKzJFUlRj?=
- =?utf-8?B?MS9EWEJLZ2RQa2ZMbHBFU1pwZmFiMGZBTW1HYm04SFdhSzBGdjQ3bEU5aXhZ?=
- =?utf-8?B?Vzk3KzNCaXYweGlTVVg4WWNlRFpieElFT0toNEp1TEtUMXVNb0VNdGhGSjNs?=
- =?utf-8?B?VHlTd0pvenRrZm10c1lGblhqNURqNzBnVjB6bnlSQU9NcnRyUHd3YzNOMTRx?=
- =?utf-8?B?anNDdUZaQlNkVXVsSzFjNy93NTNJZWhQYzNreSt0RHN1M0lGZytSc2JVbWU0?=
- =?utf-8?B?b2JDUDVVSFNlRHdHbXR3U1htQVBVa2hLYXpTWS9oVWFsSHJ1L2NnTEU5VEVM?=
- =?utf-8?B?UVlpVFRJSnVVR2k1NVgzRXY5Y0ZVKzVFUzRLOUtJaERoaUx4UkIzOUFoZVI1?=
- =?utf-8?B?UlBkK1l4T2ovRldsT3RTa3c5NzR2VzJEN0l5RHY5WCsyUVFnanMwdmNNWVFu?=
- =?utf-8?B?Z3ByR0RZTW1BdkZONW1VZklIdTFENnc3M2RvVTNZRHEwWldrVzBDaG1wWHNS?=
- =?utf-8?B?cTB4WDhHd0FrVjFUakpBK2hPWGxCb2ZKMjExRXlpejVqUmdNcUU0TUZraFlI?=
- =?utf-8?B?ckdOTDExS3Iwb1ZEUWl6YkZxMWJRVU1hbkR6TGRSbnFzK0t2ekhqWlBZZlhT?=
- =?utf-8?B?SFFONTBnc2R5R25HM01aVStaZGp5emliYUpqaFNZR0VpaStSUWxweExxdlFr?=
- =?utf-8?B?ODV0Tkg1VkdqRTQyUE1KQUlVdnBxaTVqWmFDV0RIZWNSK2tURjgrdndpdGhw?=
- =?utf-8?B?dDlacTMwZG5LQ0xlVEE3Rm8wQmxJWjNkUDdVZnRIaWhnR0FuWUNkTFZHRGpm?=
- =?utf-8?B?SjJlOStTNlorT25JOVI2Ymh4UXJpQkQ2Z2ZLc2oyZHpwQkZGdUw0OE1FWVlW?=
- =?utf-8?B?L0l4eitNK1g3OGUyUk95OHRWWFYya1lxak5iOXdlbEExRWxENGZEanB2ckNn?=
- =?utf-8?B?TGluem5tWGpVdWdNWHVoYnJ3dnV1clhwMVpiSjhUTlc1cjJYVGF4QzRxS0hS?=
- =?utf-8?B?SmVaamtxNnE0NEUxV3o5OHdUUmVUd2xDVVJkVkhLM0UwUnJpcFR6MXJTa2J1?=
- =?utf-8?B?ajZGSUdyRHliMW1FK3lSMVpPMG5XbDFIMlVrejg1bDU3bFA0M000WXJua2s5?=
- =?utf-8?B?VDhRd0FmNFlmYzdKNDlZb1BwVFhiMGlMKzFpcVg1U2hYVVluU3B4NmxPd1k2?=
- =?utf-8?B?ZzY4d0VXZEs1L3p1bFpCay9UaTcrM3dwbXVyM0w4dU1WakxNMEhmeFhoUHZr?=
- =?utf-8?B?V3FseTNqTjJHUTRWQVJrc1NVVGFrTlowZTRvNlphRGJOMlo0MVo0WG56TTRp?=
- =?utf-8?B?MWJhVWFpbDhQVjBXTUFVQUlmKzlLN05IczBhWUZ0Ky93b2p6TVlKSUE5S21K?=
- =?utf-8?B?SUdRaWZCVnU0ZURkUU5scUlNZlBsS2lQb2ZocUpMNXdTaUJwSDNQNHRVcDZ4?=
- =?utf-8?B?RjBBUi92ZHJ2SUJCN2M0NEgyZUo2MWdJY2g4aE4zaWdxb3B3SzRUbGwzdGtW?=
- =?utf-8?B?ekdSdTMvR1pmUGh4L2JOQ3h5aW10L0M0TjlTajk2cnVtK0lOTElzMXIrOTU3?=
- =?utf-8?B?OHo4YmNpVzgycU52MStpRElmWlNjZldMaFFmWTlUMElLZm1KOFFaZC9iQmFD?=
- =?utf-8?B?WHhBVUU4R1NSNDhvT0pGaFBFRjJPTEEyNE5uSXViNzB5THZBajNqaytIdnBS?=
- =?utf-8?B?NDdsdmFxcGltQ0JnY21SZUU0d1MvemVnTm9EOWc1RWJzVGtxTE00NXZBMEta?=
- =?utf-8?B?QlFLWW9hTGVLOHo0ZVY3M2tvYXdRcjludG9oNEMvdlhiMDdpcmNTTUNaWFB4?=
- =?utf-8?B?Nld0ODNZV3BLOFRzeldEWGFzWUN2QlFJUFpWZ3FWY3RubFIzdTJRcVB2dEh2?=
- =?utf-8?B?ZHg4akk2V1prNmhlQS9SWlNyZlJwU1dTdlRZbEdpM2d1dGdsVFVhSnJqK1po?=
- =?utf-8?B?ck11QUdVWXRXOEVIeE1lS0FTbFNnc1NVMlVnZ1h1eUoyd2VHSVFaSWpKOTJD?=
- =?utf-8?B?K3VjVjd1R0JwRTFxc3F2RndYNUxhWkE3SmVOTEZnVFd6Y1dGdytyT0djeTM4?=
- =?utf-8?Q?fe8l2REkMS54FuJrpe0acA6KG?=
+	=?utf-8?B?U2JYN2ZKaTVZN1NRN0hQdk9NVGl0SlJqcSswdzNHajJnaW9wQjgvZ3dhV0Ni?=
+ =?utf-8?B?RUwvT05CU2tFeUpPZUdXNTgwV1hXcW9aNFZLeWVJWTl5Vnp1VUpWbjhPdHF0?=
+ =?utf-8?B?a0lXWVdLUm54TGE4ajJkcXUxMngzQkpwTllqcGJCeWJwWGM1NmJCNUVVSzRF?=
+ =?utf-8?B?Q1RvZ1JxdkNBb1NreXNkaVNUYmM1Zlk5NEwzeHNDdjdSeW5OQzVQbWhhQjRC?=
+ =?utf-8?B?U0VxdGkrdEpkcWtTNCt4WDVTQmZJbnZrT3Q5QTdSc0FEdXRhS2FyV2xlL1hw?=
+ =?utf-8?B?eVQrRDI3OVp4aDdUdlNyT2RmbStKbHlNSXNFZXltdENnb0RDTWthN0VORlVH?=
+ =?utf-8?B?MU03dWxLbC93VTdrOGUvdVk2R0dPSVJQZDBXWlJKTTBldTk2TE0vSXU2UGh3?=
+ =?utf-8?B?bDZIQlZoT1FQZy9NbzBNV0VxZmpoSE10QklOdm1tZDI1UUgrelZFbFdxZWdl?=
+ =?utf-8?B?WEhSTkZKNEFpUVhSQWZqMHRXN2tTN28zSHRVbjgxMmZ0OHhEM2NsUk9abURa?=
+ =?utf-8?B?SDZQbWplVDg2VnlNUklKTHR1QU1LV1pGT3RWM01nREZxdDlTd2pxcUJoaGpT?=
+ =?utf-8?B?TEcrVkdyRkFYOHFHK1BSa2VwNFlPdTc5dDJNUTVidlUwRytmS1Y2UHdzT2k2?=
+ =?utf-8?B?VW9iZXp4SU1nNmFCWkpEaE1pR1Z6ZitjT1lEc2NHaXNKVXQ1elRMYmE1NlRi?=
+ =?utf-8?B?QUUzR1EyVzJvKzQ3UHVUWG13clpuQ0hHWCt5OVFmZFYvSllnK3lKTGdPSDZj?=
+ =?utf-8?B?dlRJOXVjdUFBclFzbnRRY0p4R3BSWDBWRTR6RDBucEh1QlpaRjFkQWhRTU9s?=
+ =?utf-8?B?WFRFc2FBMng0KzJtNndvUy9DMDV0NmlKR21yU1d2bGVHeFZUdGRDbGZuUWZP?=
+ =?utf-8?B?L1dsMDJScWlXcUxHQUd1NG5ZRFZNcjE1Vm9UR2x6K1NWUC9KbVZ6ZnVld0li?=
+ =?utf-8?B?WWdPbm1WT053N21KK3VLaTNkU0ducEtBWnhldmVUUm9DVjlMWkc4K3VQQXFK?=
+ =?utf-8?B?Q3JlYm5jclI2MDZQWVFjNHBqTmFaVU9aREU4N2ZaWHcxWGdWcEpnNmtSbWFv?=
+ =?utf-8?B?dUd2L2lHcDVpNFhUd0R0Nk53Y3FpWTdIN0IrUVdSKzBqSTFUdlpvakZUbHZt?=
+ =?utf-8?B?cCtjZnBpSEZUQm16VjNjQXZGOWlnOURDWHdCYit0S1hpSnFTUnRVMk5uUFla?=
+ =?utf-8?B?SURGRVByUk5BbUc5U0QzU3VMTzJtR3V4WGRiUVgvOVdKVFpYQ0RxU2VjRGNX?=
+ =?utf-8?B?SmV4ZjZQblRUUGN1WTB1R1VWWCtzN0hRd1dINHVjVkQ2SGlrMlVaSmhZd3lB?=
+ =?utf-8?B?VTRHR1R4VWxCVWdFUUNDYW1tRnBGKytUeXNVVUVFRE02bW1aK1RMY1UvVDlD?=
+ =?utf-8?B?ait2VW80ZVhiT3ZFNFd0dUhTTG9jNm5UYjhIUHpycTlVMnFrS0tHZjVqZits?=
+ =?utf-8?B?b2VkWW82SC9ndytMUFN1WU5DeFBUSUx5djhGZjFBU21TMWloc3R5YjUzZkFZ?=
+ =?utf-8?B?WWV4SytmQWd5RXNhMXI0WldMa1VURzVXUUVXbllVcjJvNXBOODV0NC9XRm1Q?=
+ =?utf-8?B?RUd4aEN2K3htbG1XaEozU0kvZndObytRck5wNVhTcFB1VWNQbm9DazlheWZ0?=
+ =?utf-8?B?STFEMFpLSkJqeHptKzkxVGRBbXJvb0g2bVgyNCtRK1VhTTYzNzdkV2FrYk5C?=
+ =?utf-8?B?T1duV2hCQ29jeHBGMlhGb2Z3Nlk0VXRDTEYwbjEweVAySWwwWkVuSHovMXJH?=
+ =?utf-8?B?WWh4dUFubzR1N2hmbUVvS01ocEFXWjhHMW1nZTJ5RzFHTzQ3OUZySko4QkRE?=
+ =?utf-8?B?dTlERVByVkdnVGVsWk81bE5PUEwya1ZhSXhwSFdLWGdJZmxwaW9Tc0M1Q0Jk?=
+ =?utf-8?B?N0ZpRlQ1ZWtkck5nbStaMlFkejRGWTQ0Z2x3QW5INUduek0yc0VDRTQ2cC9j?=
+ =?utf-8?B?SFBZa3VOUlhqYW5qbjJzbWZlWE52bnIwUUxOTnNkSXA3WXJ3ZzdZdmxBdVhi?=
+ =?utf-8?B?VzJjWFlydXdzK0FsdGN1MC9TSmRncjlFUDRMOUhUVnE3elVhM3lBNDZhZVIx?=
+ =?utf-8?B?OEtSTnM1QllVQUVqN1p0TDBGckRWcE5VVjczRTMvMTJMK2Z0dWRBaUpzNnZ1?=
+ =?utf-8?Q?aCufW6rRTL1/OSmA/A2XJBd3D?=
 X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb9eae4d-4b91-4979-8b75-08db56c66ef5
-X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f8eb59a-7445-4e1c-081e-08db56cbe510
+X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 11:04:06.9833
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 11:43:12.6484
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tnFYi0A1L4bXZXK5sNppV4Z3wSfo1fNV0Ly4OMiVzOSeK7W0EvUsLL3r5Fz1oyh6AzX+4SiETD7A8OPu61MWdA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB3374
-X-TM-AS-ERS: 104.47.11.168-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1007-27630.006
-X-TMASE-Result: 10--12.697600-4.000000
-X-TMASE-MatchedRID: hls5oAVArl//9O/B1c/Qy6n9fPsu8s0a9mojSc/N3QeqvcIF1TcLYLO9
-	n047bamGrXMOxnDE+MTeu2H4QeCL4vRr52i2NSUsEclbAMYYY6x8m8RQoY1fdBdidqgv9+A7kCP
-	MGzqmoXtKkAU17gNQngsSh9atRkcwXz51KoqDPz92GSKUJKO/tQ1bi9r2Kq3eSJHw5DazHabMoA
-	Jfsjm0Topc8cdcOaXD7icOXRyDqapLuEQOcnWva0R0oIwoMPyV2AtQU7c1a/eckOuhl70pQzKF9
-	ObUarRIOsgEj+Ozwd5og+vDn4uoN5cFdomgH0lngxsfzkNRlfJlVdRvgpNpe/oLR4+zsDTtFEAk
-	LaTcFnoC0yE6Gxlrih1brif+VfU+hc2oHviPPihKW4Ufghq1Qw==
-X-TMASE-XGENCLOUD: 2114a02d-167e-4e61-9600-00d00e4fc440-0-0-200-0
-X-TM-Deliver-Signature: AC7158366A8823FFA640B280849A0996
-X-TM-Addin-Auth: iAGoR9zlLyqzRLiJC/xAgi5Wcmp4Y3PuCOBruSxgx61c2LrNNYsbIcr1wp/
-	bnOko4kEVM7cEtUOIalqajxErbTf3KmDuWgDkyp9UI10pIU9SUJGxHHomMLg2H1SBy34yBEH3Va
-	HjgJoeR4wV/9KxcGNowmJD+tDClb0B9mxPq6ftdhkP5DYHC+vdQtgrUBNd9Kjuqr/HzkQWCA9tK
-	oLGfefYpOQ+qJLdwWabdhrvWtHM4luYd9R1ZX0RDI+5ZS6A/gknfEn8vToLjJ+RQjfu0y3FJ6mK
-	z4xB87T1KXnXvow=.rOjq1i44O9wDYnNh0JxxEMA40g8GzFK5UZ1Kv96DG8GSBuCjhFhKHN0NA3
-	MFtg25yLYR2FSD7XqFNf54PCbRfnDlT6paBC5iPkWqpue/1oquoyrHalYlqSgAx5ArbJyhF87HE
-	YopW63iCe7i19ZFkONnP2RggsNZhpbt6KlkzyI47wYH5X/2tkih4wapMaIdB1a5S+dGA2Sx7NQf
-	bph5ymUr5DtFTLoKy/D/PUuiSqXoHoWZT2HlKzrjROQ1xG8oSg862TE2Grw4I4UL/9a2xLGOQIU
-	D6p62fwxnGUezeLmZy06noUFZ6/Ofne6vXOWbcOXPP+ICsk2wZ/UW4d9T1Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: vzCLyetCOl4dtRrm8W/9j++ZWkjBleYDERg9SkNpyfBjP11zwl+QWaXXOWIBSiZne9c8DH6Hx5WkBG60KU6hXw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB1945
+X-TM-AS-ERS: 104.47.7.176-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1007-27630.007
+X-TMASE-Result: 10--27.511900-4.000000
+X-TMASE-MatchedRID: 0+daXaNUWRUMek0ClnpVp/HkpkyUphL9DjsV28DbRUBN13IiykVObKh3
+	A+x4DL0WEHmuEGswNENp1WlPE2PQ0x/jU7DSxFhTfOaYwP8dcX7cAmu1xqeetkbhULSLyKWZgK6
+	qCGa1Z9dYYfnBUCWGoVp/hmQLQur5X/FSUb7a2MIZgmFGHqyx6xgff28UuvIT4b5mHdaFMyATYb
+	tN3Gng+2VIS2rxH/h9qluH1OCJRON4CGd3XYenFwihQ5NZCXsS+KgiyLtJrSCbxQuIG3ALnkw2O
+	HQlqD0CsYDE+XcikC8ZK3NRSavY83HPBvSspzfjNxqr5qtGGJS3rIgsEdTKmSWLxjlrSy8vjFK/
+	NcS7G4kPNxz2EvpSIJqojxxRc/YRXtsGnSgA6qr2TS1YFaI5/0fLPdsHmQbn19XEQ+nuD+QuF3q
+	ZrtYTywKLbdC06zXfzr6DsroQjMkBCLy2DM9zzkEKdUlUrKmAmdrHMkUHHq/W2YYHslT0I1IRXD
+	YxV5uxXHpbb6ZETLRFRIRV4p+pAVe8kVT+4FFlmqdQuKXkmotMVCcj56k8hoe/HO7UUbiRLWTvL
+	X2iKNiGlWN2xO9eqGXwxNhkEiC3NSBA5qZwHtTece0aRiX9WudjQ/G9Lk6QioGm93F8ryIjL8WD
+	WZGeog5Fd3u9jwov1Mw7ajUKG1uXBXaJoB9JZzl/1fD/GopdWQy9YC5qGvzKU1cWyI3gWn+NTaI
+	Mjjw/vECLuM+h4RB+3BndfXUhXQ==
+X-TMASE-XGENCLOUD: a3f444ed-85b7-43c5-9a43-a5d4f043f980-0-0-200-0
+X-TM-Deliver-Signature: 5677F5372D46191B6D5E84029E36AAAB
+X-TM-Addin-Auth: 7Wxlv1E3ZzAYv/x3jDDm9pQsGNdw/S1kUwv09AFWSFwi7Z3qy0vLLvQs376
+	q0c58DPVOcb9QIWjScK9hTNvYWZSPUhW+bsuKEx6p15t/oAc21/JfbUIXDG4e8tFH2sEXWP9ntm
+	XpoOIwr/xPjHqb5KGL2riT9ORwPfJI8l6nGxKK8yUkcIafqzAsyk21Swusa9gXTq0tN866eCuLm
+	9WmrVhIzNnDMQ17Rd+k6On6uApzIbntZ8DiuLtE0baJykvrnAIK0Ain/YWjqeTjDmceRhT0dT8P
+	hbub0AkGWwfO75Q=.WJ6yiQpP7M6FQ6OKiRUeVNKGUoO6D+HFRbN9WFtSEfTVJlbh86JJI7uf01
+	KWaoArCxlCIq67djTRh2fQ4H85BsxlkNlCb4OqcopNVKcGzKpVgpkParOYb0PEk782PQF99ZreX
+	bDnq0VNGDenpBdSD7khaxPaf16HTlEoUFdTMk6d8HHX9eQ3sj6QiC3SAOigqLyAMYrGHdF4k6GR
+	gX9WCYjb3lBkwA6nY8WDAJnLM6/kzhUDvxfhfHaRK0OhPnwq/lblHs9qRflYY+ymTpafmOYw2fJ
+	nzrHue2IQgy85vkeCaWuI/yQPE/NhjlLcoyEXztolnFxHd4E9wVM+Eof+Sg==
 X-TM-Addin-ProductCode: EMS
-Subject: Re: [virtio-dev] Re: [RFC PATCH v6] virtio-video: Add virtio video
- device specification
+Subject: [virtio-dev] Re: [RFC PATCH v2 1/2] can: virtio: Initial virtio CAN driver.
 
-On 12.05.23 06:09, Alexandre Courbot wrote:
-> On Thu, May 11, 2023 at 5:50=E2=80=AFPM Alexander Gordeev
-> <alexander.gordeev@opensynergy.com> wrote:
->>
->> 3. We can have things, that V4L2 doesn't support in their stateful UAPI.
->> For example, dequeuing output buffers in decoder order.
+Hello,
+
+(still sorting my E-Mail mess)
+
+On 07.11.22 08:35, Vincent Mailhol wrote:
+> On Mon. 7 Nov. 2022 at 16:15, Alexander Stein
+> <alexander.stein@ew.tq-group.com> wrote:
+>> Am Freitag, 4. November 2022, 18:24:20 CET schrieb Harald Mommer:
+>>> From: Harald Mommer <harald.mommer@opensynergy.com>
+>>>
+>>> - CAN Control
+>>>
+>>>    - "ip link set up can0" starts the virtual CAN controller,
+>>>    - "ip link set up can0" stops the virtual CAN controller
+>>>
+>>> - CAN RX
+>>>
+>>>    Receive CAN frames. CAN frames can be standard or extended, classic or
+>>>    CAN FD. Classic CAN RTR frames are supported.
+>>>
+>>> - CAN TX
+>>>
+>>>    Send CAN frames. CAN frames can be standard or extended, classic or
+>>>    CAN FD. Classic CAN RTR frames are supported.
+>>>
+>>> - CAN Event indication (BusOff)
+>>>
+>>>    The bus off handling is considered code complete but until now bus off
+>>>    handling is largely untested.
+>>>
+>>> This is version 2 of the driver after having gotten review comments.
+>>>
+>>> Signed-off-by: Harald Mommer <Harald.Mommer@opensynergy.com>
+>>> Cc: Damir Shaikhutdinov <Damir.Shaikhutdinov@opensynergy.com>
+> [...]
 >
-> ... provided the host can do that (i.e. has a stateless decoder
-> interface).
+>>> diff --git a/include/uapi/linux/virtio_can.h
+>>> b/include/uapi/linux/virtio_can.h new file mode 100644
+>>> index 000000000000..0ca75c7a98ee
+>>> --- /dev/null
+>>> +++ b/include/uapi/linux/virtio_can.h
+>>> @@ -0,0 +1,69 @@
+>>> +/* SPDX-License-Identifier: BSD-3-Clause */
+>>> +/*
+>>> + * Copyright (C) 2021 OpenSynergy GmbH
+>>> + */
+>>> +#ifndef _LINUX_VIRTIO_VIRTIO_CAN_H
+>>> +#define _LINUX_VIRTIO_VIRTIO_CAN_H
+>>> +
+>>> +#include <linux/types.h>
+>>> +#include <linux/virtio_types.h>
+>>> +#include <linux/virtio_ids.h>
+>>> +#include <linux/virtio_config.h>
+>>> +
+>>> +/* Feature bit numbers */
+>>> +#define VIRTIO_CAN_F_CAN_CLASSIC        0u
+>>> +#define VIRTIO_CAN_F_CAN_FD             1u
+>>> +#define VIRTIO_CAN_F_LATE_TX_ACK        2u
+>>> +#define VIRTIO_CAN_F_RTR_FRAMES         3u
+>>> +
+>>> +/* CAN Result Types */
+>>> +#define VIRTIO_CAN_RESULT_OK            0u
+>>> +#define VIRTIO_CAN_RESULT_NOT_OK        1u
+>>> +
+>>> +/* CAN flags to determine type of CAN Id */
+>>> +#define VIRTIO_CAN_FLAGS_EXTENDED       0x8000u
+>>> +#define VIRTIO_CAN_FLAGS_FD             0x4000u
+>>> +#define VIRTIO_CAN_FLAGS_RTR            0x2000u
+>>> +
+>>> +/* TX queue message types */
+>>> +struct virtio_can_tx_out {
+>>> +#define VIRTIO_CAN_TX                   0x0001u
+>>> +     __le16 msg_type;
+>>> +     __le16 reserved;
+>>> +     __le32 flags;
+>>> +     __le32 can_id;
+>>> +     __u8 sdu[64u];
+>> 64u is CANFD_MAX_DLEN, right? Is it sensible to use that define instead?
+>> I guess if CAN XL support is to be added at some point, a dedicated struct is
+>> needed, to fit for CANXL_MAX_DLEN (2048 [1]).
+>>
+>> [1] https://ddec1-0-en-ctp.trendmicro.com:443/wis/clicktime/v1/query?url=https%3a%2f%2fgit.kernel.org%2fpub%2fscm%2flinux%2fkernel%2fgit%2ftorvalds%2flinux.git%2f&umid=127a2be7-331e-4823-805f-4578232f5495&auth=53c7c7de28b92dfd96e93d9dd61a23e634d2fbec-52b59e6b756f1b97e14cc9439116d9b7a4ad93da
+>> commit/?id=1a3e3034c049503ec6992a4a7d573e7fff31fac4
 
-Indeed dequeuing in decoding order is obviously possible with stateless
-interfaces. But it is often possible with stateful interfaces too AFAIK,
-just not with V4L2. For example, we have this option on some of our
-targets because the codecs are exposed using OMX with some vendor
-extensions. This is a stateful interface.
+1.) This is CANFD_MAX_DLEN. It is not sensible to use that define 
+instead as this is a Linux define and this header here is not Linux 
+specific.
 
---
-Alexander Gordeev
-Senior Software Engineer
+BTW, a microcontroller implementation supporting CAN classic only may 
+allocate only 8u bytes (CAN_MAX_DLEN) for the payload if memory usage 
+was an issue. However I doubt that very small controllers are an 
+audience for virtio.
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
+The data structure has been updated in the meantime in the sources, spec 
+still to be sent. The newer structure should be prepared for CAN XL 
+later however CAN XL is currently not supported.
 
-Phone: +49 30 60 98 54 0 - 88
-Fax: +49 (30) 60 98 54 0 - 99
-EMail: alexander.gordeev@opensynergy.com
+> To add to Alexander's comment, what is the reason to have the msg_type
+> flag? The struct can_frame, canfd_frame and canxl_frame are done such
+> that it is feasible to decide the type (Classic, FD, XL) from the
+> content of the structure. Why not just reusing the current structures?
 
-www.opensynergy.com
+The message type costs 2 bytes, if additional alignment is needed it 
+causes a cost of 4 bytes in the worst case.
 
-Handelsregister/Commercial Registry: Amtsgericht Charlottenburg, HRB 108616=
-B
-Gesch=C3=A4ftsf=C3=BChrer/Managing Director: R=C3=A9gis Adjamah
+  * Virtio uses shared memory to transfer those messages which is very
+    fast. From the speed perspective it costs almost nothing to have the
+    message type. It's not a slow serial line where every byte sent counts.
+  * The target machines for Virtio contain usually many megabytes if not
+    gigabytes. The additional message identifier plays no role for those
+    machines.
 
-Please mind our privacy notice<https://www.opensynergy.com/datenschutzerkla=
-erung/privacy-notice-for-business-partners-pursuant-to-article-13-of-the-ge=
-neral-data-protection-regulation-gdpr/> pursuant to Art. 13 GDPR. // Unsere=
- Hinweise zum Datenschutz gem. Art. 13 DSGVO finden Sie hier.<https://www.o=
-pensynergy.com/de/datenschutzerklaerung/datenschutzhinweise-fuer-geschaefts=
-partner-gem-art-13-dsgvo/>
+So the cost for the message type is relatively small. You may think 
+we're always transferring CAN messages on Rxq and Txq so we can save the 
+message type anyway. This is true for today and may be totally wrong 
+already in a few months.
+
+Those queues are communication channels which can transport any 
+information. After the specification has been published some day someone 
+may want to extend the specification having to transfer a complete 
+different message over Txq or Rxq.
+
+Easy with message type:
+
+ 1. Add a feature flag to indicate that the device now also understands
+    msg_type FOO_NEW
+ 2. Define the structure for FOO_NEW having __le_16 msg_type as first
+    member. The rest can be defined freely without any restrictions.
+
+Without message type 2. can become ugly. The implementer is forced to 
+get into the existing scheme, this may be difficult and the result may 
+not look nice.
+
+Better we spend the few bytes now to have better options in the future. 
+We don't know what is in 5 years or even next year.
+
+===
+
+The question "why not reusing exactly the existing Linux CAN structure" 
+is indeed something which has to be thought about. Cons: Virtio is not 
+directly a Linux specification. Pro: It's tempting. After I've learned 
+that qemu is also doing exactly this it becomes more and more tempting. 
+No conclusion today.
+
+>>> +};
+>>> +
+>>> +struct virtio_can_tx_in {
+>>> +     __u8 result;
+>>> +};
+>>> +
+>>> +/* RX queue message types */
+>>> +struct virtio_can_rx {
+>>> +#define VIRTIO_CAN_RX                   0x0101u
+>>> +     __le16 msg_type;
+>>> +     __le16 reserved;
+>>> +     __le32 flags;
+>>> +     __le32 can_id;
+>>> +     __u8 sdu[64u];
+>>> +};
+>> I have no experience with virtio drivers, but is there a need for dedicated
+>> structs for Tx and Rx? They are identical anyway.
+True for today. Could be optimized in the specification. Resulting 
+object code of the implementation would be the same anyway.
+>> Best regards,
+>> Alexander
+>>
+>>> +
+>>> +/* Control queue message types */
+>>> +struct virtio_can_control_out {
+>>> +#define VIRTIO_CAN_SET_CTRL_MODE_START  0x0201u
+>>> +#define VIRTIO_CAN_SET_CTRL_MODE_STOP   0x0202u
+>>> +     __le16 msg_type;
+>>> +};
+>>> +
+>>> +struct virtio_can_control_in {
+>>> +     __u8 result;
+>>> +};
+>>> +
+>>> +/* Indication queue message types */
+>>> +struct virtio_can_event_ind {
+>>> +#define VIRTIO_CAN_BUSOFF_IND           0x0301u
+>>> +     __le16 msg_type;
+>>> +};
+>>> +
+>>> +#endif /* #ifndef _LINUX_VIRTIO_VIRTIO_CAN_H */
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
