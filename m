@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12771-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12772-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3226CC7EE23
-	for <virtio-dev@archiver.kernel.org>; Sun, 21 May 2023 14:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C229C7EE2A
+	for <virtio-dev@archiver.kernel.org>; Mon, 22 May 2023 00:55:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8C3E526A31
-	for <virtio-dev@archiver.kernel.org>; Sun, 21 May 2023 14:44:16 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 72A2274E2D
+	for <virtio-dev@archiver.kernel.org>; Mon, 22 May 2023 00:55:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 77347986197
-	for <virtio-dev@archiver.kernel.org>; Sun, 21 May 2023 14:44:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6B7769863D9
+	for <virtio-dev@archiver.kernel.org>; Mon, 22 May 2023 00:55:01 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 6B1DC9859E5; Sun, 21 May 2023 14:44:16 +0000 (UTC)
+	id 5A03D9862FF; Mon, 22 May 2023 00:55:01 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,162 +24,207 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 555ED9859E6;
-	Sun, 21 May 2023 14:44:07 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4021D9862FE
+	for <virtio-dev@lists.oasis-open.org>; Mon, 22 May 2023 00:55:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n7pBo/PHyjswnWoD2/GlWrnOe1aAm/jX5LovyOsn0w2cXPP0ERsf/tc+eqChJClP9hac4n0ydRvaTybo2dmG1uGeK/oFt+WqW/6QhPvk3SPBkJwCMEckHJRyj/ATNiLIjIBxN41vZQVpx53B6XZCRpUDBYyevTLFRK03EgzRa4rL4G68LEDetO77vH3PwW+C28TtPSed5MIg1Mjlb/mL85VSyLLcpivQaFzZXkQ8HaiBVND0EL9rR547WX/jHB2VQKS/o0ZroEuVCfO6yy02YUOg1d4FgeHEtZKJH9VFP9S+a+xyQjHDYL1FGFlP8SccAXHYhurytwUDawASU5FFJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/JtslWpnGEz7NWnEz5OQGeVuij0T1HkfyT0xoQjHTGo=;
- b=OYUpMRC8yUeBZYAru6BjGUD0NdjTRLyjo1b5zYhzumGbxga5LGuV3BtfjaXftcrJQj+wfVjPRJPr9iuxAZga+APOhWQ5jR3ZEq2J37EoU5DpGp//45LJOxcr9avt7vvFwiaXBsISMR669xIU8iWBUEhQb7MT+twGo5hpgYq5JAOzFkwjmQzOaV64YB9HaiDrsRpwQlu4PaTblqCLlzJRryj0poBv/BkYZJWk7X2e9O0rzQTkixo0tVh3w7n+K3BWyvp4scMnk5p4uiTHcywUROxgoMUBp9MAmh0/z0YIpy0cUXHpZVw7zSRoDsyZ0YNTPV/54Oc8uEzYlztltgQoEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>, "david.edmondson@oracle.com"
-	<david.edmondson@oracle.com>, "sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
-	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [virtio-comment] RE: [PATCH v2 1/2] transport-pci: Introduce
- legacy registers access commands
-Thread-Index:
- AQHZf639R6aTQu3GsEiaqC7Dtr8vQa9eBfIAgADi2pCAAZmGAIAArnkAgACuQ0CAAqt6AIAAPtmwgAAZkYCAAACz8A==
-Date: Sun, 21 May 2023 14:44:03 +0000
-Message-ID:
- <PH0PR12MB54815D83C3287FE7B3A2947CDC429@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230506000135.628899-1-parav@nvidia.com>
- <20230506000135.628899-2-parav@nvidia.com>
- <20230517013839-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54817CBB98900B83C4F30164DC7E9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230518153640-mutt-send-email-mst@kernel.org>
- <20230519015520-mutt-send-email-mst@kernel.org>
+X-MC-Unique: xeBY4b8SORShtZP33KPHwA-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684716896; x=1687308896;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lXomS9NMxwbhRKSDOznyz4hf6MBSUYHaDqlPZPyUGts=;
+        b=ahXLCRfOvpT7JCEwli9Ux9eP6qlv5qiQ2TlxB5sf/srGXqaKvY4iCxFdODo3VOO6SG
+         MXRztjV9dNpwUc+uV5B7VRB4PHd5JXmfSp8yu27OUWCdIA1FJDZouce2Zh56NTvv4Eit
+         xJVkw+2H8hmBkDqhzDt021pBBrV0o7aKyBfQm8mClNp2OgJ8Ah0zqQQnAWzjixyLr/Z1
+         qVk31ZVm4oYj+Bvi7mksAo4D8wZkUCsgt/g+ME38WpBKC7YHxv7/LOOfJFuMwwaUD7X5
+         AuYD7XN0bsHXCk/7rDhERQJ+3MWc329DnfCFua+hU21yrJmEjGxvNsO7GvVHyKN0iUJ5
+         yejQ==
+X-Gm-Message-State: AC+VfDw8LPWXYbu507B2q7BuydUMnXusoIHQqvv2C8URm8z9Yikz8ZKU
+	WZZIPg2AsrO83T1ziwpqGcRY7zfGYqZELxewg+pyKuVFsncmiJjs3aFydhAToKKOoWyO6jjNCXy
+	vtTuHcJUUhUxrD4tnRvjFa2D5lboydhTlaU7/X9ZzETQ+
+X-Received: by 2002:ac2:5141:0:b0:4f3:a051:58d7 with SMTP id q1-20020ac25141000000b004f3a05158d7mr2562622lfd.49.1684716895833;
+        Sun, 21 May 2023 17:54:55 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ56GA7uyNcza5acnCMy9QIz8n0zRfNIXB48OHYIjBKuwnfJFFOl5S9jJahuORqBuAuS7YuUMHeRkndjBCoCS6A=
+X-Received: by 2002:ac2:5141:0:b0:4f3:a051:58d7 with SMTP id
+ q1-20020ac25141000000b004f3a05158d7mr2562611lfd.49.1684716895274; Sun, 21 May
+ 2023 17:54:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230506000135.628899-1-parav@nvidia.com> <20230506000135.628899-2-parav@nvidia.com>
+ <20230517013839-mutt-send-email-mst@kernel.org> <PH0PR12MB54817CBB98900B83C4F30164DC7E9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230518153640-mutt-send-email-mst@kernel.org> <20230519015520-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481AABA8A22DC088B5D7CFDDC7C9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230521050829-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548161A2D28C387C9AF23B81DC429@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230521050829-mutt-send-email-mst@kernel.org> <PH0PR12MB548161A2D28C387C9AF23B81DC429@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230521102050-mutt-send-email-mst@kernel.org>
 In-Reply-To: <20230521102050-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CYYPR12MB8869:EE_
-x-ms-office365-filtering-correlation-id: afbba93e-d9fe-40bb-553b-08db5a09d296
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- ymZ0+wYiMjZ3Tkzu6oOeZYCIxf7Sbx8r1T5dazHwwQnV475dRBg7UCxLB38TKkBKBs4ImaWT/3WJTBYuwhB93nyYonHXCKE2nwQhveravnwZjWvmlwpRojgbRlvYtk5ttQc3hAmQaZ89T5pouO09OFRd3gc4+n2k8Xck+iPPcUwtWUAiwuHNGIypve7jzYe/aeA89fxF57G3iJveMduOVfJ3r3PQoskar6LmbGBsabMk4cMLtoQ93VH9ovuR5H51B/+mBJwgQYOppkXdQ5ykJCJL4Z5zpMreJZlizAsOKS7QRjgnPgEH6MlcjU51rlrnmnkaMd88wlNIqjexztLEnV4OMUma/ij6Dcid+v0q+Tn3Sev/1WT1ryu+jXxr0tLcVuuLNQjABFNQeKjvp3JO6p7c+UEbZT5Ql+VU2dm5jlKYzMk9PVnn0IUvephZ6+iWgHY9DBBR36ookZCnwADBThWnfbHj4L9vrFC/QxzfQl+0AMLJLJ9ntBv9DpIePYCddvuJBpveQjB7z9MwHjg/HwA0m1J7+5Jvl9YjONULBxSaf6tkqOao2T4xNBSGP5c0JwZNf6/r3hlnukwHrX9Fr1+fRrP+1FMAFTSkdrZzvBX5Z+0wdZG2ARgpXNeUOAqN
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(39860400002)(346002)(136003)(396003)(451199021)(38100700002)(122000001)(38070700005)(33656002)(86362001)(55016003)(8676002)(8936002)(52536014)(107886003)(5660300002)(26005)(6506007)(9686003)(2906002)(186003)(83380400001)(41300700001)(7696005)(316002)(66476007)(76116006)(66946007)(66556008)(66446008)(54906003)(478600001)(71200400001)(64756008)(6916009)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?fkOuSZSkb0z0UanJjPUIcXUtGEcIBXzlQsyiWO/k/6xBbaZIDmQP2nyOOnzB?=
- =?us-ascii?Q?h0nNpeUQmwQZTzqToiSp4FkcAu9t4wzYijJNN3V5xff3pgddchi6ByupIMV8?=
- =?us-ascii?Q?MpcFYXdB2acCjZVUYoT7j2xPN2Ra43Rnh8OfHKtpYT9/ODGeeCFdsbXnLICX?=
- =?us-ascii?Q?WpmaFeKH7qcfOXZdH2FIftes5vDXDvEhEV30vChWje5pyFj/BtVEllW4SMwx?=
- =?us-ascii?Q?PkekZVcsiFuB/x87PgHGDGwU5DhxOnQqRnNFGOsv+P6n2HPffyCmJ5IxGInU?=
- =?us-ascii?Q?HPGQzbUspW+6nDAGGvfhICfW4i1bozj9fU0ifI17KNHrVpehGrP7ajfn/NGf?=
- =?us-ascii?Q?iibbZFVXCFhc5wtorM1DKqM8ZG2h1iUKjksHGZE6f5agtrU0V0clmmuW/HxX?=
- =?us-ascii?Q?GBSiOx0toxTotLVBxHtZG3IngGoD8IsVaxvT/y90AC48/tqyb7H1921Yre8n?=
- =?us-ascii?Q?pC+w/CK6JuSfsmPGa7KlLnI1Qah9gmnh1/G0AtZ3b+naAO1SEJHRyw+Od7PD?=
- =?us-ascii?Q?JAIzN2CdoBajtuIQ7bTrOgWt5xpjyn1n0SkOKMmxplgDggQeuz4+W0e2Vml+?=
- =?us-ascii?Q?RpLMh+nUyuCAkQKA6OU5N7eCE29Fk2UN4wbPyXNECvj0yWpUt3WqWEwH2lBW?=
- =?us-ascii?Q?h1M9HquerNufXZN9uVxkiFQsOx+ap8Yx1lIAVUslXKewa0rSzXp7n79+9PCM?=
- =?us-ascii?Q?tEeV02GsKixFFsrtllmHmBFdaZ4iHKzsz4ZyJEgHLCm5trAk2lyRZmL/Yr1I?=
- =?us-ascii?Q?iOaq2OQRIafbfsHPFpQVsM461sxo5hnlmrhoNLad+08G1oIOgixlKnp5GpHn?=
- =?us-ascii?Q?8rQx9WrgFFxxdzPMq7I5S6iavC+fEC4FeDSPg3omz5zD6GSsoGkvtiOuDFJu?=
- =?us-ascii?Q?I+NvCkuH4UzhI9DGQgyo64riy0lvxSgU0s3r26ZT/3L6CD39wCj8iXK/ivcm?=
- =?us-ascii?Q?AyyGjUGMqIbJZha0z0hxqy3CRw9aJS5Rj9vSthag8nEfI1TBWgxfhHK5T0ke?=
- =?us-ascii?Q?Io3zLDI0QUYSoOrCF8wsoq+1tU3fbzqfGqG6WofBg6kqfMm+5ZgkaZ+qnDap?=
- =?us-ascii?Q?HNs2/pTN/BIFuZZsVcB/tOf3S4LV3DUhmAjIXONaEYbg5x9bA5xFq7alpsuV?=
- =?us-ascii?Q?F3HZvJ+EtS5FG5AnnMMCu48ha6DJmctOCQT8NTahpVWXkdfd9tK9koOiuzB9?=
- =?us-ascii?Q?Tba9ejx0PdH4yHKLSfvKzAQzxKxfEfwCNGbn5bzgAcg9HardL0M+E82MTWoa?=
- =?us-ascii?Q?XsieHG09S1+dxCCW3kQE/lE43rxEvw0qAWn9EeFfA9yhJHQ0oY+T3JWBshVK?=
- =?us-ascii?Q?rHbniiCSVE6KLZ4jYMEY3NsgSwbGkDQzrnUoVz44hv5aApuj2bUaNsKJ3m1I?=
- =?us-ascii?Q?JOOuEHzqWX7XsJpPEP8xzF6fRJl7PZ52tdPCyhsEgQyziV98dnGK034arcVv?=
- =?us-ascii?Q?GyM2YTMPVJw5TJGobDIrzO9xjhiJ9jJEhEOg4cvQfKWYpDfB4VcFFFpcABbL?=
- =?us-ascii?Q?HZQZUUgr+Yy4W24Iveh3CtKO56O/CARFHJBWod5CgN07QiR2GaoIukjoRkG5?=
- =?us-ascii?Q?fauheqYPyS0CzHhwmsw=3D?=
-Content-Type: text/plain; charset="us-ascii"
+From: Jason Wang <jasowang@redhat.com>
+Date: Mon, 22 May 2023 08:54:44 +0800
+Message-ID: <CACGkMEtTa3angJZdrUW+Eeqi3vW1z7UDVAMaWowY1BRaJby0Kg@mail.gmail.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Parav Pandit <parav@nvidia.com>, 
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>, 
+	"david.edmondson@oracle.com" <david.edmondson@oracle.com>, "sburla@marvell.com" <sburla@marvell.com>, 
+	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, 
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afbba93e-d9fe-40bb-553b-08db5a09d296
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2023 14:44:03.7257
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fd3J5xgEOOBY+rqV8KC7AICgwU8KH3tSS03cqHtlT2YwAUkoD0LG6F6iS49uW1ubKoBjQvGxkLhM6qctLCi+yg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8869
-Subject: [virtio-dev] RE: [virtio-comment] RE: [PATCH v2 1/2] transport-pci: Introduce
+Subject: [virtio-dev] Re: [virtio-comment] RE: [PATCH v2 1/2] transport-pci: Introduce
  legacy registers access commands
 
-
-
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Sunday, May 21, 2023 10:33 AM
-
+On Sun, May 21, 2023 at 10:33=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com=
+> wrote:
+>
+> On Sun, May 21, 2023 at 01:21:17PM +0000, Parav Pandit wrote:
+> >
+> > > From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis=
+-
+> > > open.org> On Behalf Of Michael S. Tsirkin
+> > > Sent: Sunday, May 21, 2023 5:17 AM
+> >
+> > > > The Notification of the VFs are on the VF BAR for modern or legacy.
+> > > > One needs to build additional cross forwarding hardware from PF to =
+VF for the
+> > > doorbells.
+> > >
+> > > I think doorbells are driver notifications (linux driver calls them k=
+icks)?
+> > > I don't understand what you are saying above really.
+> > > what can and what can't be done?
+> > >
+> > VF has the notification BAR region.
+> > All 1.x and legacy such notification lands on the VF BAR.
+> >
+> > > Again all this idea (as opposed to Jason's transport vq) is to have a=
+ simple
+> > > software model. Attaching a driver to two devices at the same time is=
+ hard to
+> > > achive e.g. under windows.
+> > >
 > > Yet you initiate same discussion point that we already discussed again =
-after
-> summarizing.
+after summarizing.
 > > A driver is not attached to two devices.
 > > A driver is attached to a single device.
->=20
+>
 > And that device is the owner no? to send commands?
 >
-Not for legacy registers access as discussed before.
-=20
+> > A device uses a parent/owner group device to access legacy.
+> >
+> > Software model may evolve over time.
+> >
+> > >
+> > > > And it cannot utilize what already exists for 1.x VF.
+> > > >
+> > > >  > 2. It should be possible to send notifications through an admin
+> > > > command too,
+> > > > >    otherwise admin commands are an incomplete set of functionalit=
+y.
+> > > > >
+> > > > Yes. it is only for the functionality. As we discussed in past alre=
+ady, this will not
+> > > get any performance.
+> > >
+> > > Performance might be ok if hardware disables kicks most of the time.
+> > >
+> > Even for the first kick it is order of magnitude higher.
+> > Kicks is the natural tool for the low latency.
+> >
+> > >
+> > > > > 3. I feel using a capability to describe legacy notification
+> > > > >    area would be better just because we already have a
+> > > > >    structure for this. make it an express capability if you like.
+> > > > The AQ command interface is far more programable object than PCI ca=
+pability
+> > > to return this admin info.
+> > > > Hence I prefer AQ cmd.
+> > >
+> > > I feel your preferences for 1 and 3 conflict. If you really insist on=
+ kicks being on
+> > > VFs then at least let us make VF driver in the host simple.
+> > It is straight forward.
+> >
+> > If you prefer the "offset" example of past,
+> >
 > > If (legacy_offset =3D=3D queue_notify_offset)
-> >    *db =3D guest_supplied_q_notify_content; else
+> >    *db =3D guest_supplied_q_notify_content;
+> > else
 > >     virtio_net_send_aq_cmd();
 > >
 > > "simple" is really a subjective term in this context.
->=20
+>
 > yes this is qemu. sure.
 >
-Not limited to QEMU.
-A driver will be able to do this as well.
-
-> So we have legacy emulation send commands to VF or to PF.  Okay. But let =
-us
-> avoid the need for VF driver to send commands to PF to initialize.
+> So we have legacy emulation send commands to VF or to PF.  Okay. But let
+> us avoid the need for VF driver to send commands to PF to initialize.
 > Just get all information it needs from VF itself.
->=20
->=20
-> Maybe it's a good idea to reuse existing notification capability, or mayb=
-e a new
-> one, but let's avoid making VF driver depend on PF commands.
 >
-We agreed in v1 on Jason's suggestion to have the AQ command and yet you an=
-d Jason hinder this in v2 with this exact repeated question.
-Lets please avoid this and move forward.
-
+>
+> Maybe it's a good idea to reuse existing notification capability,
+> or maybe a new one, but let's avoid making VF driver depend on PF
+> commands.
+>
+>
+>
+> > > If it has to talk to PF
+> > > driver things are really complex. At this point we are very very far =
+from VFIO
+> > > model, and then what exactly have we gained by implementing legacy co=
+ntrol
+> > > path in hardware?
+> > It is in the VFIO model, legacy largely falls in the special path for b=
+ackward compat for the hw devices.
+> >
+> > > Let's do software with maybe a couple of features such as
+> > > VIRTIO_NET_F_LEGACY_HEADER.
+> > >
 > > We have already these design choices and tradeoff in v0 and v1, it does=
-n't fit
-> the requirements.
->=20
-
+n't fit the requirements.
+>
+> BTW not for this project but generally this is why I thought it is not
+> at all a bad idea to have a requirements text document e.g. under
+> todo/
+> discuss it as normally maybe even vote on including features in a
+> plan for a release.
+>
+> > We cannot iterate exact 100% same points again in this summary discussi=
+on.
+> >
+> > If you have any different comments from v0 and v1, please share, otherw=
+ise these commands should proceed.
+> >
+> > What you hint is saying hey, "transport everything through the PF, then=
+ why do you have a VF?"
+> > We again past that discussion.
+> >
+> > This is different requirement, than
+> > "There is a VF passthrough accessible directly from the guest without a=
+ VI, some of them need to have legacy support also".
+> > Hence how do one make that legacy guest utilize it the VF in passthroug=
+h manner for 1.x and 0.9.5.
+> > With this proposal 0.9.5 slow registers are accessed over the owner gro=
+up admin PF keeping the whole model and functionality intact.
+> >
+> > This is it.
+>
+>
 > So, I am saying one model is small driver for VF and a big one for PF.
-> And to keep the VF driver simple, it should get information simply from c=
-onfig
-> space capability.
+> And to keep the VF driver simple, it should get information simply from
+> config space capability.
 
-VF driver is small that does usual vfio passthrough work.
-PF driver implement AQ for variety of use cases that we listed in the AQ co=
-ver letter.
-VF driver implements 5 AQ commands that you suggested to split from 2 to 4.
+Think in a different way, if we don't care about the speed of those
+slow registers. For the method that accesses the configuration
+structure, could we simply extend VIRTIO_PCI_CAP_PCI_CFG capability?
+
+Thanks
+
+>
+>
+>
+> --
+> MST
+>
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
