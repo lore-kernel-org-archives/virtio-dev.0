@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12794-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12795-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A700DC7EE2D
-	for <virtio-dev@archiver.kernel.org>; Tue, 23 May 2023 18:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8BA21C7EE2A
+	for <virtio-dev@archiver.kernel.org>; Tue, 23 May 2023 21:32:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 16CC2673BE
-	for <virtio-dev@archiver.kernel.org>; Tue, 23 May 2023 18:50:33 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9920F120D46
+	for <virtio-dev@archiver.kernel.org>; Tue, 23 May 2023 21:32:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 72B1698674B
-	for <virtio-dev@archiver.kernel.org>; Tue, 23 May 2023 18:50:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 91E30986484
+	for <virtio-dev@archiver.kernel.org>; Tue, 23 May 2023 21:32:49 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CE97B9863E8; Tue, 23 May 2023 18:50:31 +0000 (UTC)
+	id 85B19986406; Tue, 23 May 2023 21:32:49 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,444 +24,138 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DEE1B9863D0
-	for <virtio-dev@lists.oasis-open.org>; Tue, 23 May 2023 18:48:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7090B9863FB;
+	Tue, 23 May 2023 21:32:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: W-0wSEY3MKmZdyJAggSL-w-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684867733; x=1687459733;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2Q1FahXhtXa+RSnz1S9asfV6TdCOnnU2VwTFyxaUvS8=;
-        b=TH5zjtDN0eYDC/CwqhH5H8yRz1GoAv88kDIWzEB/SJX5tFTKSzPcwszaytTunU+uq5
-         BAMXt8PaNR1swadegnEexETNbZNgRRWwteRjU7t4X8VIKxSDtMlFZhk1M8+T6l5XoCmG
-         A47lLZ0W4J+NKS8VYW882yfp1DW2FyfwD3vwETYY1FEpUxurvNI8bNvrRPQ87vHgvk6r
-         lB5+fWh+TtZjpgAmqvSrcS7biDKsCs7TWjHCHVmyZ6u4gUHlB3Rgaa1iAZvLnTrUnGzf
-         qErxJp9RjUliJM7oYFn+xtbKWKmrtTF/4HdiTbVUqhOjXGrJbR317/I4R/BzfRp7voyf
-         qsVg==
-X-Gm-Message-State: AC+VfDxGNAfmP8xmzp68wuOyVCwkj6yQAGrVGQtTgljShcCO4p3Tg5Ga
-	rmdkEG2wGtwuKX1D6kylyihBHG6mDtJwdXHkGCeeA3YWnrZ6Ms1UdZlcV63bOKV/sDGX4ttyuZ/
-	7HrATn7YznD/Sa/Y6i/2E4CYqh5sV
-X-Received: by 2002:a05:600c:ad2:b0:3f6:d2:d8c0 with SMTP id c18-20020a05600c0ad200b003f600d2d8c0mr7686690wmr.19.1684867733305;
-        Tue, 23 May 2023 11:48:53 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6eCVOiRvSvxiNtXXyh0/Xw4jLDKqfOOfxDHwt6YSD48ji2/nYkOj1mjzryqahnozv1whwCTQ==
-X-Received: by 2002:a05:600c:ad2:b0:3f6:d2:d8c0 with SMTP id c18-20020a05600c0ad200b003f600d2d8c0mr7686675wmr.19.1684867732854;
-        Tue, 23 May 2023 11:48:52 -0700 (PDT)
-Date: Tue, 23 May 2023 14:48:48 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QChe081d0Lw+gx0YZxmBES3hGE2rxNOhSRJbzJFgKpU+Bz9R2ttkRzC9hSQ/Wtr3edfw+0D+ZT6ZlpSQ6Hqm0i+haAeKAgpmEv69mk7CGI9mNaL/pLc9XGzvOkMnWE5I0cjWdUCi0h4FzBTYeutRgjh5e/3DIcmW704jfpOWdbqLbaKvOe2YXhRumQRysFSofQoPlEreqpFVKewByU6NtwCUOaQz7Q6TkUGfaTC+Zjng+s81FlOPuvvN1Qv3jJqif7xbwyrz5lc6SR2Bh4/BNYK8nxaTOIDK38bbtoWClh11HfNQtXLzInumSacUkpWT4oKKBmIoUgayK9t71NpCvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ECGwPahzRD/q87LesYhT0GAnL1viSa7NYBdr5uqxx+o=;
+ b=bO98XjE6suljpr95F3Wu6MgDrhF+cZqs1wdo/1bPZlNF2Lubqtcmcc2iZcDn8980WomVa/c+HH3LCgyLijv4Vx14lJQn919NhYXtFyv9LE+o1ANemhyUNRPH1V6lbZVNj4p0O2QmKgEjChj4/+iFePQFkT6HjYsfp+10KiPBceI7VKT9hNAZEAnDlxiL61Do+o9B2itDYvATppDYnMY7+8ViQSgZRZ8ny7brHOfUIbyQWPfSE9YUHEH0vXsrTkbZ0vhpUbBdvZ5IpkWicIgOGn2YpUOeOQUiOhBEi3LbsgHCktyrXTMUX9hSKAm6UGiiS19hI6pqVtOz3YrXsYvw/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: Jason Wang <jasowang@redhat.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
 	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
-	"sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230523141718-mutt-send-email-mst@kernel.org>
-References: <20230519015520-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481AABA8A22DC088B5D7CFDDC7C9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230521050829-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548161A2D28C387C9AF23B81DC429@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230521102050-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54815D83C3287FE7B3A2947CDC429@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230522154149-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481A2AD326E7F0A7CEFC223DC439@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230522170700-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54818BD5421AC200C2DEEDCFDC409@PH0PR12MB5481.namprd12.prod.outlook.com>
+	"sburla@marvell.com" <sburla@marvell.com>, Yishai Hadas <yishaih@nvidia.com>,
+	Maor Gottlieb <maorg@nvidia.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+ using AQ
+Thread-Index:
+ AQHZf637tzEcVLD5bUyVf2EjaUYU3K9Mhl4AgAJOSwCAANQugIADYnEAgAAP1ICAAAu1gIABh4gAgABhyYCAAABooIAF7m6AgAAsIgCAAEhEoIAM0siAgAA15BA=
+Date: Tue, 23 May 2023 21:32:41 +0000
+Message-ID:
+ <PH0PR12MB5481E89D0E5DD6F291F8E149DC409@PH0PR12MB5481.namprd12.prod.outlook.com>
+References:
+ <CACGkMEtfMbcu2OPsH6P2tA1aHh2FKygv=xkJ-e1XQzb62nE1vQ@mail.gmail.com>
+ <20230510014534-mutt-send-email-mst@kernel.org>
+ <CACGkMEvTs9oMewgrQpYZu1v1wdUXtxsvjqB6CPRf+y4C8EN_KQ@mail.gmail.com>
+ <20230510033812-mutt-send-email-mst@kernel.org>
+ <CACGkMEsp0i7EyyBBp06wJzrVBLNbH7MP_TT-j7b5c_yavgAmqw@mail.gmail.com>
+ <20230511085205-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54812F2EFEC7B6A235953A82DC749@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <0f75a142-71e9-676a-11ae-a54e6dbb472d@redhat.com>
+ <20230515060641-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54817BC2F2FBFE3609AFA23CDC789@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230523141439-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230523141439-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB5279:EE_
+x-ms-office365-filtering-correlation-id: e8c98065-9910-40cf-05d9-08db5bd53d17
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ G3axz8vgkuPq29ZfgLDlnZ9OqZzxAumfJubjB0SPdL9mDiHd3W6av4PQMh7ga1CKaiiegXhK0uzK2Oq6f88A6tcgPBwwVNChi31ZyYVpfimtH8hEQfZIGuvyNApvt+TnsO0Eah8d6nVqOdzqL6NPtSLe77QLAdlFJvkeinH8HIb0JPtECwooDWc9wUlR2DPTsO8j36MqG1i2pYuB8ZkY3e0V1Dw91r6U6t6RUqBUXKC/dUMPoYHF153/wkV6076HOUF+g+Bt8LuY/xYGIaRo8kMHzRy8QutRa1z8Pelr19S1rBWrqUOTGISQdtsPT/7urSWeMMCkHwlqgQxWclNZupavOUgeQ3rWZ/n5M4vJi3tpS8GoKUp1w4es0XAa22OGZtIRkxzPgsjlIaQgFZcblMvYqS1Sr7qfQGA3TOYzTX37noc+DIQ5icJkSf8wESwXxi2Uwytriq0Xzt2KbZI39bnReJCU7Abvd6/5RtsjNiuT7gOwpp88zYPup+jPlX0IrGMxvjl2LM/lbM18FSAWNKW6iwNc7GvryfIKjehkT2jOp1Nk6fIDg7EAm4Of017TxA2JHkk7c9NqGr9T9G1T5/VpZpaSLEVmdZRLv/ugwdxKrF5DVbBpJ2EjXHWoJwA8
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(366004)(39860400002)(346002)(136003)(451199021)(8936002)(8676002)(52536014)(5660300002)(83380400001)(107886003)(9686003)(186003)(6506007)(86362001)(26005)(122000001)(38100700002)(38070700005)(76116006)(71200400001)(41300700001)(478600001)(7696005)(66946007)(4326008)(55016003)(6916009)(66476007)(66446008)(316002)(64756008)(66556008)(33656002)(54906003)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?v43CAMSIbChfonXla/6vCkiiRdiTg+hyCmlAq+KUt5JZdvE96vvAWE88iOzG?=
+ =?us-ascii?Q?tCP0jVv4H8HBuegg0vN7OzeFmuIfjNOy9MvouKSUPjqJc2E1ySKjAlN40pIi?=
+ =?us-ascii?Q?H/751be25QHfGQs1EgyNkq3KR++COPmktI3G8j/yDKr3ESto+6StxjLikPNW?=
+ =?us-ascii?Q?RVuSw8TZ6f4h93QPAV7NoEYor6vU47HSanIaNiHs3hj82Sp/SYn4/4zodm5c?=
+ =?us-ascii?Q?WERBTdxg6y5j9jUZilzMQlQjq13idFjbwY/VSnWyMIBmLb0dYFv6IyqVITXI?=
+ =?us-ascii?Q?PHaMAhz+y5kVMvlbY7VH2hP8iGD1Hr75n7Qr9LvUICepK68RLJjswOQ8OiXD?=
+ =?us-ascii?Q?eM1bicV60AUjIMrqUGAht6Cq/Dq2LrOOrAqEIbR2Ewd+Wf3xt6fZw3eT2g+c?=
+ =?us-ascii?Q?HBcdSuYG5VYykvSB7r09sgpB4Ou8RlSvN1Va0/jIQv7on+twIcvwbnHXSB6P?=
+ =?us-ascii?Q?Uwaeqc7AjTBDWS3bhbHOzIpVFFWXzz7WaP5ET/RD7SprCt1PORNUXirQKJyq?=
+ =?us-ascii?Q?VKidCxXqPQXkHDsPge8Vu3dur+CaxGYgudL3iz/nDrMAq/mOzMtDDAGAl+pI?=
+ =?us-ascii?Q?SCvZiQpuC1TQ5v+cSLtJK0ohdELMhvRE9nCM8ZC5Rl1QPc2Ou/VN86NeUOd3?=
+ =?us-ascii?Q?mIq0fz1YlnJ2xf58BOQMFCGp+anN2NRlPncBaURLAJ3SuGY07ytUhFGUX/9m?=
+ =?us-ascii?Q?PDkijm/FtqERYks9sDo/a6lZOrWigek9uqrDuPKSv9EUiS/8Ivg2dE5Lcc2d?=
+ =?us-ascii?Q?vDQQravuuBZIoWU9m3Gcp3yYt0P6QD5C0AUoVmUS9VFXNXj5EgFiDVr/tNDu?=
+ =?us-ascii?Q?vEnDNtCnwwx0UXONuM3ORQplLKZTjbzarI5rAiIdtCo5oKIdlJdgpsdVxP2e?=
+ =?us-ascii?Q?C3NnXH3PSL+JWfdsENzf8uS9DOOw91cnK82GP+W7GjYRBwBI3Hxyl7CyOKda?=
+ =?us-ascii?Q?sl5fnDAnVSnQSC25YnasVcyjlZkACKnFyBwK4ey4QqpIcv683DfZq+tbaWBx?=
+ =?us-ascii?Q?bBHKZZ6n9HoOZG//YcbzSKcKsCrTpIyjZ1Pwi+gz+hqL75UTTMak9BvsMCes?=
+ =?us-ascii?Q?2ebDFY/WZqr8gXtg+pmF/4hWvu9o9zvt0XsCnSx3k7wgtwtiUdgCF6T1WeDe?=
+ =?us-ascii?Q?NRwAcrJ1q/eoe4abExJA+L8CQouhvc5XOrk42AfwqS2C5GDjgSlbBiW6p9pY?=
+ =?us-ascii?Q?ibauozYmoDWdqThxjvAAwGD+rutfMdbSt/igJfoh88bOCssjWEeXw8013POl?=
+ =?us-ascii?Q?lyNAn3BP/VQ/xxlpJyXMZSBjHZg3PQP4wyxnHev8ZX+TcT4+DOUkbKfrfibW?=
+ =?us-ascii?Q?QTvMHLgebPcKinLxSwoJH1vVx6PVpyKScaVZH1MvmL7D68cHvQNp+nKY6FmH?=
+ =?us-ascii?Q?D9mNtHrCoJgayVlooQ0z2b++saKZJSOpNX7x553Gz+yH3S6MN7IegUawVdnQ?=
+ =?us-ascii?Q?+8TC/rvjCURnCBN/eyiXcgCxNiJNNwZmExhP1wQaSSpgK+GSSqfxH1jzqudi?=
+ =?us-ascii?Q?iqWMm5SBffvKAi2ccKI1M2P/mdm+4D2phIDmOiSzu7bM8CrF8mVX0y9BzZkX?=
+ =?us-ascii?Q?8Gtq+GyS2pWvmJZBTzw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54818BD5421AC200C2DEEDCFDC409@PH0PR12MB5481.namprd12.prod.outlook.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] RE: [PATCH v2 1/2] transport-pci: Introduce
- legacy registers access commands
-
-On Tue, May 23, 2023 at 05:13:54PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Monday, May 22, 2023 5:35 PM
-> 
-> > 
-> > iokit is from my previous work experience not virtio.
-> > For virtio we had a lot of trouble with hacks like this on windows.
-> I don't know why windows driver need to talk to PF driver until now when the AQ doesn't exists.
-
-What is it you want to know?
-
-> > That's an important platform.
-> > 
-> I am not sure how important is it.
-> What I learnt that a decade has passed and even after that virtio drivers are not part of the OS distro.
-
-Because with QEMU they are so easy to side-load. So we never bothered.
-
-> > > > If you are mapping VF BAR, this has to be done by VF driver, and
-> > > > please just avoid pain for everyone by exposing the necessary info
-> > > > through the VF itself.
-> > > > A capability seems perfect for this.
-> > > >
-> > > Why not the MMIO region as proposed in v0?
-> > 
-> > Are you asking what were issues with v0? The issue with v0 was not MMIO as
-> > such at least for me.  The issue was that it was not giving us any way to work
-> > around bugs in the legacy interface. AQ was a fix for that.
-> > 
-> It doesn't need to because guest is anyway going to do whatever it does. 
-
-yes. But hypervisor can do work-arounds or detect broken functionality
-and stop cleanly.
-
-> The clear requirement is: to not fix legacy but to support legacy.
-> Fixing legacy is role of 1.x. Not the role of legacy interface itself using AQ/MMIO.
-> 
-> And even if one desire to coalesce MMIO writes, it can still do it for mac address.
-> We discussed this.
-> We also discussed that kernel as old as 2.6.32 uses CVQ for mac address.
-> 
-> And Even device can apply mac address when it reaches the count of byte writes to 6, if wishes to.
-> > 
-> > > Capability based read/write requires extra redirection, it is less optimal than
-> > MMIO.
-> > >
-> > > > An alternative is not to map VF BAR at all, steal space from PF BAR instead.
-> > > Come an iokit will be able to access this PF BAR without binding to it?
-> > 
-> > I don't get what you are saying here.  You have to bind a PF driver.
-> > Otherwise you can not send AQ command. That driver can map PF BAR into
-> > applications.
-> > 
-> This is usual model that we follow. When PF driver is serving and emulating it provides the shared platform for other devices for legacy functionality.
-> It is for legacy not for any other newer interface.
-> 
-> And for purpose of BAR mapping, such BAR in the VF can be mapped too.
-> You didn't answer why VF BAR is a problem and suggest PF BAR.
-
-VF BAR by itself is not a problem. Discovering VF BAR mapping offset
-through PF is.
-
-
-> Such VF BAR already exists and asking for new resource creation doesn't fit in your "simple" scheme suggestion either.
-> 
-> > 
-> > > > Guest is not accessing this anyway. So I really do not see why not
-> > > > from software point of view. There's a hardware reason? Could you
-> > > > talk to hardware guys about this? You objected to AQ too then
-> > > > hardware guys told you it is not a big deal.
-> > > I didn't object to AQ on hw reason.
-> > > I explained AQ is not the best compared to MMIO because it is slow
-> > compared to MMIO by law of physics as it needs to move more bits than
-> > MMIO.
-> > > And so, the capability based tunneling too is slow to MMIO.
-> > > >
-> > > > > > So we have legacy emulation send commands to VF or to PF.  Okay.
-> > > > > > But let us avoid the need for VF driver to send commands to PF to
-> > initialize.
-> > > > > > Just get all information it needs from VF itself.
-> > > > > >
-> > > > > >
-> > > > > > Maybe it's a good idea to reuse existing notification
-> > > > > > capability, or maybe a new one, but let's avoid making VF driver
-> > > > > > depend on PF
-> > > > commands.
-> > > > > >
-> > > > > We agreed in v1 on Jason's suggestion to have the AQ command and
-> > > > > yet you and Jason hinder this in v2 with this exact repeated question.
-> > > > > Lets please avoid this and move forward.
-> > > >
-> > > > How was I supposed to raise this issue on v1 if it was not there?
-> > > > Stop arguing in circles and things will move forward.
-> > > v1 version clearly had AQ commands.
-> > >
-> > > Please revisit your comments.
-> > > v0 -> you suggested:
-> > >  - "why not AQ, like transport vq, it can coalesce partial mac writes".
-> > >
-> > > v1-> over AQ, you suggested:
-> > >  - to "drop the size"
-> > > - summarized to split 2 commands to 4 commands to split device and config
-> > area.
-> > >
-> > > After that summary, you propose, why not self-contained in VF itself? -> circle
-> > back to v0 method.
-> > > (Instead of mmio, suggesting capability, but not explaining why mmio is not
-> > fine. Which is better than cap).
-> > >
-> > > Then now you propose "have BAR in the PF which is owned by other PF
-> > driver", with least reasoning.
-> > > And it convolutes with your suggestion of PF driver access...
-> > >
-> > > So, I am bit lost on your circular proposal, or it was just a probe question...
-> > > Not sure.
-> > 
-> > You did move things to AQ however not completely.  You kept notification in
-> > MMIO. If everything was in AQ we would be done as far as I am concerned
-> > (though Jason still does not like duplication of functionality with transport vq,
-> > but that is a separate issue).
-> > 
-> It is a wrong design point to ask to "move everything to AQ", because AQ cannot be the data link layer for everything.
-> One can ask in the, why don't I put my 1GB of data inside the AQ itself? AQ should do everything...
-> Why not device build MB of shared memory for MMIO, queue data ... one shared memory should do everything.
-> 
-> And list like that can continue with no end.
-> 
-> We have seen the perf numbers with iobar and memory bar both for PCI devices in lab.
-> For the PCI transport, perf wise, memory bar for notification, second is iobar, 3rd is AQ.
-> They are order of magnitude apart for latency.
-> So AQ to send DB is only looks good in the PDF like how INTX looks good in PDF with SR-IOV but doesn't work well on perf wise.
->
-> > As notification is in VF MMIO I am trying to help you by suggesting other ways
-> > to keep things consistent. If it's in VF I think it follows that where it is has to be
-> > in VF as well. Not in AQ.
-> Huh.
-> If notification for VF is in VF -> hence other config registers also in VF, such blanket statements does not help.
-
-not other config registers. what's needed in VF driver should be
-retrievable through VF.
-
-
-> I explained in past that notifications are latency sensitive, and they are best served using MMIO.
-> 
-> Can one implement legacy registers as MMIO as proposed in v0?
-> Yes, comes at high cost to build such hw.
-> Is there a better optimal option for legacy?
-> Yes, i.e. use AQ which is what we wrote in cover letter of AQ.
-> 
-> b. Use MMIO registers pair on the VF itself for example,
-> legacy_register_addr = offset + size + operation + completion
-> legacy_register_data = register content
-> 
-> an example sequence is:
-> hv sw writes 
-> legacy_register_addr = offset=0x2, size=0x4, operation=read,
-> Poll for 
-> legacy_register_addr = offset=0x2, size=0x4, operation=read, cmpl=1
-> Read the register data from legacy_register_data.
-> 
-> This way a small register footprint on device. Self-contained. Works for the device reset too.
-> Less memory footprint on the device too.
-> 
-> Does this solve the legacy interface problem? No. Because that is not the objective.
-> 
-> Is this small enough to carry in spec without disrupting the spec too much -> yes.
-> Is this lighter for sw and device to do? -> yes.
-> Does it work at scale of VFs? -> yes.
-> Does it work as_is with legacy sw? -> No.
-> 
-> > 
-> > And look if that just serves to annoy I can just point out issues and complain
-> > without suggestions. Was trying to be helpful here really.
-> > 
-> Your comments and suggestions are helpful.
-> Some of them follow the loop that doesn't help.
-> Again, thanks a lot for the inputs and reviews.
-> 
-> The design discussion helped to produce two solutions here than what was started in v0.
-
-OK good. Now I suggest you make an effort to come up with some
-compromise that will make this thread stop. I really can't say
-I even remember what we said in the beginning.
-You had this idea of starting with a problem statement document
-how about doing that? Because I feel every time people bring
-up some idea and a problem this idea would solve, you go
-"this is out of scope". Let's decide what the scope is?
-
-
-> > > >
-> > > > If we have trouble converging on the notification thing, how about
-> > > > we make progress without it for now?  Merge a slow version that
-> > > > sends kicks through aq, then work on the best way to make notifications
-> > faster, separately.
-> > > >
-> > > Sure, we can differ, but the VF has the notification BAR to utilize.
-> > > So why not use it?
-> > 
-> > Are you asking why is merging a smaller partial patch then adding functionality
-> > a good idea?
-> > 
-> I am asking a 1.x PCI device has the VF notification BAR already, why we don't use it, why to build an additional one in device?
-
-Following this logic, a 1.x PCI device also has modern common config.
-All you really truly need is a flag to make it behave like legacy,
-from POV of device config and VQs.
-
-
-> > > > VF(member) driver can't implement AQ commands at all. They are sent
-> > > > to
-> > > > PF(owner) thus by PF(owner) driver.  In virt configs, VMM can trap
-> > > > legacy access and talk to owner driver to send them.  It can also
-> > > > talk to member driver to send notifications.  You can I guess have
-> > > > VMM get member BAR offsets from owner and pass them to member for
-> > > > mapping. This raises all kind of questions of trust.
-> > > Only the member driver has access to the owner driver via kernel API.
-> > 
-> > Assuming you can predict existance of specific kernel APIs on all OSes is IMO a
-> > fool's errand. 
-> A specific kernel API is not expected.
-> A framework is expected in OS.
-> And sw improvise as use case arise.
-> 
-> Driver to driver communication may be possible in WDM using [1].
-> Outside of virtio, I can imagine for PRI level functionality two drivers interaction would be needed too.
-> 
-> [1] https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/different-ways-of-handling-irps-cheat-sheet#scenario-3-forward-with-a-completion-routine
-> 
-> > > Part of the VF BAR information at the PCI level is also on the PF.
-> > > There is no trust break here. A kernel exposes single self-contained object to
-> > user space VMM.
-> > 
-> > That is ok.  The trust break is if PF driver is in userspace. You then are trusting
-> > userspace to pass offsets back to kernel VF driver.
-> > 
-> > 
-> I don't see how a MMIO over PF is somehow more secure than AQ over PF regardless of in user or kernel.
-> I don't see how this a problem is.
-> Even today when/if IOBAR is trapped by the user space forwarding to kernel can modify the offset and value without any AQ etc.
-> 
-> I don't even see how one OS can spawn SR-IOV VFs from the user space driver in the kernel.
-> 
-> Look one can even take the PF from user space to yet another guest VM and add ten other complexities to put oneself to a dead end.
-
-So let's try to keep drivers self-contained as much as possible.
-
-
-> > 
-> > > > If you can map BAR from PF that would be simplest, VMM then only
-> > > > pokes at PF and not VF. If not then we really should expose this
-> > > > info n the VF if at all possible.
-> > > >
-> > > There is clearly no need to use PF for notification when the notification
-> > method already exists on the VF.
-> > 
-> > All this looks backwards with mixed up functionality.  What VF has is modern
-> > BAR. If you insist on reusing modern functionality for legacy when it suits you
-> > then maybe we should reuse it for everything, that would be extending
-> > transport vq to support legacy somehow.
-> > 
-> You bring back same point that we already closed in discussion.
-> It is not about suiting me.
-> It is what is there in the spec and in device for transitional device. (not specific to 1.x).
-> The design criteria is: 
-> a. use as much as possible from 1.x and transitional device for the legacy support so that spec changes, device side, sw side changes are minimal.
-> AQ fits very well to this criteria.
-> 
-> b. Avoid inventing new interfaces between driver and device, specifically at PCI device level for things that are often implemented in hw.
-> Here also AQ scores well.
-> MMIO two register example also works well.
-> 
-> And notification also works well that reuses transitional device's notification.
-
-I don't know what these are. You had some weird
-+struct virtio_admin_cmd_lq_notify_query_result {
-+       u8 bar; /* PCI BAR number of the member VF */
-+       u8 reserved[7];
-+       le64 offset; /* Byte offset within the BAR */
-+};
-if you want to re-use the normal notifications for VFs we already
-describe them using capabilities.
-
-However, this creates a weird mix where there's this command that mostly
-follows legacy pci config layout except notifications which are there in
-the legacy pci config are actually somewhere else.  And this is just
-inconsistent and confusing, and the reason for this is implementation
-defined.
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8c98065-9910-40cf-05d9-08db5bd53d17
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2023 21:32:41.3657
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jPo79Vh52v+AWL9CRzJiFC/KDaTLkk98bc9Bp3d4CV5VWHTtBXkJBOr9aMYZOxPJo9is/DtqiM264nGHb4sJ2A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5279
+Subject: [virtio-dev] RE: [PATCH v2 0/2] transport-pci: Introduce legacy registers access
+ using AQ
 
 
 
-> 3 out of 4 functionalities are done on AQ of the TVQ.
-> So, it is time to stop asking to replicate the AQ functionality on some new TVQ.
-> This was discussed in depth.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Tuesday, May 23, 2023 2:17 PM
+>=20
+> On Mon, May 15, 2023 at 02:30:55PM +0000, Parav Pandit wrote:
+> >
+> > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > Sent: Monday, May 15, 2023 6:09 AM
+> > > To be more specific, device config often has the same layout under
+> > > legacy and modern. Thus if getting an offset within device config,
+> > > same decoding logic should be reusable between legacy and modern.
+> > Modern device registers are directly accessible from the guest driver w=
+ithout
+> mediation for VF,SF,SIOV.
+> > Hence, there is no need to have commands for modern register access ove=
+r
+> some VQ.
+>=20
+> Yes, there's need, and some of it you were pushing yourself.
+Yes, there is need without mediation of AQ.
+It was discussed in depth cfgq idea with trade off.
 
-I don't think I ever did that.
+> AQ will allow reduced memory with SRIOV, and support for SIOV.
+Already discussed, v0 and v1, mediation via AQ is not the way for SRIOV.
+SIOV starting with single goal of only backward compatilbity hence, AQ is a=
+lso doesn't look future forward.
 
-> > 
-> > > In fact, it is yet extra steering entry for the hw to perform such mapping.
-> > >
-> > > To iterate what presented yday in [1] to Jason.
-> > >
-> > > [1]
-> > > https://lists.oasis-open.org/archives/virtio-comment/202305/msg00298.h
-> > > tml
-> > >
-> > > 1. legacy register access via AQ (v1)
-> > > Pros:
-> > > a. Light weight for hypervisor and devices (mainly PCI) to implement.
-> > > b. Enables sw to coalesce some device specific registers, if needed.
-> > > Cons:
-> > > a. Not self-contained, requires PF's AQ which is anyway designed for such
-> > purpose.
-> > >
-> > > 2. Legacy registers access via new MMIO region (v0 + sane reset)
-> > 
-> > I think I would buy this one if it was actually in BAR0 exactly legacy with no
-> > changes, no reset no nothing. a hack like Jason described that at least makes
-> > legacy linux drivers work with no software glue.  That is horrible, fragile but
-> > engineering history is full of hacks like this.
-> > If you need software in the middle then let's please make it robust.
-> > 
-> Your ignorance and inclination to see only from the sw pov is not helpful here.
-> Feedback from the PCI device side given here to be considered too.
-
-After hearing this for the 10th time I don't think I'm not aware, thanks
-for bringing this to my attention for the 11th time.
-My point however is the last sentence *If you need software in the
-middle then let's please make it robust.* If BAR0 hack does not work
-then let's use sane interfaces as much as possible.
-
-> This approach doesn't work well for device reset at scale which is a one way signal.
-> 
-> Hence, I proposed the either the AQ over PF or the two-register scheme of above over MMIO VF.
-> 
-> Does that work for you?
-
-AQ works fine I think. This new one I haven't seen yet hard to say.
-Probably has its own set of problems ...
-
-> > 
-> > > Pros:
-> > > a. smaller code in slow register access than AQ b. Sw cannot coalesce
-> > > some device specific registers.
-> > > c. Self-contained in the VF
-> > >
-> > > Cons:
-> > > a. Relatively burdensome for the device as it requires more RW registers at
-> > scale, but it can be indirect register.
-> > 
-> > what I keep saying
-> > 
-> > b. a ton of legacy bugs which hypervisor can't detect or work around
-> >    (reset is just one issue)
-> > 
-> > 
-> > > 3. legacy registers tunneling with additional indirection via PCI
-> > > capability
-> > 
-> > 
-> > I don't know what's this one.
-> 
-> Above example of legacy_register_addr and legacy register_data on the VF.
-
-Talking about the two register thing.  We actually have this already:
-VIRTIO_PCI_CAP_PCI_CFG.  We could allow access to IO BAR through it.
-
-
-But really since apparently you want to focus on how we solve
-notifications let's focus on that. I feel the main issue is
-poking at 1.x registers and at the same time at legacy registers.
-The spec was written with a strong assumption that it is either or,
-never a mix. Changing that will be painful.
-This is why I was asking about VIRTIO_NET_F_LEGACY_HEADER - 
-legacy can live in software then and we do not need to worry
-about it in the spec. I got it that there's too much software
-here for your taste, but the problem with legacy is really
-that it was always ad hoc and implementation derived.
-So we need to keep it siloed.
-
--- 
-MST
-
+And your summary email, we parked it aside for now.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
