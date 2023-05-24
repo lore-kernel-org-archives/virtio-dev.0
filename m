@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12806-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12807-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 30B29C77B7C
-	for <virtio-dev@archiver.kernel.org>; Wed, 24 May 2023 08:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 612BEC7EE2C
+	for <virtio-dev@archiver.kernel.org>; Wed, 24 May 2023 09:17:14 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 96B5374E3E
-	for <virtio-dev@archiver.kernel.org>; Wed, 24 May 2023 08:12:57 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 67B55EEA12
+	for <virtio-dev@archiver.kernel.org>; Wed, 24 May 2023 09:17:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8AC4F986421
-	for <virtio-dev@archiver.kernel.org>; Wed, 24 May 2023 08:12:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2FDB5986434
+	for <virtio-dev@archiver.kernel.org>; Wed, 24 May 2023 09:17:13 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 80557986412; Wed, 24 May 2023 08:12:57 +0000 (UTC)
+	id 0F4E7986410; Wed, 24 May 2023 09:17:13 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,197 +24,286 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6C39C986410;
-	Wed, 24 May 2023 08:12:52 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id F1176986412
+	for <virtio-dev@lists.oasis-open.org>; Wed, 24 May 2023 09:17:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VjNI7V9_1684915966;
-Date: Wed, 24 May 2023 16:12:46 +0800
-From: Heng Qi <hengqi@linux.alibaba.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
-	Jason Wang <jasowang@redhat.com>, Parav Pandit <parav@nvidia.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230524081246.GB76632@h68b04307.sqa.eu95>
-References: <20230522121200.40939-1-hengqi@linux.alibaba.com>
- <20230522150743-mutt-send-email-mst@kernel.org>
- <20230523024118.GA23504@h68b04307.sqa.eu95>
- <20230523024057-mutt-send-email-mst@kernel.org>
- <20230523091820.GC23504@h68b04307.sqa.eu95>
- <20230523092237-mutt-send-email-mst@kernel.org>
- <20230523135144.GD23504@h68b04307.sqa.eu95>
- <20230524020227-mutt-send-email-mst@kernel.org>
+Message-ID: <5290eb0e-93ee-afa6-9f92-3293f05986ee@quicinc.com>
+Date: Wed, 24 May 2023 17:17:05 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230524020227-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re:
- [Proposal] Relationship between XDP and rx-csum in virtio-net
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Content-Language: en-US
+To: Cornelia Huck <cohuck@redhat.com>, <virtio-dev@lists.oasis-open.org>
+CC: <quic_ztu@quicinc.com>
+References: <20230417140353.870-1-quic_haixcui@quicinc.com>
+ <20230417140353.870-3-quic_haixcui@quicinc.com> <87edoh7dz4.fsf@redhat.com>
+From: Haixu Cui <quic_haixcui@quicinc.com>
+In-Reply-To: <87edoh7dz4.fsf@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: Ttab5HjuLIRKj7h1ekuDw49ncOxVkKko
+X-Proofpoint-GUID: Ttab5HjuLIRKj7h1ekuDw49ncOxVkKko
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-24_05,2023-05-23_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 impostorscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
+ spamscore=0 clxscore=1011 adultscore=0 suspectscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305240078
+Subject: Re: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
 
-On Wed, May 24, 2023 at 02:07:14AM -0400, Michael S. Tsirkin wrote:
-> On Tue, May 23, 2023 at 09:51:44PM +0800, Heng Qi wrote:
-> > On Tue, May 23, 2023 at 09:30:28AM -0400, Michael S. Tsirkin wrote:
-> > > On Tue, May 23, 2023 at 05:18:20PM +0800, Heng Qi wrote:
-> > > > On Tue, May 23, 2023 at 03:15:37AM -0400, Michael S. Tsirkin wrote:
-> > > > > On Tue, May 23, 2023 at 10:41:18AM +0800, Heng Qi wrote:
-> > > > > > On Mon, May 22, 2023 at 03:10:05PM -0400, Michael S. Tsirkin wrote:
-> > > > > > > On Mon, May 22, 2023 at 08:12:00PM +0800, Heng Qi wrote:
-> > > > > > > > 1) Add a feature bit to the virtio specification to tell the sender that a fully
-> > > > > > > > csumed packet must be sent.
-> > > > > > > 
-> > > > > > > Who is the sender in this picture? The driver?
-> > > > > > 
-> > > > > > The device or the driver.
-> > > > > > 
-> > > > > > When the device is hw, the sender is more likely to be a device.
-> > > > > > When the device is sw, the sender can be a device or a driver.
-> > > > > >
-> > > > > > But in general, this feature is inclined to constrain the behavior of the device and
-> > > > > > the driver from the receiving side.
-> > > > > 
-> > > > > Based on above I am guessing you are talking about driver getting
-> > > > > packets from device, I wish you used terms from virtio spec.
-> > > > 
-> > > > Yes, I'm going to use the terminology of the virtio spec.
-> > > > 
-> > > > > 
-> > > > > > For example: 
-> > > > > > VIRTIO_NET_F_UNNECESSARY_CSUM : The driver tells the device that you must send me a fully csumed packet.
-> > > > > > 
-> > > > > > Then the specific implementation can be
-> > > > > > 
-> > > > > > (1) the sender sends a fully csumed packet;
-> > > > > > (2) the receiver receives a CHECKSUM_PARTIAL packet, and the device helps calculate the fully csum
-> > > > > >     (because the two parties in the communication are located on the same host, the packet is trusted.).
-> > > > > > 
-> > > > > > In summary, if VIRTIO_NET_F_UNNECESSARY_CSUM is negotiated, the driver will no longer receive any packets marked CHECKSUM_PARTIAL.
-> > > > > > 
-> > > > > > Thanks.
-> > > > > 
-> > > > > This is what clearing VIRTIO_NET_F_GUEST_CSUM does.
-> > > > 
-> > > > Yes, but with VIRTIO_NET_F_GUEST_CSUM cleared, although the device can
-> > > > receive a fully checksummed packet, we can no longer enjoy
-> > > > the device's ability to validate the packet checksum. That is, the value
-> > > > of \field{flags} in the virtio_net_hdr structure is set to 0, which means
-> > > > that the packet received by the driver will not be marked as
-> > > > VIRTIO_NET_HDR_F_DATA_VALID.
-> > > > 
-> > > > So, we need a feature bit (let's say VIRTIO_NET_F_UNNECESSARY_CSUM).
-> > > > If VIRTIO_NET_F_UNNECESSARY_CSUM is negotiated, the device must give the
-> > > > driver a fully checksummed packet, and the packet is validated by the
-> > > > device with \field{flags} set to VIRTIO_NET_HDR_F_DATA_VALID.
-> > > > 
-> > > > > 
-> > > > > I feel you are trying to say that clearing VIRTIO_NET_F_GUEST_CSUM
-> > > > > disables all offloads but you want to keep some of them?
-> > > > > 
-> > > > 
-> > > > No, what I mean is that a feature VIRTIO_NET_F_UNNECESSARY_CSUM is needed
-> > > > in addition to VIRTIO_NET_F_GUEST_CSUM, if both features are negotiated,
-> > > > then the driver may always receive packets marked as
-> > > > VIRTIO_NET_HDR_F_DATA_VALID, which means that we can now load XDP at the
-> > > > same time.
-> > > 
-> > > Makes no sense to me. VIRTIO_NET_F_GUEST_CSUM set already allows
-> > > VIRTIO_NET_HDR_F_DATA_VALID:
-> > 
-> > We need to focus on what happens when the XDP program is loaded:
-> > 
-> > The current virtio-net needs to turn off the VIRTIO_NET_F_GUEST_CSUM
-> > feature when loading XDP. The main reason for doing this is because
-> > VIRTIO_NET_F_GUEST_CSUM allows to receive packets marked as
-> > VIRTIO_NET_HDR_F_NEEDS_CSUM. Such packets are not compatible with
-> > XDP programs, because we cannot guarantee that the csum_{start, offset}
-> > fields are correct after XDP modifies the packets.
+Hello Cornelia Huck,
+     Thank you so much for your comments. I respond these comments, 
+could you please help check again. Really appreciate.
+     I will raise next proposal to fix these comments.
+
+Best Regards
+Haixu Cui
+
+On 4/18/2023 5:10 PM, Cornelia Huck wrote:
+> On Mon, Apr 17 2023, Haixu Cui <quic_haixcui@quicinc.com> wrote:
 > 
-> What do you want the device to do with these packets?
-> Just clear VIRTIO_NET_HDR_F_NEEDS_CSUM?
-> Then ... why don't you have the driver clear that bit?
-
-Just clearing VIRTIO_NET_HDR_F_NEEDS_CSUM will cause the stack to drop
-packets when validating the checksum.
-
-From [1] we know that after negotiating VIRTIO_NET_F_GUEST_CSUM, the
-device can choose to save some work, thus generating packets carrying
-VIRTIO_NET_HDR_F_NEEDS_CSUM. The new feature just keeping the device from saving
-the work it's supposed to be doing. Of course, this will bring some
-device calculating overhead, but if the device has sufficient calculating
-resources, it can offer the new feature.
-
-[1] “The converse features are also available: a driver can save the
-virtual device some work by negotiating these features. Note: For
-example, a network packet transported between two guests on the same
-system might not need checksumming at all, nor segmentation , if both
-guests are amenable.”
-
-Thanks.
+> Meta comment: I think you want to send to virtio-comment (feel free to
+> keep virtio-dev on cc:).
+Yes, I will send to virtio-comment and cc to virtio-dev in subsequent 
+commits.
 
 > 
-> > So in order for the driver to continue to enjoy the device's ability to
-> > validate packets while XDP is loaded, we need a new feature to tell the
-> > device not to deliver packets marked as VIRTIO_NET_HDR_F_NEEDS_CSUM (in
-> > other words, the device can only deliver packets marked as
-> > VIRTIO_NET_HDR_F_DATA_VALID).
-> > 
-> > Thanks.
+>> virtio-spi is a virtual SPI master and it allows a guset to operate and
+>> use the physical SPI master controlled by the host.
+>> ---
+>>   device-types/spi/description.tex        | 155 ++++++++++++++++++++++++
+>>   device-types/spi/device-conformance.tex |   7 ++
+>>   device-types/spi/driver-conformance.tex |   7 ++
+>>   3 files changed, 169 insertions(+)
+>>   create mode 100644 device-types/spi/description.tex
+>>   create mode 100644 device-types/spi/device-conformance.tex
+>>   create mode 100644 device-types/spi/driver-conformance.tex
+>>
+>> diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
+>> new file mode 100644
+>> index 0000000..a68e5f4
+>> --- /dev/null
+>> +++ b/device-types/spi/description.tex
+>> @@ -0,0 +1,155 @@
+>> +\section{SPI Master Device}\label{sec:Device Types / SPI Master Device}
+>> +
+>> +virtio-spi is a virtual SPI(Serial Peripheral Interface) master and it allows a
 > 
+> Nit: missing blank after "SPI"
+Got it. Will add blank after SPI.
 > 
+> s/it//
 > 
+>> +guest to operate and use the physical SPI master devices controlled by the host.
+>> +By attaching the host SPI controlled nodes to the virtual SPI master device, the
+>> +guest can communicate with them without changing or adding extra drivers for these
+>> +controlled SPI devices.
 > 
-> > > \item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
-> > >   VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
-> > >   set: if so, the packet checksum at offset \field{csum_offset}
-> > >   from \field{csum_start} and any preceding checksums
-> > >   have been validated.  The checksum on the packet is incomplete and
-> > >   if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags}, 
-> > >   then \field{csum_start} and \field{csum_offset} indicate how to calculate it
-> > >   (see Packet Transmission point 1).
-> > > 
-> > > Did you maybe mean if either feature is negotiated?
-> > > 
-> > > 
-> > > 
-> > > > > Again please use virtio terminology not Linux. to help you out,
-> > > > > in current linux, VIRTIO_NET_HDR_F_NEEDS_CSUM and VIRTIO_NET_HDR_F_DATA_VALID
-> > > > > will set CHECKSUM_PARTIAL and CHECKSUM_UNNECESSARY respectively.
-> > > > > 
-> > > > 
-> > > > Sure. Will do as you suggested.
-> > > > 
-> > > > Thanks.
-> > > > 
-> > > > > 
-> > > > > -- 
-> > > > > MST
-> > > > > 
-> > > > > 
-> > > > > ---------------------------------------------------------------------
-> > > > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> > > 
-> > > 
-> > > This publicly archived list offers a means to provide input to the
-> > > OASIS Virtual I/O Device (VIRTIO) TC.
-> > > 
-> > > In order to verify user consent to the Feedback License terms and
-> > > to minimize spam in the list archive, subscription is required
-> > > before posting.
-> > > 
-> > > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > > List help: virtio-comment-help@lists.oasis-open.org
-> > > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> > > List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> > > Committee: https://www.oasis-open.org/committees/virtio/
-> > > Join OASIS: https://www.oasis-open.org/join/
+> Can we rewrite this paragraph without relying on the host/guest
+> terminology? Does
 > 
+> "allows a driver to operate and use the physical SPI master devices
+> controlled by the device"
 > 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> capture the essence of what this is doing?
+> 
+> I don't quite understand the second sentence, maybe someone familiar
+> with SPI can come up with something.
+> 
+This statement is referred to the Virtio-I2C Chapter, because Virtio-SPI 
+is very similar to Virtio-SPI in architecture. The guest can communicate 
+through the physical SPI master without operating the hardware directly, 
+but calling the physical SPI master driver running on the host. So the 
+physical SPI driver on the host doesn't need changes any more.
+
+>> +
+>> +In a typical host and guest architecture with Virtio SPI, Virtio SPI driver
+>> +is the front-end and exists in the guest kernel, Virtio SPI device acts as
+> 
+> s/guest kernel/guest/ ?
+Yes, I will update in next commit.
+> 
+>> +the back-end and exists in the host. And VirtQueue is used for communication
+>> +between the front-end and the back-end.
+> 
+> "A virtqueue is used for communication between the front-end and the
+> back-end." ?
+> 
+> [I *think* "virtqueue" is the term we've agreed on?]
+Yes, I will remove this line.
+> 
+>> +
+>> +\subsection{Device ID}\label{sec:Device Types / SPI Master Device / Device ID}
+>> +45
+>> +
+>> +\subsection{Virtqueues}\label{sec:Device Types / SPI Master Device / Virtqueues}
+>> +
+>> +\begin{description}
+>> +\item[0] requestq
+>> +\end{description}
+>> +
+>> +\subsection{Feature bits}\label{sec:Device Types / SPI Master Device / Feature bits}
+>> +
+>> +None.
+>> +
+>> +\subsection{Device configuration layout}\label{sec:Device Types / SPI Master Device / Device configuration layout}
+>> +
+>> +All fields of this configuration are always available and read-only for the Virtio SPI driver.
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_config {
+>> +    u32 bus_num;
+>> +    u32 chip_select_max_number;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +\begin{description}
+>> +\item[\field{bus_num}] is the physical spi master assigned to guset, and this is SOC-specific.
+> 
+> Maybe better "the physical SPI master controled by the device"?
+Because this item is set by host and used by guest, so it seems that 
+this is assigned to the guset by the host.
+> 
+>> +
+>> +\item[\field{chip_select_max_number}] is the number of chipselect the physical spi master supported.
+>> +\end{description}
+>> +
+>> +\subsection{Device Initialization}\label{sec:Device Types / SPI Master Device / Device Initialization}
+>> +
+>> +\begin{itemize}
+>> +\item The Virtio SPI driver configures and initializes the virtqueue.
+>> +
+>> +\item The Virtio SPI driver allocates and registers the virtual SPI master.
+> 
+> What does this mean? Shouldn't we rather only require the driver to set
+> up the virtqueue and leave details on how to operate beyond the device
+> <-> driver interface to the implementation?
+Yes, I will remove this line in next commit.
+
+>> +\end{itemize}
+>> +
+>> +\subsection{Device Operation}\label{sec:Device Types / SPI Master Device / Device Operation}
+>> +
+>> +\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / SPI Master Device / Device Operation: Request Queue}
+>> +
+>> +The Virtio SPI driver queues requests to the virtqueue, and they are used by the
+>> +Virtio SPI device. Each request represents one SPI transfer and it is of the form:
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_transfer_head {
+>> +    u32 mode;
+>> +    u32 freq;
+>> +    u32 word_delay;
+>> +    u8 slave_id;
+>> +    u8 bits_per_word;
+>> +    u8 cs_change;
+>> +    u8 reserved;
+>> +};
+>> +\end{lstlisting}
+> 
+> [Side note: it seems the master/slave terminology is baked into SPI and
+> I assume we cannot avoid it?]
+On the side of the whole system, both guest and host are master.
+But on the side of guset, host just like a proxy, in a way, a slave 
+driven by the host.
+> 
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_transfer_end {
+>> +    u8 status;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_req {
+>> +    struct virtio_spi_transfer_head head;
+>> +    u8 *rx_buf;
+>> +    u8 *tx_buf;
+>> +    struct virtio_spi_transfer_end end;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The \field{mode} defines the SPI transfer mode.
+>> +
+>> +The \field{freq} defines the SPI transfer speed in Hz.
+>> +
+>> +The \field{word_delay} defines how long to wait between words within one SPI transfer,
+>> +in ns unit.
+>> +
+>> +The \field{slave_id} defines the chipselect index the SPI transfer used.
+>> +
+>> +The \field{bits_per_word} defines the number of bits in each SPI transfer word.
+>> +
+>> +The \field{cs_change} defines whether to deselect device before starting the next SPI transfer.
+>> +
+>> +The \field{rx_buf} is the receive buffer, used to hold the data received from the external device.
+>> +
+>> +The \field{tx_buf} is the transmit buffer, used to hold the data sent to the external device.
+>> +
+>> +The final \field{status} byte of the request is written by the Virtio SPI device: either
+>> +VIRTIO_SPI_MSG_OK for success or VIRTIO_SPI_MSG_ERR for error.
+>> +
+>> +\begin{lstlisting}
+>> +#define VIRTIO_SPI_MSG_OK     0
+>> +#define VIRTIO_SPI_MSG_ERR    1
+>> +\end{lstlisting}
+>> +
+>> +\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / SPI Master Device / Device Operation: Operation Status}
+>> +
+>> +Members in \field{struct virtio_spi_transfer_head} are determined by the Virtio SPI driver, while \field{status}
+>> +in \field{struct virtio_spi_transfer_end} is determined by the processing of the Virtio SPI device.
+>> +
+>> +Virtio SPI supports three transfer types: 1) half-duplex read, 2) half-duplex write, 3) full-duplex read and write.
+>> +For half-duplex read transfer, \field{rx_buf} is filled by the Virtio SPI device and consumed by the Virtio SPI driver.
+>> +For half-duplex write transfer, \field{tx_buf} is filled by the Virtio SPI driver and consumed by the Virtio SPI device.
+>> +And for full-duplex read and write transfer, both \field{tx_buf} and \field{rx_buf} are used.
+>> +
+>> +\drivernormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
+>> +
+>> +The Virtio SPI driver MUST send messages on the requestq virtqueue.
+>> +
+>> +The \field{struct spi_transfer_head} MUST be filled by the Virtio SPI driver
+>> +and MUST be readable for the Virtio SPI device.
+>> +
+>> +The \field{struct spi_transfer_end} MUST be filled by the Virtio SPI device
+>> +and MUST be writable for the Virtio SPI device.
+>> +
+>> +For half-duplex read, the Virtio SPI driver MUST send \field{struct spi_transfer_head},
+>> +\field{rx_buf} and \field{struct spi_transfer_end} to the SPI Virtio Device in order.
+>> +
+>> +For half-duplex write, the Virtio SPI driver MUST send \field{struct spi_transfer_head},
+>> +\field{tx_buf} and \field{struct spi_transfer_end} to the SPI Virtio Device in order.
+>> +
+>> +For full-duplex read and write, the Virtio SPI driver MUST send \field{struct spi_transfer_head},
+>> +\field{rx_buf}, \field{tx_buf} and \field{struct spi_transfer_end} to the SPI Virtio Device in order.
+>> +
+>> +For half-duplex write or full-duplex read and write, the Virtio SPI driver MUST not use
+>> +\field{rx_buf} if the final \field{status} returned from the Virtio SPI device is VIRTIO_SPI_MSG_ERR.
+>> +
+>> +\devicenormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
+>> +
+>> +The Virtio SPI device MUST set all the fields of the \field{struct virtio_spi_config} on
+>> +receiving a configuration request from the Virtio SPI driver.
+>> +
+>> +The Virtio SPI device MUST set the \field{struct spi_transfer_end} before sending it
+>> +back to the Virtio SPI driver.
+>> +
+>> +The Virtio SPI device MUST be able to identify the transfer type according to the
+>> +received VirtQueue descriptors.
+>> +
+>> +The Virtio SPI device MUST NOT change the value of the send buffer if transfer type
+>> +is half-duplex write or full-duplex read and write.
+> 
+> I'm not familiar with how SPI works in general and would appreciate if
+> someone else could chime in here.
+> 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
