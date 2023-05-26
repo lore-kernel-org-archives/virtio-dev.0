@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12824-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12825-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6B0F1C77B7A
-	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 08:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8FFE2C77B7A
+	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 08:09:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1357F3711B
-	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 08:05:29 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 02E3D44348
+	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 08:09:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7969C98673A
-	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 08:05:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D7255986677
+	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 08:09:00 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id EA91098662A; Fri, 26 May 2023 08:05:27 +0000 (UTC)
+	id BE813983DA0; Fri, 26 May 2023 08:09:00 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,129 +24,175 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D9FD09863FC;
-	Fri, 26 May 2023 08:04:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id AD3009863FC
+	for <virtio-dev@lists.oasis-open.org>; Fri, 26 May 2023 08:09:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VjVS-AI_1685088259;
-Message-ID: <69cd31d4-c059-3edd-f14b-bdf03ac4b200@linux.alibaba.com>
-Date: Fri, 26 May 2023 16:04:18 +0800
+X-MC-Unique: mVntMd-ANo6rjGj2sbu3kw-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685088537; x=1687680537;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=iHmkDcOr7u7Bq7Y4lFGpS8DoD5+a3ipM/U3yEBt9eDI=;
+        b=l1141FeJcjF0LtH0K4Pm7og4bnOQTw5hZ+aHOQfMe4QL40vyY7jGG16rF55dhlhi1R
+         8P38A4HAl4+3nBCeUg7ancapWVmhumV4kS6ijSSIq6M9MtZRVIQtruhOaXrghkAvqxwp
+         HoXbiyNE1oa+uxIZfN4ySTimh77qREFYbnzSgmdKN1Wpxp3obzdAe6MjogfnM0R32qv/
+         4t7Mowt60+QIZjX/xC6yB0AH+xByO5StEzZdjGg4Xm+TX/mgRXuRq9TSEeM9NTi1q6f2
+         /9tTNcx3ZVFyHSI95CTyEBFJ9mIFPvmQIpxR/2VIIGc9q2GLrdPQ9j/xrkg8SlmqVk+V
+         cwSQ==
+X-Gm-Message-State: AC+VfDzzgCcK9Yv1y7P3U2ytDQx942QKijf7gloYx1rQc7Fv283ax+V1
+	UdcBj4v9VyJAlZF6HLEP7rrxvHVaPEbbB//iDaxtlI11sq3gRuLXoFD9tVGFMCVFOP+Hj3n4v5d
+	OeXxP6fUMEfL7ikdggxr7gYKJip1PX4uVrvN0sWj4BLxD
+X-Received: by 2002:a81:7cc6:0:b0:565:ba06:6e36 with SMTP id x189-20020a817cc6000000b00565ba066e36mr518735ywc.33.1685088537691;
+        Fri, 26 May 2023 01:08:57 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7V17vl/Pj4IY2I3wEXP690pacpdjGtrn9qS+e6ZkhCr0IYxImpGzixBASqDxuonBUK4z4ftVMM+Zo/YC2hCUQ=
+X-Received: by 2002:a81:7cc6:0:b0:565:ba06:6e36 with SMTP id
+ x189-20020a817cc6000000b00565ba066e36mr518710ywc.33.1685088537449; Fri, 26
+ May 2023 01:08:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-From: Heng Qi <hengqi@linux.alibaba.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
- Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
- Yuri Benditovich <yuri.benditovich@daynix.com>,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230522050236.49433-1-hengqi@linux.alibaba.com>
- <20230522151522-mutt-send-email-mst@kernel.org>
- <20230523035803.GB23504@h68b04307.sqa.eu95>
-In-Reply-To: <20230523035803.GB23504@h68b04307.sqa.eu95>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH v14] virtio-net:
- support inner header hash
+References: <20230522185730.3233001-1-eperezma@redhat.com> <20230522185730.3233001-2-eperezma@redhat.com>
+ <20230522152226-mutt-send-email-mst@kernel.org> <CAJaqyWfSzqdyPHogzccuYBeThJgcx-A_AfF8tmqLgxKNVczBWA@mail.gmail.com>
+ <1735e461-a858-5bf2-bf9f-d9418e281d0c@amd.com> <CAJaqyWd632RiE9Zhc8OLsQbnaC42VG1FW97UMDHPQRofukYPrg@mail.gmail.com>
+ <CACGkMEudc7M5ZqRvhYkW35Sb6pK9yp1LObcFZLkX-sMRYwEj7w@mail.gmail.com>
+ <CAJaqyWfkVdejuSaSbQ_9XWZW3BrGPfQvRZw9Cw_uJajWX3JO2w@mail.gmail.com> <CACGkMEtnY86fT1BG8D34TtX-+K45E2aBbk9rwHfF8bGbhOuM1g@mail.gmail.com>
+In-Reply-To: <CACGkMEtnY86fT1BG8D34TtX-+K45E2aBbk9rwHfF8bGbhOuM1g@mail.gmail.com>
+From: Eugenio Perez Martin <eperezma@redhat.com>
+Date: Fri, 26 May 2023 10:08:21 +0200
+Message-ID: <CAJaqyWeJQv3n4Jm=s-Hx4RVWeySc5zZXEnh9GU4OA+K2+QG5-g@mail.gmail.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: Shannon Nelson <shannon.nelson@amd.com>, "Michael S. Tsirkin" <mst@redhat.com>, si-wei.liu@oracle.com, 
+	longpeng2@huawei.com, Lei Yang <leiyang@redhat.com>, 
+	Laurent Vivier <lvivier@redhat.com>, alvaro.karsz@solid-run.com, 
+	Gautam Dawar <gdawar@xilinx.com>, Cindy Lu <lulu@redhat.com>, 
+	Zhu Lingshan <lingshan.zhu@intel.com>, Liuxiangdong <liuxiangdong5@huawei.com>, 
+	Parav Pandit <parav@mellanox.com>, Harpreet Singh Anand <hanand@xilinx.com>, 
+	"Gonglei (Arei)" <arei.gonglei@huawei.com>, Shannon Nelson <snelson@pensando.io>, 
+	Stefano Garzarella <sgarzare@redhat.com>, Dragos Tatulea <dtatulea@nvidia.com>, 
+	Virtio-Dev <virtio-dev@lists.oasis-open.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [RFC 1/4] vdpa: add VHOST_BACKEND_F_ENABLE_AFTER_DRIVER_OK flag
 
+On Fri, May 26, 2023 at 8:26=E2=80=AFAM Jason Wang <jasowang@redhat.com> wr=
+ote:
+>
+> On Thu, May 25, 2023 at 12:25=E2=80=AFAM Eugenio Perez Martin
+> <eperezma@redhat.com> wrote:
+> >
+> > On Wed, May 24, 2023 at 6:07=E2=80=AFAM Jason Wang <jasowang@redhat.com=
+> wrote:
+> > >
+> > > On Tue, May 23, 2023 at 1:55=E2=80=AFPM Eugenio Perez Martin
+> > > <eperezma@redhat.com> wrote:
+> > > >
+> > > > On Mon, May 22, 2023 at 11:22=E2=80=AFPM Shannon Nelson <shannon.ne=
+lson@amd.com> wrote:
+> > > > >
+> > > > > On 5/22/23 1:07 PM, Eugenio Perez Martin wrote:
+> > > > > >
+> > > > > > On Mon, May 22, 2023 at 9:23=E2=80=AFPM Michael S. Tsirkin <mst=
+@redhat.com> wrote:
+> > > > > >>
+> > > > > >> On Mon, May 22, 2023 at 08:57:27PM +0200, Eugenio P=C3=A9rez w=
+rote:
+> > > > > >>> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > > > >>> ---
+> > > > > >>>   include/uapi/linux/vhost_types.h | 2 ++
+> > > > > >>>   1 file changed, 2 insertions(+)
+> > > > > >>>
+> > > > > >>> diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/=
+linux/vhost_types.h
+> > > > > >>> index c5690a8992d8..a1b316f49b38 100644
+> > > > > >>> --- a/include/uapi/linux/vhost_types.h
+> > > > > >>> +++ b/include/uapi/linux/vhost_types.h
+> > > > > >>> @@ -165,5 +165,7 @@ struct vhost_vdpa_iova_range {
+> > > > > >>>   #define VHOST_BACKEND_F_SUSPEND  0x4
+> > > > > >>>   /* Device can be resumed */
+> > > > > >>>   #define VHOST_BACKEND_F_RESUME  0x5
+> > > > > >>> +/* Device can enable virtqueues after DRIVER_OK */
+> > > > > >>
+> > > > > >> A bit more detail on what does this mean?
+> > > > > >> It's normally driver that enables VQs not device itself ...
+> > > > > >>
+> > > > > >
+> > > > > > I agree, it is not well explained.
+> > > > > >
+> > > > > > What about "Device supports the driver to enable virtqueues aft=
+er DRIVER_OK"?
+> > > > > >
+> > > > > >>> +#define VHOST_BACKEND_F_ENABLE_AFTER_DRIVER_OK  0x6
+> > > > >
+> > > > > Does this mean it is possible only after DRIVER_OK, or does it me=
+an in
+> > > > > addition to before DRIVER_OK?  It isn't clear to me.
+> > > > >
+> > > > > Maybe something like
+> > > > > "Device supports virtqueue enable only after DRIVER_OK"
+> > > > > or
+> > > > > "Device supports virtqueue enable both before and after DRIVER_OK=
+"
+> > > > >
+> > > >
+> > > > I agree too,
+> > > >
+> > > > With the previous suggestion it would be:
+> > > >
+> > > > "Device supports the driver to enable virtqueues both before and af=
+ter
+> > > > DRIVER_OK"
+> > >
+> > > Btw, I think it might be worth clarifying whether or not this is
+> > > supported by the current virtio spec. Spec seems to be unclear on
+> > > this:
+> > >
+> > > 1) The driver MUST NOT write a 0 to queue_enable.
+> > > 2) if reset is support, driver can wrote 1 to re-enable a virtqueue
+> > >
+> > > But it doesn't say if the driver can write 1 after DRIVER_OK without =
+reset.
+> > >
+> >
+> > To double check, you mean to write 1 even if the queue is live?
+> > "without reset *the virtqueue*"?
+>
+> No I mean something like this
+>
+> 1) write queue_enable to cvq
+> 2) set DRIVER_OK
+> 3) restore
+> 4) write queue_enable to txq 0
+>
+> >
+> > I'd add another combination that might be worth clarifying: ack
+> > VIRTIO_F_RING_RESET, write 1 to queue_enable, then write 1 to
+> > queue_reset. Set state DRIVER_OK, and then enable the queue
+> > afterwards. Is this valid?
+>
+> Spec doesn't say it can't so it's implementation specific which is
+> probably suboptimal. But as replied in another thread this seems to be
+> supported by Qemu.
+>
 
+Right, as long as the queue number is valid qemu allows it at this moment.
 
-在 2023/5/23 上午11:58, Heng Qi 写道:
-> On Mon, May 22, 2023 at 03:19:16PM -0400, Michael S. Tsirkin wrote:
->> On Mon, May 22, 2023 at 01:02:36PM +0800, Heng Qi wrote:
->>> 1. Currently, a received encapsulated packet has an outer and an inner header, but
->>> the virtio device is unable to calculate the hash for the inner header. The same
->>> flow can traverse through different tunnels, resulting in the encapsulated
->>> packets being spread across multiple receive queues (refer to the figure below).
->>> However, in certain scenarios, we may need to direct these encapsulated packets of
->>> the same flow to a single receive queue. This facilitates the processing
->>> of the flow by the same CPU to improve performance (warm caches, less locking, etc.).
->>>
->>>                 client1                    client2
->>>                    |        +-------+         |
->>>                    +------->|tunnels|<--------+
->>>                             +-------+
->>>                                |  |
->>>                                v  v
->>>                        +-----------------+
->>>                        | monitoring host |
->>>                        +-----------------+
->>>
->>> To achieve this, the device can calculate a symmetric hash based on the inner headers
->>> of the same flow.
->>>
->>> 2. For legacy systems, they may lack entropy fields which modern protocols have in
->>> the outer header, resulting in multiple flows with the same outer header but
->>> different inner headers being directed to the same receive queue. This results in
->>> poor receive performance.
->>>
->>> To address this limitation, inner header hash can be used to enable the device to advertise
->>> the capability to calculate the hash for the inner packet, regaining better receive performance.
->>>
->>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
->>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>> ---
->>> v13->v14:
->>> 	1. Move supported_hash_tunnel_types from config space into cvq command. @Parav Pandit
->>> 	2. Rebase to master branch.
->>> 	3. Some minor modifications.
->> So, I proposed adding a "generic UDP tunnel" option which simply uses UDP source
->> port for hash. I think it will help us not having to chaise future tunnels as
->> more and more are added.
-> I agree, but I thought we'd do this in another thread, sorry.
-> Following your suggestion, we should add a field similar to
-> \field{generic_udp_tunnel_option} in the virtnet_hash_tunnel_config_set
-> structure.
+> >
+> > I guess it is not, but I don't see the standard forbidding it, isn't it=
+?
 >
-> \field{generic_udp_tunnel_option} should be 0, 1 or 2.
+> Yes, this needs to be fixed.
 >
-> \field{hash_tunnel_types} is still useful, but for more general purpose we need
-> to use it together with \field{generic_udp_tunnel_option}.
->
-> When \field{generic_udp_tunnel_option} is 0, all tunneling protocols included in
-> \field{hash_tunnel_types} use the inner header for hashing. For other tunnel
-> protocols not included in \field{hash_tunnel_types}, the hash is calculated as if
-> VIRTIO_NET_F_TUNNEL_HASH is not negotiated.
->
-> When \field{generic_udp_tunnel_option} is 1, all tunneling protocols included in
-> \field{hash_tunnel_types} use the inner header for hashing. For other tunnel
-> protocols not included in \field{hash_tunnel_types}, if their outer headers are
-> based on UDP protocol, the device use the outer UDP source port for hashing.
-> For the rest of the tunnel protocols, the hash is calculated as if VIRTIO_NET_F_TUNNEL_HASH
-> was not negotiated.
->
-> When \field{generic_udp_tunnel_option} is 2, for all UDP tunneling protocols,
-> the outer udp source port is used for hashing, otherwise if the tunneling protocol
-> is included in \field{hash_tunnel_types}, the inner header is used for hashing.
-> For the rest of the tunnel protocols, the hash is calculated as if VIRTIO_NET_F_TUNNEL_HASH
-> was not negotiated.
->
-> And for this option, we need to add a reminder:
-> Although the \field{generic_udp_tunnel_option} helps us adapt to more new
-> tunneling protocols, it is still an unreliable option, especially for
-> tunneling protocols that use "SHOULD" "Recommended" in their own
-> specifications, because it means the udp source port does not
-> always fully identify a stream.
+> But one point here is that we should make svq work without RING_RESET
+> (or we can say if RING_REST implies the feature you proposed here)
 >
 
-Hi, Michael.
+If RING_RESET implies that the driver can enable just CVQ and that it
+can enable data vqs after DRIVER_OK and is easy to implement for hw
+vendors, I think it is easier to reuse it, instead of creating a new
+feature bit that overlaps so much with it.
 
-Do you agree with this plan? Please let me know if you have any comments.:)
-
-If there are no comments, I can start a new version to make progress.
-
-Thanks.
-
->> I also suggested dropping some tunnels which are less common and where
->> the specification is unambiguous enough that source port should include
->> inner hash.
-> OK, I'll re-screen and update the tunneling protocols we already include
-> (e.g. remove STT since it fits what you said).
->
-> Thanks.
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+Thanks!
 
 
 ---------------------------------------------------------------------
