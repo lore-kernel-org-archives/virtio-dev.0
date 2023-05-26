@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12822-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12823-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B52A0C7EE2C
-	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 06:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 86A55C7EE23
+	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 07:58:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DA87A157EEB
-	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 06:26:05 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id C39EE2AC4D
+	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 07:58:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A68AD986685
-	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 06:26:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BA9B398670F
+	for <virtio-dev@archiver.kernel.org>; Fri, 26 May 2023 07:58:33 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8EEDB983DA0; Fri, 26 May 2023 06:26:05 +0000 (UTC)
+	id AF956986639; Fri, 26 May 2023 07:58:33 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,185 +24,254 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7A1319863FC
-	for <virtio-dev@lists.oasis-open.org>; Fri, 26 May 2023 06:26:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9B40D9863FC;
+	Fri, 26 May 2023 07:58:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 3FHqy_sDOfiVhkg9WBbLFg-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685082361; x=1687674361;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Y07JPpDe5BzlcM88WYUG8y3MpAbmJl4ebZL7H/lUKoU=;
-        b=b4Ulch20OJnBcCPi/vWBtmP7ItHPNjFO2vyKRvhuG8Y3JGesFND42MBfdolNm4vQUH
-         q0Iulyz2h0//e19ljVYeZbqQUKwX7+MMTHoEHwzMUA8FH2ZQZiXTAP6ruIvUCePXjt2c
-         tOhi8c3lTh/jTV62VoqB0EREbPgfme5voOEj2v3D+W/1+P9LyIGTy4IlO0n6736dSxrb
-         IWHpP8BLYSTW1s0bhz6skamNoFSGglbPOEGXxZb7UV51l+ISOJtIG4i3omodgnXrSp8a
-         sUr2vU4oYJzVXcD1+Y5SNXYaypcR4Q35hmGliIPla0JL72Z8B+6XNyYGfjm3upylDRt+
-         K+pg==
-X-Gm-Message-State: AC+VfDy7ObUv9EemORMtkv2DyozSnv8EqZ5PtIuoUk85X+tCpq34l1vc
-	U2AlzZau2YvEexICgAB14ikoUlc1ETiKiY21Pqod90pDpkA5OOhv1g39HII89vxPB1xIPRagWSw
-	ChWWXc0iY8t+yQ+i2VEhVi16ndFtPXUQj7CZUSwTdGG7w
-X-Received: by 2002:a2e:9d03:0:b0:2a9:f584:659a with SMTP id t3-20020a2e9d03000000b002a9f584659amr298369lji.23.1685082361394;
-        Thu, 25 May 2023 23:26:01 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4yvNoHYi2ts/NwyNKNYBOeFcuYqPSR5e1ZwTCLjoXeNpA+KAt9Zs54/ieeJcj3XzlEoIBoE+6/jE1Ggxc1hYc=
-X-Received: by 2002:a2e:9d03:0:b0:2a9:f584:659a with SMTP id
- t3-20020a2e9d03000000b002a9f584659amr298357lji.23.1685082361117; Thu, 25 May
- 2023 23:26:01 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VjVRwLl_1685087899;
+Message-ID: <98770387-d73e-84fd-662b-c5d4ad4521c8@linux.alibaba.com>
+Date: Fri, 26 May 2023 15:58:17 +0800
 MIME-Version: 1.0
-References: <20230522185730.3233001-1-eperezma@redhat.com> <20230522185730.3233001-2-eperezma@redhat.com>
- <20230522152226-mutt-send-email-mst@kernel.org> <CAJaqyWfSzqdyPHogzccuYBeThJgcx-A_AfF8tmqLgxKNVczBWA@mail.gmail.com>
- <1735e461-a858-5bf2-bf9f-d9418e281d0c@amd.com> <CAJaqyWd632RiE9Zhc8OLsQbnaC42VG1FW97UMDHPQRofukYPrg@mail.gmail.com>
- <CACGkMEudc7M5ZqRvhYkW35Sb6pK9yp1LObcFZLkX-sMRYwEj7w@mail.gmail.com> <CAJaqyWfkVdejuSaSbQ_9XWZW3BrGPfQvRZw9Cw_uJajWX3JO2w@mail.gmail.com>
-In-Reply-To: <CAJaqyWfkVdejuSaSbQ_9XWZW3BrGPfQvRZw9Cw_uJajWX3JO2w@mail.gmail.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Fri, 26 May 2023 14:25:50 +0800
-Message-ID: <CACGkMEtnY86fT1BG8D34TtX-+K45E2aBbk9rwHfF8bGbhOuM1g@mail.gmail.com>
-To: Eugenio Perez Martin <eperezma@redhat.com>
-Cc: Shannon Nelson <shannon.nelson@amd.com>, "Michael S. Tsirkin" <mst@redhat.com>, si-wei.liu@oracle.com, 
-	longpeng2@huawei.com, Lei Yang <leiyang@redhat.com>, 
-	Laurent Vivier <lvivier@redhat.com>, alvaro.karsz@solid-run.com, 
-	Gautam Dawar <gdawar@xilinx.com>, Cindy Lu <lulu@redhat.com>, 
-	Zhu Lingshan <lingshan.zhu@intel.com>, Liuxiangdong <liuxiangdong5@huawei.com>, 
-	Parav Pandit <parav@mellanox.com>, Harpreet Singh Anand <hanand@xilinx.com>, 
-	"Gonglei (Arei)" <arei.gonglei@huawei.com>, Shannon Nelson <snelson@pensando.io>, 
-	Stefano Garzarella <sgarzare@redhat.com>, Dragos Tatulea <dtatulea@nvidia.com>, 
-	Virtio-Dev <virtio-dev@lists.oasis-open.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [RFC 1/4] vdpa: add VHOST_BACKEND_F_ENABLE_AFTER_DRIVER_OK flag
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230522121200.40939-1-hengqi@linux.alibaba.com>
+ <20230522150743-mutt-send-email-mst@kernel.org>
+ <20230523024118.GA23504@h68b04307.sqa.eu95>
+ <20230523024057-mutt-send-email-mst@kernel.org>
+ <20230523091820.GC23504@h68b04307.sqa.eu95>
+ <20230523092237-mutt-send-email-mst@kernel.org>
+ <20230523135144.GD23504@h68b04307.sqa.eu95>
+ <CACGkMEscLOVssyAeTYZE0o_KT86UazdBdj9NKPrmK5=g6YcBuA@mail.gmail.com>
+ <20230524050723.GA93898@h68b04307.sqa.eu95>
+ <CACGkMEv=OK3w6_uHhaOv8TjtMVpgkHG0Ba-+OWd1KN=17V8p9g@mail.gmail.com>
+ <20230524072404.GA76632@h68b04307.sqa.eu95>
+In-Reply-To: <20230524072404.GA76632@h68b04307.sqa.eu95>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re:
+ [virtio-dev] Re: [Proposal] Relationship between XDP and rx-csum in
+ virtio-nety
 
-On Thu, May 25, 2023 at 12:25=E2=80=AFAM Eugenio Perez Martin
-<eperezma@redhat.com> wrote:
+
+
+在 2023/5/24 下午3:24, Heng Qi 写道:
+> On Wed, May 24, 2023 at 01:52:30PM +0800, Jason Wang wrote:
+>> On Wed, May 24, 2023 at 1:07 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
+>>> On Wed, May 24, 2023 at 12:09:22PM +0800, Jason Wang wrote:
+>>>> On Tue, May 23, 2023 at 9:51 PM Heng Qi <hengqi@linux.alibaba.com> wrote:
+>>>>> On Tue, May 23, 2023 at 09:30:28AM -0400, Michael S. Tsirkin wrote:
+>>>>>> On Tue, May 23, 2023 at 05:18:20PM +0800, Heng Qi wrote:
+>>>>>>> On Tue, May 23, 2023 at 03:15:37AM -0400, Michael S. Tsirkin wrote:
+>>>>>>>> On Tue, May 23, 2023 at 10:41:18AM +0800, Heng Qi wrote:
+>>>>>>>>> On Mon, May 22, 2023 at 03:10:05PM -0400, Michael S. Tsirkin wrote:
+>>>>>>>>>> On Mon, May 22, 2023 at 08:12:00PM +0800, Heng Qi wrote:
+>>>>>>>>>>> 1) Add a feature bit to the virtio specification to tell the sender that a fully
+>>>>>>>>>>> csumed packet must be sent.
+>>>>>>>>>> Who is the sender in this picture? The driver?
+>>>>>>>>> The device or the driver.
+>>>>>>>>>
+>>>>>>>>> When the device is hw, the sender is more likely to be a device.
+>>>>>>>>> When the device is sw, the sender can be a device or a driver.
+>>>>>>>>>
+>>>>>>>>> But in general, this feature is inclined to constrain the behavior of the device and
+>>>>>>>>> the driver from the receiving side.
+>>>>>>>> Based on above I am guessing you are talking about driver getting
+>>>>>>>> packets from device, I wish you used terms from virtio spec.
+>>>>>>> Yes, I'm going to use the terminology of the virtio spec.
+>>>>>>>
+>>>>>>>>> For example:
+>>>>>>>>> VIRTIO_NET_F_UNNECESSARY_CSUM : The driver tells the device that you must send me a fully csumed packet.
+>>>>>>>>>
+>>>>>>>>> Then the specific implementation can be
+>>>>>>>>>
+>>>>>>>>> (1) the sender sends a fully csumed packet;
+>>>>>>>>> (2) the receiver receives a CHECKSUM_PARTIAL packet, and the device helps calculate the fully csum
+>>>>>>>>>      (because the two parties in the communication are located on the same host, the packet is trusted.).
+>>>>>>>>>
+>>>>>>>>> In summary, if VIRTIO_NET_F_UNNECESSARY_CSUM is negotiated, the driver will no longer receive any packets marked CHECKSUM_PARTIAL.
+>>>>>>>>>
+>>>>>>>>> Thanks.
+>>>>>>>> This is what clearing VIRTIO_NET_F_GUEST_CSUM does.
+>>>>>>> Yes, but with VIRTIO_NET_F_GUEST_CSUM cleared, although the device can
+>>>>>>> receive a fully checksummed packet, we can no longer enjoy
+>>>>>>> the device's ability to validate the packet checksum. That is, the value
+>>>>>>> of \field{flags} in the virtio_net_hdr structure is set to 0, which means
+>>>>>>> that the packet received by the driver will not be marked as
+>>>>>>> VIRTIO_NET_HDR_F_DATA_VALID.
+>>>>>>>
+>>>>>>> So, we need a feature bit (let's say VIRTIO_NET_F_UNNECESSARY_CSUM).
+>>>>>>> If VIRTIO_NET_F_UNNECESSARY_CSUM is negotiated, the device must give the
+>>>>>>> driver a fully checksummed packet, and the packet is validated by the
+>>>>>>> device with \field{flags} set to VIRTIO_NET_HDR_F_DATA_VALID.
+>>>>>>>
+>>>>>>>> I feel you are trying to say that clearing VIRTIO_NET_F_GUEST_CSUM
+>>>>>>>> disables all offloads but you want to keep some of them?
+>>>>>>>>
+>>>>>>> No, what I mean is that a feature VIRTIO_NET_F_UNNECESSARY_CSUM is needed
+>>>>>>> in addition to VIRTIO_NET_F_GUEST_CSUM, if both features are negotiated,
+>>>>>>> then the driver may always receive packets marked as
+>>>>>>> VIRTIO_NET_HDR_F_DATA_VALID, which means that we can now load XDP at the
+>>>>>>> same time.
+>>>>>> Makes no sense to me. VIRTIO_NET_F_GUEST_CSUM set already allows
+>>>>>> VIRTIO_NET_HDR_F_DATA_VALID:
+>>>>> We need to focus on what happens when the XDP program is loaded:
+>>>>>
+>>>>> The current virtio-net needs to turn off the VIRTIO_NET_F_GUEST_CSUM
+>>>>> feature when loading XDP. The main reason for doing this is because
+>>>>> VIRTIO_NET_F_GUEST_CSUM allows to receive packets marked as
+>>>>> VIRTIO_NET_HDR_F_NEEDS_CSUM. Such packets are not compatible with
+>>>>> XDP programs, because we cannot guarantee that the csum_{start, offset}
+>>>>> fields are correct after XDP modifies the packets.
+>>>> We can try to fix or workaround this. A rough idea is for example by
+>>>> using a flow dissector?
+>>> How can we fix this with a flow dissector? Could you please explain in
+>>> detail?
+>> I mean you can use a flow dissector to probe the csum_start and csum_offset.
+>>
+> I think this is a good workaround.
 >
-> On Wed, May 24, 2023 at 6:07=E2=80=AFAM Jason Wang <jasowang@redhat.com> =
-wrote:
-> >
-> > On Tue, May 23, 2023 at 1:55=E2=80=AFPM Eugenio Perez Martin
-> > <eperezma@redhat.com> wrote:
-> > >
-> > > On Mon, May 22, 2023 at 11:22=E2=80=AFPM Shannon Nelson <shannon.nels=
-on@amd.com> wrote:
-> > > >
-> > > > On 5/22/23 1:07 PM, Eugenio Perez Martin wrote:
-> > > > >
-> > > > > On Mon, May 22, 2023 at 9:23=E2=80=AFPM Michael S. Tsirkin <mst@r=
-edhat.com> wrote:
-> > > > >>
-> > > > >> On Mon, May 22, 2023 at 08:57:27PM +0200, Eugenio P=C3=A9rez wro=
-te:
-> > > > >>> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > > >>> ---
-> > > > >>>   include/uapi/linux/vhost_types.h | 2 ++
-> > > > >>>   1 file changed, 2 insertions(+)
-> > > > >>>
-> > > > >>> diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/li=
-nux/vhost_types.h
-> > > > >>> index c5690a8992d8..a1b316f49b38 100644
-> > > > >>> --- a/include/uapi/linux/vhost_types.h
-> > > > >>> +++ b/include/uapi/linux/vhost_types.h
-> > > > >>> @@ -165,5 +165,7 @@ struct vhost_vdpa_iova_range {
-> > > > >>>   #define VHOST_BACKEND_F_SUSPEND  0x4
-> > > > >>>   /* Device can be resumed */
-> > > > >>>   #define VHOST_BACKEND_F_RESUME  0x5
-> > > > >>> +/* Device can enable virtqueues after DRIVER_OK */
-> > > > >>
-> > > > >> A bit more detail on what does this mean?
-> > > > >> It's normally driver that enables VQs not device itself ...
-> > > > >>
-> > > > >
-> > > > > I agree, it is not well explained.
-> > > > >
-> > > > > What about "Device supports the driver to enable virtqueues after=
- DRIVER_OK"?
-> > > > >
-> > > > >>> +#define VHOST_BACKEND_F_ENABLE_AFTER_DRIVER_OK  0x6
-> > > >
-> > > > Does this mean it is possible only after DRIVER_OK, or does it mean=
- in
-> > > > addition to before DRIVER_OK?  It isn't clear to me.
-> > > >
-> > > > Maybe something like
-> > > > "Device supports virtqueue enable only after DRIVER_OK"
-> > > > or
-> > > > "Device supports virtqueue enable both before and after DRIVER_OK"
-> > > >
-> > >
-> > > I agree too,
-> > >
-> > > With the previous suggestion it would be:
-> > >
-> > > "Device supports the driver to enable virtqueues both before and afte=
-r
-> > > DRIVER_OK"
-> >
-> > Btw, I think it might be worth clarifying whether or not this is
-> > supported by the current virtio spec. Spec seems to be unclear on
-> > this:
-> >
-> > 1) The driver MUST NOT write a 0 to queue_enable.
-> > 2) if reset is support, driver can wrote 1 to re-enable a virtqueue
-> >
-> > But it doesn't say if the driver can write 1 after DRIVER_OK without re=
-set.
-> >
+> We save virtio-net-hdr first, and after running XDP, if the flag of
+> saved virtio-net-hdr contains VIRTIO_NET_HDR_F_NEEDS_CSUM, we'll probe
+> the csum_{start, offset}.
+
+Hi, Jason.
+
+Do we choose this option first as an attempt to solve the problem 
+described by this proposal?
+
+If so, I'll try to make a patch.
+
+Thanks.
+
+>>>> Anyhow the GSO of virtio-net was marked as
+>>>> dodgy which means the csum_start/offset needs to be validated again in
+>>>> the xmit path. Or we can monitor if the packet is modified or not, if
+>>>> not, we don't need to zero vnet header?
+>>> Yes, this is a way, and we've thought about this solution.
+>>> A relatively simple solution is to add a new flag to the XDP program
+>>> (through XDP core layer), which indicates that the XDP program is a
+>>> read-only XDP program (ie, does not modify the packet).
+>> XDP used to have something like this. Maybe we can re add them.
+> Has XDP core removed the similar flag?
+> I'm missing something from the past, can you give me a link to it please?
 >
-> To double check, you mean to write 1 even if the queue is live?
-> "without reset *the virtqueue*"?
-
-No I mean something like this
-
-1) write queue_enable to cvq
-2) set DRIVER_OK
-3) restore
-4) write queue_enable to txq 0
-
+>>> Then to load
+>>> such an XDP program we no longer need to filter out the
+>>> VIRTIO_NET_F_GUEST_CSUM feature.
+>>>
+>>> But why we didn't propose this solution in the 'Proposal', because it
+>>> seems that only virtio-net has encountered related problems. Virtual
+>>> network cards like veth, even if they receive partial csumed packets
+>>> (corresponding to virtio-net's packets marked as
+>>> VIRTIO_NET_HDR_F_NEEDS_CSUM), they still open NETIF_F_RXCSUM
+>>> (corresponding to virtio-net's VIRTIO_NET_F_GUEST_CSUM). So there is
+>>> another trade-off: the current virtnet_xdp_set() no longer
+>>> filters out VIRTIO_NET_F_GUEST_CSUM.
+>>>
+>>> The reasons I think are the following:
+>>> 1. Referring to veth’s way, the XDP program is more of a
+>>> monitoring/firewall, and may not modify data packets.
+>> Probably not, XDP could be used for building tunnels.
+>>
+> Yes, opening VIRTIO_NET_F_GUEST_CSUM directly for XDP programs, is a
+> tradeoff and may cause packet loss, but we can also benefit from rx hw
+> csum offloading.
 >
-> I'd add another combination that might be worth clarifying: ack
-> VIRTIO_F_RING_RESET, write 1 to queue_enable, then write 1 to
-> queue_reset. Set state DRIVER_OK, and then enable the queue
-> afterwards. Is this valid?
-
-Spec doesn't say it can't so it's implementation specific which is
-probably suboptimal. But as replied in another thread this seems to be
-supported by Qemu.
-
+>>> 2. We can still use XDP for packets marked as
+>>> VIRTIO_NET_HDR_F_DATA_VALID.
+>> Not sure I get this but who is going to adjust csum_start/offset?
+>>
+> The information for csum_start/offset may be overwritten or may no
+> longer be correct. For example, XDP stores some new data in the packet headroom
+> and overwrites csum_{start, offset}; or pushes new data in front of the original header.
 >
-> I guess it is not, but I don't see the standard forbidding it, isn't it?
-
-Yes, this needs to be fixed.
-
-But one point here is that we should make svq work without RING_RESET
-(or we can say if RING_REST implies the feature you proposed here)
-
-Thanks
-
+> Thanks.
 >
-> Thanks!
+>>> 3. Packets converted from xdp_{buff, frame} may not be ip_forwarded
+>>> (because ip_forward sysctl is disabled by default)
+>> That's suboptimal.
+>>
+>> Thanks
+>>
+>>> Thanks.
+>>>
+>>>> Thanks
+>>>>
+>>>>> So in order for the driver to continue to enjoy the device's ability to
+>>>>> validate packets while XDP is loaded, we need a new feature to tell the
+>>>>> device not to deliver packets marked as VIRTIO_NET_HDR_F_NEEDS_CSUM (in
+>>>>> other words, the device can only deliver packets marked as
+>>>>> VIRTIO_NET_HDR_F_DATA_VALID).
+>>>>>
+>>>>> Thanks.
+>>>>>
+>>>>>> \item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+>>>>>>    VIRTIO_NET_HDR_F_NEEDS_CSUM bit in \field{flags} can be
+>>>>>>    set: if so, the packet checksum at offset \field{csum_offset}
+>>>>>>    from \field{csum_start} and any preceding checksums
+>>>>>>    have been validated.  The checksum on the packet is incomplete and
+>>>>>>    if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags},
+>>>>>>    then \field{csum_start} and \field{csum_offset} indicate how to calculate it
+>>>>>>    (see Packet Transmission point 1).
+>>>>>>
+>>>>>> Did you maybe mean if either feature is negotiated?
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>>> Again please use virtio terminology not Linux. to help you out,
+>>>>>>>> in current linux, VIRTIO_NET_HDR_F_NEEDS_CSUM and VIRTIO_NET_HDR_F_DATA_VALID
+>>>>>>>> will set CHECKSUM_PARTIAL and CHECKSUM_UNNECESSARY respectively.
+>>>>>>>>
+>>>>>>> Sure. Will do as you suggested.
+>>>>>>>
+>>>>>>> Thanks.
+>>>>>>>
+>>>>>>>> --
+>>>>>>>> MST
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> ---------------------------------------------------------------------
+>>>>>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>>>>>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>>>>>
+>>>>>> This publicly archived list offers a means to provide input to the
+>>>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>>>
+>>>>>> In order to verify user consent to the Feedback License terms and
+>>>>>> to minimize spam in the list archive, subscription is required
+>>>>>> before posting.
+>>>>>>
+>>>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>>>> Join OASIS: https://www.oasis-open.org/join/
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
 >
-> > Thanks
-> >
-> >
-> > >
-> > > Does it look better?
-> > >
-> > > Thanks!
-> > >
-> > > > sln
-> > > >
-> > > >
-> > > > >>>
-> > > > >>>   #endif
-> > > > >>> --
-> > > > >>> 2.31.1
-> > > > >>
-> > > > >
-> > > >
-> > >
-> >
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
 >
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
 
 
 ---------------------------------------------------------------------
