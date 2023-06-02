@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12835-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12836-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0491BC7EE2F
-	for <virtio-dev@archiver.kernel.org>; Thu,  1 Jun 2023 11:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1B1F6C7EE24
+	for <virtio-dev@archiver.kernel.org>; Fri,  2 Jun 2023 20:36:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5025B6036E
-	for <virtio-dev@archiver.kernel.org>; Thu,  1 Jun 2023 11:54:04 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id EE6DE60359
+	for <virtio-dev@archiver.kernel.org>; Fri,  2 Jun 2023 20:36:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4B6E998661E
-	for <virtio-dev@archiver.kernel.org>; Thu,  1 Jun 2023 11:54:04 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E49619867FA
+	for <virtio-dev@archiver.kernel.org>; Fri,  2 Jun 2023 20:36:37 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 414F8983DE3; Thu,  1 Jun 2023 11:54:04 +0000 (UTC)
+	id D89F89867EE; Fri,  2 Jun 2023 20:36:37 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,194 +24,95 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2D16A986605;
-	Thu,  1 Jun 2023 11:54:02 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id ABDC998680B;
+	Fri,  2 Jun 2023 20:36:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vk5zXTl_1685620436;
-Message-ID: <dd2a411b-fb92-e0d7-d853-df16e9d5b1f8@linux.alibaba.com>
-Date: Thu, 1 Jun 2023 19:53:51 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SkhP5q5OBxgjaVmuFna8bWY/Va9PhMU8/DVafzZnXuvhTKKyC1KG1jnue0Uk114mEXbKPgh3A9C4wW1tBjN5W6PdGZsSiJJ8KK+8JA5n0aa7FiBZuT50x2Jemo41A5ivg/3BlqTZ+kCFwb8jjKGncl/jcnKE6q0n2T49LlSy7GPVYFsGPHPZoyAdL6kXXf642tJnsVQet3dhjMEQO4+U1wJvrnMNKQAgtXAzQ5pAgsrCuWpKLkM4ojpnhcnYJ4Y0fH2ckhPa1IgobZQYxFQskP2DWhmruQVjVHJEBdmN2YOlbB+cENmTxR8u0BjJgqsv2wwxmDk03wOrBr2FP0l/tQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cpnhhKY+AZMWGOlUxfddk+CfiwFN+mL4rsv45y7CulA=;
+ b=iMmHj+6wpZ5HgkMXS18yAvHm/npztJeIoXtcc9nssrVLMsyvrIcsaNAEh7CS1bbZF89sFiU/tmXc5FLEEZB1vBROHWxxWP0W5QPAPpqluH3WBgY9/zBD8n8hc325n5O6ulrVVn/SDqKM42LJQALZ6gFq0RrHH9xvjNxTBOO+UC0Hx3/e3IkhJ2BHgE0NKMofUAa/2VKt3ymkcX9qdghDvTgrA15FqrjF8ZGFMxRp04bsVMjVOvji0KN2+82ORR8paagoLS6OmBstIrP2iCVqf0dsaeJMmUBRC6SnWXNMYCl7ygTtPXh/TQNLvn/Y/QBxl9BTADnBnpRwvezFpVxy2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+From: Parav Pandit <parav@nvidia.com>
+To: <mst@redhat.com>, <virtio-dev@lists.oasis-open.org>, <cohuck@redhat.com>,
+	<david.edmondson@oracle.com>
+CC: <sburla@marvell.com>, <jasowang@redhat.com>, <yishaih@nvidia.com>,
+	<maorg@nvidia.com>, <virtio-comment@lists.oasis-open.org>,
+	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
+Date: Fri, 2 Jun 2023 23:36:02 +0300
+Message-ID: <20230602203604.627661-2-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20230602203604.627661-1-parav@nvidia.com>
+References: <20230602203604.627661-1-parav@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
- Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
- Yuri Benditovich <yuri.benditovich@daynix.com>,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230522050236.49433-1-hengqi@linux.alibaba.com>
- <20230522151522-mutt-send-email-mst@kernel.org>
- <20230523035803.GB23504@h68b04307.sqa.eu95>
- <69cd31d4-c059-3edd-f14b-bdf03ac4b200@linux.alibaba.com>
- <20230530153623-mutt-send-email-mst@kernel.org>
- <20230601002734-mutt-send-email-mst@kernel.org>
- <20230601051708.GC98474@h68b04307.sqa.eu95>
- <20230601070318-mutt-send-email-mst@kernel.org>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230601070318-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH
- v14] virtio-net: support inner header hash
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT104:EE_|DS0PR12MB8218:EE_
+X-MS-Office365-Filtering-Correlation-Id: f625263e-548b-46c7-d136-08db63a90c71
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	2uEpPJC5ppNJXRC7iXx1HVgDdz7icmeRR/ZhLoiUqKLj28XSfA6Sd+vczlFVbXtUCVSblxvgoEo5JXgs5L2vyzoSP3OwAAMWiYv7+VezflGZ6ttvvNmDTWjvhQP2FjJh2UywyN2PW9g3yI9pB17byRv2C/mo+VSnJx/xZJ7c6ogEDu2HCoCDoIo/2zPR2ier14pN4BhhXIFWtvg36JnJezzmJIytGXzYJ/b5H+zT7pxCClZGtdAMi/laDrAE4NEqKoJusiP0x6g1xEH4FkPjQOwkw5v3pAA+PEtPeBkx/9CRtWpUOEMdifIyuGIHOnM4bIxJ8mrMnOB9as5+vEV/tFEa9EPtMYsCA3aPtiEZasY+3QgAStiwCbIcHYIQ6ugjRZ/SOYsdcWP/TZtNJFxVFNx263q2uwmTHw+PKwsZzx3orZkm0sFGUacmH66L/X/zGivHVx4X7q3NWeAuFSrvHO7D6iq1TadkO/ZMPq+vklm7xYR3nZUz/mlVIZiifYpd7m44o1xgpgIHHyvFPN0by+OrJr0DI0O8IH6JNg5MRSd1skto7OWORGS+4vhj+0Wm7h9f/aroP1oWbCFIK8hNYowtbY2Ki2wpzGm2e0zJZsUQ6etfXNRYrpaOy7XaPBj94j+dVnWMmo252n6F5Dt2BHln6rj9fgXRo6Y+6M76o/4r3t9shQ3DGM3WM9SiRNT0FPKKgfEz5r2fcwGWqGCQXKCDxNSDzhRUzqj5r1ZcHDF7kXliyVDP3b/nyz+e28vA
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(346002)(39860400002)(396003)(451199021)(46966006)(40470700004)(36840700001)(54906003)(110136005)(36756003)(6666004)(40480700001)(4744005)(8936002)(8676002)(2906002)(5660300002)(41300700001)(70206006)(70586007)(40460700003)(4326008)(316002)(426003)(336012)(478600001)(82310400005)(86362001)(2616005)(356005)(7636003)(186003)(16526019)(47076005)(36860700001)(83380400001)(26005)(82740400003)(1076003)(107886003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2023 20:36:31.0590
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f625263e-548b-46c7-d136-08db63a90c71
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT104.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8218
+Subject: [virtio-dev] [PATCH v3 1/3] admin: Split opcode table rows with a line
 
+Currently all opcode appears to be in a single row.
+Separate them with a line similar to other tables.
 
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+---
+changelog:
+v2->v3:
+- new patch
+---
+ admin.tex | 2 ++
+ 1 file changed, 2 insertions(+)
 
-在 2023/6/1 下午7:06, Michael S. Tsirkin 写道:
-> On Thu, Jun 01, 2023 at 01:17:08PM +0800, Heng Qi wrote:
->> On Thu, Jun 01, 2023 at 12:30:30AM -0400, Michael S. Tsirkin wrote:
->>> On Tue, May 30, 2023 at 03:40:18PM -0400, Michael S. Tsirkin wrote:
->>>> On Fri, May 26, 2023 at 04:04:18PM +0800, Heng Qi wrote:
->>>>>
->>>>> 在 2023/5/23 上午11:58, Heng Qi 写道:
->>>>>> On Mon, May 22, 2023 at 03:19:16PM -0400, Michael S. Tsirkin wrote:
->>>>>>> On Mon, May 22, 2023 at 01:02:36PM +0800, Heng Qi wrote:
->>>>>>>> 1. Currently, a received encapsulated packet has an outer and an inner header, but
->>>>>>>> the virtio device is unable to calculate the hash for the inner header. The same
->>>>>>>> flow can traverse through different tunnels, resulting in the encapsulated
->>>>>>>> packets being spread across multiple receive queues (refer to the figure below).
->>>>>>>> However, in certain scenarios, we may need to direct these encapsulated packets of
->>>>>>>> the same flow to a single receive queue. This facilitates the processing
->>>>>>>> of the flow by the same CPU to improve performance (warm caches, less locking, etc.).
->>>>>>>>
->>>>>>>>                  client1                    client2
->>>>>>>>                     |        +-------+         |
->>>>>>>>                     +------->|tunnels|<--------+
->>>>>>>>                              +-------+
->>>>>>>>                                 |  |
->>>>>>>>                                 v  v
->>>>>>>>                         +-----------------+
->>>>>>>>                         | monitoring host |
->>>>>>>>                         +-----------------+
->>>>>>>>
->>>>>>>> To achieve this, the device can calculate a symmetric hash based on the inner headers
->>>>>>>> of the same flow.
->>>>>>>>
->>>>>>>> 2. For legacy systems, they may lack entropy fields which modern protocols have in
->>>>>>>> the outer header, resulting in multiple flows with the same outer header but
->>>>>>>> different inner headers being directed to the same receive queue. This results in
->>>>>>>> poor receive performance.
->>>>>>>>
->>>>>>>> To address this limitation, inner header hash can be used to enable the device to advertise
->>>>>>>> the capability to calculate the hash for the inner packet, regaining better receive performance.
->>>>>>>>
->>>>>>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
->>>>>>>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>>>>>>> ---
->>>>>>>> v13->v14:
->>>>>>>> 	1. Move supported_hash_tunnel_types from config space into cvq command. @Parav Pandit
->>>>>>>> 	2. Rebase to master branch.
->>>>>>>> 	3. Some minor modifications.
->>>>>>> So, I proposed adding a "generic UDP tunnel" option which simply uses UDP source
->>>>>>> port for hash. I think it will help us not having to chaise future tunnels as
->>>>>>> more and more are added.
->>>>>> I agree, but I thought we'd do this in another thread, sorry.
->>>>>> Following your suggestion, we should add a field similar to
->>>>>> \field{generic_udp_tunnel_option} in the virtnet_hash_tunnel_config_set
->>>>>> structure.
->>>>>>
->>>>>> \field{generic_udp_tunnel_option} should be 0, 1 or 2.
->>>>>>
->>>>>> \field{hash_tunnel_types} is still useful, but for more general purpose we need
->>>>>> to use it together with \field{generic_udp_tunnel_option}.
->>>>>>
->>>>>> When \field{generic_udp_tunnel_option} is 0, all tunneling protocols included in
->>>>>> \field{hash_tunnel_types} use the inner header for hashing. For other tunnel
->>>>>> protocols not included in \field{hash_tunnel_types}, the hash is calculated as if
->>>>>> VIRTIO_NET_F_TUNNEL_HASH is not negotiated.
->>>>>>
->>>>>> When \field{generic_udp_tunnel_option} is 1, all tunneling protocols included in
->>>>>> \field{hash_tunnel_types} use the inner header for hashing. For other tunnel
->>>>>> protocols not included in \field{hash_tunnel_types}, if their outer headers are
->>>>>> based on UDP protocol, the device use the outer UDP source port for hashing.
->>>>>> For the rest of the tunnel protocols, the hash is calculated as if VIRTIO_NET_F_TUNNEL_HASH
->>>>>> was not negotiated.
->>>>>>
->>>>>> When \field{generic_udp_tunnel_option} is 2, for all UDP tunneling protocols,
->>>>>> the outer udp source port is used for hashing, otherwise if the tunneling protocol
->>>>>> is included in \field{hash_tunnel_types}, the inner header is used for hashing.
->>>>>> For the rest of the tunnel protocols, the hash is calculated as if VIRTIO_NET_F_TUNNEL_HASH
->>>>>> was not negotiated.
->>>>>>
->>>>>> And for this option, we need to add a reminder:
->>>>>> Although the \field{generic_udp_tunnel_option} helps us adapt to more new
->>>>>> tunneling protocols, it is still an unreliable option, especially for
->>>>>> tunneling protocols that use "SHOULD" "Recommended" in their own
->>>>>> specifications, because it means the udp source port does not
->>>>>> always fully identify a stream.
->>>>>>
->>>>> Hi, Michael.
->>>>>
->>>>> Do you agree with this plan? Please let me know if you have any comments.:)
->>>>>
->>>>> If there are no comments, I can start a new version to make progress.
->>>>>
->>>>> Thanks.
->>>> How are "tunneling protocols" defined though?
->>>>
->>>> Maybe pass a mask of destination UDP ports for which this applies?
->>>>
->>>> Then we don't need options, if port is set in mask then
->>>> generic udp tunnel inner hash applies. If port is not set then
->>>> hash is calculated in some other way, including
->>>> one of tunnel specific flags.
->>> I admit this is pretty complex though. As an intermediate step
->>> I can see two other options:
->>> - just do this for all UDP packets assuming most traffic is encapsulated
->> This is a bit crude, but it does simplify the complexity of device
->> implementations.
->>
->>> - assume that the list of protocols is configured in the NIC
->>>    by other means (e.g. hard-coded, or we can add an admin command for this)
->> Other means also means hardcoding, because we always need to know what
->> the "new tunnel type" is, otherwise the driver can't understand it.
->> Assuming we don't use any hard-coded tunnel types for the
->> VIRTIO_NET_F_TUNNEL_HASH feature, then we use the GET command to get the
->> tunnel types supported by the device before we intend to use the
->> inner header hashing capabilities. But if we don't do mappings for
->> these codes, the driver can't understand what the device returns. Then
->> we need to hardcode it...
-> Yes, if we have a GET command that will need a bitmap anyway, so
-> let's just set a bitmap with a command.
->
->> So I tend to dst port mask, or generic option (set to 1 to use source
->> port for all UDP packets).
->> Thanks.
-> Makes sense, and I don't think we need both options.
-
-Yes, I agree too.
-
-Thanks.
-
->
->>> Thoghts?
->>>
->>>
->>>>>>> I also suggested dropping some tunnels which are less common and where
->>>>>>> the specification is unambiguous enough that source port should include
->>>>>>> inner hash.
->>>>>> OK, I'll re-screen and update the tunneling protocols we already include
->>>>>> (e.g. remove STT since it fits what you said).
->>>>>>
->>>>>> Thanks.
->>>>>>
->>>>>> ---------------------------------------------------------------------
->>>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->>>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
->
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
->
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
+diff --git a/admin.tex b/admin.tex
+index 2efd4d7..e51f9e6 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -114,7 +114,9 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ opcode & Name & Command Description \\
+ \hline \hline
+ 0x0000 & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
++\hline
+ 0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
++\hline
+ 0x0002 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+ \hline
+ 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
+-- 
+2.26.2
 
 
 ---------------------------------------------------------------------
