@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12856-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12857-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E9B53C7EE29
-	for <virtio-dev@archiver.kernel.org>; Sun,  4 Jun 2023 23:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99393C7EE29
+	for <virtio-dev@archiver.kernel.org>; Sun,  4 Jun 2023 23:57:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3CF78EEA15
-	for <virtio-dev@archiver.kernel.org>; Sun,  4 Jun 2023 23:41:02 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 04DED2B04E
+	for <virtio-dev@archiver.kernel.org>; Sun,  4 Jun 2023 23:57:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 30D7998646D
-	for <virtio-dev@archiver.kernel.org>; Sun,  4 Jun 2023 23:41:02 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EFB2C986423
+	for <virtio-dev@archiver.kernel.org>; Sun,  4 Jun 2023 23:57:46 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 25A25986338; Sun,  4 Jun 2023 23:41:02 +0000 (UTC)
+	id E1287986338; Sun,  4 Jun 2023 23:57:46 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 114E1986332;
-	Sun,  4 Jun 2023 23:40:58 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CD4AF986332;
+	Sun,  4 Jun 2023 23:57:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ixxC6AEoS5Sf6I95tODr0+8eB947Vldwdl6nU1b+2Zlf/9wu6pVre28k+b/mafVmZBm8q6aUX/DHGaTlsox29vR/AQI7dm3jeAst19ZPur+7aEPM8E8gfhm6mcIUob0Gpzf6/rl9gETmKdjfaSyOIScZ8ksH6OfFiNgPTLcxreWSeZKfU+iiP4IWdcuJ/+m/G1jV4IRxMryTbgzr9jJgdfbA5er9HFu387sQIjIDiNJTSv7hfbwj1J/28xuZTYtYqAhJy/SKu+TKIlTIXhfqUwofSTU3WRN3DBwvJeuoC/2hcSDZhF+WGYk1JrZEW7wu9H9/uIqaSk23vwPJz7jZYA==
+ b=Oej2VNLBcQcZ9RlVYzDLnxQe3lvm0GHsmlGaq8Kb9SedTZb+65JMTyJli5tyLcVuUqEBSoBhmPSNP9bs1I2rWLgmlE8OLs0EDmlvZpLl4lPZAoNN6HHLRnBGP95U8dRtxzVUcvu6riN/oSpUSOzLFdIp4Mivp03YpumK6FbLj5VGG93txAZAqiTWkTniimzWil7L1r/7ElqrRl0y4iB8Qwh1D24r5LmWpZamukzjtVAXPs+t4fN91kCFIGyySz2y9kZyOnyJ2NTDX2RbuYoBc6kufvUL326sdiQlY9egZa+KyjHVFB9glhR7HPAMsyD3etXg66bVGKDJOSHsQRl3FA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ia49QL51spnOkisVEaOBpKA9CNsA97ZlbUfQDi8yovs=;
- b=hUPbOYlRCsedHzW3c7zJIim6Hq7Gfty8eqIMfCxCwmYcxIBy+egeOr7tK8fKfzdLBJ7mkfnqUE5AuM+J8zTxqh+1uhnfkLmjDH4uEf5vocITUgdWRWqyt1YoZXub0ix5WzZjDX/P+vgZUOfTuFU+QqDb9DYoesXnG6/3X3GYfWZ+hCXlNDx1iKN+RlwC/OnFX/x8trW1q26qZJt3EYnS9p6LZ7q0p8pz/MiPjFsjcZHuV64jwnmdHxz+x1ACfb1w+LLSFjgAXBXhgg88xy3rhzzkl1OmMLvxYMiDSmxKDG84MRNQAnxNYec/03wUGTo3dofBYYhLB9qtjhY44g03LA==
+ bh=DjIv2eIVDjyLaablpeTONJtBP/+bSPeWmvjj3xIJHdU=;
+ b=QFiPHGUxVTS2oH6fs2gDu/9LzAMGGLWbQXkXprfDFYFjalxWlk29kBVl4X1uhzj064oFwagmq8rF3OZJSRY6ZCr/OniorkwD/CG5XO6rcdA3HaNZHkhvZB6ZCIcdvwOXXCptEsQA9cyEhHB+FwEnXjHwfT3Vih9jDyyYuCRyFtbIOl3uqDZ4XInb+iU4S7nBNAQcJBhmBoEgoSOuzbTM470XEpK24hBBQ17vE/rZLQch56lczhNCAo9EPjtSa8Ar48FKGaW2gHw9rGrp6B0/9iF1bCCfgsbUXEZ6v4utVq7PzOIPcJwM/nFyOF1j5iHaTL4cwokkTFiArz/ZvFBLyQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
@@ -46,24 +46,23 @@ CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
 	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
 	Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [PATCH v3 0/3] transport-pci: Introduce legacy registers access
- using AQ
+Thread-Topic: [PATCH v3 2/3] transport-pci: Introduce legacy registers access
+ commands
 Thread-Index:
- AQHZlZHqSKW+Shm580CRlUjcCTH7qK96p2iAgAAAjkCAAAV4gIAAAhyAgAAFe4CAAALHYIAABcIAgAAChLCAAHFxgIAAHa6g
-Date: Sun, 4 Jun 2023 23:40:54 +0000
+ AQHZlZHrjhTPPTQ0ZUaNTBTq19TtJ696o/kAgAAGnPCAAAfAAIAAAPOAgAAG/ICAAAKAQIAAer0AgAAZ7jA=
+Date: Sun, 4 Jun 2023 23:57:38 +0000
 Message-ID:
- <PH0PR12MB5481DABA25CA36A5460B13E5DC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <PH0PR12MB54817B89F8A1BF10576DAE54DC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230602203604.627661-1-parav@nvidia.com>
- <20230604092441-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54815C9677C9E1F3EDE032A9DC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230604094535-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481443CD383D9BFA0369151DC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230604101351-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548139ACEC00E7CA6D988182DC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230604105027-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B721C34D85D63FCC1F3DDC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230604174224-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230604174224-mutt-send-email-mst@kernel.org>
+ <20230602203604.627661-3-parav@nvidia.com>
+ <20230604091651-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481195B63FD61C35447FFDFDC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230604095615-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D7C7EEAC610BBBDEB69ADC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230604103309-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54813E50A9821F960C43C5BFDC4CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230604174856-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230604174856-mutt-send-email-mst@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -71,114 +70,208 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|MW4PR12MB6804:EE_
-x-ms-office365-filtering-correlation-id: de141fff-1efe-4987-fafe-08db65552380
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB7672:EE_
+x-ms-office365-filtering-correlation-id: 8a844b9b-08d3-460b-82df-08db655779f2
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- yuU3EXl2Ea7kGmTWE5klUjcGl94+U4EztBHLueGZ0FlqBy0OVG1hZDL15cmKiZyrekvj74z3gghRX7viF6O+h/G2BJ2uWZGy8siihjGvpZnGHrdZrTrIcQxTRi/hitfrxDC/JQcTbCqmOGVez8e1Or7JzdiAOpBAV2fE6PzvZ1AZIu8a+M0aAMIx6Ln7pQbTZLNiDmcpxTgg7tCH/bSShA5iOuH9KOdsLg7rfwhlsbYM/SmYM46Ff/CQKyYDrWe0czOLKv3kfA4oKlqC9wBBiBmeaEqR6xxRxoW9TKUpaDc+O7XlSZrtTXU5Vpp02cy3xS/fqNtCjYb9atFWAN+d6OQiYXvSQdAf3Jki1qeVaW5W3fsXXg/hohiueByY6KbobnZnFtQxEQC3ujk01TdOgZOsjVcL0BYMoA1mBXL5VBzz2WDwXLFqCqcNJ2MLvuAkbJIsN2yLkFHvEtV1+u2DAXY4qv3lv6upIEaRX/xEj1N+wtp7XImYkWcBoSlrA79FDYmH94LmwojTeiaWwbwxkhKMVgJAJPTyX88EbyYBEfn8A8a2qDu5Msvno7IV025RR5LPej+zEN49+0n08w/olrVJmal0ra6VZkQLQEmOaNGgTpSus6MA2ZFlIqsTt5NP
+ tbQeu+zNhm5+jFX2hkcPuqZWrmqSQqMx9pqHpCUKARMYwU3gScmBjuYJCx4vyEpEWVNepPO/Bubc1OUF8Db/YSndrg9aJvOkwLcRAXv8hxyPsffdyDYGeOUjNL3lmwB9WK1sJM+CtbR4Mt69uiFQ3qc8Ak3gNDlqJo8vgodxDu4kS3u3UxlamAyCJ5pJLPhgr4QSQk//O6aNqbPb+0PzGWamqXlJoylAR0citt52VXvJdTxmlJcNVfe9UzPhebZOd0WpGBUYBKetoH9GZZYcdYY1G3nUyNb2PSHawhyzvw0O4Vgh1mEki9e8jBdPmaADH2mYCaTI5+h9uxzhXRniTr4y0FA3O6U5Nw/SoWW/hxxkhqPY5Y9yfwERGpteSwLDQW2sjgQuKvIznmoE0ekbUwpzLjkyr6XUDNN4M9R97iveBcGrU7F9ITNJmakoNgkQ+QQf8SDWj+8SqpbJD/1xiBk2jRHDx5drIhJW0NIiOmrh9VzzL6PRx+PMUOMFUPWbPULmimxcIYhg1cRaQjwiLaYrDRHapBroQQNfVPbV8u7jJaD7Z2sGIXBxG3wu3Jp4qt7qlJONgtkHys89+Nfr4Ntf2ANuENJPOE0WVqnXsqRK7zcKI70uF2TDeVYxVNKa
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(366004)(346002)(376002)(451199021)(54906003)(71200400001)(478600001)(52536014)(5660300002)(8936002)(8676002)(38070700005)(2906002)(86362001)(33656002)(4326008)(6916009)(122000001)(64756008)(66446008)(66476007)(66556008)(66946007)(76116006)(316002)(55016003)(38100700002)(41300700001)(107886003)(9686003)(6506007)(186003)(83380400001)(7696005);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(136003)(39860400002)(376002)(396003)(451199021)(8936002)(8676002)(107886003)(7696005)(478600001)(54906003)(55016003)(41300700001)(5660300002)(52536014)(316002)(186003)(76116006)(4326008)(71200400001)(64756008)(66446008)(66556008)(66946007)(66476007)(6916009)(9686003)(6506007)(83380400001)(2906002)(122000001)(38100700002)(38070700005)(86362001)(33656002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?c6JCw2vEnyNo80tGLxG+wETIrSJ/ieQb+pghYfdptW12uCsJ34BXHU4W/6Q6?=
- =?us-ascii?Q?cmiMatpDF1HX5QJxn9QMU2tePkZ7miAprNg3bkjHwumnhjsY2e7T00sey7kP?=
- =?us-ascii?Q?vd1oA4s5MlRneM6yV08VfAqtDo1uDnpMbX0CBrDoDqrDbbtgVZ7qjRPLacoX?=
- =?us-ascii?Q?PpxZp+ME0q+Gg97eDE9/TkUf31GoczMu6kuN9IjxpVkbD+hu85xByPy923fp?=
- =?us-ascii?Q?eExp8pNdTlU7Ms+xAlIM4ZhyBitCkgy5gAkiy6qOLNvU0mHbORH6TWoZPluS?=
- =?us-ascii?Q?gs8oB7k9vQix0nxCQjlELTbK8SJijgZPNl5a3p2wMhFvxBqBT0KcezvgfKl8?=
- =?us-ascii?Q?eY3uSRuNbwLfjT4jUV5P9jfvnoY/SeIWUe35qlr1dmLpA1T9HAsz0MsSpsd4?=
- =?us-ascii?Q?NxHQ0CAVaTF7wolGIUMqMMfL+1tZ4tZwdS0ljIsGcnY2x9OwxmG3SOJkQekY?=
- =?us-ascii?Q?860D23IfcdD5ZiKxP4ju0/pnZq0W39vMsnsR+RANakyG9A70X6yWAbAi3ak+?=
- =?us-ascii?Q?sUT1QKoo5uAHPqaQD6eQqllu1lQ5k1DDyWDBykedvPEx6Wf2xZEVax0HKMDc?=
- =?us-ascii?Q?aLSXDknWVtJekKWGZDW7bpllgOLEGmps1CvDFrSoCo+UogocFcobfip4NUzo?=
- =?us-ascii?Q?KLkGt+Q8VdYz2JJBqVjZQp31Anto/jLf87h6fo3N6yyGnA4YvBWPCTHOz7Vl?=
- =?us-ascii?Q?1NeOELCG46VJLO2lemIw1rZY6dofbeeT8fXnv4YkDPz0jJwElMEwGSfeKa5Y?=
- =?us-ascii?Q?1kEiMbrQ1DeXpAq+Oq2z7xdU166d5wru+VBXqDOPiYu+HlDQ3zl87M46mKUM?=
- =?us-ascii?Q?IBYGlKbf9HTalx06DnciqHYyW9/4QrdZWJaRkUG0N4WY+D5rZX+942Vz6Ed6?=
- =?us-ascii?Q?mSruPdWV1loLGA1y6L/VhBTphv7ahBYn4OfavQ17UOElIintG8+iqsFeodCs?=
- =?us-ascii?Q?J8OuizeZ+1l5ep/mRVLXz7LRuXg1uySCcn/J8MkYvLEHuOOcrc3q9f/xkZhe?=
- =?us-ascii?Q?yPkMVhtWrpmcJF4XBzIPgljSLpGp0Vx4k6Rrj2qderkacB9WndeelE6S1BHQ?=
- =?us-ascii?Q?YeqnFp+6JkyqTwEi+/N+fRNmLztVKMVfAHE04LXNJ7V8nLvqVALSu6pEd48D?=
- =?us-ascii?Q?HvJGT1RiHtdr+uCej7g92Cb/UA+sQxp5vFO8BRlZsy/UP0pY79FwNbqXGHFB?=
- =?us-ascii?Q?N8hLaZNy4+QBtiQmbDZa1Rha8aPA+1k6JHWe7bcA9TyaW68pzz1acUY5D3Iu?=
- =?us-ascii?Q?/AQRBMCcUvwPWMvhHOENLVSBnMKQEx7WjM4uDeA6Ln9z5KvBOciscEMKUXya?=
- =?us-ascii?Q?J8WI15nl46pz2PmVBfazlJSmm7SUMX/e8CH5Ohd0+gX9oZOe8PF5vCUF+lh4?=
- =?us-ascii?Q?/DidZNOnPwxBY/JWhzHa1U0O1eZAwVwTxl7U3RSyrK5J++cpGwL2F5sHzncm?=
- =?us-ascii?Q?x6nx2vJ1Rc1tfHEmldjv6gwPepCVxpALxKlRvSuBUfdFZBhvib2MesSpNHwO?=
- =?us-ascii?Q?VzNj6KUjnxMR2SyvdZZZFEo/nlmovUC9AGUBADlACgFM7gElcr2WLrtYBrQ1?=
- =?us-ascii?Q?1f4691DtV0nQOKKgqAZhBtAg69egkLdRdZheWTO+ET1dZ4UlLOCFItTsd8dt?=
- =?us-ascii?Q?vsNVw3QLqYJsKM5wwrewLZM=3D?=
+ =?us-ascii?Q?YqAfySrlZxHN5wiCd23GG7eeJ0bhS+6qrh3AzevXMZKnTAUNd5SOP2PCstLr?=
+ =?us-ascii?Q?ZO+z8CHSBXg07UtKm7+LHmIGe6cWvhp498xnKwmz6L3QMPDYMa2Wp76fAIhb?=
+ =?us-ascii?Q?leKzNtfIl0F5K0h3EjGQgbljCQPE5gM3fZ/nSNx12IHXZZVpCN/i+V6WksYu?=
+ =?us-ascii?Q?3tX1dmGAAIGOUG4VjjGxkebmyH4G35c3DK6D7nCoTtZBSrhZ+xlvbDoeOo3y?=
+ =?us-ascii?Q?A5DlH4fyfE1jn2tA3XkzPzKftqcSREJ/0r/6KxF2jxaAfF5jFFyYMxXmsiBX?=
+ =?us-ascii?Q?+uDvGi9O/kbV3ShoDa4irNlPw4+X7pgGtGgmzEKqcTPtUV2/U9FXNFarAwYC?=
+ =?us-ascii?Q?mVnjSlU3lBm2gUbVFQx+LYgs+4HvviwA4hgCXBTsWyp8n4/vdzqagPwqdYCT?=
+ =?us-ascii?Q?Qs/kjZhukF3ug3O/yMeIuthjxu6bkqzF6TXajKISoOFGG+3DaVeDr0YA1JS8?=
+ =?us-ascii?Q?GI6nZePeaxxCq4dZJlrC4hFdTx+fEoiEIK7/q2jEQ7AvyJcKbaKrfo4eGsgJ?=
+ =?us-ascii?Q?t1xH1VAr7smE3KdvkabE3Ja9qRW36WphryQdHscDJsdWXhCicfX7K1je8NLE?=
+ =?us-ascii?Q?nJTdSKfWPNtx23Z9/gD18tFOnotHAgl6HT1bynIZnGFGFa11Jh9mWQ7ztcho?=
+ =?us-ascii?Q?XZBG1UJD09Oapqd2S6VDsf+uutt/Dl8Te4g+ZbVtm41Mye/u59hx2evQqcGH?=
+ =?us-ascii?Q?5ybSmdmm54UxKCZWlwukK2Ds9zOiSqA5RBoCrt2q6LuXoDshFGftOJbWWnRa?=
+ =?us-ascii?Q?56VHcVh5t+Z4Rub/tYYK5jlt7YPYF6o8tFuxfjC0MuYBt1S76R8kJIIlUQKZ?=
+ =?us-ascii?Q?rKxtiEAa3TpGubJbOI6y3hJqLmAtZUz57Cb5nbL2Qp3RjOoXrckYtbrkIH8/?=
+ =?us-ascii?Q?GDBmWd48AGjUpLfGS+q0r4XAoZ9KhEkBFkm/OgCvSxsi5tw9yTT4GST6JXxx?=
+ =?us-ascii?Q?CaOJSOSLYaaMK9hdQPnxsVwO2KqFFA3Evi7ZNtl2vH0JpKmyCW7mmbBX32S6?=
+ =?us-ascii?Q?pjeLSLvLE469hAM5VBHgTILoB4MZaaKXTBhwpNpoNdgG1gll8Vw9BCgm+O86?=
+ =?us-ascii?Q?xVNFyT0pll8jdZuPmZcSL5vicY4gkER/StC3u5kfejP2qJd+PjcZPXyOEalG?=
+ =?us-ascii?Q?nCkpmUYQggMP1/SAi8aO+Ox73IeTmqPy0wss84gCvtAHJaqARcigsqfl36lz?=
+ =?us-ascii?Q?5b+MfmZkcpqIq/eX1s4eNPKOXrKIkkVwhfD5aMxnXy2+lcerUiaqK4Mg3jfM?=
+ =?us-ascii?Q?7abRKBqVTCXxTZYte5PjmBRchgSnQy+aHHKQvtwuKovDk++6eaFewlySw7cO?=
+ =?us-ascii?Q?WLHHGM2j6NEeeV4XeXIp3MpOweQEpNWc0MwWQh7BdBhwuYGVXm4dEEeh6HcK?=
+ =?us-ascii?Q?hMj65CxfcxD/gIfB3jsONF8an8m/EMkUWB4+Q0KPp1N1N0Z4jqPmMRyVVhaR?=
+ =?us-ascii?Q?U+Rg3A1J/tV5MVCXIKcqSonpZHRaGbhl4jLG9eFv9g6fOo5usx4QE57kyhqH?=
+ =?us-ascii?Q?8W9mxhXnq3j//2D2vR8C7vo86wfUbLFz4BLuyPjJnvL75kgmy8Lma59uIPer?=
+ =?us-ascii?Q?+Ybd/Skren701wOyR2kSYLclI5/Z2yFxXMzJWpVoD8MPrVVTti2b2Dn6yj+q?=
+ =?us-ascii?Q?K2TaOUZcA6LLtti4Xn9/skk=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de141fff-1efe-4987-fafe-08db65552380
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2023 23:40:54.5305
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a844b9b-08d3-460b-82df-08db655779f2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2023 23:57:38.5028
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 98aCXaP8mU6GdjNYQKuTuxIOBjm/5+GUV+qaTvfGSr9/t8LFoRj9cP30LCTcauU4RWiMjsrmeCCqAh6wrgiQsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6804
-Subject: [virtio-dev] RE: [PATCH v3 0/3] transport-pci: Introduce legacy registers access
- using AQ
+X-MS-Exchange-CrossTenant-userprincipalname: y4yeK7LbN1iXL51fYvj8/qrjDrDdzcgUPU/UPH/XDiVP1SDEGxXkIJjJ5hV2wQqC5R9gkN20vJO1EVTp8gdamg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7672
+Subject: [virtio-dev] RE: [PATCH v3 2/3] transport-pci: Introduce legacy registers access
+ commands
 
 
 
 > From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Sunday, June 4, 2023 5:49 PM
+> Sent: Sunday, June 4, 2023 6:10 PM
 
-> > Legacy can utilize the 1.x hw plumbing without building new hypothetica=
-l PF
-> hardware.
+> > Conformance chapter doesn't have any links to aq requirements.
 >=20
-> Maybe.
-> Whether 1.x BAR can be reused for legacy would depend on a bunch of facto=
-rs.
-> E.g. with 1.x using VIRTIO_F_NOTIF_CONFIG_DATA - probably not.
+> Good point, but the section itself is not missing, just a couple of links=
+ in the
+> conformance chapter. Sounds like a trivial omission we can correct as an
+> editorial fix.
 >
-Not really because legacy doesn't have that feature.
-Legacy notifications are subset of 1.x feature.
-This was also discussed.
-
-> Let's just say, we are not in the position where we dictate these things =
-to OS
-> vendors yet.  One of motivations of the spec is making writing drivers ea=
-sier so
-> let's add an option for that pls.
->
-There is no need to add multiple options at this point when the hw vendors =
-are not going to implement.
-When we find another vendor to implement, we can always add the new method.
-Marvell and Nvidia both are forwarding with AQ at present proposal.
-
-> > VF has BAR for driver notifications. This BAR is used for 1.x and legac=
-y.
+Yes, to be done.
+=20
+> > > And it also somehow uses the extra command to get an address and
+> > > then translates notifications to writes at that address? This kind
+> > > of thing is what I called a theory of operation.
+> > >
+> >
+> > > A couple of paragraphs.
+> > >
+> > Yes, but I don't see such details for the AQ, notification coalescing.
 >=20
-> But it's the same piece of silicon - be it in PF or in VF.
-> I really don't see why it matters.
+> I certainly tried for AQ.
 >
-In same piece of silicon one needs to open yet another PCI steering entry t=
-o tell that treat this for VF.
-This double size programming is useless.
+There are many details about "access other device" design details located i=
+n the commit log, which is not present in the AQ section.
 
-Yet again we are discussing same point as before.
-
-> > There is no need to ask vendors to build new HW to put driver notificat=
-ions
-> on the PF BAR for VFs, when it already exists on the VF.
-> I'm talking about giving vendors an option not asking them.
+=20
+> For notification coalescing there's a whole paragraph:
+> \subparagraph{Operation}\label{sec:Device Types / Network Device / Device
+> Operation / Control Virtqueue / Notifications Coalescing / Operation}
 >
-Ok. Understood.
-When a vendor prefers to implement such cross hw forwarding it can be done.
-There isn't a desire to burn and program extra hw for functionality that al=
-ready exists on the VF.
-Hence, VF's doorbell on PF can be parked for the future option when one act=
-ually wants to implement it.
+The paragraph explains "what" part of the operation, not the design of how/=
+when things should be done by the driver.=20
+I am not against adding the theory of operation, but I clearly see being ni=
+tpicked.
+
+>=20
+> > These commands are not special.
+> > Commands described "what" they do. "When and how" is not described in
+> the spec.
+>=20
+> If the "what" is "return offset for notifications" but there's no descrip=
+tion on
+> what these notifications are then the "what" is at best incomplete.
+>=20
+
+The command description says:
+"This command returns the notify offset of the member VF for virtqueue driv=
+er notifications"
+
+What more to tell than this, as "driver notifications" is clearly described=
+ in the section 2.9 for it.
+May be I can make it little more verbose.
+
+> > It is left to the driver to compose such things.
+> > How Net device should use "queue reset" is not explained in theory of
+> operation.
+> > What is described is mechanics of queue reset steps...
+> >
+> > Those details were put in the commit log, and not in the spec.
+> > If you want to add theory of operation like nvme spec, we need to have
+> dedicated section.
+> > I don't see a reason, why this should be the first patch set to do so i=
+n v4.
+> > I am more than happy to add, but it can be done in generic way as follo=
+w up.
+>=20
+> I don't think so personally.
+> As bigger issues get fixed, we start polishing up smaller ones.
+> It is reasonable to ask that people try to decide on a high level design =
+up front to
+> avoid sending you back to the drawing board - though that's unavoidable
+> sometimes, a straw can break camel's back, but that's not the case here.
+>=20
+> Nitpicking when the design itself is undergoing big changes is unproducti=
+ve for
+> everyone - reviewers and contributors.
+> Now you are getting asked to clarify things is a good sign that the desig=
+n is
+> converging. The less time we keep arguing about protocol the faster this =
+will
+> happen.
+>=20
+Most or all questions about notify were literally answered in v2.
+I missed to add them to the alternatives considered section in the commit l=
+og.
+I will add it.
+
+> And I commented on previous versions too that the notification part is no=
+t near
+> ready, and suggested splitting it up to a follow up patch.
+> This is still the case, and I still think you should get the 4 config acc=
+ess
+> commands merged first then focus on notifications.
+>
+After you asked about this in v1, I further clarified in v2.
+I would like to cover the notification part as well. It is really the small=
+ piece as it is not baking any special or new concept.
+
+> > > But what is the answer?
+> > >
+> > BAR 0 should not be used at all by the VF device for anything including=
+ MSI-X.
+> > > > > And does this include this new command you are adding or not?
+> > > > > It mentions bar too.  What about e.g. MSIX tables? Could there
+> > > > > be other capabilities referring to a BAR?
+> > > >
+> > >
+> > > ?
+> > >
+> > New command also should not report BAR 0.
+> > > > > How does hypervisor know whether VF followed this rule (it's a
+> > > > > should, not a hard rule after all)?
+> > > > >
+> > > > It is not a MUST.
+>=20
+> Check up on the difference between SHOULD and MUST in the RFC.
+> If things break without this then you make it MUST. SHOULD is a
+> recommendation.
+>
+One may be still able to work by having it as "SHOULD", it may be just too =
+much of code without much use.
+Hence, I kept it as SHOULD.
+
+> Isn't code saving the reason you want to prevent VFs from using BAR0?
+>
+Code and driver complexity both.
+=20
+> > Even those cap check is not needed.
+> > Hypervisor driver needs to only check that BAR-0 is empty of not from t=
+he PCI
+> layer.
+>=20
+> How do you check this? BAR0 size 0? Then say so. That affects all VFs and=
+ some
+> of them might not have legacy access.
+
+I don't think we need to enforce this by writing what PCI spec already defi=
+nes.
+For example, we don't write how MSI-X PBA addresses to be programmed when p=
+rograming a vector and how to memory map PCI BAR region.
+It is left to the driver to figure out how to detect BAR0 supported or not =
+for a device.
+Multiple solutions exists left to the driver to decide.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
