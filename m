@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12887-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12888-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 91BF5C7EE25
-	for <virtio-dev@archiver.kernel.org>; Thu,  8 Jun 2023 14:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4262C7EE45
+	for <virtio-dev@archiver.kernel.org>; Thu,  8 Jun 2023 14:44:35 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C80B141EE8
-	for <virtio-dev@archiver.kernel.org>; Thu,  8 Jun 2023 14:41:46 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2627B600A9
+	for <virtio-dev@archiver.kernel.org>; Thu,  8 Jun 2023 14:44:35 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B347C986675
-	for <virtio-dev@archiver.kernel.org>; Thu,  8 Jun 2023 14:41:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1CA9498667A
+	for <virtio-dev@archiver.kernel.org>; Thu,  8 Jun 2023 14:44:35 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id A3D6598666C; Thu,  8 Jun 2023 14:41:46 +0000 (UTC)
+	id 1121798666B; Thu,  8 Jun 2023 14:44:35 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,98 +24,86 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 91D6E98666D
-	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Jun 2023 14:41:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id F19D6986655
+	for <virtio-dev@lists.oasis-open.org>; Thu,  8 Jun 2023 14:44:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: n49dpOVUPT6jIeSU9nroSg-1
+X-MC-Unique: hUgpJUE6MjWt1SkDqHBvcA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686235303; x=1688827303;
+        d=1e100.net; s=20221208; t=1686235470; x=1688827470;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GGlWwF84oWGj/yPj2FFeP4GEjFBsHte/ABZwiYf8J9M=;
-        b=i1DB/zlZmm2CEt6YSnFSwwwJY8l3xt9qd6RvyFDzIaeqKqwKPsMHPkZ0V7Z7CVZttd
-         wrFrCOrELD5Q122EzBXST3nuZ2qI25DyLqIoqq27sCTZbwMsgwjGEDAlZYLmYmidEbMO
-         WwpJE+IAaWlhu7ngyqosSkNzhqCONZS351cGg6uMvh2wjuEB2FB1dmbQmeUx19MKUR/n
-         JRILg/SZMSP4k9EWqksbDtSSSw36tEzfioN3+pq7hbxtw8OmtAiiK5DkJxaBwBPe1DlW
-         t6awAPMpFEpt/GgPZrFVgoqvE8tyr+F0pbjZxfZyYOsZ9XSTJZHhkTTXUbMiFGRvGd82
-         CJWA==
-X-Gm-Message-State: AC+VfDzbCzTZjhlSinLepxgBSuucCAdp9R9wzvBgYXZ1DtCnnQyTM9Kn
-	DyjwGokYVvdBADwZlucqgUyHazJO+RJN85iZRzXB+U3Txuda6HizmGCrjh45YOo0vK+FG6bhkxL
-	KSklmTQfOFmkqqP/bGa2xhnIlYD6j
-X-Received: by 2002:adf:f9c7:0:b0:30a:8e58:7955 with SMTP id w7-20020adff9c7000000b0030a8e587955mr2024108wrr.13.1686235303345;
-        Thu, 08 Jun 2023 07:41:43 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6S8wR4aSFunspyaTrvxpiqT5OvVaDpHCdYuTBVbSGPiz3q0rKcWYsHzCvCEp3fR30jom8n5A==
-X-Received: by 2002:adf:f9c7:0:b0:30a:8e58:7955 with SMTP id w7-20020adff9c7000000b0030a8e587955mr2024091wrr.13.1686235303057;
-        Thu, 08 Jun 2023 07:41:43 -0700 (PDT)
-Date: Thu, 8 Jun 2023 10:41:39 -0400
+        bh=AAnHUrJr6+Ie9VBrwJ/il1em80oSecodhRGNUkuEV2U=;
+        b=SI1PttdsNZe6wP7ytlNrv+gqF15rrRtWGllbozGmQhek0Csvj3AsegJhIobgXQHlw4
+         +HH3Cl/zPpwcmFJF1sKZQTcZkdhRa0RHnhSuH9wrkAhZRIcWbYDCb40qLkzhMVXSOPjU
+         OGjM7tQyGldRhCibD/hsrRMqsehd/rZ2V5sLgK0iKwg+Uer3YSrx3PYW6RSkiIB+tAm9
+         5XENe9qyhNaNeifFvh0FRVcl5tLGikiT2TM4mV+2dtw2JSCd1CXKv3tIh3cAE9AL5mEd
+         kAKz1qaRXy0uZpCUknuzeQupwHlx+ugWuS7klRygtUPCnTMQsLqPKTrjMgDxI1UI8o4+
+         Q1iA==
+X-Gm-Message-State: AC+VfDxOY2WukHQ1WZa9p9OCvHrZwFTxuW2Gg+8Ncp5eNfMw3WRPoP20
+	b+99C224MZSUQ0s7b9dke6DJPP3AIuzP2D0HsVmNtBtoRgP0nv4gxyxz+eriBGnSDYwOnYrps8K
+	5SzlXddtNPO4Lwh55DmhiPpp34C/v
+X-Received: by 2002:a7b:cbd3:0:b0:3f7:4961:52b6 with SMTP id n19-20020a7bcbd3000000b003f7496152b6mr1822300wmi.25.1686235469785;
+        Thu, 08 Jun 2023 07:44:29 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ62cPZMarvBu4yQzlpPRaeSaSKzMr/8mgFE/D/9Gy6fwNfON6OZTY4RLxDk5qHXR4L3nY4Y1w==
+X-Received: by 2002:a7b:cbd3:0:b0:3f7:4961:52b6 with SMTP id n19-20020a7bcbd3000000b003f7496152b6mr1822284wmi.25.1686235469432;
+        Thu, 08 Jun 2023 07:44:29 -0700 (PDT)
+Date: Thu, 8 Jun 2023 10:44:25 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, Jason Wang <jasowang@redhat.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+Cc: Jason Wang <jasowang@redhat.com>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
+	"sburla@marvell.com" <sburla@marvell.com>,
+	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Message-ID: <20230608104119-mutt-send-email-mst@kernel.org>
-References: <20230605071608.73016-1-hengqi@linux.alibaba.com>
- <DM8PR12MB54805C0A8E0E617EE2149851DC53A@DM8PR12MB5480.namprd12.prod.outlook.com>
- <20230608064042.GC28580@h68b04307.sqa.eu95>
- <PH0PR12MB548119AC6E8CF4A5EBCBA4D3DC50A@PH0PR12MB5481.namprd12.prod.outlook.com>
+	Shahaf Shuler <shahafs@nvidia.com>
+Message-ID: <20230608104215-mutt-send-email-mst@kernel.org>
+References: <PH0PR12MB5481C14D65D5E10CD23A9F67DC4DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230605092859-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481CEB3A34AAB49A282F2A8DC4DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230605174755-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548180E16376862A3C0DFF1DDC4DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230606073544-mutt-send-email-mst@kernel.org>
+ <CACGkMEv1so_KGwJZG3GnAf=JNky7+BMNK7N4NTtucDS+WyW5VA@mail.gmail.com>
+ <PH0PR12MB5481D80A48F3BD82D86B3DB0DC53A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEsVrqCGJJ2Q5OGbgPdtEJHTpvVt6nEKP_MzkSH_-cOa6w@mail.gmail.com>
+ <PH0PR12MB54810313CA6DD1995F52745DDC50A@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB548119AC6E8CF4A5EBCBA4D3DC50A@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54810313CA6DD1995F52745DDC50A@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: Re: [virtio-dev] RE: [PATCH v15] virtio-net: support inner header
- hash
+Subject: Re: [virtio-dev] Re: [PATCH v3 0/3] transport-pci: Introduce legacy
+ registers access using AQ
 
-On Thu, Jun 08, 2023 at 02:26:51PM +0000, Parav Pandit wrote:
+On Thu, Jun 08, 2023 at 02:38:43PM +0000, Parav Pandit wrote:
 > 
-> > From: Heng Qi <hengqi@linux.alibaba.com>
-> > Sent: Thursday, June 8, 2023 2:41 AM
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Wednesday, June 7, 2023 2:54 AM
 > 
-> [..]
-> > > > +The device MUST calculate the inner header hash for the configured
-> > > > \field{hash_tunnel_types} without the outer UDP header if
-> > > > \field{hash_option} is 1.
-> > > > +
-> > > This I think conflicts with the current RSS where if this override (higher priority
-> > than RSS) or not.
-> > 
-> > VIRTIO_NET_F_HASH_TUNNEL instructs the device to calculate an inner header
-> > hash for configured tunnel types.
-> > Then, which fields are used for the calculation of the inner header hash is
-> > determined by the RSS configuration.
-> > 
-> > Therefore, if the inner header hash uses \field{hash_option} to indicate that the
-> > outer source UDP port is used to calculate the hash, it overrides the RSS
-> > configuration (higher priority than RSS). It now not only indicates for which
-> > tunnel types the inner hash should be calculated, but also indicates which fields
-> > participate in the RSS hash calculation.
-> > 
-> > At this point, we can
-> > 1. continue to allow this behavior. That is, if \field{hash_option} is set to 1, the
-> > hash value calculated based on the outer source port indicated by
-> > VIRTIO_NET_F_HASH_TUNNEL is provided to the indirection table to select the
-> > rxq instead of the hash value provided by RSS.
-> > 
-> > 2. hand over to RSS the ability to specify a hash based on the outer source port.
-> > That is, we can add VIRTIO_NET_RSS_HASH_TUNNEL_SRC_PORT_UDP_{v4, v6,
-> > EX} in \field{supported_hash_types} to indicate that the hash should be
-> > calculated using the outer source port for all UDP tunneling protocols.
-> > This approach removes the need for \field{hash_option} and makes the line
-> > between VIRTIO_NET_F_HASH_TUNNEL and VIRTIO_NET_F_RSS clearer.
-> > 
-> #2 is preferred.
+> > Hypervisor can trap the legacy device configuration space write and convert it
+> > to cvq commands.
+> Michael already answered that cvq is not trapped; this is the main design goal we talked several times that it is passthrough device.
 > 
-> But I must be missing something.
-> Without VIRTIO_NET_RSS_HASH_TUNNEL_SRC_PORT_UDP_X, today if one wants to do RSS based on the outer UDP ports,
-> It is already supported by the RSS (even in presence of the inner header).
+> So no point discussing this again.
 > 
-> So why do have to introduce VIRTIO_NET_RSS_HASH_TUNNEL_SRC_PORT_UDP_X?
+> If you have any comments on v4, please let me know.
+> 
+> Both the design points are addressed in v4.
+> 1. To split to two commands for device and config area
+> 2. Use pci cap to learn about notification region
+> 
+> Since this ABI reflects what we agree on,
+> I would want to raise for vote in coming days to be part of 1.3 in few days as we have more than 3 weeks to sort out non-ABI language part.
 
-they want an option to ignore all other header fields.
+I think there's a bunch of work to tighten wording in v4, don't believe
+it is ready for vote yet. Unfortunately I need to get ready for travel
+and then travel for the kvm forum, during this time I will try but I
+can't promise when I will be able to go over it in detail and send
+comments. Back June 20.
 
 -- 
 MST
