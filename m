@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12906-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12907-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 40D5BC7EE23
-	for <virtio-dev@archiver.kernel.org>; Fri,  9 Jun 2023 02:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0E2B2C7EE23
+	for <virtio-dev@archiver.kernel.org>; Fri,  9 Jun 2023 02:03:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DDBC34437C
-	for <virtio-dev@archiver.kernel.org>; Fri,  9 Jun 2023 02:03:35 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id BAA1A68466
+	for <virtio-dev@archiver.kernel.org>; Fri,  9 Jun 2023 02:03:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D54109867FA
-	for <virtio-dev@archiver.kernel.org>; Fri,  9 Jun 2023 02:03:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6675D9867F0
+	for <virtio-dev@archiver.kernel.org>; Fri,  9 Jun 2023 02:03:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C8A08986692; Fri,  9 Jun 2023 02:03:35 +0000 (UTC)
+	id 24EA99868AE; Fri,  9 Jun 2023 02:03:36 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 167DB986804;
+	by lists.oasis-open.org (Postfix) with ESMTP id EA2759867E0;
 	Fri,  9 Jun 2023 02:03:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T5zrvIjLYInu3TJBZnD2Je6YSf7ceM4ODEAcMtvY22CyYyPSpqBteWPa2PebxoRb3X5aMnPuvPrvk2fH4I7gnAhsDxrLhCPtHpG+K7lGo3DWbyBlpgV8M3x2y3blc/W9TfgJj9ceWk2bi/YV9/3Z1Mh6EPzFn6JwHUFKAS2mLiw9QBZNc7YVklPvBc/ZRGKE8G53CSLHWGxVEtGn9mAyuPozyt4Zpcz2aHZXb86m2MKI8Cmaizw9ZXsKi+6KXjk5Z5yw78jpKeDLgwi+wrcjIZjbPhpuhwhKqLSaxS7uh6Eck0oKzDU0rECioMffhQIftyUh0YFVKBkSp3MskCcVHg==
+ b=FYOcSYFMYsaE3zLaFAkQnwTZkI3mSIuBEUes5cnZYUMNKcFQcff4nlP0r5SXxMypznUYU8xoU3sY/UEHair+KUsEJwl+hgxnYF8J3ib8FKHyc27+TljbMaTSybV898QoVmmvnKHKRlzbAZ9EYbrTSFRyqBwirQKorU5u06yy3GjIpUSKOBMtWWkIbqd8zhXVMWnUECMy2pdzr9lhZ5jmTdqPSEtIwIuipOmpjYv0WM1+rh6+fK6TKpAWHTaaBBHpjnhE6M/Fv2A0G2Q83VjuQWsJ+hcummnL3/NzktAqXGzTkYshKYoUW6VAo8FRlQyURRtsK4QZscKGm7mi6LMqOQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CqevPKxEkTPCChAP37x59otVRoyPWa9+5ZWKgGRrKtY=;
- b=bhGGRSboHXfjHyuwyc0ZTfwJ6A6YD+K5e/HuDXg1iajcQojwSXJmxAo3y/tzMPF3dI/GCJ3fMDyOMHTEG4dgq6FyWRnQZK+JtSYKAcpr3L8yMkyzyLEeGDrPPIjVyeqASVZa2SV3P/bYQZztGPEO6GrDbSLcgRBq8FATWXFpZQIFIQdKug/8zNbafw2v8xbuQv2ynUuX5a6zqg84YFdRfUzx20ey5mUiqt13jIaw4EbYykcv5lwRb8xrG78eo46NCOZ34YieyKgrEZs9gOB8khVAlALWViSQ24uDIlAho1uiTln6xdAnxFajdX/NyDfDwTAnQWOK7E7H3zepR92hWQ==
+ bh=jJA/vC1fbL9OxKo4WMXrwjBIEiWmO/wslHDFjK4j/Lw=;
+ b=jIpjW57wehclnKkVgLDFYoT/gD/y/4V5ZuFphbrPtehkk45lWCxOPy0cUjtSYM0CRTJktVcRIG0P+swGdhzkbkDi2liE1yl5nMMRDox07GruAoalqe4isQ5TrP/QGouzkGMtycZycxuyUJkUlBzA/1Ikgg/0j+a9GgQ4nwzR/T/ixcDaDDqW9YVlYJYJJmH1NDF7jFVU0Sh3koDeJxbU+MNARJsqIH00HcIFU8MXX2nihHUQitAgCNtkaHdapIsaHiARdvpUq+/RIznfxZtPa1hWajrjsmpY9KBA2osK8YHaPymr1vbgoTgj7lJ5s1cutkFaRzAVfEaHltX8eN+g8w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=lists.oasis-open.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
@@ -50,8 +50,8 @@ To: <virtio-comment@lists.oasis-open.org>, <mst@redhat.com>,
 CC: <virtio-dev@lists.oasis-open.org>, <sburla@marvell.com>,
 	<jasowang@redhat.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
 	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Date: Fri, 9 Jun 2023 05:02:46 +0300
-Message-ID: <20230609020248.869700-3-parav@nvidia.com>
+Date: Fri, 9 Jun 2023 05:02:48 +0300
+Message-ID: <20230609020248.869700-5-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20230609020248.869700-1-parav@nvidia.com>
 References: <20230609020248.869700-1-parav@nvidia.com>
@@ -63,61 +63,193 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT037:EE_|DS0PR12MB9060:EE_
-X-MS-Office365-Filtering-Correlation-Id: 90b69dfd-7058-46cd-7e9e-08db688db509
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT079:EE_|BY5PR12MB4886:EE_
+X-MS-Office365-Filtering-Correlation-Id: 22d0fb4c-1a4c-4cfd-b788-08db688db585
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	oz5UnwPYVPqcxRH/Z6IFX8Q9qiYpnPMaMTF5WL5m/ZB7d7xAKIa4kpcu0yEHjW63Rn12m6G3x+I10s9THQhxpAd/6V1+DkYnl55URCPnVdbn4noEAedaSJSS5Pvd8/ZJTW9DM69axK8XF4AY+3e+fhsYPSCC61Qgc8YkfP5rPkWMjGXsH0Yw3VFI5J+elo2EvGgZInsSVtpy+BZJk7IiHC3FwrWo/MKd7TSmEUeJ7uoYc60IBR6dR0wj05g/kMnzhlWOpuu6zr2x1r8IaR2t6ie/KHiv+p1GrHQYa6heJ4GFeyDDbz7Wg94FH+jNLtm+EyhZ+sUTvnj/x/1Al67siVdeQ6CFQ87PHIFXK99uKo4HsDpGdCS09iRhRs9EWEEaBMSz/n5cvJLKSFqyYA/qj/2IcDEHtlsM0f2HQ03jw0vexKdCWDQDm9W+Rg+XuA/drZYpozOAo2Fu2XiYzaK1NFq+ihVVjqKUaQJTznqesf8mEeg+qXoPA1lpMfruUGVv+U7raLS6JimgGKDe/wgx98tHe9Vw4hnQghmQfKYPwtvPZPS9THC0w/GSHyl1lwwoVp5qfmN04gHrO8Yi6JjgeK9aIDNHwrp1cOwr/AZweszV/MCMZ9vkF6WWBmhLrL+mupCsedc5J6ydHveMo65CvIJcI7VAjhQQZxdm2jqe0WGFfEfOezNbeyV/loQ09LGvJmCkurczTWIP81otyTjqcS6UQloosCKPFmNsmgjX5LLqRjHeDojrDGDOQOcglHV1
+	6dVBZ5ieWY6G67yhHZ3Puu+VnGIXKIh6fnsX8OvC5wQYrDVRNjGUejGAXrw+wdREn02rBTVz6xEzoE36bCPay6sdxHBns13H4F1X5T08cOxCsm/gYzoKgqwAGXX7g1cKLUr7ImLW6tTH14MWesL03s+g3xZLx4I3nJdf/QcxuG2zvNMONQSwVSJl1ypzlumhOnaXYELn0eGxCMkJAi0yOFVmrdcXK1oObiBwIwkM1fzWGAHa6yWwHOosB1g/tJz4yNPA5J6kaeNKxmAW1dV/AZR67BvWdb/XdpStunB5bkEe/L9rKuCtEYLzLJkfzfhQzB0EfnCWTugLBPoVvUAVCSHQ3TDbtNFb2ES3rVK9Trg/TOx1JoyxLHngTGY8S5Imx3VLkVjNtVmcNmgsU9hVMQpG/+Oz0T3wLoUnkg4vfFSnAO9t7L7jUhTRbUNMaYVbKFeVguy5lTDpZwzl6oMBOZzpMpPLxMw+Rg/QFOFXFeCAhg7uG+7TXO9V8KqU+JEtG+Pb6Tm6+u69JO1QlvKOQg3bgrfRLOKyvZha6J1kpdJNn2/GIb8tOGIks3sJDVhgNpt/MX1qTDrFhi81wo1ZI0kxxaEbOMnlkPp427imwpXQG11SlzNY2LP6T5++D8S1sLKo60UK68GvO7pirTKpC/nSRtQJHMDzduhxgzfptXHwokrSJDsHYL8ipT6e24Bhqt+4bYszp6y6aJ2KQgyD1mgy0lqBLruCyTuQRKUsxwY6LYyqzwzwgjOMr/h6QkEbOYQ3hL5Kh8jVOAbSdc0+/LWf5KPvw0VdRXL6WuBN1XY=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(346002)(136003)(39860400002)(451199021)(36840700001)(40470700004)(46966006)(70586007)(70206006)(8936002)(8676002)(4326008)(107886003)(316002)(40480700001)(54906003)(110136005)(2906002)(478600001)(5660300002)(41300700001)(40460700003)(47076005)(1076003)(82740400003)(26005)(6666004)(16526019)(186003)(336012)(83380400001)(36860700001)(2616005)(7636003)(356005)(82310400005)(86362001)(36756003)(426003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(136003)(396003)(346002)(451199021)(36840700001)(40470700004)(46966006)(107886003)(186003)(1076003)(26005)(16526019)(2616005)(966005)(82740400003)(426003)(336012)(83380400001)(47076005)(6666004)(36756003)(54906003)(2906002)(36860700001)(82310400005)(8936002)(8676002)(110136005)(40480700001)(478600001)(41300700001)(316002)(5660300002)(40460700003)(4326008)(86362001)(7636003)(356005)(70206006)(70586007);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 02:03:23.8626
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 02:03:24.6611
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90b69dfd-7058-46cd-7e9e-08db688db509
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22d0fb4c-1a4c-4cfd-b788-08db688db585
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT037.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9060
-Subject: [virtio-dev] [PATCH v5 2/4] admin: Fix section numbering
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4886
+Subject: [virtio-dev] [PATCH v5 4/4] transport-pci: Introduce group legacy group member config region access
 
-Requirements are put one additional level down. Fix it.
+This patch links how in a PCI transport a group owner can access group
+member (PCI VFs) legacy registers using a legacy registers access
+commands using administration virtqueue infrastructure.
 
+Additionally it extend the PCI notification capability through which a
+PCI VF device indicates to the driver which PCI BAR region to be used
+for driver notifications.
+
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
 v4->v5:
-- new patch
----
- admin.tex | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+- split pci transport and generic command section to new patch
+- removed multiple references to the VF
+- written the description of the command as generic with member
+  and group device terminology
+- reflected many section names to remove VF
+v3->v4:
+- moved noted to the conformance section details in next patch
+- removed queue notify address query AQ command on Michael's suggestion,
+  though it is fine. Instead replaced with extending virtio_pci_notify_cap
+  to indicate that legacy queue notifications can be done on the
+  notification location.
+- fixed spelling errors.
+- replaced administrative virtqueue to administration virtqueue
+- added queue notification capability register to indicate legacy q
+  notification supported
+v2->v3:
+- adddressed Jason and Michael's comment to split single register
+  access command to common config and device specific commands.
+- dropped the suggetion to introduce enable/disable command as
+  admin command cap bit already covers it.
+v1->v2:
+- addressed comments from Michael
+- added theory of operation
+- grammar corrections
+- removed group fields description from individual commands as
+  it is already present in generic section
+- added endianness normative for legacy device registers region
+- renamed the file to drop vf and add legacy prefix
 
-diff --git a/admin.tex b/admin.tex
-index e51f9e6..fd3b97d 100644
---- a/admin.tex
-+++ b/admin.tex
-@@ -286,7 +286,7 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
- supporting multiple group types, the list of supported commands
- might differ between different group types.
+- added overview in commit log
+- renamed subsection to reflect command
+---
+ conformance.tex               |  3 +++
+ transport-pci-legacy-regs.tex | 46 +++++++++++++++++++++++++++++++++++
+ transport-pci.tex             | 19 +++++++++++++++
+ 3 files changed, 68 insertions(+)
+ create mode 100644 transport-pci-legacy-regs.tex
+
+diff --git a/conformance.tex b/conformance.tex
+index 6bac4b0..93f409c 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -267,6 +267,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtio Device Configuration Layout Detection / Legacy Interface: A Note on Device Layout Detection}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Device Initialization / Virtqueue Configuration / Legacy Interface: A Note on Virtqueue Configuration}
++\item Section \ref{devicenormative:Virtio Transport Options / Virtio Over PCI Bus / Legacy Interfaces Requirements: Group Member Device Legacy Configuration Access}
++\item Section \ref{drivernormative:Virtio Transport Options / Virtio Over PCI Bus / Legacy Interfaces Requirements: Group Member Device Legacy Configuration Access}
++\item Section \ref{par:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: Notification capability}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over MMIO / Legacy interface}
+ \item Section \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Setting the Virtio Revision / Legacy Interfaces: A Note on Setting the Virtio Revision}
+ \item Section \ref{sec:Virtio Transport Options / Virtio over channel I/O / Device Initialization / Configuring a Virtqueue / Legacy Interface: A Note on Configuring a Virtqueue}
+diff --git a/transport-pci-legacy-regs.tex b/transport-pci-legacy-regs.tex
+new file mode 100644
+index 0000000..a25b586
+--- /dev/null
++++ b/transport-pci-legacy-regs.tex
+@@ -0,0 +1,46 @@
++\subsection{Legacy Interfaces: Group member device Configuration Region Access}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Legacy Interfaces: Group Member Device Configuration Region Access}
++
++As described in PCIe base specification \hyperref[intro:PCIe]{[PCIe]} PCI VFs
++do not support the I/O space BAR. Due to this limitation, a PCI VF hardware
++device that supports legacy interfaces cannot be attached as passthrough
++device to the guest virtual machine.
++
++To have a transitional or legacy virtio device in the guest virtual machine,
++a PCI PF device as a group owner may support accessing its group member
++device's legacy configuration region using the group administration commands
++listed at \ref{sec:Basic Facilities of a Virtio Device / Device groups / Group
++administration commands / Legacy Interfaces: legacy configuration access commands}.
++These legacy configuration access commands are transported via the
++administration virtqueue. This mechanism enables minimal involvement of the
++hypervisor software only for the purpose of the legacy configuration region access.
++
++When a guest virtual machine requests legacy configuration and device
++specific regions of group member device, a hypervisor software accesses
++it using an administration virtqueue on behalf of the guest virtual machine.
++
++Even though virtqueue driver notifications can be communicated through
++administration virtqueue, if the group member device support such
++notifications using a memory-mapped operation, such driver notifications
++are sent using a group member device defined notification region.
++
++The group owner device should not expose PCI BAR0 for the group member
++devices when it prefers to support legacy interface for legacy configuration
++access using its group owner.
++This facilitates hypervisor software to operate with least amount of
++complexities to emulate the legacy interface I/O space BAR and passthrough
++other PCI BARs and PCI device capabilities to the guest virtual machine
++without any translation.
++
++\devicenormative{\subsubsection}{Legacy Interfaces Requirements: Group Member Device Legacy Configuration Access}{Virtio Transport Options / Virtio Over PCI Bus / Legacy Interfaces Requirements: Group Member Device Legacy Configuration Access}
++
++When a PCI SR-IOV group owner device supports
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE commands, the group owner device SHOULD
++NOT expose PCI BAR0 in the SR-IOV Extended capability. This is to facilitate the
++software to emulate I/O region BAR0 for supporting the legacy interface.
++
++\drivernormative{\subsubsection}{Legacy Interfaces Requirements: Group Member Device Legacy Configuration Access}{Virtio Transport Options / Virtio Over PCI Bus / Legacy Interfaces Requirements: Group Member Device Legacy Configuration Access}
++
++The driver SHOULD NOT emulate I/O region BAR0 if a device group member exposes
++a PCI BAR0.
+diff --git a/transport-pci.tex b/transport-pci.tex
+index a5c6719..42bc104 100644
+--- a/transport-pci.tex
++++ b/transport-pci.tex
+@@ -541,6 +541,7 @@ \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options
+ struct virtio_pci_notify_cap {
+         struct virtio_pci_cap cap;
+         le32 notify_off_multiplier; /* Multiplier for queue_notify_off. */
++        u8 legacy_q_notify_supported;
+ };
+ \end{lstlisting}
  
--\devicenormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
-+\devicenormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+@@ -560,6 +561,14 @@ \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options
+ the same Queue Notify address for all queues.
+ \end{note}
  
- The device MUST validate \field{opcode}, \field{group_type} and
- \field{group_member_id}, and if any of these has an invalid or
-@@ -378,7 +378,7 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
- \field{VF Enable} refer to registers within the SR-IOV Extended
- Capability as specified by \hyperref[intro:PCIe]{[PCIe]}.
++\field{legacy_q_notify_supported} when set to 1, indicates that the device
++supports legacy queue notifications at this notification location. Legacy Queue
++Notification address is derived within a BAR for a virtqueue:
++
++\begin{lstlisting}
++        cap.offset
++\end{lstlisting}
++
+ \devicenormative{\paragraph}{Notification capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notification capability}
+ The device MUST present at least one notification capability.
  
--\drivernormative{\paragraph}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
-+\drivernormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+@@ -596,6 +605,14 @@ \subsubsection{Notification structure layout}\label{sec:Virtio Transport Options
+ cap.length >= queue_notify_off * notify_off_multiplier + 4
+ \end{lstlisting}
  
- The driver MAY discover whether device supports a specific group type
- by issuing VIRTIO_ADMIN_CMD_LIST_QUERY with the matching
++\paragraph{Legacy Interfaces: Notification capability}\label{par:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: Notification capability}
++
++The device SHOULD set \field{legacy_q_notify_supported} when the device
++notification location supports legacy driver notifications.
++
++The driver in the hypervisor MAY use notification location for accessing
++legacy queue notify address when the device supports it.
++
+ \subsubsection{ISR status capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / ISR status capability}
+ 
+ The VIRTIO_PCI_CAP_ISR_CFG capability
+@@ -1212,3 +1229,5 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
+         re-examine the configuration space to see what changed.
+     \end{itemize}
+ \end{itemize}
++
++\input{transport-pci-legacy-regs.tex}
 -- 
 2.26.2
 
