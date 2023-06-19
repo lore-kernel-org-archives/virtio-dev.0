@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12979-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12980-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8894AEB64DB
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00032EB64D9
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:38:24 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C88972AFEC
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:37:47 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 622D42A82A
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:38:24 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 53390986830
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:37:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4944C986430
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:38:24 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 023ED9865D0; Mon, 19 Jun 2023 17:37:47 +0000 (UTC)
+	id 3CB0A9863A6; Mon, 19 Jun 2023 17:38:24 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,98 +24,119 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D27D6986429
-	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Jun 2023 17:37:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 29A709863A9;
+	Mon, 19 Jun 2023 17:38:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: X8Hx5YRoPRupTkXOuJ78ww-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687196263; x=1689788263;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3050zEV9/MzgWmosdTeWPjPE4G3lxcfo4ol+uBaZmBY=;
-        b=PFrKIg1mKf24K3Ms0AmpHbOjvm9RjEKmnQx3/5/bBy+XTRbRZ8UWB37pXBuSBaGwYO
-         9K1mogTYz+d6GZhDc6gOLmbBbXqN/eO7110W+9SNuk1h/7I3DVH6MJvQDjnXuYJO/YIK
-         UGL2ilJYlVdU01PxHBS/N0+1T7knZXBq/NbBw3NklDC6rO8+HBhckoanGMsu3kkaBJ3d
-         WbJgu4x0cli/q9+YVxEbA+Mr/rN4JxWdo+8/ZzlhRHKOdnG92wFxzs8pKDimZA6qEqs/
-         hd5xmFeHd/7uFIOXw7gW6dCCaDf/JaOFNyEzOb951vXqXYVXWdv9JK73uihQqfH3uXCO
-         IIpQ==
-X-Gm-Message-State: AC+VfDy2hSd3cQ8j6kplERGx49GFFTP2A4F70gEzrgIz89CXM9gd2dWT
-	1vNXjIhqlGpmgR2bttPjTnQZ6jXT42R9qJu8+dwLwKhSp7r5CSPpLsX9msEDiKUHONWUy1Ypefq
-	uJl6bcdlP2LNeQnrV1fce+FEkBJfV
-X-Received: by 2002:a05:6000:181:b0:311:149c:23fa with SMTP id p1-20020a056000018100b00311149c23famr9050428wrx.25.1687196263635;
-        Mon, 19 Jun 2023 10:37:43 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5ZDMKvsO1LRlC+KiNquOpszjksSayH1Ky69uDAMpLUMxum8ovlXMJwJ7xTAJSEMBw18PC+lg==
-X-Received: by 2002:a05:6000:181:b0:311:149c:23fa with SMTP id p1-20020a056000018100b00311149c23famr9050415wrx.25.1687196263326;
-        Mon, 19 Jun 2023 10:37:43 -0700 (PDT)
-Date: Mon, 19 Jun 2023 13:37:39 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230619133322-mutt-send-email-mst@kernel.org>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LhxZDdoMjFF2ERvsZ+GnGMxO4LfTJsg1Q6CspqCDRHyNxcg8FPZolMoRYwOaZK9Md8x4Ysi+lqezcGNPwCqyCkbnQfRGdR1JkKyFX7iOzaz9Qjf/Jk/rbJjALPtrnU4jRr6SebKDck2qDaNV0Ucue/PjSkJLbB+V5zc72zWf73JR/kZcFFM4YwnLHXpBk6ZfUJozNWtRLxSgInEI2dWqNBwomLaTRKDQSQH62U5pg9YYJTvS0dMSgVBOo/9Ocp9PmoRnuDn7XMw94ef+YG3NJjZeekbW2Hzoiz7Wd6PZOe1yOu/yAnryKBt1/S1MmVHY9qebr+cbF3RCepdqRJ4r/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=A6UXab2NCISGxVFcnOvNXNePc0DxU8sRWSryGsD1UDY=;
+ b=Wbbw04hKnT6sT+mTTB3+UGLFMtwXGeecIaihUOHWHPrvkpn2f3BCHJVnf17KjZYGEAKNg7L2U+ywHZbeaY/8GQPFjcrcIU2n4g6YsMzTuCSRwg1FXx7wX3Of+mluLhpGgZSg2spE3Eoq65NypVpDUd+0lcfS1ZtFSweJqL6npYpVb0XP/O3o3tezXNQNDLVa1b1+sfEaJfZsG6x9+HkthfM7YqtCMJlFxMLdnEPr5FE87r+0yAjnQagvCZwqqvi68YMJuBu84JcHVMwtqQFOkBsv8+kurFY1s9fNGilX13t46OY1Sm1W1HzS+cQvcZR68+so15dMB3sczeeXI1VtZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "david.edmondson@oracle.com"
+	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
+	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
+	<shahafs@nvidia.com>
+Thread-Topic: [virtio-dev] Re: [PATCH v6 3/4] admin: Add group member legacy
+ register access commands
+Thread-Index:
+ AQHZnhzNwhtFR5mF+Uage7sFrLqCZ6+SV8kAgAABfNCAAAQDAIAAAJdAgAAH7YCAAAB3IIAABbuAgAABEZA=
+Date: Mon, 19 Jun 2023 17:38:15 +0000
+Message-ID:
+ <PH0PR12MB5481FDB1BD7EF9C26C699C88DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230613173015.1244486-1-parav@nvidia.com>
- <20230613173015.1244486-5-parav@nvidia.com>
- <20230619122836-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481758B8EE080750D6377C0DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230619131115-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481D1836A5B9A7B345A20A8DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230613173015.1244486-4-parav@nvidia.com>
+ <20230619121724-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481EE01C25B4C170E498177DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619123757-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54816B14CE2DA659837D1C09DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619130440-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481AE9F8C823289DD17C7B2DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619132640-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230619132640-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CY8PR12MB7611:EE_
+x-ms-office365-filtering-correlation-id: a6c91d4d-7767-4e4e-78b7-08db70ebf683
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ S4B8gm3N6u+4E4CFVcaIiPOzdhEvPL6wXVmeOl9QtvfByPeO2GWkuqtA7WJW/GpiblA2LgXgLa5FOI+aGa2h6AyVbzE8GArdWK/IKj/r4B0Ib20Z5iFYD/mojOb2HhzPYmFc8ASdnEvNG4DRw5cBPYn7XlrZ+S+wfyurRGOagmW7NzTRP8oLH2JzlpheZDVFBg9pVMAZ/U0Ma7Sx9J5nWKVW1nj1iiKPyEYbugByOMHUbQlTcGjhuoz5oy64LhIGeQqtTsA5CFNqFVwkK6gv+iJNyt91WD4iF7Evw/uic4Y1hHbHGHBHSodg0K7SkLKAe4KoXori0IeKc10mF8/snoqE+FTmhYW7VaC/q9ZeJhrbvhOEk1JqYrQkmko/9ddlG/wg3Pa7ipLjLjPlS7WpBMmBQMc02YfRa3HM9PcA4bpiDComhE8rMLdev+gy6oxcD3p2iGH6MUcIyg4vT7rjqToBMXsskEw6hFrEANo0Entfm8JBknxCABymtnEACzUPWyltVjckqTcVrqL8PizuKga2DCv01saAMA9qbqjTVE2yDtH03lAmPNwubo7aztY5u4LCxL/mHZwBIwF4DAh5Vr/+PoVjhUdA1MqgXlVtXkA9E7Roa3zcPuk+lftjr6+W
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39860400002)(346002)(376002)(136003)(451199021)(83380400001)(7696005)(54906003)(38100700002)(316002)(8676002)(8936002)(6506007)(9686003)(86362001)(26005)(4326008)(33656002)(186003)(41300700001)(5660300002)(52536014)(6916009)(66446008)(66946007)(76116006)(64756008)(66556008)(66476007)(107886003)(122000001)(55016003)(38070700005)(71200400001)(478600001)(2906002)(4744005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?8aDfw/rtd29CjU6h2FTW2+07yr4/oOGiPpihx+Honkal4Vqcp/JP9qWH2xUg?=
+ =?us-ascii?Q?yvg9ijh7ggw5AV3nAJqsXADNWg72fIKRIbIPAXcxauVG8ywatM8rWDgJKu+R?=
+ =?us-ascii?Q?DG0bwWyyzpj4LzY5UXSqm8JNzUI9TNxhD4S3MrF75LdwM1u8JCq3UTkdg1zW?=
+ =?us-ascii?Q?E9wOsNN5vr3J42PxK0YMYX7neKagc0RcyDS7RyFZ31BFo+GN4Dl+0yKv4MaB?=
+ =?us-ascii?Q?arVTMEjJRjLwaZZ8ZORdA/xKRJWEFYoJJ6OM10qhBLSKjB8rtXCxdYne7vHx?=
+ =?us-ascii?Q?tlzmgztxBXEt4IqDdCFoRo/70WHSF8IJYl2x9m8Cs5wy4xqx2s6Yv8X8RZmH?=
+ =?us-ascii?Q?77uAIv9EFnmxhEOxU7BoHJ4fKqZmftf3sfgTH7CM/bS9T8uPl/5gA2ulE43N?=
+ =?us-ascii?Q?i+zTzQE9nXEg8YE5zrQkTAPjefcf+NAMLF+JEumLR2gX84/h24Eovx57qeP+?=
+ =?us-ascii?Q?GURQZrUmdv+uYjQ3lbt7l9Z+PWlQqILbvWFWyRHIMLTpoamEKPc0C2gG13vo?=
+ =?us-ascii?Q?lgHCig/BUB+bDJTw/o91+HgHxWzmvtcvlPZ5a+ETdwj7rgZ7Nyq7YBX8hnhb?=
+ =?us-ascii?Q?CSWSUrdgF9dDXUN21mx8r5ZgCgUnMjiovDA/uW2jtIZAJuDYqcoDeeTBhMlC?=
+ =?us-ascii?Q?HCWn93oydfS2spXKs2aN3kXYVR4zA99LxN793eMlBZjebXgzNW5Ia3rPvo/b?=
+ =?us-ascii?Q?Mt4smwttVSz4LOPOp/Z6uNwWCAIUniWFlFe6x+F5P+fdR3Gc8WabgFl1LF2N?=
+ =?us-ascii?Q?e8gS7HUsFdWZNYgMX0ZamqtqHpVFjPpRxRqOiL1QgfGipvk0AQTihVN4Vasz?=
+ =?us-ascii?Q?CBQZQfzEEKSgoSjCjWyHks8cPSZ2Gkx+++wZCrb+h67bPQ9sDzB1GLBDTsSG?=
+ =?us-ascii?Q?4cxfbhNbdm+vUDubPS+XCL2vXbVbbASlcxKuK5d+TGIUemqIOM7PoyBPHj7b?=
+ =?us-ascii?Q?iWzSIFCa0dYCi2me2G2ImOBRlzWqTqK2U3fJbGWaF4JnnuakPuY+I6aUOn+N?=
+ =?us-ascii?Q?HWA9FTl4XeSZWVLCwPxzpFTnR9pUIgoxZ18ZkyTbbicbFUW4Y+IyHYsKjWMP?=
+ =?us-ascii?Q?OUbbF2atiWqvjqirn+88jGscuG85z5ECDKb3EOMXjZ/7bp8cdxT0rAiziasW?=
+ =?us-ascii?Q?chW1pJpZOMRsxYvnZq6yj+TkWFBMubQUpA9D4Dl3fNiKXbZsY32KN157BPAb?=
+ =?us-ascii?Q?RFYDY2oQFfuOvTMtAhACApjP4tgxgivWAKTZz5iNvISuWzxF31RMHoLBeORW?=
+ =?us-ascii?Q?fSMxdxeeTrXwp3INgCg4XcfBGPu12QSzXKjiK8Y/GJFl3TJ7oMArBQSOmhjo?=
+ =?us-ascii?Q?tLVft/YDwaU/GuDY/stAxP1S5prp0iMDUDZG7dfI4HCmVU4j5HGMinTz2/22?=
+ =?us-ascii?Q?oZ9sesGcME1VO0TgDDYVyPsehebKrhcmKjJA58w85CTtsMmDgyPdbFXqWkUC?=
+ =?us-ascii?Q?WoV0ZwT6duCqzgAgEEl2uGrcIfpLE/8P0CX5/t28VkBcZuPAAjh36frjmViX?=
+ =?us-ascii?Q?1B0iXaqBiyYUbCNKdNyKe2EDfFADQ3whqM9wR99LcN3Ao7lfesDAe7cE05Hq?=
+ =?us-ascii?Q?WQhrO4rvx7wuWV773Ds=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481D1836A5B9A7B345A20A8DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v6 4/4] transport-pci: Introduce group legacy group
- member config region access
-
-On Mon, Jun 19, 2023 at 05:26:22PM +0000, Parav Pandit wrote:
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Monday, June 19, 2023 1:20 PM
-> 
-> > > It is reused, but it doesnt come for free.
-> > > Do you want to re-consider AQ notify query command?
-> > > Or continue as proposed in v6?
-> > 
-> > 
-> > If we can't just make it come for free then maybe
-> > VIRTIO_PCI_CAP_LEGACY_NOTIFY_CFG is better, we can just list the number in
-> > the common section and then link to the description in the new section.
-> >
-> How is it better? It requires burning more bytes.
-> Is it better because it is self contained?
-
-Mostly yes. But it also adds a bit more flexibility, right?
-I thought avoiding touching transport-pci is worth less
-flexibility but if we can't avoid that...
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6c91d4d-7767-4e4e-78b7-08db70ebf683
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2023 17:38:15.8096
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /T9PLS7+dlWjCMflvD+PRPtm7j1pKe+V7tNcVkKstrYdjlav6MBbCsR2l2UamRgwWfRJJsWWtndOnvq8mvJjGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7611
+Subject: RE: [virtio-dev] Re: [PATCH v6 3/4] admin: Add group member legacy
+ register access commands
 
 
-> > I also feel we want ability to have such a capability in the owner too.
-> > Would prefer including it now though I guess we can add it as an extension.
-> 
-> Re-opening the past discussion.. amazing. :)
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Monday, June 19, 2023 1:33 PM
 
-OK fair enough.. I guess both of us are not 100% happy but
-it's a compromize for now. And maybe we'll add one of AQ
-and / or PF cap down the road.
-
-> Why? How is it different and better than querying over AQ?
-
-Wait a second let me clarify. I am talking about notification
-in the PCI BAR of the PF. *Not* offset in PF capability
-but in the VF BAR.
-
-
-> I see the AQ is better than group owner and group member specific cap.
-
-
+> But I am looking for a way to keep this stuff as self contained as possib=
+le. I don't
+> much care whether the new tex is under pci and admin command section just
+> lists commands and links there, or it is under admin and then pci section=
+ links
+> there.
+Yes. On it to move things to the generic admin section.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
