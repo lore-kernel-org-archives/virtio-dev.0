@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12970-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12971-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C3A5DEB64D9
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E59CBEB64D9
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:11:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 08BB97A068
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:05:31 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2BD9F94EE8
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:11:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DB3CF9863B0
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:05:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0B583986430
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 17:11:07 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BDFE09863A6; Mon, 19 Jun 2023 17:05:30 +0000 (UTC)
+	id E1A229863A6; Mon, 19 Jun 2023 17:11:06 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,95 +24,107 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 439B39863A9
-	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Jun 2023 17:05:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CEA9C9863A9
+	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Jun 2023 17:11:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: HMMDT-6MMe6aNN0YsHnTpA-1
+X-MC-Unique: VSBiSKG0OGO5BzabEc175Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687194270; x=1689786270;
+        d=1e100.net; s=20221208; t=1687194662; x=1689786662;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=czaTvAL0283TaAk9AfUuCB/ugeyobeCgMeg00EZeZr0=;
-        b=KhC7LrvHHqnb/baQReSX/PMwolHvf6Y+wHdSp340gapKr0mmmHmEoonrVTwKNtN5x9
-         +j5W3tLuYQBcLE6oUm58q4V/N/SqS73HyclF/CMO8CANxQQ8xllcbcX8khTcmMMZpTHn
-         6j9xzfbYCsiQffRVMEcaeQV8iUCCCn/66TOBuyPtqNfsua6nlkCSH3qkjbpDVlWuQTU0
-         u6RR4XGF0h2ufV14LWbwMcE2Wy3YDeLLeM8CCshEOeb56wMZlm0/weQN7UkgNetlP2R6
-         xG6vRuNNRbfE579sT/0LDZ9r/V/TGzgN153aqAs8ch/9+83u9e2kLwVpIR6SXtJ1xHey
-         65yw==
-X-Gm-Message-State: AC+VfDzRodALG28a8/i38Yw8mWShSrwmBCTUcCpfUQuqiwiHGByD3L+o
-	fNZZEVhHVhuGDHoobk+oniJmdSBPua5KDni8ODiS4cYh0zEvR6C0zPRwnOCy/8mOfMBlw/uOFUY
-	aeNPOzNclSnE3F3lvDJFPFUzpZrVU
-X-Received: by 2002:a05:600c:248:b0:3f9:b3b4:4367 with SMTP id 8-20020a05600c024800b003f9b3b44367mr1376187wmj.15.1687194269881;
-        Mon, 19 Jun 2023 10:04:29 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7lNrtoUnzKhnIIBbkeiMwRaj1Y0+EZdIOgHHcS3ZWt9f+Rvwp/bY4VMMCowuTCAg+ao07luA==
-X-Received: by 2002:a05:600c:248:b0:3f9:b3b4:4367 with SMTP id 8-20020a05600c024800b003f9b3b44367mr1376166wmj.15.1687194269580;
-        Mon, 19 Jun 2023 10:04:29 -0700 (PDT)
-Date: Mon, 19 Jun 2023 13:04:25 -0400
+        bh=YqE25GwlpsHbTvjqxQ9vZ9X3YKy8tDRTCmEqkFQoH0k=;
+        b=CrAS9FNJRV0qDJYtEhJpWJpSvo7OxAi8iDVT7R+0wCkLutLNqqvQiLfCWJfQbw6IPZ
+         CzSBGtN2EJ9JYmEbnmBlfeqjX82Rg/8ZEMk2qiJ3PLX1sR1TCoRheITecDWI74DQZSD2
+         DcdQfsmnpa9vnN2UZJ523oW2anklBTMWkh8tZBABdSVqPPnGiTHs9xTxc1jdYzYw6Jk+
+         Gl/b/kj9S0RwapANCPW32a+OQ7ag7kirlixlCiwENPLAsY+Vd42YV84iCSJsH5uQKRn2
+         +b9bVVRKC98KctV5itb7hNplJSzRBh4/RSeSOd/i/oRLf31Kt8rVDyEOH05xgXlur/Fu
+         P0JA==
+X-Gm-Message-State: AC+VfDywDqtn29fg+R/CnKGMwpefgSFI3MBuJYBz1l3XhXlQ43AoKxVD
+	4icQDCWa1HnnFv1i+FA12tHWtj+O7wLnqXQ8Qqhd8LP8/lc4VCmO6+6VMu/bnH/4BytE8X+PpiW
+	jTZD9DJnIfqDKPGdpM7vLEIZs1AWv
+X-Received: by 2002:a7b:c7da:0:b0:3f9:b5cc:71e4 with SMTP id z26-20020a7bc7da000000b003f9b5cc71e4mr297770wmk.8.1687194662213;
+        Mon, 19 Jun 2023 10:11:02 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5xVEC5w7ZtlW4YTFh+cLPRCH1wBJJUXnxzLS+++209a4JxyKpS5S/zs3JYapUMI+BaPrYjvQ==
+X-Received: by 2002:a7b:c7da:0:b0:3f9:b5cc:71e4 with SMTP id z26-20020a7bc7da000000b003f9b5cc71e4mr297751wmk.8.1687194661884;
+        Mon, 19 Jun 2023 10:11:01 -0700 (PDT)
+Date: Mon, 19 Jun 2023 13:10:57 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com,
-	david.edmondson@oracle.com, virtio-dev@lists.oasis-open.org,
-	sburla@marvell.com, jasowang@redhat.com, yishaih@nvidia.com,
-	maorg@nvidia.com, shahafs@nvidia.com
-Message-ID: <20230619124042-mutt-send-email-mst@kernel.org>
+Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"sburla@marvell.com" <sburla@marvell.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
+	Shahaf Shuler <shahafs@nvidia.com>
+Message-ID: <20230619130440-mutt-send-email-mst@kernel.org>
 References: <20230613173015.1244486-1-parav@nvidia.com>
- <20230613173015.1244486-5-parav@nvidia.com>
+ <20230613173015.1244486-4-parav@nvidia.com>
+ <20230619121724-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481EE01C25B4C170E498177DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619123757-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54816B14CE2DA659837D1C09DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20230613173015.1244486-5-parav@nvidia.com>
+In-Reply-To: <PH0PR12MB54816B14CE2DA659837D1C09DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v6 4/4] transport-pci: Introduce group legacy group
- member config region access
+Subject: [virtio-dev] Re: [PATCH v6 3/4] admin: Add group member legacy register access
+ commands
 
-On Tue, Jun 13, 2023 at 08:30:15PM +0300, Parav Pandit wrote:
-> +Even though virtqueue driver notifications can be communicated through
-> +administration virtqueue, if the group member device support such
-> +notifications using a memory-mapped operation, such driver notifications
-> +are sent using a group member device defined notification region.
+On Mon, Jun 19, 2023 at 04:45:23PM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Monday, June 19, 2023 12:40 PM
+> > > >
+> > > > we can just say "the legacy interface of member devices"
+> > > >
+> > > What is the harm in telling explicitly what is currently supported, specially
+> > when it theory of operation description section.
+> > 
+> > The harm is that
+> > - making things generic on the 1st try is the only stick we have
+> >   as contributors always push to make their solutions as
+> >   specific to their needs as possible
+> > - people are lazy and they will copy text and then I get to repeat this argument
+> > all over again.
+> >
+> 
+> The "legacy interface of member device" is a vague term. As implementer, reader I don't understand what that means.
+> The commands clearly communicate the scope.
 
-I still feel we should support sending notifications to owner
-at least optionally. For example:
+Add this as an example then.
 
+> > If you want to also have a type specific text, be my guest "specifically, for an
+> > SRIOV type" ....
+> > 
+> SRIOV in generic section doesn't make sense. It is covered in the pci transport section.
 
-\begin{lstlisting}
-struct virtio_pci_owner_legacy_notify_cap {
-        struct virtio_pci_cap cap;
-        le32 notify_off_multiplier; /* Multiplier for member id. */
-};
-\end{lstlisting}
+When it's convenient to you you argue that it's clearer, when it's not
+you want it generic.  Just mention it quickly and link to the specific
+text in the new section.
 
-\field{notify_off_multiplier} is combined with the \field{member id} to
-derive an address within a BAR.
+Look the only reason I personally am even entertaining this over
+objections of several members is that this stuff has the potentional to
+be well contained.  That's the only argument, otherwise individual
+features like _F_LEGACY_MAC would win hands down - this is how we always
+did it.  If you are intent on spreading this all over the spec
+we'll need to rethink the whole approach.
 
-\begin{lstlisting}
-        cap.offset + member_id * notify_off_multiplier
-\end{lstlisting}
-
-
-
-We also need, as part of theory of operation, text that reads
-something like "accessing the member device legacy interface
-using one of XYZ commands has the same effect as accessing
-it using the legacy interface".
-
-
-
-Also, do all VFs support legacy interface with these
-commands or none at all?
-
-
-Also these devices will use non-transitional ID but they in fact
-do have a legacy interface so using this definition they are
-transitional devices. Maybe we need to add
-when we describe the device ID text like "non transitional
-devices and transitional devices utilizing commands XYZ" ...?
-
-
--- 
-MST
+> > 
+> > > > > using following listed
+> > > >
+> > > > using the following
+> > > >
+> > > > > +administrative commands:
+> > > >
+> > > > administration not administrative
+> > > >
+> > > Ack.
 
 
 ---------------------------------------------------------------------
