@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-12988-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-12989-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF9E0EB64DC
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 20:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 18FBCEB64D9
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 21:08:06 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 67CBC157F1F
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 20:43:40 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 718D923D58
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 21:08:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5585D986509
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 20:43:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 61E48986579
+	for <virtio-dev@archiver.kernel.org>; Mon, 19 Jun 2023 21:08:05 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 482789863E1; Mon, 19 Jun 2023 20:43:40 +0000 (UTC)
+	id 51D0498640E; Mon, 19 Jun 2023 21:08:05 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,39 +24,39 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 338609863BD;
-	Mon, 19 Jun 2023 20:43:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 367D69863BD;
+	Mon, 19 Jun 2023 21:08:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hlaZtKonKjYe1KdNpV0ukO64EpfooSjHgw6q0qciuHEcUqGD26/prvnExzR1Ip2J5rcv8tjv6lKzuHsGQnsc7P868ZQfHXDRkfIWc8Ze5KZ14RA2+qfSBSRnf/ufFvRW8czqCy1JaHbibXhfE5E0Lm1K5l7onfcC1JgZsP8RfSbdy80N0N8VG6Y8DaxTYWP25qZAtEn6PEg+KG3LQOeoOzQcDS/xJhRmqHuZKnRUiTbVvtd0DzVKKblx1vLlKST6w0m4CmN86IEsB1vB0pqEztWH/U4YGyJI/Q4V4pNr7W/CdjqoZ4vfpXHhSBhU3LmcrcYrWR8/3V2xiwssO5/H2A==
+ b=kHmsbv7cWsC7iLLd3dqfdFH4qvzoFJn1V2+Rt1u/Rk0f7fE9NMHPRauRj8v4A+YpfEvbenhloV64wy+VP2QGnXXXP/pT4h7BbNljZoof9e0H4VhDGu/TdjZmqqJA18y5YMCe9gZW/XFVB6vqE90GTJNlc+eu/MBlQPfeiLQ2QDyOX2nxi0wOrHh8psW9TyqT3baNWoOLICbSgwPoO2yMgaIJedfUX6BsaeL5W8Q5dCr934iNiO8t0mzWYoZA5miACBXH5JtfUG8IP+RiFE8EbWV5Bmbf0C0EASjCPiiSgrdhcxRGT2ngBGrdjUDtqFbSmqdLXdypK2ZvGYaAUTyFvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JjqIWKijqPwQGk3t9mLkoSexjiievJ2cDeB/OVm5VJ8=;
- b=KzP4hVnRHlbkFB3ptLv88vK83j4fl9ti/5nnPgNNi/Lbrr1UuZ+nk8PhQB26swsDCGLXaFA77f4mXHfznvedMtg+/25iZ3U2OCz4QzrI4DCh18Y7V7OfL/QqCI43Koc5q3SE9U3QdTKlzZq344wYTVQCqDyPNM//mvKrchCLsFJ0kkrmk7hIzlfNAcMCpO1N8JFZXVEIkvf5zr73Q8pqfCUxg6Lmtx6cHjXTpN7UFqw31vC6iELd63PJVBy/3BKD12y1B6C8ZTPvMsROoidffNGnvJC6IPraiU3uAzvvn60kPx0L872AhHcbiIb/+28HfbsOxAENA1mgKisMdsIRNg==
+ bh=5TbUEKkV+snbWM3iLhudLrt/m+U2TSX2T9ZjX3Q2MD4=;
+ b=U90DPEdr1qKUiPKo2r8th5jGlhMc+lllg3IRh1zuLqHjcBOU5v2gIpMKingmi6rVHxLCtB438shb6I8QG7shI+dCC1cTmRh0LY+FjS2xnBHN25hN8hMMuquvSXsXSVWwvuB/7DL+8bhNJFaruzViGSBHcygsqWW3REczx/c1wrC0/fudP+KysXNood5e4Ylgzj2vfJDAzxCbduJkdqubGp7bHDZHFZmD2EC19gvQhtSDIglrxIasRYqh8oTmOIOKOKTE2ofkVR3AvMrHDl2kwWCzbB9O0hVyHVeeOvbvA5G4axnra7fndXQa2OEWv3zV6Q2oxxVgsnfbTTZ1EZJQ/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 From: Parav Pandit <parav@nvidia.com>
 To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>
-Thread-Topic: [virtio-comment] Re: About custom device counter
-Thread-Index:
- AQHZnPYBhAj3P4GR10mqaBAnc/G3uq+Gs4AAgABUQYCAAWnBgIAC+GGAgAIVnICABJomEIAAHvQAgABqpBA=
-Date: Mon, 19 Jun 2023 20:43:36 +0000
+CC: "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "david.edmondson@oracle.com"
+	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
+	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
+	<shahafs@nvidia.com>
+Thread-Topic: [PATCH v6 4/4] transport-pci: Introduce group legacy group
+ member config region access
+Thread-Index: AQHZnhzOtKzAnSMZqEmlUO1lSJmuDq+SVpeAgAAEMcA=
+Date: Mon, 19 Jun 2023 21:07:56 +0000
 Message-ID:
- <PH0PR12MB548187B11DDE81B452E13507DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <1686550355.2503424-1-xuanzhuo@linux.alibaba.com>
- <20230612022526-mutt-send-email-mst@kernel.org>
- <1686569235.2395291-1-xuanzhuo@linux.alibaba.com>
- <20230613045854-mutt-send-email-mst@kernel.org>
- <1686810211.4567776-1-xuanzhuo@linux.alibaba.com>
- <20230616101113-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481D058584D7AF742C1FEE1DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230619101745-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230619101745-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548149CD1C28AA21A203C13ADC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230613173015.1244486-1-parav@nvidia.com>
+ <20230613173015.1244486-5-parav@nvidia.com>
+ <20230619112050-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230619112050-mutt-send-email-mst@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -64,74 +64,414 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CH2PR12MB5019:EE_
-x-ms-office365-filtering-correlation-id: 478245d9-83b6-4932-209f-08db7105dad0
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH7PR12MB8826:EE_
+x-ms-office365-filtering-correlation-id: 701c88d5-3b42-44e4-5290-08db71094156
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- F8CEOL07QEP6kiXPO4pNjqG61ahzUaw5n2vv742q9uW3pG1SraYJ9FVgRMVnYgSi15UmoHgSHx6AfC+IzG6iHWSkF6aGP1EBC6UTNKzOkZyMU4be4ERrq4M4N0y/rGG+M2HvxKA6V1C6yEN6PyT2VK8759CCAaKUnjaBBQ/2ON74S5XQhFR/yObtq5R9gKrlUudGndXhtV8cJpokuuGmwb5XnZ039IcRBfhfgr04LUHZdF5soQSwK88AvZc9s+buBqlakMAxtXgV82LYcLlWUAtSUHGeU07E86EDgyPTcDD/UnC2nzdox36VHvNx54h9cScbhPK4U5pnik3nKeWxqaBNq/zP482BwIIOGu8VIT/fXVZr+ugKeJnHFyR/V+UPN+/Ez0vz0zMAY01iwUCEyj+yFR8g739L5yiVYqbI0tVp7huSPrAKH8A/lqj1bc8TRZWacQ9E38ByHjotycxceCP0h/smEG57ddr/WCI9NKXornkIFuKCytspIznAPRGfKnZF0HOzoLDbsbpq2tkOvv0sSH4vbLCAyeE3vUgGrvkO7wQvvdZq+v4mdt4bdxl5sMOHFUCPNZm5Zofratd3thUs01vYDKzHqj8k188auoHPnVS+TUytErd8Aa2U0Nmz
+ VGh3/qBgWuqwVJ42/hGpMErTN2WkWB/OnuEHKJT3DI1J0eSmdQ7mDQNa3UqJg3KC+awn+bczZxk8gIBxaeURwpfChrfMP93YEyBHe2zcqUIbu7tKoEkAjonA8hO/BBQMQEYHXOC3EzPWLFiwyNeQU3thFDTYsEBWOulcRu1d1UQN1sGTeX6SVQkaWJtK95lGMUdnSPCx49HOacqqwFP6eKYkZmMgPJHizbm7WAJX6kGVX7Z6X6yVosoKVgl+luKVqUl9ijfudnOovu1Ltnum6RZVjq4B3RjQPkzZAKQCp+1UzePRLDvqkAAuMg+Wi9eaNWlfKZognn7Tu/X1XOYnmqYulgsY81nPH5Y/nE1ACBZguXW6I+OGW+J0KStybDSQTYx0NRAsjvmuUpxwcf0OLKraHIAMMoPEoy5PWLJuL68WD+5tDRKudIGc3c8L5B+YpTkGBfIXnv2K4VQgT6HbRbLRVbhldWEELsrFRr/y5PLCr8NBYXrAYLvmjc2gPwBmULFvDvXbcAG7/MEOhg9/RMebsi0Z/vBDJzUPVENsaP5X3w0C0dYRXyIvZUfdBm//a8esM8P/MfA9m7FZtvVEB0UhkBHLFS9TGpsVinAD2Sb7jNoTgYcmQLNt0+QDC1Ps
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(366004)(39860400002)(346002)(136003)(451199021)(2906002)(52536014)(5660300002)(38070700005)(8676002)(8936002)(33656002)(55016003)(558084003)(41300700001)(86362001)(7696005)(478600001)(71200400001)(186003)(9686003)(6506007)(54906003)(38100700002)(316002)(122000001)(66556008)(66446008)(6916009)(64756008)(66476007)(66946007)(76116006)(4326008);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(39860400002)(346002)(396003)(376002)(451199021)(8936002)(66946007)(8676002)(66556008)(64756008)(76116006)(66446008)(66476007)(52536014)(107886003)(38070700005)(186003)(6506007)(9686003)(83380400001)(41300700001)(38100700002)(5660300002)(6916009)(4326008)(316002)(54906003)(7696005)(30864003)(55016003)(478600001)(2906002)(33656002)(122000001)(71200400001)(86362001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?hTXGo8ins4Ckg7LrE9dcNeQE7hNu/EwDRXfeTepnSQ5Im/94Djuun/oXErI9?=
- =?us-ascii?Q?JDOOCzaZul+hODySNO3p8V8hl/UxXUCr1W+6miQodrJvo+Snjl99gYQSRyoB?=
- =?us-ascii?Q?GjV6RH5S6NlRMhlMDEhtPsThlVD1+KzgNfmsq9HD3H06uV/WjhqvBFfWz/Vi?=
- =?us-ascii?Q?z6MGg4h1nkMcbBwAKwYA0r6rbDONZGvVn8rW51hHlkkTqtnw+1KCeELfM2Uf?=
- =?us-ascii?Q?XfvNQPxhRo9yMXmhaFjkSO4kGaNN5tBFuGZtWtEpTkK6HlTZ3cJ2Cdy2+Lnv?=
- =?us-ascii?Q?iOs4u8c+F10fQlYlfAfhOws7UA9haDbgBfBQ5WB+wJ4BtITXwWpkjxVC3dJd?=
- =?us-ascii?Q?XBkbZ2xNfL3a6RWZGcyfNgvzRh5f1h2cbdm86ZTm00Bgv8XEddNj2JBnu4kQ?=
- =?us-ascii?Q?gkKNNjRib9TP1ogZi7lJVxyW0OzMMhtJuLDobfiBBAWn1dhAXjRGr+UvrSmR?=
- =?us-ascii?Q?+MCAiZBG0ePRIFf3eocEqytBceyO1qBVwX5TuUnZiZu8ej19n3nW74Kf4Zbr?=
- =?us-ascii?Q?iITkUYpY579fdiUW40MEHdZm/3Ofq1HQP4hBAySZnDLp2iWxgvFPsWCo49LC?=
- =?us-ascii?Q?HQQnyTB1n1CShMjvgUFeB+quH4pUGmCzlqm59nhFXmFu+f1wEM2mhLGHU3Hi?=
- =?us-ascii?Q?m9N5EEq6xzZqiXvkisuDJZEoAWMV1Jdpe9cY6o0ae2Vi0C9xQEiS9QxP6Ip5?=
- =?us-ascii?Q?ILm+kFDO7JKTagp5LDq0CBEZcbgI+Cn0IFs+KvxUgXc4XV4r6B4L9Sg4clCr?=
- =?us-ascii?Q?XHypOV/X74aBo+S1z9FGSTwEkER/eBscsp9PIug/NlvS7UtyYHCK/oaAS5kh?=
- =?us-ascii?Q?vR1oy1UN7S7WPrsn4L6R8iakSDT216PnlI6ml+ZzaHpKihsBxlGRVX32wiI2?=
- =?us-ascii?Q?4k9Pgbz9qVMEEYruMMUpYv7824Ka8Gtx4DIK+NWZZOtVgALJajcYGeeYmaAF?=
- =?us-ascii?Q?9b+3v/Gjv+HVCb6mkReB+y1VGGcBJ+bOQmKquAsLxXDuVPgjKMTy7qADtigO?=
- =?us-ascii?Q?huiZaeIPoh4Q5YwUMw4FinFIUB8dWnt9/j9FxRUxpKUTTBb23bm/xc6dbxZ+?=
- =?us-ascii?Q?9ynmprRYeOxaWOS4sufc0/c+1/mnddf1Jc3+5UMvfhkAOK2nEKIwkrrLQsTk?=
- =?us-ascii?Q?R27xKF/J+UcoIOs9Wh2SUUT92Q8BIveSdWuiSRs6+onVpfzNnq/dmxTYRDiz?=
- =?us-ascii?Q?t4Fgw7xsBpFaRkFzvpyynBPIHTyuX6brSoJWbsM8WNyXdZxTle1Qb0GHAtsj?=
- =?us-ascii?Q?E/BkbZxg67IcMu/abJwb1103hpAOlliwSo4ZgXlTuLJuiZg6i35STowvlgXo?=
- =?us-ascii?Q?Ease5OfcHcKSBTMAbTZvvRF5rgYIbUDk3JkLWHBT6nKIKtSvPVhG5W0Pq4pI?=
- =?us-ascii?Q?wtRs4uu1awx3AhupsbCn7QtDaiM4Heah6qRsNoncV745B8J5yCjpOUSEKFcY?=
- =?us-ascii?Q?ggUOdz4e8/tD9ln47uImRG40ePhYumdH/lo2zy23dDcahmnjpUSvPWbrYmGK?=
- =?us-ascii?Q?a5tlNGfvxQNw9GyKyiwFMIMPW1JMfS/38M3YQvs9eRwpK4ENtKBvJy5lAK8f?=
- =?us-ascii?Q?4R0jBWa9rSHFSocAY1fgNPqsMlvcNiuwYUZsJoNF4rmBocARlCkpPDkdhUux?=
- =?us-ascii?Q?FHFqsLm4zaCXZMV1JCG9rZQ=3D?=
+ =?us-ascii?Q?cgx2C5Ksa0YKpCQW60gWamy2PPhuzr9KRX7Honq59rOiBk1qoVzskYQBNSUQ?=
+ =?us-ascii?Q?B7b8qBt0RiAFCmVgkN2+x7KtwlyXqo2JUCP4wAxnY8R6YZUpAsy1ut5fKLnU?=
+ =?us-ascii?Q?rksyQkUYpR1A78rvEAtuqhT8mMMJBcZs8Yiu1+/5uPOsIfdj2xTb7rQOISmR?=
+ =?us-ascii?Q?AxcX9C6UwbMRU/TsaOhxHCZ2AJgXFBegvmgc92hi6i9/TjKZzkcYuOzhyEcO?=
+ =?us-ascii?Q?Xcr1cqkdamHFi5Qk1WZye4fl2dfWECQ7mCaMtaMfUQxT4K+EMC7kNq/oAYLZ?=
+ =?us-ascii?Q?KXn0GIFwsED81y4u25kkKGsmn8Z8F20PEhowR98t3VO7UIjzyIBEOQtARvD9?=
+ =?us-ascii?Q?qXX7eBkufqzC+OH3PxBCYoiWP9CDiRLPgxup+4O+25nhWGlLyDtae3nduRgf?=
+ =?us-ascii?Q?74UQPTfG/AKpfK95zteWFahcNtLE6laUKlKzcDehOqO6zFwoUy/734HS0HtL?=
+ =?us-ascii?Q?370wst6qjxzQFi5zC57d8yEoGJPTE12tonwp4dq069hlei0paQw8XWwHm2O2?=
+ =?us-ascii?Q?o7WfZSsup87q1kijdY35IJ+H5/YlIoEFpLE0q5QcWkFiKLO3qe2q4eArGWbD?=
+ =?us-ascii?Q?3RnlQlF4eVltVXg73BIKJ17Mr5GSEjXel+dqycFJPBzzhCjQVhiPvAb9nli9?=
+ =?us-ascii?Q?M3GS9Ebz1HW0W03hYF+aUEBb/pNQmHPy+rJe8KvtT8SjISYZDu9eFIFYl46D?=
+ =?us-ascii?Q?yhcIgoMVvYIEwv0g3JbubmaNM0PyFTWf8LRqKlqvG6WffVjq4fQU5DFVc0ZO?=
+ =?us-ascii?Q?xrwLxDMdofWf7O7zY9DxAbKxyeUxQj5FdN2/qcPZSvIweLuIc40MO2En4bH6?=
+ =?us-ascii?Q?Wn5jc+JtJxR/JA/slBcpjOCZQTPCHLH3DGLJgScDrlYJmRsQf5tX7nSInOls?=
+ =?us-ascii?Q?aYH2QdPAyzLrh6t+Bu9lL+8JWmoyADol9uVp17PlHHm9EpvkNqGR1EHA0QVs?=
+ =?us-ascii?Q?UsNvsnOHTvmG5GhiHNvEL6dY7XC/ZUwr/BHgfmK2CaxNOv8050d9dZckZvCc?=
+ =?us-ascii?Q?ldr/revtQot/NIYF3H5k/t9MWXuEo6mckwGkshhg7LI7OVwukthIHFqSGZ34?=
+ =?us-ascii?Q?OT7/tnWXF4vNNwzg36/waWFqmpJTqyyH8SoC3dIKGXzBuqh2+76/pj/G6aiC?=
+ =?us-ascii?Q?GYBVfboyQ2MyO+nh1Wl2hUjnQ8zIspG0FT+B+uN7e9qBLv3oIg/n/23CKHdz?=
+ =?us-ascii?Q?8JLBSw54AGkgZlUyIE4SSmnh6v4Lyudw8g0/yhIDYVzzwwrq8YFD8MOW5vvE?=
+ =?us-ascii?Q?bH5gAWXHhofYaxugSUPtgMnNPGrj98rFn/yYlQoWAmc+HnpjfUSu3QEhnl6Y?=
+ =?us-ascii?Q?OIjW7SJh6PsO1kWs9kbn9gwfB6lObhJF8nYOCi04adQ7737VWWJ7zfibqf+n?=
+ =?us-ascii?Q?JPu+0T01k8KhfRJehJPlyxuOXBZ69oL4fdGcH+EwoEghDj62vO/s1Z8urwx7?=
+ =?us-ascii?Q?fscOD0vJbLJFJ+BzinYStWc3QvIvxL7W18XxidASxeBM1BTwbYHrFdUm81F0?=
+ =?us-ascii?Q?r0LqThqcjejPTCTNW6kVk3mTLgZhhNa7AICdLq+WudpdBbHKpm4zm2YqL3ku?=
+ =?us-ascii?Q?lc/6SPIBqgndz+Wd0XrDwZ6s9UM95jh7N8nxB20sA8qJD1Mj7VBw8VU852+9?=
+ =?us-ascii?Q?dnmQFE/w4zjAL4F7ok3jQys=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 478245d9-83b6-4932-209f-08db7105dad0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2023 20:43:36.2735
+X-MS-Exchange-CrossTenant-Network-Message-Id: 701c88d5-3b42-44e4-5290-08db71094156
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2023 21:07:56.7772
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gBsdTLX+itlM1a6JQ9lohCcLETzqGyk8rVp6GiKDz27ChVFC0YNYvI7hgY0zeH9FoB1YDZ0DjT9p33d8rU59hA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB5019
-Subject: [virtio-dev] RE: [virtio-comment] Re: About custom device counter
-
+X-MS-Exchange-CrossTenant-userprincipalname: b3GeCO07cJKhLBLDdQV9YFlx3znDbhLNr4R0iXOzROCMD0YOVACILC2dJWyLHono/QcVAaLYJnArDeFpI5GlMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8826
+Subject: [virtio-dev] RE: [PATCH v6 4/4] transport-pci: Introduce group legacy group member
+ config region access
 
 
 > From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Monday, June 19, 2023 10:21 AM
+> Sent: Monday, June 19, 2023 12:17 PM
+
+> I'd love to just put this stuff in a separate tex document and just link =
+there from
+> the generic thing.
+> Or if it's too hard, please create new sections for this stuff. But in th=
+is case each
+> of these sections has to start with repeating the description when things=
+ apply.
+> E.g. "when using legacy interface"
+> when using commands "A B C to access" etc etc.
+>=20
+> I wrote a bunch of comments below.
+>
+I will stick to them as most things are taken out to generic section anyway=
+ in patch 3.
+Only PCI transport part stays here.
+I will move some more text to generic section.
+=20
+> > +As described in PCIe base specification \hyperref[intro:PCIe]{[PCIe]}
+> > +PCI VFs do not support the I/O space BAR. Due to this limitation, a
+> > +PCI VF hardware device that supports legacy interfaces cannot be
+> > +attached as passthrough device to the guest virtual machine.
+>=20
+> That's not the only reason. Let's keep things generic and start by saying
+> something like "Some configurations with a need to support legacy drivers=
+ can
+> not implement a transitional device. For example .... ".
+>
+I will avoid For example part and move this to generic section.
+=20
+> > +
+> > +To have a transitional or legacy virtio device in the guest virtual
+> > +machine, a PCI PF device as a group owner may
+>=20
+> may -> can outside conformance statements.
+>=20
+Ack.
+
+> > support accessing its group member
+>=20
+> Pls keep it generic. A group owner ....
+>
+Ack
 =20
 >=20
-> Yes but Xuan Zhuo here is saying that he wants a register that is like li=
-nk speed,
-> not a counter.
->
-I understand it as counter because Xuan is saying counter.
+> > +device's legacy configuration region using the group administration
+> > +commands listed at \ref{sec:Basic Facilities of a Virtio Device /
+> > +Device groups / Group administration commands / Legacy Interfaces: leg=
+acy
+> configuration access commands}.
+> > +These legacy configuration access commands are transported via the
+> > +administration virtqueue.
+>=20
+> are these called legacy configuration access commands then?
+> why do you introduce this term? it does not look like it's used anywhere =
+else.
+>=20
+It is used and referred PCI section " Legacy Interfaces: Group member devic=
+e Configuration Region Access".
+>=20
+> I would prefer it if you just use the term "legacy interface"
+> it is well defined and widely used in the spec.
+>=20
+It is "legacy interface", with suffix for group member config access.
+In future, there may be a section for other things than config access.
 
-He wrote " The counter is for the user, not for the driver".
+> again leave virtqueue out of it pls we'll have other ways down the road. =
+what
+> matters is that they are transferred to a group member by sending legacy
+> configuration access commands to the group owner.
+>
+Ack.
+It is theory of operation, not a normative.
+Tomorrow if other than aq exists, one will write as "AQ or xyz"..
+
+But fine to me to reduce changes from 216 to less lines. :)
+=20
+>=20
+> > This mechanism enables minimal involvement of the
+> > +hypervisor software only for the purpose of the legacy configuration r=
+egion
+> access.
+>=20
+> Leave marketing out of it pls, kill last sentence.
+>
+Huh, I don't see theory of operation and scope of the hypervisor as marketi=
+ng at all.
+I will remove as it makes this patch shorter.
+=20
+>=20
+>=20
+> > +
+> > +When a guest virtual machine requests legacy configuration and device
+> > +specific regions
+>=20
+> wait so now it's legacy configuration and device specific regions and the=
+se two
+> are distinct?
+>=20
+> > of group member device, a hypervisor software accesses
+> > +it using an administration virtqueue
+>=20
+> please talk of administration commands. virtqueue does not matter at all.
+>=20
+Ack.
+
+> > on behalf of the guest virtual machine.
+>=20
+>=20
+>=20
+> To put it in our terms, something like this:
+> 	when a legacy driver accesses a member device of
+> 	a group using the
+> 	legacy interface, a modern driver can intercept
+> 	the access and forward it to the owner device.
+>=20
+I will not mention "modern driver" as it has zero reference in spec and don=
+'t want to bring Linux terms here.
+"the driver can intercept" is enough.
+
+>=20
+>=20
+> > +
+> > +Even though virtqueue driver notifications can be communicated
+> > +through administration virtqueue, if the group member device support
+> > +such
+>=20
+> supports?
+>
+Ack.
+=20
+> > +notifications using a memory-mapped operation, such driver
+> > +notifications are sent using a group member device defined notificatio=
+n
+> region.
+>=20
+> what does "are sent" imply here? is there a matching conformance statemen=
+t?
+> who sends them?
+>=20
+It has the same meaning as "Driver notifications" section first line has.
+Isnt it implicit that driver notifications are sent by driver based on "Dri=
+ver notifications" section?
+
+> > +
+> > +The group owner device
+>=20
+> this is the 1st you mention any group or its owner.
+>=20
+> > should not expose PCI BAR0
+>=20
+> Not PCI BAR0. That is in header. You mean VF BAR0.
+>=20
+I will rewrite it as,
+
+The group owner device should not expose PCI BAR0 in the PCI SR-IOV extende=
+d capability for the group member PCI VF devices when it prefers to
+support legacy interface for legacy configuration access using this group o=
+wner.
+
+> > for the group member
+> > +devices when it prefers to support legacy interface for legacy
+> > +configuration access using its group owner.
+>=20
+> don't use should outside conformance
+>=20
+What should be used instead of "should"?
+
+>=20
+> I think this specific case actually should be more specific.
+> Something like:
+>=20
+> - For PCI SRIOV groups, when group owner device implements commands
+>   A,B,C the group owner's VF BAR 0 is hardwired to 0
+>   in its PCI SRIOV capability.
+>
+I wrote it slightly differently above.
+=20
+>=20
+> > +This facilitates hypervisor software to operate with least amount of
+> > +complexities
+>=20
+> complexity is its own plural
+>=20
+> > to emulate the legacy interface I/O space BAR and passthrough
+> > +other PCI BARs and PCI device capabilities to the guest virtual
+> > +machine without any translation.
+> > +
+> > +The group member device should not expose PCI BAR0 in various PCI
+> capabilities.
+> > +
+> > +\devicenormative{\subsubsection}{Legacy Interfaces Requirements:
+> > +Group Member Device Legacy Configuration Access}{Virtio Transport
+> > +Options / Virtio Over PCI Bus / Legacy Interfaces Requirements: Group
+> > +Member Device Legacy Configuration Access}
+> > +
+> > +When a PCI SR-IOV group owner device supports
+> > +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+> > +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
+> > +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
+> > +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE commands, the group
+> owner
+> > +device SHOULD NOT expose PCI BAR0 in the SR-IOV Extended capability.
+> > +This is to facilitate the software to emulate I/O region BAR0 for supp=
+orting
+> the legacy interface.
+>=20
+> not PCI BAR0 - VF BAR0. Check the PCI spec you can not "not expose it". i=
+f you
+> want to register can be "unimplemented".
+> Base Address registers are hardwired to zero
+>=20
+> But it is better to be specific on what should happen. hardwire VF BAR0 t=
+o 0,
+> right?
+>=20
+Hardwire to zero and not expose is same thing to me.
+
+>=20
+> > +
+> > +\drivernormative{\subsubsection}{Legacy Interfaces Requirements:
+> > +Group Member Device Legacy Configuration Access}{Virtio Transport
+> > +Options / Virtio Over PCI Bus / Legacy Interfaces Requirements: Group
+> > +Member Device Legacy Configuration Access}
+> > +
+> > +The driver SHOULD NOT emulate I/O region BAR0 if a device group
+> > +member exposes a PCI BAR0.
+>=20
+> what does "emulate" mean here? which driver it is?
+>
+I will add the line to theory of operation, but I recollect "emulate" line =
+came from you.
+=20
+> > diff --git a/transport-pci.tex b/transport-pci.tex index
+> > a5c6719..3647485 100644
+> > --- a/transport-pci.tex
+> > +++ b/transport-pci.tex
+> > @@ -541,6 +541,8 @@ \subsubsection{Notification structure
+> > layout}\label{sec:Virtio Transport Options  struct virtio_pci_notify_ca=
+p {
+> >          struct virtio_pci_cap cap;
+> >          le32 notify_off_multiplier; /* Multiplier for
+> > queue_notify_off. */
+> > +        u8 legacy_q_notify_supported;
+>=20
+> I am still mulling whether VIRTIO_PCI_CAP_NOTIFY_CFG would be better.
+>=20
+>=20
+> > +	u8 reserved[3];
+>=20
+>=20
+> align with spaces pls.
+>=20
+Ack.
+
+>=20
+> >  };
+> >  \end{lstlisting}
+> >
+> > @@ -560,6 +562,14 @@ \subsubsection{Notification structure
+> > layout}\label{sec:Virtio Transport Options  the same Queue Notify addre=
+ss for
+> all queues.
+> >  \end{note}
+> >
+> > +\field{legacy_q_notify_supported} when set to 1,
+>=20
+>=20
+> Do you mean something like:
+> When \field{legacy_q_notify_supported} this indicates that ...
+>
+Yes will fix.
+=20
+> > indicates that the device
+> > +supports legacy queue notifications at this notification location.
+>=20
+> And what location? this refers to what? the location described by this ca=
+pability
+> maybe?
+>=20
+Ack.
+
+>=20
+> More specifically, assume a transitional device (with an IO BAR as normal=
+). Does
+> presence of this flag in the capability imply we can use a legacy queue b=
+ut use
+> this notification with this capability?
+I don't know how this combination can be even possible by the device other =
+than a buggy software who will do both.
+
+> I worry that if we allow that, it opens floodgates of people who are too =
+lazy to
+> upgrade to 1.0 but just hack this notification in there.
+>
+Don't understand the concern.
+If a device has transitional device, it is 1.0 device supporting legacy wit=
+h IOBAR and newer interface.
+So...
+=20
+>=20
+>=20
+>=20
+>=20
+> > Legacy Queue
+> > +Notification address is derived within a BAR for a virtqueue:
+> > +
+> > +\begin{lstlisting}
+> > +        cap.offset
+> > +\end{lstlisting}
+> > +
+> >  \devicenormative{\paragraph}{Notification capability}{Virtio
+> > Transport Options / Virtio Over PCI Bus / PCI Device Layout / Notificat=
+ion
+> capability}  The device MUST present at least one notification capability=
+.
+> >
+>=20
+> I don't get what this is saying.  I *think* you really mean is that
+> queue_notify_off is 0.
+>=20
+Please refer to the current notification address definition.
+Above is written in similar way where it doesnt need to describe queue_noti=
+fy_off.
+>=20
+> > @@ -596,6 +606,14 @@ \subsubsection{Notification structure
+> > layout}\label{sec:Virtio Transport Options  cap.length >=3D
+> > queue_notify_off * notify_off_multiplier + 4  \end{lstlisting}
+> >
+> > +\paragraph{Legacy Interfaces: Notification
+> > +capability}\label{par:Virtio Transport Options / Virtio Over PCI Bus
+> > +/ PCI Device Layout / Legacy Interfaces: Notification capability}
+> > +
+> > +The device SHOULD set \field{legacy_q_notify_supported}
+>=20
+> why SHOULD and not MUST here - if driver checks for it then it won't work
+> without no?
+>=20
+If device doesn't want to support queue notifications, it has ability to se=
+t to 0.
+
+> > when the device
+> > +notification location supports legacy driver notifications.
+>=20
+> legacy driver notifications is ambigous.
+> what you want here and elsewhere is something like "when used through a
+> legacy interface, device supports driver
+>
+Ack.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
