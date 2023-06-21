@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13029-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13030-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 48FCFEB64D7
-	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 20:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2456DEB64D7
+	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 20:52:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9249223D58
-	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 20:43:52 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6F33342C25
+	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 20:52:10 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 82BC89865DB
-	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 20:43:52 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 65C689866DA
+	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 20:52:10 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 77C43983DDB; Wed, 21 Jun 2023 20:43:52 +0000 (UTC)
+	id 5A6089865D0; Wed, 21 Jun 2023 20:52:10 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,44 +24,42 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 60D589865CE;
-	Wed, 21 Jun 2023 20:43:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 46FF79865CF;
+	Wed, 21 Jun 2023 20:52:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TeAaSQl1pck+6vmUUkfqy1LT2Iler/f/d0a8Xl5LyArvhLPJ0Qzcy0XkIzHPD5zSAq3yq/Kk2wrBAcVlT8KENgmko7/hdumvwfY1gvVVRy+6AByBq8CKwWs/ndmpn70WYIO6zuCGNWwZnHnR+431mWspehLqUwn0kWSr3Zgh0gw9SlEa04JVBs+4slaSPIsCSUDp4WBNUvXfSGv2+CCQkNu6e2zB+LmGvfS9s/8+ibAqnGib0Agk7F5J9GqY+dl5GPkX0Ai8MtYw5dvSwKCjmzRZKxOO/t+xgAYwU94Uk+HFTKBorOdNZTFERGN7ZXM9yZYkJSN6vQFHUQ7eGAuP0g==
+ b=Nka/JjVN9BsEKZh8s5/bun02Y70mipzaHV/AEmAmVO+OxvesnnZdX1X9svIzK5FWGUdXRAPenu9iW8gibDNnZOy0uw05Ska7VRxeQ3ntVM5qvPsruVHh4FUsaf35NFrkawjOqF+KPN3Q3f5OAu84zPdzcKugRBHLgBm1D/bmUIjNFIg+O+Ta+5+3u85KAy0z9QjdR6mEbu1r2TNpHerQbsV6EiQ5mW8mdZ4WnNQd4k5T/bZ2fB7zScRBLqXCfZ5lGttUn+s2EXsRU+YJ5kOa9wZwJgdAAPp3cH16x9TBmQSOqQQYfLAohuomjcaZAgNUFw16SOQ3Xm+Wcn8p3DxpRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Htje2lHCnmHKnih5Y697+iiYGK8WwrADri1t4q44SKU=;
- b=Iu6zEoKVQVn9p+kDzoQRrRCram3CmOP9sm79J1ouDPoVRk1OHSh1m3JARytznMpcj4vcAToUlTRUmzO2uic8gUtHJRyPpxeDqMhUoqbqNCOD60yCqICvZKLUkwBjtd6nDNWOImRa72DOUFJOzDgTyaYe1tql6IH037MYMt7q65eXPE2cSa9lXWCsMoAXrO9/rXSMKV0jTHYVNUU4HALF9SmR1LlYz47+cZS987PvOKiQ/NM/zc0cgE8mJYTSND3HXMrsewfm6mt4Atci8ROHdmmpZ9Hu1v33B5XqPYfWHXxnG980xZcUmIoMUN2fQZLjZ+FQ0fEBdGvFQPRia+Giyw==
+ bh=wDImohfVKe9THwEdH239ALbAAN7WRVQjFB4j8KFngPk=;
+ b=c3dPMEoTtY+dy+eOmMzCiQugQ55P/cxqW0pwpDZ8cMObggKZkRdf+SLAM0uT+t6XUpj51qGVMF2tpGe9UoHg47BTbQ/i9CMHyx2rH8PDJVE6V93QolxZvRDkGbZmu3D2j4Ry9PcVOHS5+16uj3sHMD6u94409koI1Grn8ZQBDfs6m6hgVGeTOswn5hZ680BAGkOMAhpQ1ZqzgEFJsgZlvrEVrapRO2IqGmzQND9WUtDkiR3R5Q2OpFoqsZPF3hZDxZiT+0KN5NVRsXOwrlomG2aP/BVzzu/DzqFCUW2Z8AwAc+c8kJlLavL14CfXnDBj+3tfBJKAXNr60WzJCr/EJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 From: Parav Pandit <parav@nvidia.com>
 To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "david.edmondson@oracle.com"
-	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
-	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
-	<shahafs@nvidia.com>
-Thread-Topic: [virtio-comment] RE: [PATCH v6 4/4] transport-pci: Introduce
- group legacy group member config region access
+CC: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, Jason Wang <jasowang@redhat.com>, Yuri
+ Benditovich <yuri.benditovich@daynix.com>, Xuan Zhuo
+	<xuanzhuo@linux.alibaba.com>, Cornelia Huck <cohuck@redhat.com>
+Thread-Topic: [virtio-comment] Re: [PATCH v18] virtio-net: support inner
+ header hash
 Thread-Index:
- AQHZnhzOtKzAnSMZqEmlUO1lSJmuDq+SVpeAgAAEMcCAA2BzAIAAAXvAgAAFpQCAAADcAA==
-Date: Wed, 21 Jun 2023 20:43:35 +0000
+ AQHZpEdpSlZ4I0eUeUmZIFkjtAkw3q+VZGYAgAASyQCAAC5zgIAAADyAgAAMJYCAAAHeEIAABAeAgAAB1cA=
+Date: Wed, 21 Jun 2023 20:52:04 +0000
 Message-ID:
- <PH0PR12MB5481824968904CE745CBCDE7DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230613173015.1244486-1-parav@nvidia.com>
- <20230613173015.1244486-5-parav@nvidia.com>
- <20230619112050-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548149CD1C28AA21A203C13ADC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230621154832-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54815544B2D409AC9BBDAAC6DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230621162636-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230621162636-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481C4EA5D0614E1289DFC77DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230621135052.76028-1-hengqi@linux.alibaba.com>
+ <20230621104647-mutt-send-email-mst@kernel.org>
+ <20230621164606.GI74977@h68b04307.sqa.eu95>
+ <20230621152559-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481141E18AAF1BF214A0E29DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230621161157-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481C99B8504F02D39B3A6F0DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230621163116-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230621163116-mutt-send-email-mst@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -69,158 +67,123 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BL3PR12MB6617:EE_
-x-ms-office365-filtering-correlation-id: ef3639a0-fede-4db6-ee90-08db72982eee
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH7PR12MB6419:EE_
+x-ms-office365-filtering-correlation-id: 3830715d-2bcd-4f27-cb25-08db72995e99
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- xghATcHjt/HL97l0JKIHvQMYM4MwVDtqW17TVeUFgzvJ3sQNSzwCC4u8o5foTtWYpIf/bpZKTH4vjpUlDyMHYOilDvKj2zueQpoZ8InehI4zfbH4RO/BYO04oNu6xH2R+DHqJCJq/kolG50wyf3GtdZ4xUqYmWjqezWjq2nVpGG7MglDUf8+IJVZX0abo+K5SABbqBIVTOKhwBBmJn8J7Fs2oasnNwg+U1UMh4J27a6b882qYgg59AYmj9TkpNfzDv4wJMEErWGEhSs9SuYMAUwVZVAFmCoOQ5lsWvJltLtQn81w+ORF9VJ0JXhYfguM+1u2AJhqtXuLSE/tSa03mk7xQdbMgoE19FK9gcawHOicU7NnmhSGW25mkHBhgWnRqzC4Nd9nWsHFcQr7RHlhnVhsiTdxyt9wdpoJk18b4mysGwYEuhQcKpV1rMINY3BudNbkLjveUuFYYl69H2YFIQDCQVq/HyrhgpNDN5lqg4wsDrFzgcWO61syN/nC2juIq0URHZaMEgh5hVp+hXkDqY6q0vVddYiVNYE078xJuITYrulTX9iHh+3hE5Ho6fwrzgZmGsM9oJBVgzOTgIRcGolBs6EpU67X0awtABlZW+Vd8tX7nvoB//oi0bU8C3k0
+ sda/RHPtm6A/jEddXKJ+9jhbaBjeImV/gLWgmuWmMzrlM1UpqGVOJ2N0HMLGmvvzJNLnc+6N8GCIu4uTPxfGebbZ9VOWmzfN3IeNpDf9mTufDPguOPzDTbbrnBQLvI5+D5eh9Rsv6omiCJiGzNCLvQhX42ZiaoMW8Gxjmz7/FnZmiHos0VABmv5hfTHB2ZVXInY7l4AIehcJiDGZIUdo9MZE6Ikn2gN3rU0bu6saXApHdlKNS1VlQDNjvPLpW5q0OMRjejqFFdh1ggGf8t3GfuagR1yf6i3dl2hpUm/ansvrUMQB3JISPQr5mJVeKpuJtMhL6W1IyEpIxaztshOqK0yTwMgxUYI8/l7d7/cRlZKcMs5/kR7xWyLk+4Q0hpVlvT8vJOFd2ahu3s+osuD66g9Qwtq5eHPqFKGbHJMwqiVihrErRc9/BMKCgZcehbGVMpcLsDgIFzB8IJyviXQNtxYeEbqkWUlMuPczKkohL1Sh0iaV7ghq3f0kPihhjykXNYvaW/QWpWY+4LP3Mkfr59ps/Efwj2Opf0BA2AtdfSCSOh3gtWhCekJ22BFuUR/OWQWCuu5YlgiXqn0ykztrJ3T9ptp/x/oDJts/5ffjP+90QGjpSxiwTrWX5v/xBm3U
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(451199021)(71200400001)(122000001)(86362001)(7696005)(316002)(55016003)(4326008)(478600001)(6916009)(33656002)(52536014)(54906003)(64756008)(76116006)(66946007)(66556008)(66476007)(5660300002)(66446008)(38100700002)(8676002)(83380400001)(8936002)(41300700001)(9686003)(107886003)(6506007)(2906002)(186003)(53546011)(38070700005);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(366004)(396003)(136003)(451199021)(8936002)(8676002)(52536014)(41300700001)(316002)(54906003)(86362001)(2906002)(5660300002)(38070700005)(478600001)(6916009)(66556008)(66476007)(66946007)(66446008)(76116006)(4326008)(64756008)(71200400001)(7696005)(33656002)(38100700002)(122000001)(6506007)(186003)(9686003)(55016003)(83380400001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?uvmmvVsC5Dr96pGekUrWpnDfnN7u8XbwjBiQIVsRk+KqeNRSdeZRq50liUaZ?=
- =?us-ascii?Q?bYtNnGIznMALFpiRLaRZ2owp41Mz31Bi0bxmOTYGgJ8lT9Fy/nWezjPVLXCJ?=
- =?us-ascii?Q?Wm6QcH2aLIDRXcjXhOF5/8aSE8uz/GFfhEDGUVd1Qz7DFTYkyHeX9lr3/VBg?=
- =?us-ascii?Q?rqO2bNlzgvNK7dbVi93KUbBE/kz3xWTDwgC1hbB2eneqKl4MjV3anYYMQAj6?=
- =?us-ascii?Q?7o4z+vKNWRkXxTbE2n5y7mZAPxOhW3YH8A1rNk9lO39yEWhmu8F1wEqepX8J?=
- =?us-ascii?Q?sOBEl31RuruStEXh0jWx+/sx7s5wk50dy9YJoqm4Y3NilJrtWFIz+Dj0/GN6?=
- =?us-ascii?Q?hTYZfrcaO2tk0WcCklhxJHvFYgKX0+6gS4/SaTrV19WUFV9jqZdQO0L36b/R?=
- =?us-ascii?Q?jK4ondjtTdGzYLgwFs64SoLsCp1Nys/A75jmtq37VMQvplquXA/wANhCNnTO?=
- =?us-ascii?Q?bIHSDbKCu45gOUa/PcxaCpelguT77JuNkw6DpOk7CnxAS5VyTpsN8hwZCsz0?=
- =?us-ascii?Q?teGkr6/MHH0/870nC53BGGnSIKbHfHHQ85sqrtULMp4MIlG88n0EgPeN3m54?=
- =?us-ascii?Q?MChuViSa9ogIVUlmh1NZpBPKhMRtPlpyPIqoxrKQ+/gTkp8kdPul9uTEGVht?=
- =?us-ascii?Q?dm8RGBlZOzQyb5P6PeL7vByLG3eaniUT2EwUE5ZXgNFy0ITkrsQJR1DFP9u+?=
- =?us-ascii?Q?c/l8fnXiUwRIus5cgpv2PgEakySbbxFCCyq0gMmjbg2wLFIIRAF7vsd9oD/4?=
- =?us-ascii?Q?zxm3PTaCwrHrB9plqw8yoZmB5hp+1sb2bf20hlZSdle0hgwG1RZj0cTszNBf?=
- =?us-ascii?Q?UOYYODIjHd6ZqdB6DZxwauUlrVC7coxwMbYKAgaQ8mU/pPfvMe+ynSdpvSMV?=
- =?us-ascii?Q?ldBP8EA9TMYLAExjbbzSaKZ/03tNvTd8oYwLrbogysev657MYfPDj+1vjIG5?=
- =?us-ascii?Q?w4K5CBwemqnbFsKKyLDuoUfdrg6yNWxMAtBl6wJCq4E/F8gWVCYBPKSc7amK?=
- =?us-ascii?Q?mQgde/pP8crdPNu9gIJ9RqfUlh4rZtCYKFoyYAv8qkSlXXwXJ6pR7ZwvH/i6?=
- =?us-ascii?Q?jc5zMxV4dXrsH46MM60Hv7naM2bCCCm94OTWs9b8oJ3lOmM5RbPnghtL3KIJ?=
- =?us-ascii?Q?Bk+0Dd9NyBlb4fXNQRje0hTVwgsSVM5y1ZrzwZVuauJIvo1qpWabQqN6JueY?=
- =?us-ascii?Q?v2dSLRQeg1bgV8JWIIo3qQIpzj2Gly29GQGAE06VapvQgSfmmE4d4fJznZwn?=
- =?us-ascii?Q?qMN/wv5lkexEQOoRL+6G4U3U4W4A4WgrH0rbM/hXs1OhwjKJ3MFPj3Fl5FYR?=
- =?us-ascii?Q?TIOZTAQSjn4xGHMF0VnoIxQoK5iE3skmPp3T5QbKDLtiOfYhLgnXBG5pe+7k?=
- =?us-ascii?Q?k8RCWJc/wAEXdRXaOZqLMK2ntD8LyAIqmhiL2xLK08mg8dYDbs4K4qxshsju?=
- =?us-ascii?Q?jLAIIgf2sl/OYrr3AIsuTjJBAf0MYky0sWfX0n/Uv4OILBrgf/MfT+EUkN1F?=
- =?us-ascii?Q?GZRnujEh3pihWUcH95iHqTOYvKNiZejIzj0f/fydI/p7AxPU0GFUffkN/oPo?=
- =?us-ascii?Q?0jDlQ0Ojo/ztVq2wSrmauuYcYcmNhMC/FTJZdnJLWtwtRD21gv6dsKa3xIKk?=
- =?us-ascii?Q?NMEJxqgu8yNhf+eag+q8BaM=3D?=
+ =?us-ascii?Q?I+T8OsuvVL5JzejkvC7PNHEuIVOj45F4paah5L/Lp8KAHDvyOvFBcgEmq/fw?=
+ =?us-ascii?Q?79m7140cdtFywGLG+nsA1P+21suWflQIFTlnm4AQfBxAlH2bZuFP8gAAyPZS?=
+ =?us-ascii?Q?+5cBFXhrMKjtu2S0GKX54sr27vNbThZnHAMbSZ7uLjthFiZP/2ZowJ6GspX7?=
+ =?us-ascii?Q?h8gqJT0XY5mYapHGV3QtpEWpNDTvCniRP0Qqwi5JhUk9YxIpm05u2/RYWktD?=
+ =?us-ascii?Q?DjlA8Ecl2enF2COCATLkxQLuOz+qnIfT4CaZU/GqlWshjwADIfm2sQh+Lxzx?=
+ =?us-ascii?Q?pmx6DFDBWSQvKsG0uZNSA6jQcIIY9QWSz1XyzQRD+2FUtwjo0924OnfJXbjg?=
+ =?us-ascii?Q?VkYiDM/kje1OurcXa36bzgnWWmj9jIW+t7EH4lH145WJWNNuyevLrQvmnozU?=
+ =?us-ascii?Q?aeqU+dBWqasqRQj8K4BnyZejlspJcPq3qJOQVkwzkHxSePL9GhBPXYbTg3yQ?=
+ =?us-ascii?Q?AnfKIQWXgfswMC65kq0SODAzMjgx0t8AGEWet2YO4iISE4Qgz1wn506CyEUy?=
+ =?us-ascii?Q?D1HJnHvu15i4T/nMPTX5Xg2SzuEqJUQjT62eUiWaAYB20JSQtKRPX/cirqqM?=
+ =?us-ascii?Q?WdwCMOCtJKkASSw9++ciHoNsiybzqFNp0navfsP8lG24aOE9l1WGfmB2KU2n?=
+ =?us-ascii?Q?UOsd8JNjfeLDWkquOA27Es0ARSmT/ZwkNGMkhP8ITVoq+oQZqUeaepdnCOkA?=
+ =?us-ascii?Q?SM5YMSWRlPkNjoNB/p6QXUbYE51BSiW39LC65Ii3DO1tTSHHd78yWWNWBxm2?=
+ =?us-ascii?Q?K7Jiw3Plk++hZZuKYq4DbMkf0hb2QyqzFGLYPL5I+cR8w7ufDxdPchfpK0/d?=
+ =?us-ascii?Q?JgJniZEgNz2UjXjt4GGMEHMBgS4fvi7kIEMNhWzJDliyxuZfiJMXQb5cTUyu?=
+ =?us-ascii?Q?2fSMQt4Wp0C2L51hLtynX0i1vgUMDDjfNHGobzGvGxtFTdTSB11JCspwfXyQ?=
+ =?us-ascii?Q?GH2Uiz0bwxFcC48+Fn354vXOCUcfm1J878c1O6mWYJIqBbc2ELtXsIanRMr2?=
+ =?us-ascii?Q?hFXlTfQsPjyUj+1a0b41+42aRRmYYw71VC//dfM8y/X8ReE6Nrc0tHE6pYPQ?=
+ =?us-ascii?Q?pSobmWmmwLFkei1w1LUBpQfOzKlSCZzMMIDjfcOiayOmZUSpNSYFTm7NBgUW?=
+ =?us-ascii?Q?7OwDQVV7sCLo92KahN2ASiMRvdnR7KwGhCJLqi63530lMkLQImTSTo3tpna3?=
+ =?us-ascii?Q?k1p4Og2zcGwmb5WdCxc8eTTs5pa7NHKU9tIoN+50UUValIyCDL6zYSwURhcY?=
+ =?us-ascii?Q?sCnwXdaPjHJjFEGpd2oAgJFV3EgMcn9PAipgFT2wiRtD496t6BKWtEwICU8+?=
+ =?us-ascii?Q?PBzl4tfx25noEGi9/tAZqoBqv0PFx+So+ScV9iwUoUrjv8gnXodgWKrUj61c?=
+ =?us-ascii?Q?S0V9nDbbg+ym1AopG3bQvWNfe9tBNir8zgcmdXF862SCDS88BlZvhXDly+Y+?=
+ =?us-ascii?Q?ZTK4Px+p3WQzR+TMxfRnt4rnvI4ZpMBIZ5WvixCIXk2lcGdw+k6qyGudOuiW?=
+ =?us-ascii?Q?s18DUdvZbXZnvpBPhE1P+pKrJ4H9E8LZJfFi+5KnfZTR4SdM8lvOVGZMEf+j?=
+ =?us-ascii?Q?lzqxo5ABIiP+L218wOVEcVcZZ9yfNKXrgi2kXq5bKZX6wkTDRC47OWGzs/6w?=
+ =?us-ascii?Q?Gk9trgMD9s1BC3MPfFOoQrQ=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef3639a0-fede-4db6-ee90-08db72982eee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2023 20:43:35.1050
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3830715d-2bcd-4f27-cb25-08db72995e99
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2023 20:52:04.5731
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GQWn029FBcORSfytrnDPIFr9JO+fwNWMSO4LE2Nhgn8eYw/dtFbKcuD3G4Sf/+ghvhTOZgit8mHHbah+gmv1SQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6617
-Subject: [virtio-dev] RE: [virtio-comment] RE: [PATCH v6 4/4] transport-pci: Introduce
- group legacy group member config region access
+X-MS-Exchange-CrossTenant-userprincipalname: CS9KMkiaJuQf+jfhwTgJxFs3UH+FRbLbWV2VCFKNk1siWgd9hOHhXLlK8OqHg4CbJlYXQ8p494wQhdaaY7ArEA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6419
+Subject: [virtio-dev] RE: [virtio-comment] Re: [PATCH v18] virtio-net: support inner header
+ hash
 
 
 > From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Wednesday, June 21, 2023 4:31 PM
-> To: Parav Pandit <parav@nvidia.com>
-> Cc: virtio-comment@lists.oasis-open.org; cohuck@redhat.com;
-> david.edmondson@oracle.com; virtio-dev@lists.oasis-open.org;
-> sburla@marvell.com; jasowang@redhat.com; Yishai Hadas
-> <yishaih@nvidia.com>; Maor Gottlieb <maorg@nvidia.com>; Shahaf Shuler
-> <shahafs@nvidia.com>
-> Subject: Re: [virtio-comment] RE: [PATCH v6 4/4] transport-pci: Introduce=
- group
-> legacy group member config region access
->=20
-> On Wed, Jun 21, 2023 at 08:22:58PM +0000, Parav Pandit wrote:
-> >
-> >
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Wednesday, June 21, 2023 4:06 PM
-> >
-> > [..]
-> > > > > To put it in our terms, something like this:
-> > > > > 	when a legacy driver accesses a member device of
-> > > > > 	a group using the
-> > > > > 	legacy interface, a modern driver can intercept
-> > > > > 	the access and forward it to the owner device.
-> > > > >
-> > > > I will not mention "modern driver" as it has zero reference in
-> > > > spec and don't
-> > > want to bring Linux terms here.
-> > > > "the driver can intercept" is enough.
->=20
-> Maybe a (non legacy) driver can intercept? Would that be acceptable?
-> Just to clarify the confusion above.
->=20
-Non legacy driver wording is fine.
+> Sent: Wednesday, June 21, 2023 4:38 PM
 
-> > >  	when a legacy member device driver accesses a member device of
-> > >  	a group using the
-> > >  	legacy interface, an owner device driver can intercept
-> > >  	the access and forward it to the owner device.
-> > >
-> > Above is not correct.
-> >
-> > We have 3 drivers in picture.
-> > 1. guest driver
+> > > And the field is RO so no memory cost to exposing it in all VFs.
+> > Two structures do not bring the asymmetry.
+> > Accessing current and enabled fields via two different mechanism is bri=
+nging
+> the asymmetry.
 >=20
-> this is legacy driver, so easy
+> I guess it's a matter of taste, but it is clearly more consistent with ot=
+her hash
+> things, to which it's very similar.
+>
+This is consistent with new commands we define including notification coale=
+scing whose GET is not coming config space.
+=20
 >=20
-> > 2. hypervisor level member device driver
->=20
-> this is just for notifications, optionally, yes?
->=20
-For notifications (optionally) and for configuration region access.
+> Nah, config space is too convenient when we can live with its limitations=
+. I don't
+> thin kwe prefer not to keep growing it.
+> For some things such as this one it's perfect.
+>
+Fields are different between different devices.
 
+> For example, for migration driver might want to validate that two devices=
+ have
+> same capability. doing it without dma is nicer.
 >=20
-> > 3. group owner device driver
-> >
-> > Trying to write without introducing guest and hypervisor term,
-> >
-> > A group owner device driver provides the service to access member devic=
-e's
-> configuration region.
-> > A member device driver avail this service when it wants to access the m=
-ember
-> device's configuration region.
+A migration driver for real world scenario, will almost have to use the dma=
+ for amount of data it needs to exchange.
+
+> Another example, future admin transport will have ability to provision de=
+vices
+> by supplying their config space.
+> This will include this capability automatically, if instead we hide it in=
+ a command
+> we need to do extra custom work.
 >=20
+> > So we do not prefer to keep growing the config space anymore, hence
+> > GET is the right approach to me.
 >=20
-> I agree, it's getting complicated.
->
-> >
-> > > > I will rewrite it as,
-> > > >
-> > > > The group owner device should not expose PCI BAR0 in the PCI
-> > > > SR-IOV extended capability for the group member PCI VF devices
-> > > > when it prefers to
-> > > support legacy interface for legacy configuration access using this g=
-roup
-> owner.
-> > >
-> > >
-> > > This seems to ignore all my comments.
-> > >
-> > I replied after that, probably missed in exchanges.
-> >
-> > How about:
-> > The group owner device MUST hardwire PCI BAR0 in the PCI SR-IOV extende=
-d
-> capability for the group member PCI VF devices when it supports legacy
-> configuration access commands.
-> >
->=20
-> better but it's not a PCI BAR0. let's add link to sriov spec, and name it=
- VF BAR0
-> same as in that spec.
->
-Yes, VF BAR0, will correct it.
+> Heh I know you hate config space. Let it go, stop wasting time arguing ab=
+out the
+> same thing on every turn and instead help define admin transport to solve=
+ it
+
+This was discussed many times, a driver to have a direct (non-intercepted b=
+y owner device) channel to device.
+If you mean this non-intercepted channel as admin transport, fine.
+If you mean this is intercepted and it is going over admin cmd, then it is =
+of no use for all future interfaces.
+
+We discussed this in thread with you and Jason.
+I provided concrete example with size and device provisioning math too and =
+other example of multi-physical address VQ.
+So transporting register by register over some admin transport is sub-optim=
+al.
+
+
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
