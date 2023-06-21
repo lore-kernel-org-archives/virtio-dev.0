@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13006-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13007-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1EAFEB64D7
-	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 15:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB777EB64D8
+	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 15:50:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1D9B42A8DA
-	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 15:46:55 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 598D34282F
+	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 15:50:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EADC09865D0
-	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 15:46:54 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 309A298662A
+	for <virtio-dev@archiver.kernel.org>; Wed, 21 Jun 2023 15:50:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C863798643E; Wed, 21 Jun 2023 15:46:54 +0000 (UTC)
+	id 209349865EB; Wed, 21 Jun 2023 15:50:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,482 +24,187 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B263B9865BD
-	for <virtio-dev@lists.oasis-open.org>; Wed, 21 Jun 2023 15:46:54 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EAF979865BA;
+	Wed, 21 Jun 2023 15:50:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: LQdQnYoRO0yQgFqldgMz-A-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687362405; x=1689954405;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bgLOgOCYEENTPVIab5gIubURtpyvy3Z+2JWt0wzTOTM=;
-        b=DquoTsFE7XmWTpUOKzyqsjFhFeLaxsuEm44/a/qpcvVlK2b11gQt3cO3bME2kg/6YW
-         QqHko1KvQ/NaiFx1nJ1vmhpTuoSQ0MA6BZDb5xyWC/77MwDhxWiG1ZNZTH5u/wpyEoMe
-         3HWyMZPVJF9AHhqyV/aK3iIXPSejhO7xbLnUIa3UIXuSSrWykq1HsX9Yg5Rvik1SksjJ
-         1/aIiLXR8URhsO6x33A6oWIqkyAnDhjF5MA6aBoyl/XEYXmKV2Lwgb6IAEwpMnyDnu2s
-         DuEbRowpRbR/J8ZjHkQhFASFCY8QRTOS1rDwzVqpg/iCWhCRQLu6pRa/DmH45DI1IsGN
-         101g==
-X-Gm-Message-State: AC+VfDzRbORVPCqKuSD0aa2poy+vgXfrR9mzT7hkZBwpbUZr/2j2lH7Z
-	unQSiB9w3M++mQV5V1FIbthHjWqvBU132IYgcQZDpW5Fj9jttM+n/bjeBFtm2lCDNXv5GIqJkGn
-	scYg423e8Eldm92H2sorrGmJJAw96
-X-Received: by 2002:a17:907:da9:b0:989:7e02:2929 with SMTP id go41-20020a1709070da900b009897e022929mr3139941ejc.70.1687362405471;
-        Wed, 21 Jun 2023 08:46:45 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6K93VRakQDhc59axyuLIWYS86b4AiyIx3GzQh0tKhxkzCgc3+i/tBXBfjBLfnOXqxNGndHiQ==
-X-Received: by 2002:a17:907:da9:b0:989:7e02:2929 with SMTP id go41-20020a1709070da900b009897e022929mr3139923ejc.70.1687362404962;
-        Wed, 21 Jun 2023 08:46:44 -0700 (PDT)
-Date: Wed, 21 Jun 2023 11:46:39 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Cornelia Huck <cohuck@redhat.com>
-Message-ID: <20230621114627-mutt-send-email-mst@kernel.org>
-References: <20230612080920.116385-1-hengqi@linux.alibaba.com>
- <e642198c-a75c-f68a-641b-304b9f6b59ba@linux.alibaba.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=juaXs5+SoIIftQCiZ6AxkzqkxIYDXwZ6eDGCp1PI/ZK6ytsvrqRJMWi4uBSjhJlcADCICujXs+h+tF15xakujbCgsAwb28PwsQbiVw+zJ84XiWgJSN+LqB2/0PamoL3VSwW4rB2mCNDp0ac/VJxM9nLxI8B+Z4BRxp/nAjciDS62y77RK6BbF+2KyfbUf4gjL7jH21mHX8L8a1wrGDNKFp08FBlRQHmgfsae0n3cFwW2sCIXntnPWIC/FbknfEBHmH5icYAWRNZkIVtXR6rjYxZT1Iv+rr/h1X7re2w0m9Xwm1fSA0YVFWktoxuxKHbw9+RvsrxlocTwer4kR/A7bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5cyjX7G9iJBPf/DvITvjAP/lywcz18H8lqbz5Fm1v6I=;
+ b=MoQi2E+G9O0c3RiujES9KOk8BrLSUYJj1T5j0z09/AtdiriKWNi624wIcn9hq3/a/gCPTB7HMyuJaxqIXgMORS7uuB3IZ9cb6h3FgCPHSdKDBqnVE30kbsa6yhzrk0hoahuA9a5LtBXDRWt5OuVnzN8Yf1h1Yrfo0iO54MCJrD1ToSUJ6XSJOcX5oWKaOFHph3Ni4OXYic8eWpSBffDmkFw5mWTSj5WFS0uifM3SPRzOpXCLHGshTlR9SgK1YJYQCIo0vKuAUQvrGGyeTem7gVoxna+ZmLm+dnt9H6JClz8x93XUqVndWZq+fvpCmiegV4rNGTSLYnZVODqMHcJRDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "david.edmondson@oracle.com"
+	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
+	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
+	<shahafs@nvidia.com>
+Thread-Topic: [PATCH v6 4/4] transport-pci: Introduce group legacy group
+ member config region access
+Thread-Index:
+ AQHZnhzOtKzAnSMZqEmlUO1lSJmuDq+SXH+AgAAALsCAAAuagIAAARvwgAAD4ICAAAFGkIAABE6AgAAA1fCAAVC94IABrvFg
+Date: Wed, 21 Jun 2023 15:50:00 +0000
+Message-ID:
+ <PH0PR12MB54812103E5CB5CF860B9B50CDC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230613173015.1244486-1-parav@nvidia.com>
+ <20230613173015.1244486-5-parav@nvidia.com>
+ <20230619122836-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481758B8EE080750D6377C0DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619131115-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D1836A5B9A7B345A20A8DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619133322-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481E624E00FC403C9ECFA03DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230619134649-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54811536BD824EAAFE8A56D5DC5FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <PH0PR12MB54815F1345502771D9FE24CEDC5CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To:
+ <PH0PR12MB54815F1345502771D9FE24CEDC5CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SN7PR12MB8772:EE_
+x-ms-office365-filtering-correlation-id: 191388ff-0d90-49a9-2965-08db726f2bf8
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ XdPe282WgDkZ/XkVRPARaihLNoLwDiMX1rhDVJxSwu00cM/0EPiBV+dvcwtBhdAdA9NBeFiK+pXwnuBFk+pTBjsjymUUrFkdHqn/m8jFY+WfNwJjjMC+P685dr0zEiEfCnFYy8ZTGJSl1m1jjMJYU2FHnWULodJII50UUNSwbxielGo0cmy7zBYnG2HszmopOWunWNt5HfhLt8mEeCB3QKf5+WPGUSqrg39sttB50gxcB9s6LjmwBvSI5GzFC13PoXPZFcvuuO77sQgsJGaRe2wgqYELIGXsf4l4IrELt5cWHLL5ks2hHcs7dcOQR5C3eg+DRrzTmf+Y7ED+HmyIIdvSjvRIApfqYrdqDoKNUXmn2Q1ZifaqIvLX2N23hdbT0vPajR7skLCeXPsyj5xJDUcTrgvXzFBfKy/OflS1cyic9DHYiVeD4GueDJcCGhijlVS+A1hb61TVvpWC8oO1dzT3YwfZLW7O8rpIilsdmJYuoDciYPwE68XQyoadXyQIKGkZNPHNtGOmouibhGeZdCu+fJymtLJtfYVdLh41K0XbYOZeX1eybA0iXcqaVgECkttLfbTwVjFI+ByDdfD8lVEoCpqCMuAWeQ3GaDSYz4I=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(136003)(396003)(346002)(376002)(451199021)(478600001)(71200400001)(4326008)(76116006)(54906003)(6506007)(186003)(107886003)(9686003)(7696005)(2906002)(8676002)(8936002)(41300700001)(64756008)(316002)(66946007)(66476007)(66446008)(66556008)(52536014)(5660300002)(6916009)(38100700002)(122000001)(86362001)(33656002)(38070700005)(83380400001)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?vtLBnBUV0pH5G4Xote/5wEC+THqX4PcABuy+ITvCgLlrj3qu+Dzm45qQIjxp?=
+ =?us-ascii?Q?EzhpO7JuNw6gKUELoTtE6WX48fI1+W92N/4SpEQ0KfW9gJjiJw2Z1YjPrjje?=
+ =?us-ascii?Q?aiRYyjQRmtNDfo4asRxkZ/iYpNKgY5YFkxzg1OgqeyYktsBZXd60SazFxWcO?=
+ =?us-ascii?Q?2B24IjS+h6BVTnusVgbQpuoMcStGOs+JdJyelaGuqelt6+4Vsb1rIcUoKOeU?=
+ =?us-ascii?Q?4pcML3mmLAl/Vt5wYhLl1jI96pt8RH8VGavyUkgSMjgc2OM9gpwRSoG6cK/9?=
+ =?us-ascii?Q?V+ZgFGs9KS5gac6qvTtY0MHZig9IhG19IPqSgSrFrUZ8YcR3syUTmFqPUOuO?=
+ =?us-ascii?Q?OKPFsXJoGwfhgQPL6D/Etz6KYu8Z1oFiAymR5Ud/nySbYy7VZL5fNLl24VKL?=
+ =?us-ascii?Q?ANYFKvDNSmFhZOfBNT2iZXswfgdzIsN6Ee1iYJ1YCdR9p2wexX2sO2QSVFbB?=
+ =?us-ascii?Q?ml/V+xaDIjDF6o4WAOr85K1JT1QmcBEAdAt2WNZ+FdR8E1S4jm/ZQBt5kJNl?=
+ =?us-ascii?Q?Z5eitzydmi3e7h+hjQ4nEamZ7LkIoKQidcqBeB/0J0unsy/rlZWwK8KL0/Kj?=
+ =?us-ascii?Q?eepnFuoZmOedj5w0KqazL/HZsrkC/z0riH8xhDi646T7P088MQlnj8ADe4DY?=
+ =?us-ascii?Q?FetIvoLrtnGUdpMxJ26O7rsxrZOBJ+i02CFqRaw8PBWJX2pYxGaITKfMlX3N?=
+ =?us-ascii?Q?zneEGnlTPxs6GIh87c2dCDAuSRNxB7k/dQ4eXmJhzdP7FoSyd1550Jp/37Uj?=
+ =?us-ascii?Q?hxj0toVhBeA0l+GcnoRk6ZqvdZRWJDREY14zBonhwkXFjb9vsPH/yGX6iQ3G?=
+ =?us-ascii?Q?4ukXuCHMhD6dCEd7f0AVo4vhr7tV6Qc0veQur9iA71qIpxO0ZUkHnQmgUlIr?=
+ =?us-ascii?Q?6g+EwfjfYYOkPM1mWQObGIYRPpRQ9zpImDn2wGuXcvCSh6Im/Dx0FcqAJgci?=
+ =?us-ascii?Q?M5NLuibs5PCWnAexT2L7M2zn9I+a3ozHRSVUd5AjcK3y7o9wxXnhJ4/mjT5W?=
+ =?us-ascii?Q?eaKlcd2E0J/2ZU5IeAAe9eH1kp72Cwd2ufLq+1S8X2YF+vKAa7l/ukEwbBHi?=
+ =?us-ascii?Q?9aQmbzY0Qbu3H7NqGJJZPObt+ohjsWoUzd8LaWOIfk0y7+4OatYO4KDb012/?=
+ =?us-ascii?Q?/oaRvrL5b+zihin73rrmzkTS4hd6km1kkfTF/EdUqCLd2aFQWbg0dUo9OFNC?=
+ =?us-ascii?Q?Y185/qnkDEjH2nb/mcU6BHoHMFBQWhjcLP6wI7ugqvfUyLEBut0xGv6kg8iO?=
+ =?us-ascii?Q?BSfthmXb/vdUzTaOtHlfpBawt2/qddgETVAxxkH7+JpHL3q1C+4YeVL+7MWi?=
+ =?us-ascii?Q?+I+1A4bY0NZ5dL4FbHJKnzcJkWAc8LecKigCmM+yXDArlkbxyyOPnaL6zRk3?=
+ =?us-ascii?Q?4jc+2ReeMeDwFa3dr8FrME39jBpVXXorbloJlYWjN9KVGyp3zOWH+pQHVFMS?=
+ =?us-ascii?Q?JVEDGJKvAdUn2ciDik1SJXUqoe5eC2yL/EAMeVjglsiL922H7uDqGDzxnbHU?=
+ =?us-ascii?Q?XzSYJ/7XlUSgXNAT9a6C/zX0b2iSl7aHC4GIweV0V6FcPB3t6+iHhaWBakng?=
+ =?us-ascii?Q?/rqSGUN2vUR/24mRgmfjCafskoC0BVENNm/2dJ0sQHAXoVD9RPmzfyaJRqP7?=
+ =?us-ascii?Q?g2BG6OddAJ6Bc43d7kmyRkg=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <e642198c-a75c-f68a-641b-304b9f6b59ba@linux.alibaba.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] [PATCH v17] virtio-net:
- support inner header hash
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 191388ff-0d90-49a9-2965-08db726f2bf8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2023 15:50:00.7600
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: a7QpLenQ07woyR01tUd0IY0VpMSE3TpxGdeAy36cmjUPDMQXVPx4tQg8g+lLEi468y6T6b1+ZFVJOie36OZGkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8772
+Subject: [virtio-dev] RE: [PATCH v6 4/4] transport-pci: Introduce group legacy group member
+ config region access
 
-A couple more fixes are needed I think.
 
-On Thu, Jun 15, 2023 at 05:29:30PM +0800, Heng Qi wrote:
-> 
-> Hi all!
-> 
-> If after reviewing it you feel this version meets the necessaryrequirements,
-> I kindly request a vote.
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/173
-> 
-> Thanks a lot!
-> 
-> 
-> 
-> 
-> 在 2023/6/12 下午4:09, Heng Qi 写道:
-> > 1. Currently, a received encapsulated packet has an outer and an inner header, but
-> > the virtio device is unable to calculate the hash for the inner header. The same
-> > flow can traverse through different tunnels, resulting in the encapsulated
-> > packets being spread across multiple receive queues (refer to the figure below).
-> > However, in certain scenarios, we may need to direct these encapsulated packets of
-> > the same flow to a single receive queue. This facilitates the processing
-> > of the flow by the same CPU to improve performance (warm caches, less locking, etc.).
-> > 
-> >                 client1                    client2
-> >                    |        +-------+         |
-> >                    +------->|tunnels|<--------+
-> >                             +-------+
-> >                                |  |
-> >                                v  v
-> >                        +-----------------+
-> >                        | monitoring host |
-> >                        +-----------------+
-> > 
-> > To achieve this, the device can calculate a symmetric hash based on the inner headers
-> > of the same flow.
-> > 
-> > 2. For legacy systems, they may lack entropy fields which modern protocols have in
-> > the outer header, resulting in multiple flows with the same outer header but
-> > different inner headers being directed to the same receive queue. This results in
-> > poor receive performance.
-> > 
-> > To address this limitation, inner header hash can be used to enable the device to advertise
-> > the capability to calculate the hash for the inner packet, regaining better receive performance.
-> > 
-> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/173
-> > 
-> > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reviewed-by: Parav Pandit <parav@nvidia.com>
-> > ---
-> > v16->v17:
-> > 	1. Some small rewrites. @Parav Pandit
-> > 	2. Add Parav's Reviewed-by tag (Thanks!).
-> > 
-> > v15->v16:
-> > 	1. Remove the hash_option. In order to delimit the inner header hash and RSS
-> > 	   configuration, the ability to configure the outer src udp port hash is given
-> > 	   to RSS. This is orthogonal to inner header hash, which will be done in the
-> > 	   RSS capability extension topic (considered as an RSS extension together
-> > 	   with the symmetric toeplitz hash algorithm, etc.). @Parav Pandit @Michael S . Tsirkin
-> > 	2. Fix a 'field' typo. @Parav Pandit
-> > 
-> > v14->v15:
-> > 	1. Add tunnel hash option suggested by @Michael S . Tsirkin
-> > 	2. Adjust some descriptions.
-> > 
-> > v13->v14:
-> > 	1. Move supported_hash_tunnel_types from config space into cvq command. @Parav Pandit
-> > 	2. Rebase to master branch.
-> > 	3. Some minor modifications.
-> > 
-> > v12->v13:
-> > 	1. Add a GET command for hash_tunnel_types. @Parav Pandit
-> > 	2. Add tunneling protocol explanation. @Jason Wang
-> > 	3. Add comments on some usage scenarios for inner hash.
-> > 
-> > v11->v12:
-> > 	1. Add a command VIRTIO_NET_CTRL_MQ_TUNNEL_CONFIG.
-> > 	2. Refine the commit log. @Michael S . Tsirkin
-> > 	3. Add some tunnel types.
-> > 
-> > v10->v11:
-> > 	1. Revise commit log for clarity for readers.
-> > 	2. Some modifications to avoid undefined terms. @Parav Pandit
-> > 	3. Change VIRTIO_NET_F_HASH_TUNNEL dependency. @Parav Pandit
-> > 	4. Add the normative statements. @Parav Pandit
-> > 
-> > v9->v10:
-> > 	1. Removed hash_report_tunnel related information. @Parav Pandit
-> > 	2. Re-describe the limitations of QoS for tunneling.
-> > 	3. Some clarification.
-> > 
-> > v8->v9:
-> > 	1. Merge hash_report_tunnel_types into hash_report. @Parav Pandit
-> > 	2. Add tunnel security section. @Michael S . Tsirkin
-> > 	3. Add VIRTIO_NET_F_HASH_REPORT_TUNNEL.
-> > 	4. Fix some typos.
-> > 	5. Add more tunnel types. @Michael S . Tsirkin
-> > 
-> > v7->v8:
-> > 	1. Add supported_hash_tunnel_types. @Jason Wang, @Parav Pandit
-> > 	2. Change hash_report_tunnel to hash_report_tunnel_types. @Parav Pandit
-> > 	3. Removed re-definition for inner packet hashing. @Parav Pandit
-> > 	4. Fix some typos. @Michael S . Tsirkin
-> > 	5. Clarify some sentences. @Michael S . Tsirkin
-> > 
-> > v6->v7:
-> > 	1. Modify the wording of some sentences for clarity. @Michael S. Tsirkin
-> > 	2. Fix some syntax issues. @Michael S. Tsirkin
-> > 
-> > v5->v6:
-> > 	1. Fix some syntax and capitalization issues. @Michael S. Tsirkin
-> > 	2. Use encapsulated/encaptulation uniformly. @Michael S. Tsirkin
-> > 	3. Move the links to introduction section. @Michael S. Tsirkin
-> > 	4. Clarify some sentences. @Michael S. Tsirkin
-> > 
-> > v4->v5:
-> > 	1. Clarify some paragraphs. @Cornelia Huck
-> > 	2. Fix the u8 type. @Cornelia Huck
-> > 
-> > v3->v4:
-> > 	1. Rename VIRTIO_NET_F_HASH_GRE_VXLAN_GENEVE_INNER to VIRTIO_NET_F_HASH_TUNNEL. @Jason Wang
-> > 	2. Make things clearer. @Jason Wang @Michael S. Tsirkin
-> > 	3. Keep the possibility to use inner hash for automatic receive steering. @Jason Wang
-> > 	4. Add the "Tunnel packet" paragraph to avoid repeating the GRE etc. many times. @Michael S. Tsirkin
-> > 
-> > v2->v3:
-> > 	1. Add a feature bit for GRE/VXLAN/GENEVE inner hash. @Jason Wang
-> > 	2. Chang \field{hash_tunnel} to \field{hash_report_tunnel}. @Jason Wang, @Michael S. Tsirkin
-> > 
-> > v1->v2:
-> > 	1. Remove the patch for the bitmask fix. @Michael S. Tsirkin
-> > 	2. Clarify some paragraphs. @Jason Wang
-> > 	3. Add \field{hash_tunnel} and VIRTIO_NET_HASH_REPORT_GRE. @Yuri Benditovich
-> > 
-> >   device-types/net/description.tex        | 161 ++++++++++++++++++++++++
-> >   device-types/net/device-conformance.tex |   1 +
-> >   device-types/net/driver-conformance.tex |   1 +
-> >   introduction.tex                        |  40 ++++++
-> >   4 files changed, 203 insertions(+)
-> > 
-> > diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-> > index 3030222..6bf65ff 100644
-> > --- a/device-types/net/description.tex
-> > +++ b/device-types/net/description.tex
-> > @@ -88,6 +88,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
-> >   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
-> >       channel.
-> > +\item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for tunnel-encapsulated packets.
-> > +
-> >   \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
-> >   \item[VIRTIO_NET_F_NOTF_COAL(53)] Device supports notifications coalescing.
-> > @@ -147,6 +149,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
-> >   \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
-> >   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
-> >   \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
-> > +\item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS and/or VIRTIO_NET_F_HASH_REPORT.
-> >   \end{description}
-> >   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
-> > @@ -869,6 +872,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
-> >   If the feature VIRTIO_NET_F_RSS was negotiated:
-> >   \begin{itemize}
-> >   \item The device uses \field{hash_types} of the virtio_net_rss_config structure as 'Enabled hash types' bitmask.
-> > +\item The device uses \field{hash_tunnel_types} of the virtnet_hash_tunnel_config_get structure as 'Enabled encapsulation hash types' bitmask if VIRTIO_NET_F_HASH_TUNNEL was negotiated.
-> >   \item The device uses a key as defined in \field{hash_key_data} and \field{hash_key_length} of the virtio_net_rss_config structure (see
-> >   \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / Setting RSS parameters}).
-> >   \end{itemize}
-> > @@ -876,6 +880,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
-> >   If the feature VIRTIO_NET_F_RSS was not negotiated:
-> >   \begin{itemize}
-> >   \item The device uses \field{hash_types} of the virtio_net_hash_config structure as 'Enabled hash types' bitmask.
-> > +\item The device uses \field{hash_tunnel_types} of the virtnet_hash_tunnel_config_get structure as 'Enabled encapsulation hash types' bitmask if VIRTIO_NET_F_HASH_TUNNEL was negotiated.
-> >   \item The device uses a key as defined in \field{hash_key_data} and \field{hash_key_length} of the virtio_net_hash_config structure (see
-> >   \ref{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode / Hash calculation}).
-> >   \end{itemize}
-> > @@ -891,6 +896,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
-> >   \subparagraph{Supported/enabled hash types}
-> >   \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled hash types}
-> > +This paragraph relies on definitions from \hyperref[intro:IP]{[IP]}, \hyperref[intro:UDP]{[UDP]} and \hyperref[intro:TCP]{[TCP]}.
-> >   Hash types applicable for IPv4 packets:
-> >   \begin{lstlisting}
-> >   #define VIRTIO_NET_HASH_TYPE_IPv4              (1 << 0)
-> > @@ -1001,6 +1007,161 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
-> >   (see \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv6 packets without extension header}).
-> >   \end{itemize}
-> > +\paragraph{Inner Header Hash}
-> > +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Inner Header Hash}
-> > +
-> > +If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the driver can send commands VIRTIO_NET_CTRL_HASH_TUNNEL_SET
-> > +and VIRTIO_NET_CTRL_HASH_TUNNEL_GET for the inner header hash configuration.
-> > +
-> > +struct virtnet_hash_tunnel_config_set {
-> > +    le32 hash_tunnel_types;
-> > +};
-> > +
-> > +struct virtnet_hash_tunnel_config_get {
-> > +    le32 supported_hash_tunnel_types;
-> > +    le32 hash_tunnel_types;
-> > +};
-> > +
-> > +#define VIRTIO_NET_CTRL_HASH_TUNNEL 7
-> > + #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
-> > + #define VIRTIO_NET_CTRL_HASH_TUNNEL_GET 1
-> > +
-> > +Field \field{supported_hash_tunnel_types} provided by the device indicates that the device supports inner header hash for these encapsulation types.
-> > +\field{supported_hash_tunnel_types} contains the bitmask of supported tunnel hash types. See \ref{sec:Device Types / Network Device / Device Operation / Processing
-> > +of Incoming Packets / Hash calculation for incoming packets / Supported/enabled encapsulation hash types}.
-> > +
-> > +Field \field{hash_tunnel_types} contains the bitmask of configured tunnel hash types.
-> > +See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled encapsulation hash types}.
-> > +
-> > +The class VIRTIO_NET_CTRL_HASH_TUNNEL has the following commands:
-> > +\begin{itemize}
-> > +\item VIRTIO_NET_CTRL_HASH_TUNNEL_SET: set \field{hash_tunnel_types} for the device using the virtnet_hash_tunnel_config_set structure, which is read-only for the device.
-> > +\item VIRTIO_NET_CTRL_HASH_TUNNEL_GET: get \field{hash_tunnel_types} and \field{supported_hash_tunnel_types} from the device using the virtnet_hash_tunnel_config_get
-> > +      structure, which is write-only for the device.
-> > +\end{itemize}
-> > +
-> > +\subparagraph{Tunnel/Encapsulated packet}
-> > +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Tunnel/Encapsulated packet}
-> > +
-> > +A tunnel packet is encapsulated from the original packet based on the tunneling protocol (only a single level of
-> > +encapsulation is currently supported). The encapsulated packet contains an outer header and an inner header, and
-> > +the device calculates the hash over either the inner header or the outer header.
-> > +
-> > +If VIRTIO_NET_F_HASH_TUNNEL is negotiated and a received encapsulated packet's outer header matches one of the
-> > +configured \field{hash_tunnel_types}, the hash of the inner header is calculated.
-> > +
-> > +Supported encapsulated packet types:
-> > +\begin{itemize}
-> > +\item The outer header of the following encapsulation types does not contain the transport protocol:
-> > +\begin{itemize}
-> > +\item \hyperref[intro:ipip]{[IPIP]}: the outer header is over IPv4 and the inner header is over IPv4.
-> > +\item \hyperref[intro:nvgre]{[NVGRE]}: the outer header is over IPv4/IPv6 and the inner header is over IPv4/IPv6.
-> > +\item \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]}: the outer header is over IPv4 and the inner header is over IPv4.
-> > +\item \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]}: the outer header is over IPv4 and the inner header is over IPv4.
-> > +\item \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]}: the outer header is over IPv4/IPv6 and the inner header is over IPv4/IPv6.
-> > +\end{itemize}
-> > +\item The outer header of the following encapsulation types uses UDP as the transport protocol:
-> > +\begin{itemize}
-> > +\item \hyperref[intro:vxlan]{[VXLAN]}: the outer header is over IPv4/IPv6 and the inner header is over IPv4/IPv6.
-> > +\item \hyperref[intro:geneve]{[GENEVE]}: the outer header is over IPv4/IPv6 and the inner header is over IPv4/IPv6.
-> > +\item \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]}: the outer header is over IPv4/IPv6 and the inner header is over IPv4/IPv6.
-> > +\item \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]}: the outer header is over IPv4/IPv6 and the inner header is over IPv4/IPv6.
-> > +\end{itemize}
-> > +\end{itemize}
-> > +
-> > +If VIRTIO_NET_HASH_TUNNEL_TYPE_NONE is set or the encapsulation type is not included in the configured \field{hash_tunnel_types},
-> > +the hash of the outer header is calculated for the received encapsulated packet.
-> > +
-> > +The hash is calculated for the received non-encapsulated packet as if VIRTIO_NET_F_HASH_TUNNEL was not negotiated.
-> > +
-> > +\subparagraph{Supported/enabled encapsulation hash types}
-> > +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Supported/enabled encapsulation hash types}
-> > +
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NONE        (1 << 0)
-> > +\end{lstlisting}
-> > +
-> > +Supported encapsulation hash types:
-> > +Hash type applicable for inner payload of the \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 1)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 2)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 3)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 4)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:vxlan]{[VXLAN]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 5)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 6)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:geneve]{[GENEVE]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 7)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:ipip]{[IPIP]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 8)
-> > +\end{lstlisting}
-> > +Hash type applicable for inner payload of the \hyperref[intro:nvgre]{[NVGRE]} packet:
-> > +\begin{lstlisting}
-> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 9)
-> > +\end{lstlisting}
-> > +
-> > +\subparagraph{Advice}
-> > +Usage scenarios of inner header hash (but not limited to):
-> > +\begin{itemize}
-> > +\item Legacy tunneling protocols that lack entropy in the outer header use inner header hash to hash flows
-> > +      with the same outer header but different inner headers to different queues for better-receiving performance.
-> > +\item In scenarios where the same flow passing through different tunnels is expected to be received in the same queue,
-> > +      to utilize warm caches, to have less locking etc. are optimized to obtain receiving performance.
-> > +\end{itemize}
-> > +
-> > +For scenarios with sufficient outer entropy or no inner header hash requirements, inner header hash may not be needed:
-> > +A tunnel is often expected to isolate the external network from the internal one. By completely ignoring entropy
-> > +in the outer header and replacing it with entropy from the inner header, for hash calculations, this expectation
-> > +might be violated to a certain extent, depending on how the hash is used. When the hash use is limited to RSS queue
-> > +selection, inner header hash may have quality of service (QoS) limitations.
-> > +
-> > +Possible mitigations:
-> > +\begin{itemize}
-> > +\item Use a tool with good forwarding performance to keep the receive queue from dropping packets.
-> > +\item If the QoS is unavailable, the driver can set \field{hash_tunnel_types} to VIRTIO_NET_HASH_TUNNEL_TYPE_NONE
-> > +      to disable inner header hash for encapsulated packets.
-> > +\item Perform appropriate QoS before packets consume the receive buffers of the receive queues.
-> > +\end{itemize}
-> > +
-> > +\devicenormative{\subparagraph}{Inner Header Hash}{Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
-> > +
-> > +The device MUST calculate the hash on the outer header if the type of the received encapsulated packet does not match
-> > +any value of the configured \field{hash_tunnel_types}.
-> > +
-> > +The device MUST respond to the VIRTIO_NET_CTRL_HASH_TUNNEL_SET command with VIRTIO_NET_ERR if the device receives
-> > +an unsupported or unrecognized VIRTIO_NET_HASH_TUNNEL_TYPE_ flag.
-> > +
-> > +The device MUST provide the values of \field{supported_hash_tunnel_types} if it offers the VIRTIO_NET_F_HASH_TUNNEL feature.
-> > +
-> > +Upon reset, the device MUST initialize \field{hash_tunnel_type} to 0.
-> > +
-> > +\drivernormative{\subparagraph}{Inner Header Hash}{Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
-> > +
-> > +The driver MUST have negotiated the VIRTIO_NET_F_HASH_TUNNEL feature when issuing commands VIRTIO_NET_CTRL_HASH_TUNNEL_SET and VIRTIO_NET_CTRL_HASH_TUNNEL_GET.
-> > +
-> > +The driver MUST ignore the values received from the VIRTIO_NET_CTRL_HASH_TUNNEL_GET command if the device responds with VIRTIO_NET_ERR.
-> > +
-> > +The driver MUST NOT set any VIRTIO_NET_HASH_TUNNEL_TYPE_ flags which are not supported by the device.
-> > +
-> >   \paragraph{Hash reporting for incoming packets}
-> >   \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash reporting for incoming packets}
-> > diff --git a/device-types/net/device-conformance.tex b/device-types/net/device-conformance.tex
-> > index 54f6783..f88f48b 100644
-> > --- a/device-types/net/device-conformance.tex
-> > +++ b/device-types/net/device-conformance.tex
-> > @@ -14,4 +14,5 @@
-> >   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
-> >   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
-> >   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-> > +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
-> >   \end{itemize}
-> > diff --git a/device-types/net/driver-conformance.tex b/device-types/net/driver-conformance.tex
-> > index 97d0cc1..9d853d9 100644
-> > --- a/device-types/net/driver-conformance.tex
-> > +++ b/device-types/net/driver-conformance.tex
-> > @@ -14,4 +14,5 @@
-> >   \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
-> >   \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
-> >   \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
-> > +\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
-> >   \end{itemize}
-> > diff --git a/introduction.tex b/introduction.tex
-> > index b7155bf..3f34950 100644
-> > --- a/introduction.tex
-> > +++ b/introduction.tex
-> > @@ -102,6 +102,46 @@ \section{Normative References}\label{sec:Normative References}
-> >       Standards for Efficient Cryptography Group(SECG), ``SEC1: Elliptic Cureve Cryptography'', Version 1.0, September 2000.
-> >   	\newline\url{https://www.secg.org/sec1-v2.pdf}\\
-> > +	\phantomsection\label{intro:gre_rfc2784}\textbf{[GRE_rfc2784]} &
-> > +    Generic Routing Encapsulation. This protocol is only specified for IPv4 and used as either the payload or delivery protocol.
-> > +	\newline\url{https://datatracker.ietf.org/doc/rfc2784/}\\
-> > +	\phantomsection\label{intro:gre_rfc2890}\textbf{[GRE_rfc2890]} &
-> > +    Key and Sequence Number Extensions to GRE \ref{intro:gre_rfc2784}. This protocol describes extensions by which two fields, Key and
-> > +    Sequence Number, can be optionally carried in the GRE Header \ref{intro:gre_rfc2784}.
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc2890}\\
-> > +	\phantomsection\label{intro:gre_rfc7676}\textbf{[GRE_rfc7676]} &
-> > +    IPv6 Support for Generic Routing Encapsulation (GRE). This protocol is specified for IPv6 and used as either the payload or
-> > +    delivery protocol. Note that this does not change the GRE header format or any behaviors specified by RFC 2784 or RFC 2890.
-> > +	\newline\url{https://datatracker.ietf.org/doc/rfc7676/}\\
-> > +	\phantomsection\label{intro:gre_in_udp_rfc8086}\textbf{[GRE-in-UDP]} &
-> > +    GRE-in-UDP Encapsulation. This specifies a method of encapsulating network protocol packets within GRE and UDP headers.
-> > +    This GRE-in-UDP encapsulation allows the UDP source port field to be used as an entropy field. This protocol is specified for IPv4 and IPv6,
-> > +    and used as either the payload or delivery protocol.
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc8086}\\
-> > +	\phantomsection\label{intro:vxlan}\textbf{[VXLAN]} &
-> > +    Virtual eXtensible Local Area Network.
-> > +	\newline\url{https://datatracker.ietf.org/doc/rfc7348/}\\
-> > +	\phantomsection\label{intro:vxlan-gpe}\textbf{[VXLAN-GPE]} &
-> > +    Generic Protocol Extension for VXLAN. This protocol describes extending Virtual eXtensible Local Area Network (VXLAN) via changes to the VXLAN header.
-> > +	\newline\url{https://www.ietf.org/archive/id/draft-ietf-nvo3-vxlan-gpe-12.txt}\\
-> > +	\phantomsection\label{intro:geneve}\textbf{[GENEVE]} &
-> > +    Generic Network Virtualization Encapsulation.
-> > +	\newline\url{https://datatracker.ietf.org/doc/rfc8926/}\\
-> > +	\phantomsection\label{intro:ipip}\textbf{[IPIP]} &
-> > +    IP Encapsulation within IP.
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc2003}\\
-> > +	\phantomsection\label{intro:nvgre}\textbf{[NVGRE]} &
-> > +    NVGRE: Network Virtualization Using Generic Routing Encapsulation
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc7637.html}\\
-> > +	\phantomsection\label{intro:IP}\textbf{[IP]} &
-> > +    INTERNET PROTOCOL
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc791}\\
-> > +	\phantomsection\label{intro:UDP}\textbf{[UDP]} &
-> > +    User Datagram Protocol
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc768}\\
-> > +	\phantomsection\label{intro:TCP}\textbf{[TCP]} &
-> > +    TRANSMISSION CONTROL PROTOCOL
-> > +	\newline\url{https://www.rfc-editor.org/rfc/rfc793}\\
-> >   \end{longtable}
-> >   \section{Non-Normative References}
-> 
-> 
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
-> 
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
-> 
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
 
+> From: Parav Pandit
+> Sent: Tuesday, June 20, 2023 10:12 AM
+>=20
+> Michael,
+>=20
+> > From: Parav Pandit <parav@nvidia.com>
+> > Sent: Monday, June 19, 2023 2:07 PM
+> > We don't need to do it now.
+> >
+> > > Current VF capability is kind of ok I guess ...
+> > >
+> > Already proposed one?
+> >
+> > > If you want admin command to query then it would need to map in PF
+> > memory.
+> > No need.
+> > It is similar to rest of the configuration access commands.
+> >
+> > > I understand two concerns with this:
+> > > - you worry that this forces ordering requirements - it's true and I
+> > >   don't know of a good fix. So if possible use VF BAR by preference?
+> > > - you worry about wasting physical memory space
+> > >   this we can fix by sticking VF# in the kick.
+> > >
+> > > As an alternative, if we can make the new command able to
+> > > communicate offset in PCI BAR or in VF BAR or both then I think
+> > > that's also an acceptable
+> >
+> > A new command proposed was for VF BAR that member driver can ask to
+> > its group owner driver (like rest of the config commands).
+> >
+>=20
+> Are you ok with the admin command to query the notification address of th=
+e
+> member device bar?
+>=20
+> I presented both the proposals.
+> We need to conclude this now without keep flipping between two from versi=
+on
+> to version.
+>=20
+> a. v3 with admin command
+> pros:
+> 1. self-contained via AQ for rest of the control path operations.
+> 2. Can work with future siov device who may want to support legacy 3. Doe=
+sn't
+> bake things in low level pci capabilities which is hard to get rid of 4. =
+Able to add
+> new command or new response if some device wants to support this on PF
+> (very unlikely)
+>=20
+Given that this has more pros and no objection to it,=20
+I will revise v7 today with query admin command like v3.
+
+> b. and v6 with capability extension.
+> Cons:
+> 1. Does not have above advantages
+>=20
+> Pros:
+> 1. Uses existing PCI capability for the extension
+>=20
+>=20
+> > A future command can tell for the PF BAR if needed and some device
+> > wants to do such extra implementation.
+> >
+> > > compromize:
+> > > drivers that have trouble mapping VF BAR after querying PF can just
+> > > map PF BAR. WDYT?
+> >
+> > PF BAR for notification can be done later when there is some device
+> > who really have the limitation and wants to do that.
+> > We don't see that additional need as driver notifications are present
+> > on the VF already as listed in the alternative.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
