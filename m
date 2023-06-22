@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13058-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13059-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ABC94EB64D8
-	for <virtio-dev@archiver.kernel.org>; Thu, 22 Jun 2023 18:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5EC8EEB64DC
+	for <virtio-dev@archiver.kernel.org>; Thu, 22 Jun 2023 18:18:00 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 229A688E07
-	for <virtio-dev@archiver.kernel.org>; Thu, 22 Jun 2023 18:12:18 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4419F16DCD2
+	for <virtio-dev@archiver.kernel.org>; Thu, 22 Jun 2023 18:17:59 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1D0D99865EB
-	for <virtio-dev@archiver.kernel.org>; Thu, 22 Jun 2023 18:12:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3D7199865EB
+	for <virtio-dev@archiver.kernel.org>; Thu, 22 Jun 2023 18:17:59 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 114449865D1; Thu, 22 Jun 2023 18:12:18 +0000 (UTC)
+	id 306C69865D1; Thu, 22 Jun 2023 18:17:59 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F1A879865D4;
-	Thu, 22 Jun 2023 18:12:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1B9B09865D4;
+	Thu, 22 Jun 2023 18:17:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T20cz/1gtmhA9Em9sFiEoYA9MOXN91OyOU8vaLvso3pItERXIuEQvtwWwmEQ26Onc1oCXQjfwRSNsx3Hlvx9CcEBQ7S533lQpweXs5WxZfu5+dwLJOYON4vnF6SekttGtu8Rmeop03oaekAFitvQhNE3TWYywFPpDlthMueFlPVOkjdiF/DTL2Rw3ciGwrgTp2k8w9Uo6mOnFO9/MollZH2iJj6PDqF30hOrr0iogGy7L5pfi8fO9URaD5+o6vomak17WxRrDMUJht+OJJjVQC/vKxzy9bBW1214ekX74kdSmPW+CSGt8eqNUF1eA8obt3Zw0nhck0PW7rg2nf/fZg==
+ b=Jery99ph0Wk/cmDfYPM3kQh5tgcO32uS8YtndvcZ4wF3QGmAFHKkAWW9SYFgX4Dn45PalntSu2S6JYAew/y9B40jH8Bn98piivuVoVey/836bKPk6XIz7J/D4/31w7lPQHCjx7kWpOToNgSqmcjKP0HMyF+iliUllf7aN/GZj2RbOEl7XpM44Xqx/6fxlX8Mrr5+BLKSvZQMqLV4G+ONgvhEoNwJvTGbVZXfcK1zkfH7CdmJ1dEwh+wEM/Jf8bY+jtkWnK+JQdOMNKz2xYATqVU1BmWRe2IihkK1HWZi+XdU5w1rJyjFFciAAkdXtJFeOjX5tjp0opc2067mxzxLKw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8iHxWBSGLF3XFkwkywu0FRJdZXYEETF9Q1IXQWHTfEk=;
- b=gjD2rfFxE2FDdqdaOIz5YssKKc1ruJgiv9TBsVnUI5cFgxjlnmcag8JVjPtu9Y+rReeU2sfWpAw/YA5Nj907cI+QnhmqWqWcqpytmXGuSAyKLc2N3gA7djvzFdnE86Dps+mzciCkmsgGDk8hE8ofR4xaodnScRUugShyspabO5AD6cBAmaBdTLizQ47oeNaUl9dW0R9qdXJudz0vFSVbtITFhMCdnU9Y+tThfsoQqTIT1zm/q6ihV9ZThI0WSRsNm7S2A2nNhBJAsR/20vFfMZNjFXYvEebKQPWXTVG2/CR14EVn/7MW7QCofT3fp7dBt945zOTpNnUXIZm2ZkFT+Q==
+ bh=nMHiseWlWDnTQ13oYmQ1X0fVtluppL3AObqVs2WViZg=;
+ b=Jmi8GBujDE5aOl5er0Dq5X0JBr6kd4eExLNEjZp0a92C8RIGcRCs4gUs8EK8arNk+wYHScnB5Wts0oNQjMJKTzr8B2SuJXCITHgXl0GiJvGiUGeTPMc4zj4M1+GF2Fumbc/U7Z79pF7t2MxIlqtSS7EZ1XEQiOdireEcWgRoZAQ/Q1a3Gbn8bZbH3XJobs47lLlXtXMQeduqPPjD/v9M6OZbTDhG27jovI75bGdr+bVuxLMDQlAYcjW4+FU7whmUzzRYXZCa7amQeuxvZcUuX7LS5K6CIQOiRRjjDQBgaTWZiiQyF1p2NpRbftIv8p/EeWsssEqppmYrhVERta8v9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
@@ -47,22 +47,22 @@ CC: Heng Qi <hengqi@linux.alibaba.com>, "virtio-comment@lists.oasis-open.org"
 Thread-Topic: [virtio-dev] Re: [virtio-comment] Re: [PATCH v18] virtio-net:
  support inner header hash
 Thread-Index:
- AQHZpEdpSlZ4I0eUeUmZIFkjtAkw3q+VZGYAgAASyQCAAC5zgIAAADyAgAAMJYCAAAHeEIAABAeAgAAB1cCAAKHPAIAAY0PggABFu4CAAAII0IAABUeAgAAAscCAAAT1AIAAAI/wgAAHmgCAAARLAA==
-Date: Thu, 22 Jun 2023 18:12:09 +0000
+ AQHZpEdpSlZ4I0eUeUmZIFkjtAkw3q+VZGYAgAASyQCAAC5zgIAAADyAgAAMJYCAAAHeEIAABAeAgAAB1cCAAKHPAIAAY0PggABRroCAAAA20IAABzoAgAACfmCAAAb+gIAAAMtg
+Date: Thu, 22 Jun 2023 18:17:54 +0000
 Message-ID:
- <PH0PR12MB5481EDA41A3BA3FDF9A75E38DC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230621163116-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481BE907C0BBACC00389091DC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230621161157-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481C99B8504F02D39B3A6F0DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230621163116-mutt-send-email-mst@kernel.org>
  <PH0PR12MB5481C4EA5D0614E1289DFC77DC5DA@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230622021932-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54815D6D07A49CE775620088DC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230622120756-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54812B8DA2A17EF07CBDC3F1DC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230622124701-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548183EB6CB52E3A719C27ACDC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230622131120-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481A92301E4D27AFA43CB0DDC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230622133802-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230622133802-mutt-send-email-mst@kernel.org>
+ <20230622130359-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481367BAA5DE0BAA33DBAA8DC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230622132837-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481B65F624B16200B91B0AADC22A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230622140412-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230622140412-mutt-send-email-mst@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -70,130 +70,129 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH7PR12MB7872:EE_
-x-ms-office365-filtering-correlation-id: 398799ed-fa01-4e95-13a8-08db734c31e5
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BL3PR12MB9050:EE_
+x-ms-office365-filtering-correlation-id: dc2e3b47-2f35-4245-71ee-08db734cffa4
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- WB6sqYQY4qMG+dbnavwVeW/WZ7uX3WNa+FG48WU8lqVTy1b/xwF6x3PlCyGIERNjhsfGcDJ5EiHJSDvn9cso9QTE8GOmdftTCENe9cVnvtKZrSAABFzJ5GpBDwFvScoWCSG8QBSV1Q+uN8QPlc/A0rWa3RUjnvVN0T2BUjt1SbG73N0pSDM35Z5+xunbtr0S3voYwHPnwZBe9lDp1ZI4iowx1M/1yiklYLr1gpAoqaX7lpQ7jX5Z28er/NSpJLRiB02fl18bsEZI+YQsXZQMQvS9RZY986E+Y1Gg7DKbgtCuhZj+EngS8wHe/tGLRhU8okX4MhixI0+nnEEffr0ogJwriyKfNuHHhLhjNcIlTUUziEYRagLE87HRvSceGbMCyzOfHi5ahRR4B9gtHhn91fl0VERKNdkxoEyixMcHePTVyLiWnEx/RJXNUbq4XgR1RwqoCQBYdIDyJTTLeHgrZ5zExK7qSA5Xkbu4qD8H5PBSm9zmlDj2C5qQlyHH1DYPQWBs7u8931XW3a1o6eweymLryqIEEBgVxbBwPfi5/DB1Ksf1/2bZysmE2tVmI6Hl9v7ztyXk1LV1HRvfbm12zstg4IMDgjIsu17SijD5X4BwRvKaAecyO62js9gTHWtB
+ 6kj4MoZZqLTGw8Dyi62AlrES2U6EPoXinM9yUulUjoytPVgjwqmp2/ktwPiPsqu1Sskn3ukMy0NQmYEo4oLMU4vxWce/ITwntuduCtDJ/TTlBbynHfrRkCXyGqDTEJYSliZTzT5G7vOV/244EdBGDeCq4Gkk50rqh67sJp1VqqOg8sctyvd1hLV2B4Lbez9VsL6GdOlqlnY9rhS4kbjSI11/FsVaSoChqUWtKnrGqGS1BSIex8lVOsOw2CIVTp6WfGxGMVPouGtAiwi/6o6H6J+0+0iTjIAjbp8ImVdAKB1m8V6W0kxyr0aWtA5YDSuSoLBJ7Hg7dHJbOkJnByHwCJSKZWPW6AvW/z9TYnWCSlZd/bPmLQmAXhraSJqkomyM2OeunhOYrHK8v2AqQ5QsBh7g03X1pguDL6Ld0C3u/Au0/kulTtC4rN8GUf4bUL2Qn1TRg2tKuR+V4mxbmHzjiLifm+wVxBVKCQWDKEjgIl09X6g/V8DD4kDoLoMhk/U+Z2zZdzJxicvw23eJzBilaoBrJUT7rDnPL8BNUSXPPopBfY/65c/zt56MyO3A2zDx4/HdxalJZx5MooYTZTDtucBb00AWfLE3uaYv+G/o+odwrh+wCWs9mFWKrIDkiyT7
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(451199021)(8936002)(7696005)(8676002)(83380400001)(52536014)(122000001)(38100700002)(54906003)(33656002)(5660300002)(9686003)(478600001)(26005)(66946007)(4326008)(76116006)(6916009)(71200400001)(66476007)(64756008)(66446008)(66556008)(41300700001)(316002)(186003)(6506007)(2906002)(86362001)(55016003)(38070700005);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(346002)(366004)(39860400002)(451199021)(55016003)(186003)(26005)(9686003)(8936002)(8676002)(33656002)(41300700001)(478600001)(38070700005)(38100700002)(316002)(54906003)(76116006)(122000001)(66946007)(66556008)(66476007)(66446008)(6916009)(4326008)(64756008)(52536014)(6506007)(2906002)(7696005)(5660300002)(86362001)(83380400001)(71200400001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?5rlhpsGFsXMaNc/iGLWM6qCU1SEQdFpjMGKwqfQSiiDkG6VJkp2inVQeb+p4?=
- =?us-ascii?Q?Jz1HiZ9nuj9NXwZoL3/3cJHOmFfJopq0oGMre31ZsBtai4rP7kzX1e623ob0?=
- =?us-ascii?Q?PeuScncCG6CFZEkJ3DDvY4VPnIdB19H2qoy2xJqok8UDeI67YYX1IKFUuWIR?=
- =?us-ascii?Q?2gp7vkVIfFi97ebEx7b8kUWpD6qQnxZOuJel88w+Oqwhc5HmgAmB1RZvLGS/?=
- =?us-ascii?Q?IBamUR6q7V3DzA6fqFqrX9p1I9jlgMybF1hoAncfxGzl88lwaJG4T4V1nDL+?=
- =?us-ascii?Q?sSRgQL4lI+B184vQCYxByEmgAFa2d0LeyINAw2hS+U+iV/TmzFG+RC+MjOQ4?=
- =?us-ascii?Q?Uv7DMo+oHJIT+nSE7HsNkB8loMj+uxQE2MzFC40Z1iHFAmGjjaJB9fOSQYJi?=
- =?us-ascii?Q?esbkplhAEijy9hvmYBYHviqC93hYhtshd/wjPHpGGLKXFPH8lx7NFJc/rLkZ?=
- =?us-ascii?Q?n+DZ2F99zNIcTye0xoDQXmSaG5K0Qn6jr1NH+YU8+ESwqCG4++vA0k2VquKR?=
- =?us-ascii?Q?cGj6VZ78rIjP1J09eF6PVUg8HvP7jd8M/4qiAq7XfgYU3dV+gBOi5E61tIRl?=
- =?us-ascii?Q?Z1O5kXqrh7KdiyZ620tX20dfZsqgldXJZAe7xpGof60VZ8cj4iLyiCvFvHYQ?=
- =?us-ascii?Q?LZrkoGWGAIXWmKI/Hf5j/00IEHAq2qeT+4ed5fyHMuwb38uJSq1DXRED6gqs?=
- =?us-ascii?Q?sv6272Rpqs+lU4jIccaV3L/z7xBq3EhHXG8bUxjTWTQrEQ+jKEx5vMiVs83i?=
- =?us-ascii?Q?BbfgZFLln4HDP4griyp/9epeCQ97MvDEvOG2Ib2PRU9AoDAL5WjGgXlIBzgK?=
- =?us-ascii?Q?eeKNp1rtbSv3dUOpOn+wmMXnZ0JE+QLFYMSm6d7zkxS6n6VUnk22Jli1aIJt?=
- =?us-ascii?Q?AdZ1cONYdiUCgOIMbP0S8HDJ2JAAx+FV62va7ka0wdQO8dKLtl1MtYQWfBOA?=
- =?us-ascii?Q?uC1gD8So4XZ5f0Zjfl9ywnke0W9/GKzB3IdulAtQDnAlS3SXIdfTFZjxS8Fg?=
- =?us-ascii?Q?jooJJXQ9tpWgI506ZD1pCYwwDc7WUKUaIJWCF7RP+EV/3mBrwgoy7NvaDGZa?=
- =?us-ascii?Q?YZghIMrzMy5I/hih2BVJuj65TZCyfuvXc39FJt6QqBk4I4X8Bha3HKUj7WaD?=
- =?us-ascii?Q?P6GnKn6TWGdzVpf8TrvJ568wipm9vWMjNTjXniLrMP3i2cqQMe5UZwV8MW76?=
- =?us-ascii?Q?Z5Razg8uiKTNDKC1ppLy9LSFnLtXAMCGAwe+fUQy7npROefuJiK2vAU0TuuM?=
- =?us-ascii?Q?t4Vf6WRIMntI018rFsD8kZYy/uV8XL6Bgkk74ZNZkMybJre50iY+rdms7j9V?=
- =?us-ascii?Q?bq59ucIGFF+xq4+0sIHmPY3FUsQvxgNtFAdPcHXmsBmg7tMpxe/ROsGl8cqs?=
- =?us-ascii?Q?/4OTwZAmBDciEffEtUNZ4ZyVU9RQxTU011EtGoLpSTY4RRsA34rhgUeE1zkK?=
- =?us-ascii?Q?oPwfYEn/caQI3IwmvNroQuHYxKTm2x/B3d4v9TDyB1/LFD4Vn+HaStygyun1?=
- =?us-ascii?Q?24oHKDyFnW+EtkDVWSe56HqMilMAQFv8a6yPe8H/dwNSkjVwrddGIaY8rZcV?=
- =?us-ascii?Q?86/FZo49wq6Ghrxou6s=3D?=
+ =?us-ascii?Q?Y3QE3bSJ3GbZbaDfjfdOLfI4pV5TaI/mjx/JHLjvMfZ7Mpg+wN3tLfbWAIc+?=
+ =?us-ascii?Q?Y7qymecP3oYswUgJkt87x3ZCkuTi4RlMi4/jRks5GfMF0ZMQrfwFBG5MQG6d?=
+ =?us-ascii?Q?W6d4oKcUpQ9pVxpFpYUFQ2llVbjjWlQ13zH/C8CLqoc9SmCyRSy980qM6+RP?=
+ =?us-ascii?Q?jnpdA4P6zmjMvoBrmStT6qz/dXGpiRslPKyZ1ECfXGmZ2yQ4TBVRqpV16oTy?=
+ =?us-ascii?Q?LxLccWBGWMJryeM9f1vfBXP/jju/Q15UMU8btu3Fcae11nz+AlEzicRSWPn8?=
+ =?us-ascii?Q?nqpJRINOjvOuPpq0QLHyF3IfrrtONLhqQ7MXvERytvwT5mCpAXl8I3gdFrj+?=
+ =?us-ascii?Q?kqXvVn6KNxIdz2WbiGSQtGi0uQFFL7o15PKL9yKO3r7EPmrikbsvJDWbAAvG?=
+ =?us-ascii?Q?w78UeJlnu7ZWTtl3gUDrXV0HCKPEheTcxKi2MAt8S/zWBl9c1WmjVREgnHSE?=
+ =?us-ascii?Q?O30dlWtF9KXkwZq2rrFhHtMCv/koVjKjLC5xeHXfsUCcvGvqtT6x+XBozN33?=
+ =?us-ascii?Q?lbikMBFmQzuVdAYf25OkNX1qVw5rz3f25AbT8Ebr6YevxeJ2H8rxVdYBdZUQ?=
+ =?us-ascii?Q?s0JYoHO2XvItHUqR4Nza932+jUVLCkKYbtC7mGhaMEd6y7RsFDPqvQf1T78R?=
+ =?us-ascii?Q?IKVSkEfgh4GbQ1p4TLiH23jqaDIVjqRGY6KKIMQ0W9x9VfewBRUQv69+dQbX?=
+ =?us-ascii?Q?lJHWR6OMrOFCiDUtQ7sd87bcb/2uLqMpA8P26YDNJT9nj/x+ukhJ1DMf4XZZ?=
+ =?us-ascii?Q?vP0YsuXEgsYGPNU+iKgLZspwXUc0mJAPZQIvIZ+pmL9XorLHEjw6f2zdfd3p?=
+ =?us-ascii?Q?/3LpPlaLdLDLT2rA0hNF8aVkScp5idk+x4cegXHHvF9Gw0YYndgvQDgxP2w7?=
+ =?us-ascii?Q?t8A9G2PC7aTvp71avwTB+YnFP0PU4hHJ0SO5CxfG2aq1mkfI8VwVCQVAMjWs?=
+ =?us-ascii?Q?PDpay+yD/ua5uTU5Sp0JBZZ68oqJ6MspEsHTDpUrV6Kwi7JRwz/DqpOVVJNz?=
+ =?us-ascii?Q?0jHc2wJDC3OYf4JSszwr559ZkwSCHZkurSSa4lFmlJDAtPQ1T2WrQtAHm4ea?=
+ =?us-ascii?Q?qs14C8MXI1GRYRqWpBWmST/jamawsD780n1MDE7QpNGnGVGcUQ9WERJ+Se2G?=
+ =?us-ascii?Q?l0T41uGZOMSNcbCJ6gLu/YhVCboypjYilzHabjQY6+yoM0wST8luPsBtlNHM?=
+ =?us-ascii?Q?E9RG/3AID6NR3LuzDqt6NUoeNtHvxjUvYleAvtxwQgwxiMNOsfzqqUFNwqGg?=
+ =?us-ascii?Q?EtT1IsSroS5tG9SW5h0vnyFtiE4x7speXI0IKgLNVNl+wFLrYzu6gkUUKHwc?=
+ =?us-ascii?Q?rXVEb9UEpIenJ8ccBrJdNsVbfRAolTM641iA7D6VDDVNL5B8HiZj3lwfiz6+?=
+ =?us-ascii?Q?I5aHMkvtqh0J7wXc3wxRZYZMkmwGkHpIMeMBzByQY0lVKWf1ETaiCzG6YkcA?=
+ =?us-ascii?Q?Kbp8+ge+V2w01p+m06kjbx7da1Rxi2M4EPhxq4ugt1ZAaljuSM9scYbqNY06?=
+ =?us-ascii?Q?1xKscE9diW3AvQ6fU0qMgq18NKhbD/9T1KVbCvwsN3NwigIvHLYSrPffYpPR?=
+ =?us-ascii?Q?QrGD0pSYxdREZZiEEKw=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 398799ed-fa01-4e95-13a8-08db734c31e5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2023 18:12:09.4689
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc2e3b47-2f35-4245-71ee-08db734cffa4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2023 18:17:54.6410
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4pxB/7yhLaHRNv6jS+iiMXfUd/9EKAK/DQAKO/WF/6AlTg5VLwH4YmAJenOuP3urlr+2nPJ+c8cMHCaHfEVVPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7872
+X-MS-Exchange-CrossTenant-userprincipalname: vE2pvTTblkYHdgbK3D6xGRtsyJrojENTG0KDrdnas6JXZKaXJUT8Xiu88StkhmhTvm5oDTHpbezX8nYiXer5tw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB9050
 Subject: RE: [virtio-dev] Re: [virtio-comment] Re: [PATCH v18] virtio-net:
  support inner header hash
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Thursday, June 22, 2023 1:44 PM
+
+
+> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> O=
+n
+> Behalf Of Michael S. Tsirkin
+> Sent: Thursday, June 22, 2023 2:12 PM
+
+[..]
+
+> > > > The proposal for 1.4 is literally very simple as below.
+> > > > 1. All existing fields of cfg space stays in cfg space 2. Any new
+> > > > capabilities to be queried, query using a vq (aq, cfgvq, whatevervq=
+).
+> > > > 3. Optionally existing fields can be queries over vq of #2 Once
+> > > > this arrive, no need for new GET commands.
+> > > > Till that time, don't keep infinitely grow the cfg space.
+> > > > Any next addition to cfg space, should work on defining the cfgvq.
+> > >
+> > > Simple, but short sighted. I know you guys don't support your
+> > > hardware for 10-
+> > > 20 years but for software people do.
+> > > And so "All existing fields of cfg space stays in cfg space" is a
+> > > bad idea simply because this does not allow removing things from
+> > > config space not in 10 not in
+> > > 20 years not ever.
+> > >
+> > #1 is for backward compat for existing drivers.
+> >  You missed about #3. Existing cfg space fields can be queries using th=
+e cfgvq
+> too.
 >=20
-> On Thu, Jun 22, 2023 at 05:20:23PM +0000, Parav Pandit wrote:
+> Then #1 does not matter. We can give devices choice.
+>=20
+> > >
+> > > Instead we need to allow two ways to access config space.  Teach
+> > > drivers about both, actually mandate supporting both.  And then
+> > > devices will make their own cost/benefit decision about which feature=
+s they
+> want to support in MMIO.
 > >
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Thursday, June 22, 2023 1:15 PM
-> > >
-> > > On Thu, Jun 22, 2023 at 05:04:04PM +0000, Parav Pandit wrote:
-> > > >
-> > > >
-> > > > > From: virtio-dev@lists.oasis-open.org
-> > > > > <virtio-dev@lists.oasis-open.org> On Behalf Of Michael S.
-> > > > > Tsirkin
-> > > > > Sent: Thursday, June 22, 2023 12:54 PM
-> > > >
-> > > > > > Admin command as I recall are not accessible directly by the
-> > > > > > member driver to
-> > > > > the member device.
-> > > > > > So a cmdq or cfgq is needed.
-> > > > >
-> > > > > Possible, sure. Or we actually discussed a self group. I took it
-> > > > > away until it had a user.
-> > > > >
-> > > > The problematic part of AQ is that its index is placed in the yet
-> > > > another onchip
-> > > die register that does not scale as each member device has different
-> > > queue count.
-> > > > When admin queue was discussed, it was only for group owner, (you
-> > > answered to Jiri).
-> > > > Hence the scale is relatively less, so it was acceptable.
-> > > >
-> > > > Now having unique numbers for VFs is not good.
-> > > > Max proposal was the last index after existing defined VQs of
-> > > > num_queues,
-> > > that saves the storage space on device.
-> > >
-> > > Surely, you can just have a very large index and be done with it?
-> > >
-> > There is count of AQ too.
+> > If both method is mandated, I don't see benefit at all of two methods.
 >=20
-> Make that same across VFs?
+> Mandated for driver.
+> Benefit is for devices, they will have the choice which drivers to suppor=
+t. In 10-
+> 20 years all drivers support cfg command and then people can start shippi=
+ng
+> devices without MMIO access to any registers.
 >
-Queues are not infinite, so when one doesn't need it, better to not make sa=
-me number.
+Until that point devices are forced to burn memory, which is not needed at =
+all in < 3 years.
+Once cfgvq is present for new fields, from the day 1, device does not need =
+to store any newly defined fields on MMIO.
+
+And 10 to 20 years, it can stop for existing fields..
+
+The clear benefit is fields defined in 1.4 no longer needs to be stored sta=
+rting from 2023-24.
 =20
-> > For receive flow filters one may want to have multiple flowfilter_vqs a=
-s the
-> perf req is high for some vms.
-> >
-> > And device to build non linear PCI steering on the driver notification =
-for this
-> very high q count.
-> > It is optimal to have finite and linear q max value.
+> > VQ is generic part of the spec for slow and fast operation, so it is no=
+t at all a
+> cost for config reading.
 >=20
-> What does this have to do with AQ? These are data vqs.
->=20
+> This will depend. E.g. if there's a single command to get all of config i=
+n one go,
+> then it actually can be a speedup, reducing the # of VM exits.
 
-I think further. Ignore this comment.
-We need few bare minimum fields to bootstrap the device.
-So num_aq is one of them to absorb.
-This is ok.
-
-> So 1.4 will maybe have new migration capabilities, and that is great.
-> But I do not like it that we are adding in 1.3 features that can't be sup=
-ported
-> with current migration capabilities.
-For 1.3 vdpa style solution are anyway trapping the CVQ so no problem for i=
-t either.
+Yes, one command to get all at least device specific config.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
