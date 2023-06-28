@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13118-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13119-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4830AEB64DC
-	for <virtio-dev@archiver.kernel.org>; Wed, 28 Jun 2023 09:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0FAAEB64D7
+	for <virtio-dev@archiver.kernel.org>; Wed, 28 Jun 2023 10:10:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 849F926A46
-	for <virtio-dev@archiver.kernel.org>; Wed, 28 Jun 2023 09:44:45 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 08D6042855
+	for <virtio-dev@archiver.kernel.org>; Wed, 28 Jun 2023 10:10:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7A5BF9865CA
-	for <virtio-dev@archiver.kernel.org>; Wed, 28 Jun 2023 09:44:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EE7109865D4
+	for <virtio-dev@archiver.kernel.org>; Wed, 28 Jun 2023 10:10:48 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 6F7D598656E; Wed, 28 Jun 2023 09:44:45 +0000 (UTC)
+	id E22E598656E; Wed, 28 Jun 2023 10:10:48 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,140 +24,131 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5983198656F;
-	Wed, 28 Jun 2023 09:44:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D1B6F98656F
+	for <virtio-dev@lists.oasis-open.org>; Wed, 28 Jun 2023 10:10:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <fd2e0d5d-a3e9-027a-bec1-d0e821ec6421@quicinc.com>
-Date: Wed, 28 Jun 2023 17:44:34 +0800
+X-MC-Unique: xeK_fjlIPfizYqlfLG1kUA-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687947042; x=1690539042;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9/F/Gj+35HuFIkOAckuCTE/bMakH0NSKW0sVlHaAiJU=;
+        b=U9a3CXcEvsAW32RNYpVmFpWU5F9Vng1jlzyrVKRbcLC2KoZKnk5TK91I+uRtn+s/kt
+         gyGaWW5KRPvDACN6++Lj11q9Vs4TS7J561+EdRZbXMv/8utTrde3eGgcwyNZPx1yKyMp
+         2+a8LnTRMprmQVOz3osXo2UeJU1ZhVcv29xMbtGwkTnN+YQss6ni2UsNl31xfjC54VUO
+         0iu/ZrCAkm2FQnXZ68W9WLflChNiRGycH8boI86FaHOcK5XE7VtSbb/DFmMshVCSp+6V
+         l6eTiiFn1DdTVuQm3SUp4ABPQge4R6hCgKYsDFZ+2SePpjthXK1XtyN4dTSdsKj6Z9Vd
+         /o3w==
+X-Gm-Message-State: AC+VfDz6W7SJRV+r4f6Ew18DQmJC1ICslE4SDpIm1M0xR5pvWGb4302h
+	S8Jyg68EOr3buNyffAbw8qmi2cLpWc2dTGMv0LOTFDt7UC0QjLlEXh8YwoZs8snEEwv7P9jb+yq
+	R05/AxHZRyHkfMRoHNqFw7TuTDmKW
+X-Received: by 2002:adf:e40d:0:b0:314:824:3778 with SMTP id g13-20020adfe40d000000b0031408243778mr1763346wrm.22.1687947042281;
+        Wed, 28 Jun 2023 03:10:42 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6UgIDmNz488AjmWyPWoKtWfA28+bn2E0k0jHw9r7cx+fyIp1dN0/MQyMJ2hLCDkw5RaUp/xQ==
+X-Received: by 2002:adf:e40d:0:b0:314:824:3778 with SMTP id g13-20020adfe40d000000b0031408243778mr1763330wrm.22.1687947041886;
+        Wed, 28 Jun 2023 03:10:41 -0700 (PDT)
+Date: Wed, 28 Jun 2023 06:10:36 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>,
+	Yuri Benditovich <yuri.benditovich@daynix.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Message-ID: <20230628060519-mutt-send-email-mst@kernel.org>
+References: <20230627163549.40028-1-hengqi@linux.alibaba.com>
+ <CACGkMEvFmAiWDp8w=ytin21Oi+PcTb1X3Eve7Kt2NVr_RkhgmA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Content-Language: en-US
-To: <jrreinhart@google.com>
-CC: Cornelia Huck <cohuck@redhat.com>, <quic_ztu@quicinc.com>,
-        <virtio-dev@lists.oasis-open.org>,
-        <virtio-comment@lists.oasis-open.org>
-References: <000000000000925c1305ff1f7c76@google.com>
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <000000000000925c1305ff1f7c76@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <CACGkMEvFmAiWDp8w=ytin21Oi+PcTb1X3Eve7Kt2NVr_RkhgmA@mail.gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: mNRxlDHyG9mbjSMvEGKIIZ-z4VlKFxu5
-X-Proofpoint-GUID: mNRxlDHyG9mbjSMvEGKIIZ-z4VlKFxu5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-06-28_06,2023-06-27_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 suspectscore=0 phishscore=0 mlxlogscore=622
- lowpriorityscore=0 clxscore=1011 adultscore=0 mlxscore=0 bulkscore=0
- spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2305260000 definitions=main-2306280084
-Subject: Re: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
+Subject: [virtio-dev] Re: [PATCH v19] virtio-net: support inner header hash
 
-Hi @jrreinhart@google.com,
-     Thank you very much for your helpful comments.
+On Wed, Jun 28, 2023 at 11:46:22AM +0800, Jason Wang wrote:
+> On Wed, Jun 28, 2023 at 12:35 AM Heng Qi <hengqi@linux.alibaba.com> wrote:
+> >
+> > 1. Currently, a received encapsulated packet has an outer and an inner header, but
+> > the virtio device is unable to calculate the hash for the inner header. The same
+> > flow can traverse through different tunnels, resulting in the encapsulated
+> > packets being spread across multiple receive queues (refer to the figure below).
+> > However, in certain scenarios, we may need to direct these encapsulated packets of
+> > the same flow to a single receive queue. This facilitates the processing
+> > of the flow by the same CPU to improve performance (warm caches, less locking, etc.).
+> >
+> >                client1                    client2
+> >                   |        +-------+         |
+> >                   +------->|tunnels|<--------+
+> >                            +-------+
+> >                               |  |
+> >                               v  v
+> >                       +-----------------+
+> >                       | monitoring host |
+> >                       +-----------------+
+> >
+> > To achieve this, the device can calculate a symmetric hash based on the inner headers
+> > of the same flow.
+> >
+> > 2. For legacy systems, they may lack entropy fields which modern protocols have in
+> > the outer header, resulting in multiple flows with the same outer header but
+> > different inner headers being directed to the same receive queue. This results in
+> > poor receive performance.
+> >
+> > To address this limitation, inner header hash can be used to enable the device to advertise
+> > the capability to calculate the hash for the inner packet, regaining better receive performance.
+> >
+> > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/173
+> > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Reviewed-by: Parav Pandit <parav@nvidia.com>
+> > ---
+> > v18->v19:
+> >         1. Have a single structure instead of two. @Michael S . Tsirkin
+> >         2. Some small rewrites. @Michael S . Tsirkin
+> >         3. Rebase to master.
+> >
+> > v17->v18:
+> >         1. Some rewording suggestions from Michael (Thanks!).
+> >         2. Use 0 to disable inner header hash and remove
+> >            VIRTIO_NET_HASH_TUNNEL_TYPE_NONE.
+> > v16->v17:
+> >         1. Some small rewrites. @Parav Pandit
+> >         2. Add Parav's Reviewed-by tag (Thanks!).
+> >
+> > v15->v16:
+> >         1. Remove the hash_option. In order to delimit the inner header hash and RSS
+> >            configuration, the ability to configure the outer src udp port hash is given
+> >            to RSS. This is orthogonal to inner header hash, which will be done in the
+> >            RSS capability extension topic (considered as an RSS extension together
+> >            with the symmetric toeplitz hash algorithm, etc.). @Parav Pandit @Michael S . Tsirkin
+> >         2. Fix a 'field' typo. @Parav Pandit
+> >
+> > v14->v15:
+> >         1. Add tunnel hash option suggested by @Michael S . Tsirkin
+> >         2. Adjust some descriptions.
+> >
+> > v13->v14:
+> >         1. Move supported_hash_tunnel_types from config space into cvq command. @Parav Pandit
+> 
+> I may miss some discussions, but this complicates the provisioning a lot.
+> 
+> Having it in the config space, then a type agnostic provisioning
+> through config space + feature bits just works fine.
+> 
+> If we move it only via cvq, we need device specific provisioning interface.
+> 
+> Thanks
 
-     I missed the delay and cs_change_delay parameters. I will add both 
-of them, although cs_change_delay can not be set from userspace, but can 
-be set in kernel space.
+Yea that's what I said too. Debugging too.  I think we should build a
+consistent solution that allows accessing config space through DMA,
+separately from this effort.  Parav do you think you can live with this
+approach so this specific proposal can move forward?
 
+-- 
+MST
 
-     For CS delays such as PRE_DELAY/POST_DELAY, it seems that they are 
-defined in structure spi_device:
-
-     @cs_setup: delay to be introduced by the controller after CS is 
-asserted.
-
-     @cs_hold: delay to be introduced by the controller before CS is 
-deasserted.
-
-     @cs_inactive: delay to be introduced by the controller after CS is
-deasserted. If @cs_change_delay is used from @spi_transfer, then the
-two delays will be added up.
-
-     They show the SPI controller ability to control the CS 
-assertion/deassertion timing and should not be changed for each transfer 
-(because thay can be updated by setting structure spi_transfer or 
-structure spi_ioc_transfer). I think it better to define these parameter 
-in host OS rather than in guest OS since it's the host OS to operate the 
-hardware SPI controller directly. Besides, it can also avoid passing the 
-same values from guest to host time after time.
-
-     What's your opinion on this topic? Again, thank you very much.
-
-Best Regards
-Haixu Cui
-
-On 6/28/2023 1:06 AM, jrreinhart@google.com wrote:
-> Hi Haixu,
-> 
->> +The \field{word_delay} defines how long to wait between words within
->> one SPI transfer,
->> +in ns unit.
-> 
-> I'm a little surprised to see a word_delay but no frame_delay or
-> transfer_delay.
-> 
-> For example, many SPI peripherals require a delay after CS is asserted,
-> but before the first SCLK edge, allowing them to prepare to send data.
-> (E.g. an ADC might begin taking a sample.)
-> 
-> 
-> The linux struct spi_transfer has three delay fields:
-> 
-> * @cs_change_delay: delay between cs deassert and assert when
-> *      @cs_change is set and @spi_transfer is not the last in
-> *      @spi_message
-> * @delay: delay to be introduced after this transfer before
-> *    (optionally) changing the chipselect status, then starting the
-> *    next transfer or completing this @spi_message.
-> * @word_delay: inter word delay to be introduced after each word size
-> *    (set by bits_per_word) transmission.
-> 
-> The userspace spidev.h API has only two:
-> 
-> * @delay_usecs: If nonzero, how long to delay after the last bit
-> *       transfer before optionally deselecting the device before the
-> *       next transfer.
-> * @word_delay_usecs: If nonzero, how long to wait between words within
-> *       one transfer. This property needs explicit support in the SPI
-> *       controller, otherwise it is silently ignored.
-> 
-> The NXP i.MX RT500 SPI (master) controller, for example, has four
-> configurable delays:
-> 
-> - PRE_DELAY: After CS assertion, before first SCLK edge.
-> - POST_DELAY: After a transfer, before CS deassertion.
-> - FRAME_DELAY: Between frames (which are arbitrarily defined by
->    software).
-> - TRANSFER_DELAY: Minimum CS deassertion time between transfers.
-> 
-> The NVIDIA Tegra114 SPI controller has:
-> 
-> - nvidia,cs-setup-clk-count: CS setup timing parameter.
-> - nvidia,cs-hold-clk-count: CS hold timing parameter.
-> 
-> 
-> I understand that accurately representing all possible delays might be
-> difficult or futile, but I'm curious to understand why, of all the
-> possible delays, inter-word delay was chosen for inclusion.
-> 
-> In a microcontroller, delays around CS (de)assertion can be customized
-> by using a GPIO -- rather than the hardware SPI block -- to drive the CS
-> signal. This way, delays can be inserted where needed. To do so with a
-> virtualized SPI controller might prove difficult however, as the virtual
-> channel carrying a CS GPIO signal might not be synchronized to the
-> channel carrying the SPI data.
-> 
-> Curious to hear your thoughts.
-> 
-> Thanks,
-> Jonathon Reinhart
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
