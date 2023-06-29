@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13161-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13162-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 252F4EB64D9
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 19:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 21FDDEB64D9
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 21:26:12 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 867EB2B04D
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 19:57:53 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 567DD4290A
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 21:26:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 544E19866EF
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 19:57:53 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 49022986709
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 21:26:11 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 35C3A9865B5; Thu, 29 Jun 2023 19:57:53 +0000 (UTC)
+	id 37E4898413B; Thu, 29 Jun 2023 21:26:11 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,323 +24,174 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 221B998667F
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Jun 2023 19:57:53 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1F8C2986677;
+	Thu, 29 Jun 2023 21:26:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: CFYZkhWnODqN4ndpCsvuYQ-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688068669; x=1690660669;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kXcmJG+JJXal8IJ5HeDxyhb2NM1/Z41eI3ho7cA2iw0=;
-        b=VMwk15wAbkmp8BVd1b7IqdmtYv4hkzbWX70WGMDb2BqjCEGd8A/HpLUVcPiLohZQ4P
-         x+3MQRRU9a2XwqQT4PByJeNBEYpnp01GOaZAMeUbQRcI1Ah2MNsia0p3bnvBwgdkG+xd
-         D7c1MPQczvLc2Ju+jncVaakCzdqVpK0xdVgBW+rRPKb6b9SlWGwQyVvVJAnCJ+T/WW2k
-         0mkFjZpNwY+gLtxjFFsqf961U6NRMSA1xab8bX5lziO9JWtn0njcQM+9+POnvn0O+7tW
-         SPzFII2xzrM+ux56ByuiWA4+XlNK/tvasyzg1DITAwM8kViOGx2mszKcaKf2vZHW3tBY
-         KUXA==
-X-Gm-Message-State: ABy/qLZ6L9zeofVykFUBKkHGUKj6uEx+dgbwOylqH4+WYSHf/lqt4ha4
-	YTWb+LYPUWMO2/piIXFI1nOuUtkdQOuJmD3V22vsOzF77Euj9AkcWCb8AO3oksbLsMgKLr9d1kK
-	8JDsUPKNEhE3fp/Rc2XWZlbvhWUVI
-X-Received: by 2002:adf:f049:0:b0:309:1532:8287 with SMTP id t9-20020adff049000000b0030915328287mr478317wro.19.1688068669502;
-        Thu, 29 Jun 2023 12:57:49 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlGN+kZBf4fe+c7eQh+qyzfiqbphgzPpQV0F1nBwyM2UMTyXlivO5F9r+FTqHDm6MDlz3r0WkA==
-X-Received: by 2002:adf:f049:0:b0:309:1532:8287 with SMTP id t9-20020adff049000000b0030915328287mr478303wro.19.1688068669157;
-        Thu, 29 Jun 2023 12:57:49 -0700 (PDT)
-Date: Thu, 29 Jun 2023 15:57:45 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com,
-	david.edmondson@oracle.com, virtio-dev@lists.oasis-open.org,
-	sburla@marvell.com, jasowang@redhat.com, yishaih@nvidia.com,
-	maorg@nvidia.com, shahafs@nvidia.com
-Message-ID: <20230629155403-mutt-send-email-mst@kernel.org>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iLKdYR47yVDzqu+d8j4HUEv4eUcuCSgQ6rIivJVFv3g5NB2BubUyICqR+jQzrrhXzhwmnI4mYy6gyG9GcUeGBicboZEdd6hzabtOlXCWZOsV1veWv3QU8vzsSfM5scdEK6vvA+OErImli26lc8B1F55V+zFpdSRuTtHCDh5dW/FMeRLQYSeByY9+uiExEAO16w0xX5u5u2GMyqugVJP8/8YoXwVARc+DtWIvT5K282t+TRcOs+3AOn4JQ+UCbnrUphsIIWBLQmkpyGQQUCjECIK9/gsAhab6D6LdvC166kCN4tuKCxCmNl3KEWXw92aYA2nVP2RIWQ7J5FT7CSId4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Jb85QdDz/Lt8Ew/V3+Jh3/EXhbtSWEayf2AMKhQfLjU=;
+ b=l2BJsCIp3mgGmd1ag5Q1CRq51E/NLbFqI2nRt2FvtiPmiD9vGJZ/qfv8tzYHG9V9r+DgX4ypAVRVOPAY2TBenic1gxnRh+GNiJP5Cg1XiqgKRYsvXvl7TFXUzzvtDlNs9omEql7Z6kNRrsqv7HNXaB9Yc5l+zdBOEqNwa7F6WEbGPLoZ8+NPxSFUta+FB52pJUA+MPytlX6k//O3qJ69GGQ6JmoBJTaMCFauB+3X5r5bb5LQWdxOrBZQE+8GN+PZSA0y502WqJSSmBlX6MJU8SCDu/yZeJwIT7Fu4ufdVF02rG4iho95KTCkCpsgiB8yMxSoKTXqYBDdcf6xar7Row==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "david.edmondson@oracle.com"
+	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
+	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
+	<shahafs@nvidia.com>
+Thread-Topic: [PATCH v7 4/4] transport-pci: Introduce group legacy group
+ member config region access
+Thread-Index: AQHZqTvss7QOWMrqzk+6ekRzXD35Ma+iNGeAgAAYaMA=
+Date: Thu, 29 Jun 2023 21:26:03 +0000
+Message-ID:
+ <PH0PR12MB5481D453B751068CCE6C68C6DC25A@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230627211050.1527507-1-parav@nvidia.com>
+ <20230627211050.1527507-5-parav@nvidia.com>
+ <20230629155022-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230629155022-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SN7PR12MB6983:EE_
+x-ms-office365-filtering-correlation-id: a5ead2cc-baef-4232-42b6-08db78e77165
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ jUndKF7/Gu/OhrU0GnWsmmIP4U6HQPLvPv9gcF6WtCNQfSyhhfVw2pRNnvU9bUObO81EQwLaB689y2xPgcFLjgdI1tG19Ytl2nuL7SDfD3R5vURmYy3eD0ZJf54D8t7r18fb+zbfh8HwRb7y7dya2Z+bSQsUwPloKZ9yx4k51VjzY2ijqe5+pak0/c6xQ6TXw8o67gZufZvUZf1f8LSd//wa48uH0ntqPu7dsABH00xr/Z9KBEvLxLbv/ACR7A1L+3Ran5Zs3FK7LdtIWgUV5zFgWLt3bO/ZLGkXpkmmSP/C9BXZPw412ekKh0DaPuAVyAVQiRKWF0AdOIxcEnCnz4eutzi5jhQra801Ek877wEMltM5TtN7FYGooWGBiL/JxrE7N0X9U9jJhVnuJT+T4z+WtTBYSQfKuFJo37gQDeZi8abxcrLm12yqRgYXUQrIQr7b7wTE4BW+0p1ddvZFmicMs4pTLU6O7hJAYy07lneGlbHInCCukPOuIeuZq3qEHsNn58xSNCTBbsWOIxV0kezwCZ6fRYL7O3JFrcQgfoOzfaRjmvxEhJgY2lxnf4HUDtXWcPJ11+abgnwKt/NIxlol0UYuFQ0dctJrZOfTkc+42G7UHsXR+xBhXCwRfqRE
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(346002)(366004)(39860400002)(451199021)(6506007)(66556008)(107886003)(71200400001)(26005)(54906003)(83380400001)(7696005)(2906002)(186003)(9686003)(478600001)(33656002)(86362001)(64756008)(316002)(5660300002)(66476007)(122000001)(52536014)(76116006)(66946007)(8676002)(6916009)(66446008)(41300700001)(8936002)(4326008)(38070700005)(38100700002)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?aL5NXw5dgMsEVirhWpgayOLFFHsZiozCMX1t/0wEyRPBsq2CUS/jy6HuA1Jr?=
+ =?us-ascii?Q?VHuXi6glWnXNChkOPSLH7Z0Ea1uLIzZb0cUv0Se2LKF+irZA1JgX7/niK/Kg?=
+ =?us-ascii?Q?NDckN+wH4U/X6KCodQ0vbxiL0E9ITcgLqYl63C/nNtYosp2edUovhg6mIQlR?=
+ =?us-ascii?Q?CGXe0xptv30uPZYngJOxPeLV32llaAt+Vfem9jRYw5VZJu/OVZjUI7eE0eqn?=
+ =?us-ascii?Q?mP2xsbJQssmZpKvSGHwMB7Ry3MVZF95M5Z8SOSW0pWXOnwGvgJt4ERekfCV4?=
+ =?us-ascii?Q?egoMwAscKR+SFS8yKI+ynGeYolOzuHHWIRpRwfojipfQA9BrJiUJ1T0TX5jQ?=
+ =?us-ascii?Q?3CiwlerUSEScSeLpzAMvE7Tnagr0n7IuDKHbtK9oLEX+xfTgU4KZeOWj4JcQ?=
+ =?us-ascii?Q?hovDWQJ18EVJRbhksiX3c1oUPExXU9MbAB3tFH+SIyqIdR50Je8Gpkm27BWd?=
+ =?us-ascii?Q?/xm7U/4w0AcXpVZuxeWY/h4kGzb4KB4apND68CuAUl2cwTaYdl99bqotPNfV?=
+ =?us-ascii?Q?cLRHgmtG/v9sTN7gN8XU0ChWRCCdPCb7QGUFtHkAZIg4Go21Lv1IhEN/MqqQ?=
+ =?us-ascii?Q?8OMVCW9e+hl5BV4Ei0Ikz+ABHpLIkkne9NXtBAo9PAh72shv0bXqH0M740CE?=
+ =?us-ascii?Q?/6mKMibzvECtStZm0QLzdYbrmkByxlTJ+pb5xpDW4zuAJq7yjLiMDfGpMQsP?=
+ =?us-ascii?Q?IFBqV7aiFUdwRBc5/ejWlQUppyhhUru5VC5R3SbYwNsZUckxCqdrSwKoBptS?=
+ =?us-ascii?Q?2+oTdSYSAf6h/OXi0osBC2gJcvDNh0srRZZcu+95d5jw6LSMEMJwoVUbT9F6?=
+ =?us-ascii?Q?1zhgKsOD12BBSlM7nBQbYDZuZJ26ibrM8j9oyNkWzJmu3tgsS/mct47L6Fip?=
+ =?us-ascii?Q?o59ov88q8CUPgRycHT+11Ez+hbh1si5cS+dTwjSjIy4hvrTDyE1JBDK5+LJ+?=
+ =?us-ascii?Q?qhPHjpEWB4myKgL7IR7Jd7lYfAryak/1X6u3tR+g35ZzI+hoPfg4xykg5GsS?=
+ =?us-ascii?Q?Acjtre/ATqMSiD7ZuoEKfmmFa0ecrnmbasx/mDbY1C2z88T768/dfd7kqf6l?=
+ =?us-ascii?Q?gIFbUE9SMoDC0IvSk7i/bF1vBmXAla8NIdZH1Fi0opcRhQWByEEXRhjucZd5?=
+ =?us-ascii?Q?mMGl31X/teqqD60n4pXfJwGaQiV/99HyAW+567H/ZHM5H8/31rFluvdo2Y3d?=
+ =?us-ascii?Q?A+1IZYtwzmW4+purDOY0RAtX9J3hU/0JKmcG3HSfllPH7rxqPTMY8btolLO7?=
+ =?us-ascii?Q?UQoomofUHvtndHjYASSksfWlMlcPsDaCAxfL6lsO/4S+aB8+un7KHt6Yig+z?=
+ =?us-ascii?Q?5TvXZRlkmViUiNHvufDpIttrYsc7XCzxNm0nEJSqPy0n+S1qHaupW4YJmiqy?=
+ =?us-ascii?Q?T8E81Q44R4d9WWtN2Ml4vRnGvZ1SlGpmNiNjKCNTkFqJMdTKIRUmt6MAQ0hX?=
+ =?us-ascii?Q?T7NqF9CxbdsTbZt/9RxqGCmJKo1ex2gjhA9JfyMsTpk+bZlxEEh/bU5BJho6?=
+ =?us-ascii?Q?7xSAL/BvyXSXNNwiEZcN9q99qGD7Cb67DHqrOq0vCIqLaeElSPrMMAxtPy/2?=
+ =?us-ascii?Q?SkudRfxjyiGFMWikeIw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20230627211050.1527507-1-parav@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH v7 0/4] admin: Introduce legacy registers access using AQ
-
-On Wed, Jun 28, 2023 at 12:10:46AM +0300, Parav Pandit wrote:
-> This short series introduces legacy registers access commands for the owner
-> group member access the legacy registers of the member VFs.
-> This short series introduces legacy region access commands by the group owner
-> device for its member devices.
-> Currently it is applicable to the PCI PF and VF devices. If in future any
-> SIOV devices to support legacy registers, they can be easily supported using
-> same commands by using the group member identifiers of the future SIOV devices.
-> 
-> More details as overview, motivation, use case are further described
-> below.
-> 
-> Patch summary:
-> --------------
-> patch-1 split rows of admin opcode tables by a line
-> patch-2 fix section numbering
-> patch-3 add generic legacy region access commands
-> patch-4 add pci specific definition
-> 
-> Iadministation t uses the newly introduced administration command facility with 4 new
-> commands which uses the existing virtio_admin_cmd and a new command to
-> query the legacy notification region.
-> 
-> Usecase:
-> --------
-> 1. A hypervisor/system needs to provide transitional
->    virtio devices to the guest VM at scale of thousands,
->    typically, one to eight devices per VM.
-> 
-> 2. A hypervisor/system needs to provide such devices using a
->    vendor agnostic driver in the hypervisor system.
-> 
-> 3. A hypervisor system prefers to have single stack regardless of
->    virtio device type (net/blk) and be future compatible with a
->    single vfio stack using SR-IOV or other scalable device
->    virtualization technology to map PCI devices to the guest VM.
->    (as transitional or otherwise)
-
-OK I went over it. Still some comments on the ABI.
-If you can address that by next week, I will try to find
-the way to fix up the wording next week.
-Problem is, when things are finally ready is when people
-start review in earnest and while I hope at least ABI wise
-we will not need to make changes it's likely that
-there will be comments on wording.
-
-If we are super lucky we can finish until end of next week
-but my problem is I can't work on this 100% of my time.
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5ead2cc-baef-4232-42b6-08db78e77165
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2023 21:26:03.8027
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +xuBpPQxxlKYVODBh40/sEHCbCmabdoDUi0i4Kv277yKHn1Ls04d+aoOnofV5wkMrofcOzDu4uV4US82/jo/EQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6983
+Subject: [virtio-dev] RE: [PATCH v7 4/4] transport-pci: Introduce group legacy group member
+ config region access
 
 
-> Motivation/Background:
-> ----------------------
-> The existing virtio transitional PCI device is missing support for
-> PCI SR-IOV based devices. Currently it does not work beyond
-> PCI PF, or as software emulated device in reality. Currently it
-> has below cited system level limitations:
-> 
-> [a] PCIe spec citation:
-> VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
-> 
-> [b] cpu arch citiation:
-> Intel 64 and IA-32 Architectures Software Developer’s Manual:
-> The processor’s I/O address space is separate and distinct from
-> the physical-memory address space. The I/O address space consists
-> of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
-> 
-> [c] PCIe spec citation:
-> If a bridge implements an I/O address range,...I/O address range will be
-> aligned to a 4 KB boundary.
-> 
-> Overview:
-> ---------
-> Above usecase requirements is solved by PCI PF group owner accessing
-> its group member PCI VFs legacy registers using an admin virtqueue of
-> the group owner PCI PF.
-> 
-> Two new admin virtqueue commands are added which read/write PCI VF
-> registers.
-> 
-> Software usage example:
-> -----------------------
-> One way to use and map to the guest VM is by using vfio driver
-> framework in Linux kernel.
-> 
->                 +----------------------+
->                 |pci_dev_id = 0x100X   |
-> +---------------|pci_rev_id = 0x0      |-----+
-> |vfio device    |BAR0 = I/O region     |     |
-> |               |Other attributes      |     |
-> |               +----------------------+     |
-> |                                            |
-> +   +--------------+     +-----------------+ |
-> |   |I/O BAR to AQ |     | Other vfio      | |
-> |   |rd/wr mapper  |     | functionalities | |
-> |   +--------------+     +-----------------+ |
-> |                                            |
-> +------+-------------------------+-----------+
->        |                         |
->    Legacy region            Driver notification
->     access                       |
->        |                         |
->   +----+------------+       +----+------------+
->   | +-----+         |       | PCI VF device A |
->   | | AQ  |-------------+---->+-------------+ |
->   | +-----+         |   |   | | legacy regs | |
->   | PCI PF device   |   |   | +-------------+ |
->   +-----------------+   |   +-----------------+
->                         |
->                         |   +----+------------+
->                         |   | PCI VF device N |
->                         +---->+-------------+ |
->                             | | legacy regs | |
->                             | +-------------+ |
->                             +-----------------+
-> 
-> 2. Virtio pci driver to bind to the listed device id and
->    use it in the host.
-> 
-> 3. Use it in a light weight hypervisor to run bare-metal OS.
-> 
-> Please review.
-> 
-> Alternatives considered:
-> ========================
-> 1. Exposing BAR0 as MMIO BAR that follows legacy registers template
-> Pros:
-> a. Kind of works with legacy drivers as some of them have used API
->    which is agnostic to MMIO vs IOBAR.
-> b. Does not require hypervisor intervantion
-> Cons:
-> a. Device reset is extremely hard to implement in device at scale as
->    driver does not wait for device reset completion
-> b. Device register width related problems persist that hypervisor if
->    wishes, it cannot be fixed.
-> 
-> 2. Accessing VF registers by tunneling it through new legacy PCI capability
-> Pros:
-> a. Self contained, but cannot work with future PCI SIOV devices
-> Cons:
-> a. Equally slow as AQ access
-> b. Still requires new capability for notification access
-> c. Requires hardware to build low level registers access which is not worth
->    for long term future
-> 
-> 3. Accessing VF notification region using new PF BAR
-> Cons:
-> a. Requires hardware to build new PCI steering logic per PF to forward
->    notification from the PF to VF, requires double the amount of logic
->    compared to today
-> b. Requires very large additional PF BAR whose size must be max_Vfs * BAR size.
-> 
-> 4. Trapping CVQ, configuration region, LEGACY_HDR
-> Cons:
-> a. This does not fullfil the very basic requirement to not trap the
->    1.x objects (configuration registers, vqs)
-> b. Requires feature negotiations mediation in hypervisor software
-> c. Requires constant device type specific knowledge in hypervisor driver
->    (Does not scale for 30+ device types)
-> 
-> 4. F_LEACY_HDR, F_WRITE_MAC
-> Cons:
-> a. Requires device support to have read/write mac address which is
->    hard to implement on every member device.
-> b. such functionality is duplicate of existing cvq per device.
-> c. config space is only for the initialization specific purpose.
-> d. Requires mediation of 1.x objects, which is not good design.
-> e. Solves only for the net device.
-> Pros:
-> a. May work for nested env
-> 
-> conclusion for picking AQ approach:
-> ==================================
-> 1. Overall AQ based access is simpler to implement with combination of
->    best from software and device so that legacy registers do not get baked
->    in the device hardware
-> 2. AQ allows hypervisor software to intercept legacy registers and make
->    corrections if needed
-> 3. Provides trade-off between performance, device complexity vs spec,
->    while still maintaining passthrough mode for the VFs with minimal
->    hypervisor intercepts only for legacy registers access
-> 4. AQ mechanism is designed for accessing other member devices registers
->    as noted in AQ submission, it utilizes the existing infrastructure over
->    other alternatives.
-> 5. Uses existing driver notification region similar to legacy notification
->    saves hardware resources
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> 
-> ---
-> changelog:
-> v6->v7:
-> - addressed several comments from Michael
-> - use AQ command to query legacy notify region, dropped pci capability
->   modifications
-> - moved most part of the text to the generic admin command section
-> - replace administrative to administration
-> - replace admin vq citation to admin commands
-> - added normatives for device and driver side
-> - made BAR0 to be not used at all when supporting legacy interface
-> - added normative around BAR0 and SR-IOV extended capability
-> - grammar corrections
-> v5->v6:
-> - fixed previous missed abbreviation of LCC and LD
-> - added text for the PCI capability for the group member device
-> v4->v5:
-> - split pci transport and generic command section to new patch
-> - removed multiple references to the VF
-> - written the description of the command as generic with member
->   and group device terminology
-> - reflected many section names to remove VF
-> - split from pci transport specific patch
-> - split conformance to transport and generic sections
-> - written the description of the command as generic with member
->   and group device terminology
-> - reflected many section names to remove VF
-> - rename fields from register to region
-> - avoided abbreviation for legacy, device and config
-> v3->v4:
-> - moved noted to the conformance section details in next patch
-> - removed queue notify address query AQ command on Michael's suggestion,
->   though it is fine. Instead replaced with extending virtio_pci_notify_cap
->   to indicate that legacy queue notifications can be done on the
->   notification location
-> - fixed spelling errors
-> - replaced administrative virtqueue to administration virtqueue
-> - moved legacy interface normative references to legacy conformance
->   section
-> v2->v3:
-> - added new patch to split raws of admin vq opcode table
-> - adddressed Jason and Michael's comment to split single register
->   access command to common config and device specific commands.
-> - dropped the suggetion to introduce enable/disable command as
->   admin command cap bit already covers it.
-> - added other alternative design considered and discussed in detail in v0, v1 and v2
-> v1->v2:
-> - addressed comments from Michael
-> - added theory of operation
-> - grammar corrections
-> - removed group fields description from individual commands as
->   it is already present in generic section
-> - added endianness normative for legacy device registers region
-> - renamed the file to drop vf and add legacy prefix
-> - added overview in commit log
-> - renamed subsection to reflect command
-> v0->v1:
-> - addressed comments, suggesetions and ideas from Michael Tsirkin and Jason Wang
-> - far more simpler design than MMR access
-> - removed complexities of MMR device ids
-> - removed complexities of MMR registers and extended capabilities
-> - dropped adding new extended capabilities because if if they are
->   added, a pci device still needs to have existing capabilities
->   in the legacy configuration space and hypervisor driver do not
->   need to access them
-> 
-> 
-> Parav Pandit (4):
->   admin: Split opcode table rows with a line
->   admin: Fix section numbering
->   admin: Add group member legacy register access commands
->   transport-pci: Introduce group legacy group member config region
->     access
-> 
->  admin-cmds-legacy-interface.tex | 204 ++++++++++++++++++++++++++++++++
->  admin.tex                       |  20 +++-
->  conformance.tex                 |   3 +
->  transport-pci-legacy-regs.tex   |  43 +++++++
->  transport-pci.tex               |   2 +
->  5 files changed, 269 insertions(+), 3 deletions(-)
->  create mode 100644 admin-cmds-legacy-interface.tex
->  create mode 100644 transport-pci-legacy-regs.tex
-> 
-> -- 
-> 2.26.2
 
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Thursday, June 29, 2023 3:54 PM
+
+> > +In \field{struct virtio_virtio_admin_cmd_legacy_notify_query_entry},
+> > +\field{region} is defined as following:
+> > +
+> > +\begin{lstlisting}
+> > +struct virtio_pci_notify_region {
+> > +        u8 owner;    /* When set to 1, notification region of the owne=
+r device */
+> > +        u8 bar;    /* BAR of the member or owner device */
+> > +        u8 padding[2];
+> > +        le32 offset; /* Offset within bar. */ }; \end{lstlisting}
+>=20
+> Is this just a legacy thing or somehow generic? If the former please stic=
+k
+> _legacy_ in the struct name.
+>
+Yes, let me prefix legacy to it.=20
+=20
+>=20
+> > +
+> > +The group owner device hardwire VF BAR0 in the SR-IOV Extended capabil=
+ity.
+> > +
+> > +The group member device does not use PCI BAR0 in various PCI capabilit=
+ies.
+>=20
+> what does this mean? what various capabilities? VFs don't have PCI BAR0 a=
+t all
+> ...
+>=20
+The PCI capabilities listed in "section 4.1.4 Virtio Structure PCI Capabili=
+ties"
+
+> > +
+> > +\devicenormative{\subsubsection}{Legacy Interface: Group Member
+> > +Device Legacy Configuration Region Access}{Virtio Transport Options /
+> > +Virtio Over PCI Bus / Legacy Interface: Group Member Device
+> > +Configuration Region Access}
+> > +
+> > +When a PCI SR-IOV group owner device supports
+> > +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
+> > +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
+> > +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
+> > +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE commands, the group
+> owner
+> > +device MUST hardwire VF BAR0 in the SR-IOV Extended capability and
+> > +the group member device MUST NOT use BAR0 in any of the Virtio Structu=
+re
+> PCI Capabilities.
+> > +
+> > +The group member driver SHOULD use the notification region supplied
+> > +by the group owner driver.
+> > +
+> > +The group owner device or the group member device or both MAY support
+> > +driver notifications region.
+>=20
+> why is this text here as opposed to the other file?
+> But really I think for now it's easier to just have everything in admin-c=
+mds-
+> legacy-interface.tex
+>
+Because the owner/member flag is in this structure.
+It was too much to split a byte out of a structure for the spirit of keepin=
+g it generic.
+=20
+Most things are in the admin-cmds-legacy-interface.tex.
+Here only PCI specific structs are located.
+
+Do you propose to move above=20
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
