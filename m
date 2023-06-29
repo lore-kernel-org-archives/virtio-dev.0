@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13139-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13140-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 29178EB64D7
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 03:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB545EB64DA
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 03:29:28 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 673C56004D
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 03:17:50 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 406367E2DA
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 03:29:28 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4EF619865D4
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 03:17:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 347B198667F
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 03:29:28 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 33F09986317; Thu, 29 Jun 2023 03:17:50 +0000 (UTC)
+	id 2A1409865CE; Thu, 29 Jun 2023 03:29:28 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,109 +24,274 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 157A298658E
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Jun 2023 03:17:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 13691986590
+	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Jun 2023 03:29:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: APMwPYpzP6OWWCX6GgJ4WQ-1
+X-MC-Unique: BsKrIkUSM8ir6aNF_nHbqA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688008666; x=1690600666;
+        d=1e100.net; s=20221208; t=1688009362; x=1690601362;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=P/L1vqN6tztYqvMoNwM1vhPnJrcwSqwmW06TnqPTNF8=;
-        b=KmAGmdaEIk555UW/iXo8ib/ueLwefMvccUASYq0Zl8OdeTRA+LntTtzdw93Kv2M4Pq
-         km2+6HzJU6Y7dCYfbBwHxYAJ+ZqTtO2DDBuRa7eUZvqPT3o5MW0axvWN9afPQItH+51q
-         sXWTrcBcJdiGXH4AmrLB7b/vgPbeJbkwWUaGD0xGwVN2DhyCNtId/x3KM9+b4ku7kMBA
-         FCgZVQUz28cW7Bz6u0X+BFSSzZ54z15PO4Mdq8fcMtP4RonMzWOiGVUGamW93XnZJMQd
-         k0T4dKbu23DELjq9bJ/ivdP1ViMStZv6vTBW0EALIB7ktBuraKGO8w4J1woXqTr0Y4ar
-         zNWQ==
-X-Gm-Message-State: AC+VfDxzx2tVuCovCzHi8OGy7hm5vIDs/ZmD6WkxdGT5ZcDvSV7chwqb
-	HVY2UBlvFSKa5M/r07V2xHK9ve6AMfxsUwBMHiuFjMFpsN59T492YpGTfCGHsxljGu396F6CAQU
-	shNVwANmth2ys0yhEUAEjxIKbhB/76e8H7kRRKwyXBeKD
-X-Received: by 2002:a2e:3202:0:b0:2b5:9d78:213e with SMTP id y2-20020a2e3202000000b002b59d78213emr11171841ljy.22.1688008666368;
-        Wed, 28 Jun 2023 20:17:46 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7Pkia1M7ilXuWTQiJmb1wTinrFEydGB4WEL/YHZeml5sKKv3SS8D5KmiNLf60JT4w4AORq+BQoHVQ8Y51QvrY=
-X-Received: by 2002:a2e:3202:0:b0:2b5:9d78:213e with SMTP id
- y2-20020a2e3202000000b002b59d78213emr11171831ljy.22.1688008666048; Wed, 28
- Jun 2023 20:17:46 -0700 (PDT)
+        bh=ZhUZRsfZAsfcUCNmxuz68VVSaIeNbux1Anw7CEPGc0M=;
+        b=KHI5+XXKDrsLsLVZ2Pdep8OKqfYz0p8eByNXXRqRRxTQxEFsiuGyIvXVx2dfES5jJX
+         91Q4ljbShOm88ocQD7RZ18IrI6Kw1y309j+Pr5G42cOmCfkBeKCIi5RSkrCe9bTIBcly
+         GGnuSO92gDxSvbVIMmo2E4ij8HUPzRdn3x5DDlXyTw8GFBYG8V//FlS2bb+NY/+lmzl3
+         lHXTCOTs3Yum1MDKEdBjtcxQtYyKJBKzVIUk7slo/PB7CKKUQchgvzr+WmEEH84Eepzu
+         +Jaw8D4OiJNVaPn1FvizAKXWcqX53gucPR8B7MKVkR0h67U8ZZkCLcDkqX98PG+Jxmwc
+         0fpg==
+X-Gm-Message-State: AC+VfDw8+MF2FIC1AQ3nYv1nimQbomw7ovEqo18OM7AIX63LEO6XL2Vm
+	yJNzfK8SuWo9cPOPub8uy+LMrTC5M1XDc9i1+TvjHprTh88T3ZVCG4bltLOogkYyJABzYH1DZ/6
+	QrH4otrBkbKC9sodNJtnMxHw5EFXvfb71sLGZTt0grRBL
+X-Received: by 2002:a05:651c:103c:b0:2b6:a83e:4ce3 with SMTP id w28-20020a05651c103c00b002b6a83e4ce3mr7050480ljm.44.1688009362145;
+        Wed, 28 Jun 2023 20:29:22 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ56Y6bR/BH9z/yZVtyz/6yDcQ2b8cEPN2ESMbbuhG5EAnSw8l0SKOx9UVDW0ijoHF7KZTsyQcTFqJVGwvud+wY=
+X-Received: by 2002:a05:651c:103c:b0:2b6:a83e:4ce3 with SMTP id
+ w28-20020a05651c103c00b002b6a83e4ce3mr7050473ljm.44.1688009361820; Wed, 28
+ Jun 2023 20:29:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230627163549.40028-1-hengqi@linux.alibaba.com>
- <CACGkMEvFmAiWDp8w=ytin21Oi+PcTb1X3Eve7Kt2NVr_RkhgmA@mail.gmail.com>
- <PH0PR12MB54811123CFCDEFE3B48D4381DC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtgomh1EGNLqhXQssRW02nnHkamxT5rV5eZZ9BZFH=uJA@mail.gmail.com> <PH0PR12MB548102A43104218F481B8679DC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB548102A43104218F481B8679DC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230626062210.49020-1-xuanzhuo@linux.alibaba.com>
+ <1687854185.3344731-3-xuanzhuo@linux.alibaba.com> <CACGkMEs=2HJ=Bg5Xk1GYZAOKpNLpf5EUrkNEkEOKU4hSbXC=mw@mail.gmail.com>
+ <1687863046.3264692-9-xuanzhuo@linux.alibaba.com> <CACGkMEvyJrnyN0CFv2sAraNQM5E_Hkccmo1hJNzQPX8DRB5ryg@mail.gmail.com>
+ <1687932392.6613173-2-xuanzhuo@linux.alibaba.com> <20230628114143-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230628114143-mutt-send-email-mst@kernel.org>
 From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 29 Jun 2023 11:17:34 +0800
-Message-ID: <CACGkMEsk-eH19bdBgMvxrX-xqpOX=RELv-BadZdGq+K0_6xh+A@mail.gmail.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, 
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, 
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Michael S . Tsirkin" <mst@redhat.com>, 
-	Yuri Benditovich <yuri.benditovich@daynix.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Thu, 29 Jun 2023 11:29:10 +0800
+Message-ID: <CACGkMEspnOhFi3XbeOaZ3mPcCv3G8+34hVYo7nrmVndDkZSJ2w@mail.gmail.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, virtio-dev@lists.oasis-open.org, 
+	parav@nvidia.com, virtio-comment@lists.oasis-open.org, 
+	"Zhu, Lingshan" <lingshan.zhu@intel.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [PATCH v19] virtio-net: support inner header hash
+Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH] admin-queue: bind the group member
+ to the device
 
-On Thu, Jun 29, 2023 at 12:00=E2=80=AFAM Parav Pandit <parav@nvidia.com> wr=
+On Wed, Jun 28, 2023 at 11:55=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com=
+> wrote:
+>
+> On Wed, Jun 28, 2023 at 02:06:32PM +0800, Xuan Zhuo wrote:
+> > On Wed, 28 Jun 2023 10:49:45 +0800, Jason Wang <jasowang@redhat.com> wr=
 ote:
->
->
->
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Wednesday, June 28, 2023 1:38 AM
->
-> [..]
-> > > Provisioning is far simpler thing to do in device specific way than a=
-sking device
-> > to store this value in onchip area which is rarely accessed.
+> > > On Tue, Jun 27, 2023 at 6:54=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.ali=
+baba.com> wrote:
+> > > >
+> > > > On Tue, 27 Jun 2023 17:00:06 +0800, Jason Wang <jasowang@redhat.com=
+> wrote:
+> > > > > On Tue, Jun 27, 2023 at 4:28=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux=
+.alibaba.com> wrote:
+> > > > > >
+> > > > > >
+> > > > > > Thanks Parav for pointing it out. We may have some gaps on the =
+case.
+> > > > > >
+> > > > > > Let me introduce our case, which I think it is simple and shoul=
+d be easy to
+> > > > > > understand.
+> > > > > >
+> > > > > > First, the user (customer) purchased a bare metal machine.
+> > > > > >
+> > > > > > ## Bare metal machine
+> > > > > >
+> > > > > > Let me briefly explain the characteristics of a bare metal mach=
+ine. It is not a
+> > > > > > virtual machine, it is a physical machine, and the difference b=
+etween it and a
+> > > > > > general physical machine is that its PCI is connected to a devi=
+ce similar to a
+> > > > > > DPU. This DPU provides devices such as virtio-blk/net to the ho=
+st through PCI.
+> > > > > > These devices are managed by the vendor, and must be created an=
+d purchased
+> > > > > > on the vendor's management platform.
+> > > > > >
+> > > > > > ## DPU
+> > > > > >
+> > > > > > There is a software implementation in the DPU, which will respo=
+nd to PCI
+> > > > > > operations. But as mentioned above, resources such as network c=
+ards must be
+> > > > > > purchased and created before they can exist. So users can creat=
+e VF, which is
+> > > > > > just a pci-level operation, but there may not be a correspondin=
+g backend.
+> > > > > >
+> > > > > > ## Management Platform
+> > > > > >
+> > > > > > The creation and configuration of devices is realized on the ma=
+nagement
+> > > > > > platform.
+> > > > > >
+> > > > > > After the user completed the purchase on the management platfor=
+m (this is an
+> > > > > > independent platform provided by the vendor and has nothing to =
+do with
+> > > > > > virtio), then there will be a corresponding device implementati=
+on in the DPU.
+> > > > > > This includes some user configurations, available bandwidth res=
+ources and other
+> > > > > > information.
+> > > > > >
+> > > > > > ## Usage
+> > > > > >
+> > > > > > Since the user is directly on the HOST, the user can create VMs=
+, passthrough PF
+> > > > > > or VF into the VM. Or users can create a large number of docker=
+s, all of which
+> > > > > > use a separate virtio-net device for performance.
+> > > > > >
+> > > > > > The reason why users use vf is that we need to use a large numb=
+er of virtio-net
+> > > > > > devices. This number reaches 1k+.
+> > > > > >
+> > > > > > Based on this scenario, we need to bind vf to the backend devic=
+e. Because, we
+> > > > > > cannot automatically complete the creation of the virtio-net ba=
+ckend device when
+> > > > > > the user creates a vf.
+> > > > > >
+> > > > > > ## Migration
+> > > > > >
+> > > > > > In addition, let's consider another scenario of migration. If a=
+ vm is migrated
+> > > > > > from another host, of course its corresponding virtio device is=
+ also migrated to
+> > > > > > the DPU. At this time, our newly created vf can only be used by=
+ the vm after it
+> > > > > > is bound to the migrated device. We do not want this vf to be a=
+ brand new
+> > > > > > device.
+> > > > > >
+> > > > > > ## Abstraction
+> > > > > >
+> > > > > > So, this is how I understand the process of creating vf:
+> > > > > >
+> > > > > > 1. Create a PCI VF, at this time there may be no backend virtio=
+ device, or there
+> > > > > >     is only a default backend. It does not fully meet our expec=
+tations.
+> > > > > > 2. Create device or migrate device
+> > > > > > 3. Bind the backend virtio device to the vf
+> > > > >
+> > > > > 3) should come before 2)?
+> > > > >
+> > > > > Who is going to do 3) btw, is it the user? If yes, for example, i=
+f a
+> > > > > user wants another 4 queue virtio-net devices, after purchase, ho=
+w
+> > > > > does the user know its id?
+> > > >
+> > > > Got the id from the management platform.
+> > >
+> > > So it can do the binding via that management platform which this
+> > > became a cloud vendor specific interface.
 > >
-> > Are you suggesting to not place any new fields in the config space?
+> > In our scenario, this is bound by the user using this id and vf id in t=
+he os.
 > >
-> Yes.
-
-It's not the fault of config space itself, but the way to access the
-config space, more below.
-
+> > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > > In most scenarios, the first step may be enough. We can make so=
+me fine-tuning on
+> > > > > > this default device, such as modifying its mac. In the future, =
+we can use admin
+> > > > > > queue to modify its msix vector and other configurations.
+> > > > > >
+> > > > > > But we should allow, we bind a backend virtio device to a certa=
+in vf. This is
+> > > > > > useful for live migration and virtio devices with special confi=
+gurations.
+> > > > >
+> > > > > All of these could be addressed if a dynamic provisioning model i=
+s
+> > > > > implemented (SIOV or transport virtqueue). Trying to have a worka=
+round
+> > > > > in SR-IOV might be tricky.
+> > > >
+> > > >
+> > > > SR-IOV vf is native PCI device, this is the advancement.
+> > >
+> > > The problem is that it doesn't support flexible provisioning, e.g
+> > > create and destroy a single VF.
+> >
+> > YES. ^_^!!
 >
-> > struct virtio_net_config {
-> >         u8 mac[6];
-> >         le16 status;
-> >         le16 max_virtqueue_pairs;
-> >         le16 mtu;
-> >         le32 speed;
-> >         u8 duplex;
-> >         u8 rss_max_key_size;
-> >         le16 rss_max_indirection_table_length;
-> >         le32 supported_hash_types;
-> > };
+> So sure, create it. Once you have created it, you can
+> use the VF# to talk to it.
+>
+>
+> I *suspect* that what this ID does is replace provisioning commands.
+>
+> So instead of saying "create VF#3 with MAC 0xABC and 0x1000VQs"
+> you would have management say "ID 0xFACE refers to MAC ABC and 1000VQs"
+> and later you will say "bind VF#3 to ID 0xFACE" and that will
+> set it up.
+>
+> Is that it?
+>
+> But why is it important to do it in two steps like this?
+> as opposed to in one step?  I have no idea.
+>
 > >
-> > Which of the above do you think can be accessed frequently and which pa=
-rt of
-> > the spec says it must be stored in the onchip area?
+> > >
+> > > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > > The design of virtio itself is two layers, and virtio should al=
+low switching the
+> > > > > > transport layer by nature. This is our advantage.
+> > > > >
+> > > > > Is it not switching the transport layer but about binding/unbindi=
+ng
+> > > > > vitio devices to VF?
+> > > >
+> > > > YES.
+> > > >
+> > > > >
+> > > > > Is a new capability or similar admin cmd sufficient in this case?
+> > > >
+> > > > All is ok.
+> > > >
+> > > >
+> > > > >
+> > > > > struct virtio_pci_bind_cap {
+> > > > >         struct virtio_pci_cap cap;
+> > > > >         u16 bind; // virtio_device_id
+> > > > >         u16 unbind; // virtio_device_id
+> > > > > };
+> > > >
+> > > > You mean that the "bind" or "unbind" is writeable?
 > >
-> Most are not accessed frequently.
-> The fact that they are in MMIO a device needs to place in a memory with t=
-ight latency budget.
+> > This is a good idea.
+> >
+> > Thanks.
+>
+> So stealing valuable memory from limited pci config space, no error
+> handling, no filtering... Ugh.  Let's not put a round peg in a square
+> hole.
 
-This really depends on the implementation and vendor architectures.
-For example,
+It's just quick example to demonstrate the idea, actually I meant it
+could be done via admin cmd, see above
 
-1) MSI BAR might require much more resources than a simple device
-configuration space
-2) I was told my some vendors that the virtqueue is much more valuable than=
- MMIO
-3) We can introduce new ways to access the device configuration space
-
-> Spec is not going to talk on onchip area, it is the reflection of spec th=
-at forces certain inefficient implementation .
-
-Exactly, it's implementation specific, so config space is fine, we
-just need to invent new methods to access them that fit for your
-hardware.
+"""
+Is a new capability or similar admin cmd sufficient in this case?
+"""
 
 Thanks
+
+>
+> For management I think we should use admin commands. They were built for
+> the management use-case.
+> Config space (pci and virtio) is better for driver slow path.
+>
+> --
+> MST
+>
 
 
 ---------------------------------------------------------------------
