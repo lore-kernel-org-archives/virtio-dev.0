@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13147-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13148-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9D002C0015E
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 11:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F09BEB64D9
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 11:54:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 10C1C3427
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 11:48:16 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8258576043
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 11:54:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 04CF0986633
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 11:48:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 60E5D986633
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Jun 2023 11:54:33 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id ED4D69865AA; Thu, 29 Jun 2023 11:48:15 +0000 (UTC)
+	id 4980B9865A8; Thu, 29 Jun 2023 11:54:33 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,140 +24,155 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D857E9865D5
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Jun 2023 11:48:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 368C09865CA
+	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Jun 2023 11:54:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: nPQgdyjdOu-8x4xOFDfqJQ-1
+X-MC-Unique: vNnFGvX8Oly-LmbMzYBGtw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688039289; x=1690631289;
+        d=1e100.net; s=20221208; t=1688039669; x=1690631669;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=r0mcyIzaxFbROoBjB5w5oJfKWv4ZvlXNmrlOchvGg1k=;
-        b=knp+LvThUizTX4bCunRCTjkejb3iw3JEbpvrrfI0WLsIRdxi2sGV4KU2GiVTKM9COu
-         aQKgqTpxra3gQPhcVKBaPeDn5uSQ8SohY6xRSngtYY5lmgPjdnY9G2j2/IzOfcUXEwfR
-         W3//zt/y942KzorGyrAjxXpOVLtCikx4mVjk98kBl/3EHhQtMOY1QIGb/uYusHz23Fnw
-         jNZXwucGtIiSJdVMt4cDn4mZSlVGEd2Z0ukR3BaqU5Q7k4EYvYqZkqZA6LtnuTKM0ArD
-         lwCDgI+N7o/hTDwsxtVCUd4EQ81Jci4UCpA72G5q0gPjQ3uzeROSDVrlmvtdDx3SK6GG
-         lbYw==
-X-Gm-Message-State: AC+VfDwdhdHaq72DdxMkbXUNPHU5qQpaqRwxelHfd42SNEtm6S4SRybw
-	ZLer9i+nXjB304dN/q57rqOmIHnwDUBGy37zHS6lazfRtKS51B9qsClfopuDWdMk/bfL5OOEr+3
-	9cHxd76oT4vTDHc0jvEpj+9Wz0Cjf
-X-Received: by 2002:a05:600c:2154:b0:3fa:9348:51a8 with SMTP id v20-20020a05600c215400b003fa934851a8mr8426134wml.23.1688039289281;
-        Thu, 29 Jun 2023 04:48:09 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5Dt1HYrrMzp4pv+qcMvpPPWGDIJR6IuA+KNZPraiSgx+pWA1V8NGkHwtf/vdxv9HwrbhpPYQ==
-X-Received: by 2002:a05:600c:2154:b0:3fa:9348:51a8 with SMTP id v20-20020a05600c215400b003fa934851a8mr8426120wml.23.1688039288941;
-        Thu, 29 Jun 2023 04:48:08 -0700 (PDT)
-Date: Thu, 29 Jun 2023 07:48:04 -0400
+        bh=b9DQVVlJRuS0z0N/6y6cvre/aIGM6+4+EqNJUrUKLh0=;
+        b=Ank5/ELO6bUVdjST8khlLrgJZiR/37r/wS/qSYgb+lJIK0hi1JRHEyePcEpK7rTC7D
+         WzXZo2kr4udJbEXG/LCc5dy/uJAXDwXGzC9mAOuAeNcXGdXD26aX5Etyb5hS+AD9rokg
+         XiDhLX2WgO1JEK21cwKIYWxw8GOgfHXwaIjkQjoQi9m7D7rA0NaZs1bsvOZJTcTxX6Gp
+         IdTbedjkNd/RP2InNFve/CD9lWnrmjw1ucFeuaRvrJRrxg62En9DBdJNTguOzLZWWpyO
+         Yxd4hz+eNpylNOtQN49TBQd8ViTbAHamQ3QnueQm7Up4i3jbYZ+5gYWOAa2cz7Amuim+
+         f3GQ==
+X-Gm-Message-State: AC+VfDzk5OLizdW4L8NRbD0ddzddSXmGnR+QLF9242FXCPurSLqfitVM
+	LvdlxGc6wfoVB1Z5Zqo32N+S19iqGNXFM/pwn8eFWq3rs6iw6fFqy//92kW7gvbDWlaYX8lRYki
+	PvdBI0Zl/3Az0Akfomrf0r8cV8ylI
+X-Received: by 2002:a05:6000:118d:b0:313:fca5:9079 with SMTP id g13-20020a056000118d00b00313fca59079mr6224254wrx.59.1688039669561;
+        Thu, 29 Jun 2023 04:54:29 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ63xHKcE9RRSMH85CFAlOgVv9Dsmk1ID8ehrw+nBPfHz8woCCsiP9Ah09CTjWIYPX0xHUM4ZA==
+X-Received: by 2002:a05:6000:118d:b0:313:fca5:9079 with SMTP id g13-20020a056000118d00b00313fca59079mr6224240wrx.59.1688039669151;
+        Thu, 29 Jun 2023 04:54:29 -0700 (PDT)
+Date: Thu, 29 Jun 2023 07:54:23 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+To: Jason Wang <jasowang@redhat.com>
+Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>,
 	Yuri Benditovich <yuri.benditovich@daynix.com>,
 	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20230629074627-mutt-send-email-mst@kernel.org>
-References: <PH0PR12MB54811123CFCDEFE3B48D4381DC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230628061257-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481ED6C94DE8CC414C3369BDC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230628123131-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481BA1CDA0942170186CB59DC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230628132122-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54814D42786A6981467D3FADDC24A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230628152125-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481EAD97F6163C52DF4FF53DC25A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <4132affe-9b97-a81f-ad57-50ed4341678b@linux.alibaba.com>
+Message-ID: <20230629074925-mutt-send-email-mst@kernel.org>
+References: <20230627163549.40028-1-hengqi@linux.alibaba.com>
+ <CACGkMEvFmAiWDp8w=ytin21Oi+PcTb1X3Eve7Kt2NVr_RkhgmA@mail.gmail.com>
+ <20230628060519-mutt-send-email-mst@kernel.org>
+ <2522ab61-a333-a33b-784c-01ea6b4b42da@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <4132affe-9b97-a81f-ad57-50ed4341678b@linux.alibaba.com>
+In-Reply-To: <2522ab61-a333-a33b-784c-01ea6b4b42da@redhat.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] RE: [PATCH v19] virtio-net: support inner
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v19] virtio-net: support inner
  header hash
 
-On Thu, Jun 29, 2023 at 10:05:09AM +0800, Heng Qi wrote:
+On Thu, Jun 29, 2023 at 11:31:58AM +0800, Jason Wang wrote:
 > 
-> 
-> 在 2023/6/29 上午9:56, Parav Pandit 写道:
-> > 
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Wednesday, June 28, 2023 3:45 PM
-> > > > > Maybe I get it. You want to use the new features as a carrot to
-> > > > > force drivers to implement DMA? You suspect they will ignore the
-> > > > > spec requirement just because things seem to work?
-> > > > > 
-> > > > Right because it is not a must normative.
-> > > Well SHOULD also does not mean "ok to just ignore".
-> > > 
-> > > 	This word, or the adjective "RECOMMENDED", mean that there
-> > > 	   may exist valid reasons in particular circumstances to ignore a
-> > > 	   particular item, but the full implications must be understood and
-> > > 	   carefully weighed before choosing a different course.
-> > > 
-> > RECOMMENDED and SHOULD forces the device to support MMIO, which is not good.
-> > So rather a good design is device tells the starting offset for the extended config space.
-> > And extended config space MUST be accessed using a DMA.
-> > With this sw can have infinite size MMIO and hw device forces DMA based on its implementation of where to start DMA from.
-> > This also gives the ability to maintain current config as MMIO for backward compatibility.
-> > > 
-> > > > > There's some logic here, for sure. you just might be right.
-> > > > > 
-> > > > > However, surely we can discuss this small tweak in 1.4 timeframe?
-> > > > Sure, if we prefer the DMA approach I don't have a problem in adding
-> > > temporary one field to config space.
-> > > > I propose to add a line to the spec " Device Configuration Space"
-> > > > section, something like,
+> 在 2023/6/28 18:10, Michael S. Tsirkin 写道:
+> > On Wed, Jun 28, 2023 at 11:46:22AM +0800, Jason Wang wrote:
+> > > On Wed, Jun 28, 2023 at 12:35 AM Heng Qi <hengqi@linux.alibaba.com> wrote:
+> > > > 1. Currently, a received encapsulated packet has an outer and an inner header, but
+> > > > the virtio device is unable to calculate the hash for the inner header. The same
+> > > > flow can traverse through different tunnels, resulting in the encapsulated
+> > > > packets being spread across multiple receive queues (refer to the figure below).
+> > > > However, in certain scenarios, we may need to direct these encapsulated packets of
+> > > > the same flow to a single receive queue. This facilitates the processing
+> > > > of the flow by the same CPU to improve performance (warm caches, less locking, etc.).
 > > > > 
-> > > > Note: Any new device configuration space fields additional MUST consider
-> > > accessing such fields via a DMA interface.
-> > > > And this will guide the new patches of what to do instead of last moment
-> > > rush.
+> > > >                 client1                    client2
+> > > >                    |        +-------+         |
+> > > >                    +------->|tunnels|<--------+
+> > > >                             +-------+
+> > > >                                |  |
+> > > >                                v  v
+> > > >                        +-----------------+
+> > > >                        | monitoring host |
+> > > >                        +-----------------+
+> > > > 
+> > > > To achieve this, the device can calculate a symmetric hash based on the inner headers
+> > > > of the same flow.
+> > > > 
+> > > > 2. For legacy systems, they may lack entropy fields which modern protocols have in
+> > > > the outer header, resulting in multiple flows with the same outer header but
+> > > > different inner headers being directed to the same receive queue. This results in
+> > > > poor receive performance.
+> > > > 
+> > > > To address this limitation, inner header hash can be used to enable the device to advertise
+> > > > the capability to calculate the hash for the inner packet, regaining better receive performance.
+> > > > 
+> > > > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/173
+> > > > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> > > > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > Reviewed-by: Parav Pandit <parav@nvidia.com>
+> > > > ---
+> > > > v18->v19:
+> > > >          1. Have a single structure instead of two. @Michael S . Tsirkin
+> > > >          2. Some small rewrites. @Michael S . Tsirkin
+> > > >          3. Rebase to master.
+> > > > 
+> > > > v17->v18:
+> > > >          1. Some rewording suggestions from Michael (Thanks!).
+> > > >          2. Use 0 to disable inner header hash and remove
+> > > >             VIRTIO_NET_HASH_TUNNEL_TYPE_NONE.
+> > > > v16->v17:
+> > > >          1. Some small rewrites. @Parav Pandit
+> > > >          2. Add Parav's Reviewed-by tag (Thanks!).
+> > > > 
+> > > > v15->v16:
+> > > >          1. Remove the hash_option. In order to delimit the inner header hash and RSS
+> > > >             configuration, the ability to configure the outer src udp port hash is given
+> > > >             to RSS. This is orthogonal to inner header hash, which will be done in the
+> > > >             RSS capability extension topic (considered as an RSS extension together
+> > > >             with the symmetric toeplitz hash algorithm, etc.). @Parav Pandit @Michael S . Tsirkin
+> > > >          2. Fix a 'field' typo. @Parav Pandit
+> > > > 
+> > > > v14->v15:
+> > > >          1. Add tunnel hash option suggested by @Michael S . Tsirkin
+> > > >          2. Adjust some descriptions.
+> > > > 
+> > > > v13->v14:
+> > > >          1. Move supported_hash_tunnel_types from config space into cvq command. @Parav Pandit
+> > > I may miss some discussions, but this complicates the provisioning a lot.
 > > > 
-> > > Yea, except again I'd probably make it a SHOULD: e.g. I can see how switching to
-> > > MMIO might be an option for qemu helping us debug DMA issues.
+> > > Having it in the config space, then a type agnostic provisioning
+> > > through config space + feature bits just works fine.
 > > > 
-> > There are too many queues whose debugging is needed and MMIO likely not the way to debug.
-> > > The time to discuss this detail would be around when proposal for the DMA
-> > > access to config space is on list though: I feel this SHOULD vs MUST is a small
-> > > enough detail.
+> > > If we move it only via cvq, we need device specific provisioning interface.
 > > > 
-> >  From implementation POV it is certainly critical and good step forward to optimize virtio interface.
-> > > Going back to inner hash. If we move supported_tunnels back to config space,
-> > > do you feel we still need GET or just drop it? I note we do not have GET for
-> > > either hash or rss config.
-> > > 
-> > For hash and rss config, debugging is missing. :)
-> > Yes, we can drop the GET after switching supported_tunnels to struct virtio_net_hash_config.
+> > > Thanks
+> > Yea that's what I said too. Debugging too.  I think we should build a
+> > consistent solution that allows accessing config space through DMA,
+> > separately from this effort.  Parav do you think you can live with this
+> > approach so this specific proposal can move forward?
 > 
-> Great! Glad to hear this!
 > 
-> > > And if we no longer have GET is there still a reason for a separate command as
-> > > opposed to a field in virtio_net_hash_config?
-> > > I know this was done in v11 but there it was misaligned.
-> > > We went with a command because we needed it for supported_tunnels but
-> > > now that is no longer the case and there are reserved words in
-> > > virtio_net_hash_config ...
-> > > 
-> > > Let me know how you feel it about that, not critical for me.
-> > struct virtio_net_hash_config reserved is fine.
+> We can probably go another way, invent a new device configuration space
+> capability which fixed size like PCI configuration access capability?
 > 
-> +1.
+> struct virtio_pci_cfg_cap {
+>         struct virtio_pci_cap cap;
+>         u8 dev_cfg_data[4]; /* Data for device configuration space access.
+> */
+> };
 > 
-> Inner header hash is orthogonal to RSS, and it's fine to have its own
-> structure and commands.
-> There is no need to send additional RSS fields when we configure inner
-> header hash.
+> So it won't grow as the size of device configuration space grows.
 > 
-> Thanks.
+> Thanks
 
-Not RSS, hash calculations. It's not critical, but I note that
-practically you said you will enable this with symmetric hash
-so it makes sense to me to send this in the same command
-with the key.
+It is true, it does not have to be DMA strictly speaking.
 
-Not critical though if there's opposition.
+The basic issue is with synchronous access.
+
+We can change the capability in some way to allow asynch then
+that works. E.g. make device change length to 0 and driver
+must poll before considering the operation done.
+
+Having said that, this will increase # of VM exits even more.
+Not a fan, DMA seems cleaner.
 
 -- 
 MST
