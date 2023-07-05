@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13238-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13239-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8E2E8C001B0
-	for <virtio-dev@archiver.kernel.org>; Wed,  5 Jul 2023 14:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B7BC5EB64DA
+	for <virtio-dev@archiver.kernel.org>; Wed,  5 Jul 2023 16:30:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id CFF87C8DF1
-	for <virtio-dev@archiver.kernel.org>; Wed,  5 Jul 2023 14:37:27 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0354442C2E
+	for <virtio-dev@archiver.kernel.org>; Wed,  5 Jul 2023 16:30:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BEDCE986729
-	for <virtio-dev@archiver.kernel.org>; Wed,  5 Jul 2023 14:37:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EA580986812
+	for <virtio-dev@archiver.kernel.org>; Wed,  5 Jul 2023 16:30:06 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id AFAE9986725; Wed,  5 Jul 2023 14:37:27 +0000 (UTC)
+	id DB795986724; Wed,  5 Jul 2023 16:30:06 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,39 +24,35 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 978D4986721;
-	Wed,  5 Jul 2023 14:37:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BE076986721;
+	Wed,  5 Jul 2023 16:30:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mzcoiRlpWUgCqzGU/5Q/HdeZqkwgFbqu6WXCdw9eykVtoegNpPYUzlxhmOnll+XsEZDPnLkV8u/86o2wDx+Mw61o4WlKrUwEhBmlfkJUaWT4BmXl6TFXwOwW50nC3moRKv0m/HUwig2hBWsnM06aK5DK5E4o6ADOBw1vF98ZQbBzgnY8xziEH5quoxbbTD39wnyfN36M38hm3vkblwg5oEF2Z0h6MmA7kxvmLq/+zuxZnqsNcAiPff1BYQfmSDKcesWSFw70bTF306fX/vCKjb9+nC0YtpHrwHLPa/wXXh98/qgfuh00P0xXOKEucXGA1RAK4fwIPeFoC0aRuMAGHw==
+ b=GaT+LBsV4Q/AfS8/7v59Ql5biv3gqtAHqTA6iXcYP+M2ZJE2ZhNawXscvy6cXgzh4TsLooIbeH1hstK1q5WA+SB8nRKlamw7t+pq29uncTWMgsUUfZYczVIjGZS9iOpQGGjFLDzr7r6i67KRB/ood4t3L8q9V7OSEk4OsmFz4NbcUDuN+gppwDcmxqifNPk/VhTM5O5x5pPurMl4eY8flyVh5tY2Y8zFBS3f/dr3gDWVQDQ/+b2o4DZ7zRA9leGlxVSdthC3baR34VHvIjNflrMzQ3HQMmMBTT8OAbigfTVGfWwzWFTGahx12dxmsGgvM0tSWYclysH91PR4QnDoyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BIxoJnVyeQRFtgm4AuCQthBwC8sayKXFeq113g9riDc=;
- b=EVipMpyYvhgZKKQ+s+ay2mUOBOTI6h18Z05HkxZkZEfyKIp6/gGJKNxO0znnbv1+n06IsM/zJavAtf6dm7Llbrsn2vYu1L55/GnL+tnlSZCyFtKNOwJo06vd0OlPxzqvib7Q2ufIm5RXkZC0bqW9iRZrW2pmR6NU3GfQ1bHn+M3+z5W89oXIipoGzvbh7GEXl0v8A4MDSIc1OB/jrGlN30K5AbAvhf2eRKzJy+70B3H++2xq+xUQWRlJQAMLoBS2dPBekmQYm5pEx4HLwvGmBoVCb+ZG3HY5OboF1lofv5v7NIJK0zDATpaocoJMnNghNPCRSqBZXI3Z7W7Ydn9ufQ==
+ bh=Jdgjr4wlUnb2xf2AYk/5WgDRFadj+p41iotx4pe/x6I=;
+ b=hPy4u7ANf9dQYGlCHWIVQDRV/c4dMxCKU8XGvorb8aX0W6hytNOz+SdjP1LZkCpC9KojwItFDhE/NxY5OxLMdbONSN1bT1TCYv3qsKImxEHAoD/+pvsOHWyS7DRq5EPE6KXbAkjCKkyhlFPnN9MWkjC/SrZ0zYI8uHp96JNnoppqsm2ir4RlY9Rr013dtl0Svb/yOJYR18ldlBezDeQgQtaIqz7eY7kv/hlt4twXmQYqOTaX8l3ZvomDfZsLoTbZgrvY9EUkPkSRO8hI3WdECm7aQ85L2RaFcN2/5+tHz3PKbKQdVk8BLUAaplNSYMTqGfvQkBjgjwDwaPZUkofUAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 From: Parav Pandit <parav@nvidia.com>
-To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, "david.edmondson@oracle.com"
-	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
-	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
-	<shahafs@nvidia.com>
-Thread-Topic: [virtio-comment] [PATCH v9 0/4] admin: Access legacy registers
- using admin commands
-Thread-Index: AQHZrtCLWAcU8k1wLESQt7niIKXarK+rBJ+AgAAdwiCAAA0fAIAADvOA
-Date: Wed, 5 Jul 2023 14:37:22 +0000
+To: Cornelia Huck <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>,
+	"david.edmondson@oracle.com" <david.edmondson@oracle.com>
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"sburla@marvell.com" <sburla@marvell.com>, "jasowang@redhat.com"
+	<jasowang@redhat.com>, Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb
+	<maorg@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>
+Thread-Topic: [virtio-dev] Re: [PATCH v9 2/4] admin: Fix section numbering
+Thread-Index: AQHZrtCMoqnaHfpeiE2xcEQG7N+PAq+q8/qAgABp+sA=
+Date: Wed, 5 Jul 2023 16:29:58 +0000
 Message-ID:
- <PH0PR12MB5481787D2C6F9C1701BBC978DC2FA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <PH0PR12MB5481645B15D2D6824000496EDC2FA@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230704233724.22394-1-parav@nvidia.com>
- <20230705070758-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481B4761D5B67B850755782DC2FA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <87a5wa325r.fsf@redhat.com>
-In-Reply-To: <87a5wa325r.fsf@redhat.com>
+ <20230704233724.22394-3-parav@nvidia.com> <87ilay3c0u.fsf@redhat.com>
+In-Reply-To: <87ilay3c0u.fsf@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -64,97 +60,75 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB5168:EE_
-x-ms-office365-filtering-correlation-id: 7dd4ee3f-7b39-4b69-0576-08db7d6557e1
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|LV8PR12MB9082:EE_
+x-ms-office365-filtering-correlation-id: b2354c6b-1f2b-4ed8-bf38-08db7d751312
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
 x-microsoft-antispam-message-info:
- axpBXha8eGz5EsUKWvW79n2cFOiUdmlXByRyDcHAyfhe5FqfeqDhMcnoKxfLGNLMEeZnT3JeLmXxIBjppThhxXQURSttgpU2rqIkymjhE8bwDwSg67uKkIASl2j09atEEBnKTl6Jdhm+k6ImU/IQGcr42mXARtpXVk7vXACX8oAKLgzU/pcFAg2xODwbxZZaGO5NL+Bs4dyhC3mDN7K+saVNGzEmD1IrGaWV8DCDaajqJ7SKDbaHQHTwWdXnvFoq6KEIenO1RezGGtEkaSOvpFJ2QF5e5lGkHqFHBrMDNQAAinwkJmbGfC56DhR3ruAS25yK9478FgT2kHF9BX+HQItk5CNSIZUGpbdNdKpatVY5v4nLhBBnecdy+2Qm+rY8oITCP1I/1CjwIriy9tNMdhlLTPb1kUW70QvSNkNYRod0JoSBvHgD3gpaQFn5UrE6VYstN7Yaj9cr+okZIY/vGfuocvhpWKz5YLAmZ8BXqGwHnNWer2jmEnb36cOGep53tUoxpuZ9+IrlnbBYun2yMVfUeiqFbNXgeCyH9J02SvcUQcGvBOzYqpg/ZpUyf3D/Wjo4JRjWAnP2sdgVzlldxvxTMH2QwDWnUkGdNG+RPgquZeL+YFet4DecH0tlbQDy
+ G9fSqUB9/b+mNxPi+CLf6iNDTAcT2o5sTEygzUQ3mwJJrC+ETmJfNpue+ymGsJOgcz8thY7knm8Fe0DwpLaH+tQ3POonjEQnDuy6x1tl950wVpbFSmi6KDDphZCPKuGFXkjkPgUjPZeaI1jcbPeP5semu0iQb7sCMkPN7y3REYbYwiN/rBmm9zzNHKLj0JFzmOQ3/UX5y2YK2qsHtv4z3iOosG+vrEJaBf28pBlNHD0dVekrjlS8crlDEOztBFZgQ5boXJu/aFEwkhMwFmt3HAofEGRyCGxBqYJ5EW65brQs9MgY9SbVUD7vIfURhg0YcEsYpjo+IGIfvq8NSsxZY51H5kTNDSTQfM/lBfWdXmGQvqDje/tTdLySsSY7a0LzjuCWUw78LJcnx2KCadjbNal8gF3/MNmlt2dZtj2aJnn6XZgafK9W+GnRjMSawOo1nx/dC9CfaXf0jJwmnRGkhCTqVlYuWMHm0T4DHdwWIfJ0v0ZUi/E11cLLZ0eDgmB0bjFYVS9LxF71uALlAvNPYjwAuzvxyOdCsWEUn0q6Muk/lMmjNhp8cxxDDIWk0bDZqu+Nsa59ScgUlMzKpX/HYTPEz2iQEANtXxU9fThC2qi3UJGobFsd85OsE+XQb+H/
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(451199021)(107886003)(41300700001)(478600001)(38070700005)(9686003)(54906003)(110136005)(86362001)(38100700002)(7696005)(122000001)(71200400001)(4326008)(316002)(83380400001)(33656002)(66556008)(66476007)(66446008)(64756008)(66946007)(76116006)(55016003)(8936002)(8676002)(2906002)(5660300002)(52536014)(186003)(6506007)(26005);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(366004)(346002)(39860400002)(451199021)(7696005)(76116006)(71200400001)(478600001)(110136005)(54906003)(83380400001)(86362001)(38070700005)(33656002)(55016003)(4744005)(66946007)(2906002)(107886003)(186003)(6506007)(26005)(9686003)(122000001)(38100700002)(66556008)(316002)(64756008)(41300700001)(4326008)(66476007)(8936002)(8676002)(66446008)(52536014)(5660300002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?bSL30coT50LGehVpUoLb4/aaUd130yggnL/kOpet/vtolpgNbtxbMhHiU1RY?=
- =?us-ascii?Q?w821hHCxGfCbSkkefS9VquBROM5Wd6CddHrJLmCcW3Wt4jRY/cTV4jz9a/lY?=
- =?us-ascii?Q?i6jNSvD1xK3+ZVoccQ+P0duFakdH4ixLqK1gLi2fewBg6av1LFQLxbN4Na3F?=
- =?us-ascii?Q?TdV3P7MJDTmXi94VbPnxaYJkdn3r1oFk/yYPoff+CAKPc7s73xKJQ+nJBjrg?=
- =?us-ascii?Q?pVTphKV+uYgVmQdf/z38TN9BxlTtKS1wH9wcDYWKJxnobP0Z38qM83zldfFY?=
- =?us-ascii?Q?WAoaX4MO9rywYd73ZFf2HBY9Dg/MLZGCYY/0XqqZWaQOgmwD8TzrK8DryG+/?=
- =?us-ascii?Q?OWWJu1ogSY0qayp4dwScFWLpOK2QiOlQPhg2MPwuNiQkgB2IO3OWxwW6Zg1g?=
- =?us-ascii?Q?p7cBmwjdM2MFH1uj0fde6i9DP/0MCMlsjhpWHkFhlbtGAViNaWpiZwyw2HEL?=
- =?us-ascii?Q?SmHcNltQ9oXac5U9ED+YL0WjjCW85LpT1rznb2NiZW2NgM8uUNRMA9R9CunV?=
- =?us-ascii?Q?IrrP9oUj4jXCXpoI7+wSe3L56szMlZdJAEnc/B5f1Ji/rAx67roJUIARoC2v?=
- =?us-ascii?Q?+wf1q5ZVSjf9tA0k94ysJkKyvgkhkxYEzFDxsY/VM/20R908FvGyPAnUV1qi?=
- =?us-ascii?Q?U7mrSpdXr3BsyLhfotYXe+OmyOpFy9+Y67kAZagyMM5YqofbFvpoaoCdqzX5?=
- =?us-ascii?Q?PYlExLZhUQDUHKgGYGBF04h588vgrofdOraNfOVRTIMPC7a2rHIddiN3ZswH?=
- =?us-ascii?Q?b6cq1VqxPXsE7/6ub0Ece7mlk9i4zjVW+3/vU1qW128hHqy/bj2F+FcY9Q92?=
- =?us-ascii?Q?5SAbBQw5ksqPPDOmjpfElRk+mSxU7C/EtuJ+fHiDork+kyqTRKwOVeDil5nC?=
- =?us-ascii?Q?mzVavn+Yma4tPb2TaEmJMEmzYpSxOzrLJd8e7K3fEuH4gBL2G8f7FZRdtdD7?=
- =?us-ascii?Q?qrZPk/TsZVDa7KLDMGR0S+amD1bFolp0Lpex87+sXg4RVmYch3xijSYKPv4x?=
- =?us-ascii?Q?WLoiKbHCDdiHeVWSYoFvpP6386DtG/nI35go39KT2bYsNH974RuMCDFvEh7Y?=
- =?us-ascii?Q?+8dlEYIQlQVj8lktoNNMIpyJoVC5Vet+4ka4Q5KPgoZpOl5jPOzsq/WeaQsq?=
- =?us-ascii?Q?0fpg9PxmA8yj3PU3iOv9OeCq/oDezvSKlxGIH00fiRgOc5MKIOig4YOh188Z?=
- =?us-ascii?Q?Pz242NjlI+ZYqs3QteKqr+QEMX8x+DA5f3t371lsMpPPs9NM+4izuPOedsTA?=
- =?us-ascii?Q?oqK0r+RZwWbJb1hH42M+yzAVGVskwu8ciXR99Q0ZUDGa9osDbbuT7DSjZOfa?=
- =?us-ascii?Q?9hb7PIuLsV8lH/u3+J1anvCM6OCtnp94joiidM8/UQmGHs3Jtjt7K5DrjFFo?=
- =?us-ascii?Q?qoyI+y8AU64asq2qFtE5jPkeNqGZt73mgnxcPPiAghRJ3WeJzwl4Mji/VVME?=
- =?us-ascii?Q?++c/JWBBbLUD5caw6XQ4A6VxLSxGHZ87URbNVc09DGfWGTD4zCqZqpzRhCGd?=
- =?us-ascii?Q?GI3fE62Jknghf6aGL3e2XxGz88XxjRTsubSCaEYWAZICuE1VWAbzGgipi8PZ?=
- =?us-ascii?Q?LBh/O7f8rMxZkldSI98=3D?=
+ =?us-ascii?Q?zliXEnXucKwHfqWb2mcmMLKXD5pxSHw9oQbQhZBUrDm5dHWmVXe6YDF3+tkb?=
+ =?us-ascii?Q?XW+y6hQdpDgHzBEqnWLH22oi/UOH3/lJWb4gml8ogUTPnaAH73hSES41bU4w?=
+ =?us-ascii?Q?O9JUy8sFfDNK1z1WxatdSUymDfUUsM7ByHXANkvgQ2J8rx9JpYUtli0HemtS?=
+ =?us-ascii?Q?Y69eU0blcb9sqB1llr0HDBCKPN/dTMXodg6FJYJ3c1wycwxPKeuz1F68i6p5?=
+ =?us-ascii?Q?KDic+mIayCO1akCZOFMVbKJ68j9ptWFFQPS6KMLWQ370ETv5IqULuN1XoWLz?=
+ =?us-ascii?Q?WNfN47osBofxTvh5dDpLiKkLKmOJjw7yV4zq0/xea3zMaZACkhNOkOIiKlBK?=
+ =?us-ascii?Q?Vt2RIYF1MFwAqDdvSM1qKevjBnySHSKlq57vrWUn7Xe00wSEwItZu3jNcsvt?=
+ =?us-ascii?Q?cuR8HlPQLEUZ2DPxmU8xAKnlPQ03PI9fMhJQgpJr26Ov3lnzUf3TGyJRn16u?=
+ =?us-ascii?Q?+eEs+Uog2MGA0J6Tx0CrSPNTLtQuxozRhgRB5q4gT4tkhY9q6i3h86TL4gpu?=
+ =?us-ascii?Q?PWE5UG4kRUC7dQSwrDk+BOJ0J798dtYXBxxOGpQU5lFlweuYurI8llyC8uz9?=
+ =?us-ascii?Q?ReBbmIUHtQnN5Po9kH++1KXK6GPJS57tOqwRNE0UypPlCHhWZKSllvnxtb4u?=
+ =?us-ascii?Q?fjL5kNNTgJuQ5nRUHecWAYy3UwUitq5uvxEmb/48F88k7VCwdSivfvkaBwsF?=
+ =?us-ascii?Q?yfABJmXimDvQhiPZ9tNiu04ERlEXjNKDEaGaIt0C+G05ws1TtwM3pczKb7/w?=
+ =?us-ascii?Q?lBVP3uPY0r8N/7OXCO5KboDMgoFwxlqHLOBCHgxT5NoGddu7lc46CmoWLeZZ?=
+ =?us-ascii?Q?fxCWR8dsZp3PMVJ8bOfc/V1UAwCyAwoHfS+CRrjU807vKrJ1sNC2VEVgsrMr?=
+ =?us-ascii?Q?mvF3PyOCpCUr/To9Cen9oHzc+PijNoPOGqFWx6Dz5QblKzoQGjw753YvYkao?=
+ =?us-ascii?Q?DLir3mQYgfNs4w8GoOD+hZG1mkNG0cLkGFO9diKBZB14oRX0McdkbEGNP+y2?=
+ =?us-ascii?Q?ycRd4scqDqHhIvXrtBEKuINsbSzw0LN7daCYYGpuKJBsDxA0TvDf9/7OMKeq?=
+ =?us-ascii?Q?wXbhxJ1u/qxtN28YNs3d3/sDHqKqytAlFSLwh4EUgoBuKWwBJ1s7lyZrF7ao?=
+ =?us-ascii?Q?QPeyB2N/BA5XYkQODdZk8U1yCXL9wXtI3iMIMWCDRI6VcWE1YDmCGqcUi0YC?=
+ =?us-ascii?Q?SwEJ3hCjIbA2WdcXZPqzbDU3wFpmxhq9WuTI9qSLucvtARSAFXkQ0JlRkTym?=
+ =?us-ascii?Q?jBMGgRJecKDD3x0MQVHfAXjsNSPbA2LZP2IdIQyuclbl0W38YVh6HL5dTCod?=
+ =?us-ascii?Q?kooecJBgZyCVKmwQcNdKRr1H6sN1s2bfFQ+N4ciP6e8S8elG0qAUoNY9POBC?=
+ =?us-ascii?Q?L+7wR4OUvGYe9PSnAxz+oVXOmdYGKLJj4phNku4XniYa2qwhiT648HYLroPv?=
+ =?us-ascii?Q?CZGQn75AjjL6+OF9sNyMeQqqhzua4reNUR1PRg6HNlXB+GhQuYx2bd9asB8V?=
+ =?us-ascii?Q?L1TAdyebeQjQyLanswsz0yoWrZlBO4Q49RSRDDiZPw9QGAymEmYPgsGgoRdA?=
+ =?us-ascii?Q?7ieUIlb+MPX34Xms6WY=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7dd4ee3f-7b39-4b69-0576-08db7d6557e1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2023 14:37:22.2353
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2354c6b-1f2b-4ed8-bf38-08db7d751312
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2023 16:29:58.7579
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TKqDg91VGde2Hi9iEKZ0SpGvvrbDnphcy+xl1qiPYGGcjQHIC58Nu2cHWwn+QhvjVPFRSeRTS4GBkho7kPADgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5168
-Subject: [virtio-dev] RE: [virtio-comment] [PATCH v9 0/4] admin: Access legacy registers
- using admin commands
+X-MS-Exchange-CrossTenant-userprincipalname: /LJA/nuLyBcff2DtcYGzcbqjzBfnKFIGE1Mh7D/bJ4NXG2MIecmC9QPc1s1GMq7s7F6QuL38nhmPeYkOmdEPzg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9082
+Subject: RE: [virtio-dev] Re: [PATCH v9 2/4] admin: Fix section numbering
 
 
 
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Wednesday, July 5, 2023 9:43 AM
-
+> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> O=
+n
+> Behalf Of Cornelia Huck
+> Sent: Wednesday, July 5, 2023 6:10 AM
 >=20
-> >> From: Michael S. Tsirkin <mst@redhat.com>
-> >> Sent: Wednesday, July 5, 2023 7:09 AM
-> >>
-> >> OK I sent a bunch of comments. Pls try to address, unfortunately I
-> >> didn't go in depth over the last patch, but I feel it should be
-> >> squashed into the generic legacy command sections avoiding need for
-> >> indirection, so rewriting it now wouldn't be efficient.
-> >
-> > I relooked at well yday.
-> > Transport has very small section.
-> > This aligns to how the existing spec is written, for example vq notify =
-data is
-> explained in generic way and defined in pci way in PCI chapter.
-> > The indirection is fine and also self-contained similarly here.
->=20
-> Would it make sense to do this the other way around (i.e. use something t=
-hat is
-> PCI-only from the start?)
->=20
-> IIUC, the "legacy" problem as it stands is something specific to PCI, wit=
-h MMIO
-> using two distinct approaches for pre-1.0 and 1.0+, and CCW simply using
-> different commands (and no need for any kind of cross
-> access.) Not 100% sure about MMIO, but I don't think we need a version of=
- this
-> for CCW.
-V4 or v5 was having everything in PCI and Michael asked to write as generic=
- as possible.
-so I moved large part as generic.
-And kept pci part in pci.
+> Same thing applies to the normative statements for the admin vq (in the s=
+ame
+> file) -- do you want to fix that as well?
+
+Yes, let me fix it.
+I will do this as pre-work and this patch can depend on it.
+So that it can be merged quickly and I don't need to run around with more s=
+ide patches for this main series.
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
