@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13248-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13249-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1B10EB64D9
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 04:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6CBB6EB64D9
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 04:21:18 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 59D4D7C6AD
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 04:20:43 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8410F99168
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 04:20:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 982EB986821
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 04:20:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6EF56986809
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 04:20:44 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 58FA79868A3; Thu,  6 Jul 2023 04:20:41 +0000 (UTC)
+	id 6107F98645C; Thu,  6 Jul 2023 04:20:44 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,100 +24,116 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 119D1986724;
-	Thu,  6 Jul 2023 04:19:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 921CD986729;
+	Thu,  6 Jul 2023 04:20:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fGz4EnlnsswIVnswo7nr2srea6yMRmFBgvgxZOT0h0xVv/N+TVLKX+IClABL2qERN35uhje4+TNz2mNI1Zmfv5ld+wEGIfd7ULdwBnBMPZ8KNZEkQAiv1e3/uOBV9INCObzN/kUBN93gOvzUHW60GA61kAf2gv9LziScf9UrNCGKpjzGKQDGsdRwGp5dZMg7llbsCkT/ecAWYCMwBglMPzs6AV6Ueoaua2b7/WzQRgwQk2wQMgUEmOdlTsN6+d6ln4WQUfV0bmmb0yqlNDV8Fv+IbDwDBwt8U5k6tL2tqdKYFP9dIZwQI5HOn+V5zuWoa7xEgiHdRE9W44ou0n+O6w==
+ b=FOwwgv2VuNjSOKa2cBE4aAnNuk15HYeCvrU8a80yuu9nWqlZgwvgizXPUIOAzZbG3cnDwOjzNpsHOYlMoVFbxr9Wr7jdKAsJ8bdT5vpAeT9AI55wKkSrLnAFuidatQgfEqc5ZOuVct1qh+WEInAE6MlyZyMzwgDTnA1HLFJ6FTpmkuegdTj/6bTtsWK1Au1Q5u4bY2cJe41Y73DpOqcSLLJc9xazDwLla3h/sXP2g40EfbMHwCE0eSt1hPdKv9ceXIaW+6UWBY6+lSZyA8lgJDu9bpH8BR0Ycm2SeMu/vZwLe8WDMCElnZX6d997JoPwyJR4hmXZTw0+IfTQRWtG4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3020rDvIbSD+Pm6taRKcYkS9JZq1yRciqD1CZ7wTRXg=;
- b=Wu7Li9Ql2oYEfNUB4BvplMM+eo0Iv0qSytK4awW1StuO47S0zxg0wZLRirwS543oGKBTJ9LsH3kkZIjhgawP1YZ19/hTPK2Er8yonN2iMTv6GDedSh9TVEp6U/skpzvV/8cN9vWFKFAX1o4F5iju3BTj5C84N8a1qx4j5vAKUq36IfEw5vX+vcPDdO1nnT89gm9+KK6VrSGGEK5hoJ3cSkgBhZEiXOfJ3lcipgfCSKN2Ykmqy0Xy78BEq6sXUFkEVbwPPsDuitVuC4/F2ciiI7Bu/vZX4TwQYrka7uIFKESoYn+RvZNguSGVyeSiGR8+hPZK2kd9oYUWd1MeV/2YwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.oasis-open.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+ bh=kYD+ONj8QrqD3FK1/VStUBUwGLKYZqjp6QlQFUrgW2E=;
+ b=WpHUcGkOKs5PvpSMtiVU9w1x9xTLn6hHChNeMk2b2oBww5Mct+VZX/m3LRdINiNcfSvcCiG3pkZiAVXVaFMTt9uXi1jpIDp1MHjyveEbkRC+SspKQtV2zxgRyBRdUd3vBGZ/GEYmCHDV2kAZnKqxDd3vmkB4j4neurIOqtDRuwAVt+Us/NyBEMOyGq0mxo9sL6COZi7HdBEGBlKp6Ggk8ebisbN0RDVbR1BajcZrbm6FQvxoPRZr56msxcONdV/DjqZdu7JzDxjitEgyg6N3VpNRoVMQHzJU6iZbjjPZlxv44Az4GoYp0ptVCHn8yrJqEMtEUQCh8z3+3OoPG7j/pw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 From: Parav Pandit <parav@nvidia.com>
-To: <virtio-comment@lists.oasis-open.org>, <mst@redhat.com>,
-	<cohuck@redhat.com>, <david.edmondson@oracle.com>
-CC: <virtio-dev@lists.oasis-open.org>, <sburla@marvell.com>,
-	<jasowang@redhat.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
-	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Date: Thu, 6 Jul 2023 07:17:11 +0300
-Message-ID: <20230706041714.65600-2-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230706041714.65600-1-parav@nvidia.com>
-References: <20230706041714.65600-1-parav@nvidia.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "david.edmondson@oracle.com"
+	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
+	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
+	<shahafs@nvidia.com>
+Thread-Topic: [virtio-comment] [PATCH v9 0/4] admin: Access legacy registers
+ using admin commands
+Thread-Index: AQHZrtCLWAcU8k1wLESQt7niIKXarK+rBJ+AgAEfwSA=
+Date: Thu, 6 Jul 2023 04:20:03 +0000
+Message-ID:
+ <PH0PR12MB5481D2368A718164DE18DCDCDC2CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230704233724.22394-1-parav@nvidia.com>
+ <20230705070758-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230705070758-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH7PR12MB8056:EE_
+x-ms-office365-filtering-correlation-id: 57363a90-7cc5-470f-32e5-08db7dd84559
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ FkNgZkJo93IqlQQJHxTvDvAE+npeoolscLqwfOEmAll9ztUNz8InLSzF1rSYFnmBuncjINsbdx+U1i/QMVH3CdBi+9mP74qkGa2GJLl8qz8Bd1Hnrou31dC5pPipSQc5I7eKfc9Podq5immegip18wA/pl2WnyT1VHPoT45g1Ss7+9gMdyRQyYRfqlHOxq1/SIVkfN+jYpjKHtxwNugj/bMybPWZjKSww5yKLWNq9vdMXMrEjf4zjURqfnzQnursZNxt6rSniKhxOJe3dv1cry4B3VmDoz/3pgMxVcsmt0KU5+X8w0hGU15fO9M8+Ii4shmmAwO5vdidycyv6yV2dbEoMvUjd4+BKoyJzExPvP+lOl3RZMHgbiDkqfpgM0+i4P+ATXnOpYytWke2lujotgCd4LDg8YvFxHZY+oj4fDtxyZjuNHkcFSX8mlT1aqrtwkOgXXoidN4HVVo6LX89yjYLJX1r4FNAWbB05fdIKYCFItpkZva0yZ5ngrJhkJdmqaDIPquESkdbWuZigglel5lMF554H9siXcPQf+jy1IhcpJf0wPRfKq1GllQbcpzbtCFyhpy3Sn89iNU7L5qnAulDU68AU+whnks0tGYqboA=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(366004)(346002)(39860400002)(376002)(451199021)(33656002)(316002)(76116006)(66946007)(64756008)(4326008)(66476007)(478600001)(66556008)(6916009)(2906002)(8676002)(8936002)(52536014)(5660300002)(66446008)(41300700001)(55016003)(86362001)(9686003)(54906003)(38070700005)(38100700002)(4744005)(7696005)(122000001)(186003)(71200400001)(26005)(6506007)(107886003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?TStObTI2SFRhdFIvUVJCcndLSkN2Uks2ejVLSHFVVXVCeHhxUUxDSVdKdE1z?=
+ =?utf-8?B?c1Q3SjZXdWdvQ1o1VWV2N3o0UVZweEw5SkloTGY1MXdEcHNQME4zMllVK3Rq?=
+ =?utf-8?B?U2JZNzZ2S252S0E2dEUxOWFaQXd6akV6clkwTUVDRFdKem5ObE95QXd3aUVl?=
+ =?utf-8?B?K3ovSzgzT0ptQkxPckg0aXVLMW5XS0VWSjZIYTR2Wmk2MG0vZnoya3h0WGxU?=
+ =?utf-8?B?WGlDVXd1VXpELzJDRzZNcVdMYlFFdU51cGRGeHI5UUlYREdRUkpVNm1VZS9j?=
+ =?utf-8?B?eGpNblVzUlNxZ2JrSG8vemo5dmJIV3dIV0lnS1lPRHorWkNoRGdmY0djeDZT?=
+ =?utf-8?B?WTBwVFRzaVQ4SXJrSEVHMFl6UHF1Zmo2MGhzMmRVbWRKTFdzdDQwbW83T0Fl?=
+ =?utf-8?B?TUM5MjI2Nk0wY0Y3TGdSTzBON3ovdUFlS25DV2NXK3ZMTXZUZkV5Rk1vWE1G?=
+ =?utf-8?B?VDlucXlDeFVHdFVsMVVTZjMzSmZ2clZ6UjAvQTIveTZVNDNNSGp3bmxVNCtY?=
+ =?utf-8?B?WDBoNlJ3ZlRPV0pZUXRPNytyN3FhVzBqWnk4ZXZZYmJiancvb0tMQTMwMkJh?=
+ =?utf-8?B?RDdUTlBpUnVVMUkyVkx2c25YUGdyS2lwYzBEREZQaGhodDd1VG1WbVFtdTJh?=
+ =?utf-8?B?a0JrOXc3dE1DVWcrVFFkT0kvSEFsOGNjTUxxRkhQRlFzYXlsVnhoUzJkYTc1?=
+ =?utf-8?B?VUJqT1EzemNyekpFSWJYSm5lYTEyOEI4YTYrYXZHTGVWcVZ0MzdIV2l4RFhm?=
+ =?utf-8?B?dG9WYTBFa3hQc2lKUEh0SUgwdGVWQW1jRVA3b0djOTdXalJFY1U5bTU5MmV0?=
+ =?utf-8?B?QW1vVXJJNVRCODJUMVI1OTl0em9aS29DbnFkSWZ1NlBPaUhhY1JyVEZvRm5z?=
+ =?utf-8?B?TU1OWEhNekNQSm4xcXhLSWNXaE5QRnFzZ0VYM09SSExmRkJkenM1RmZZMzhv?=
+ =?utf-8?B?QzluZytqQ0ZqWnp2bnpOWCs0eHJHdXBLQ3hIQlpYYi9GajdiUDFIR282Rm9W?=
+ =?utf-8?B?S3VtS3E4WDJnNkF3T3IyelVOU2RxWUZjSmVOVUtXcDY5RGlod05kMUlEcE9z?=
+ =?utf-8?B?eEVIVnhtdDRTSXFyZDdZYlphbUVtYzIvQUpFOWJXYWMzd0tlbmVFMHYwdWVy?=
+ =?utf-8?B?ZWlOZTJwZlpxbmZycXlaQUg5Zk4zMEttMXlJR3JZVnlOT3d2SENCTW1GcUsv?=
+ =?utf-8?B?cDhYRU9oWXlFU0VSbXRCbkJUL3VHZENMaE4ydEZ0a1NDNTFrNThNeStqVVli?=
+ =?utf-8?B?d3JxaUs3MFhaZlAxRG96S1I4UkFUVk05TUhVVXQzRW5jdjl0elVUdFI1SVlO?=
+ =?utf-8?B?REZadUVmYTlQYU9JWExJb1BvSHRnelRUQWVaVm45Y0NIV3NTL2I0bi9zN1Qw?=
+ =?utf-8?B?b281Z2VKbm03U3RGbFd6NTZlUVlsYjBhd2kwSC9CMnI4TjRkajBnS3hvWGJH?=
+ =?utf-8?B?QTVwT2t3OHNjUTdnK1p4Q0UrSFRNeXdjaitoekpoOXBxS1RKZVBZS00xY3N0?=
+ =?utf-8?B?WDZMWlo1bTVMb09yNXFwQ2RtWjVqSGIxRVZqM1RhVkRXWm5Bd3dLLzhhb2Zp?=
+ =?utf-8?B?eGdtbVJndjFPeDVSeU83b3B5U0FMUUd6NVRTWEVKS1hPM0tNV1JtTzBaU0lJ?=
+ =?utf-8?B?NFhhZkxBaERQL1NFL0JzSEg0Tmk5a1o1dk54RHA5S2FBQU5FNzdsZGZib0tB?=
+ =?utf-8?B?TU5EbUZyZFZtQmpHY3l0ZWNRUU5oNDNWRHdwdGVEOU5aZUUzVG04RlNPeXdu?=
+ =?utf-8?B?Qyt1RjZVYnFZUm5UTytxVWZJUERjS3doOE1UREpUamtnMjEzT3dlRCs5dHR0?=
+ =?utf-8?B?ejN3bW8vbUpPbU50VWhLMjNXVzFWNlBrdGh2VGRuRzNVbHZzRmhQT1FlS0h1?=
+ =?utf-8?B?VmxZVVhtZFNqZmw5S2I3R2U5d2lEVXV6c2RsM1EySUgrY3NxcEVxUWs2ek5U?=
+ =?utf-8?B?a1FoaXpMTXQwNUFXMWZ0TTVHR0FxbGZuVER4T1hxbEhSTHNZK25vVWFLZGRs?=
+ =?utf-8?B?WjB4eEJQYy9TVVoyK1hnWXlrVCtsdm9mT3FmY2VlbGE2NUNvbFRKOHZRR1ZQ?=
+ =?utf-8?B?WUZLRnRqSk9pVGlkR01NY3E3NEp4dkY2b1BQbWcwU0lNTThuSEdROS9MVjB3?=
+ =?utf-8?Q?PyME=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT004:EE_|PH7PR12MB6977:EE_
-X-MS-Office365-Filtering-Correlation-Id: 06725a55-f600-4194-7a71-08db7dd820c5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	aEMu26FyXx1qnKCWrMh634nB6rj8GSrve1WgoqeaYybtWWccVpgZ0gSB6mEXUnlxsFuluN89DTv4T2aSwy5IBIbm6aOn8PySYqjaSIQN4hyGXM2nJzMnNw4651Y/tU3saF2YJ2tLANpV0Clyu8YSbyfHDCTzcuOqevO88vNP15vnELzufarMmrJuCNCMhI90kVagX8nRyQA2LZDQF8f1xPRl++XLISYoLeJ9L5cEnyj0a+Co9rXfLhvPiSx//qpSE1PdcLtOzDQbGGsGy1uQHhlCFCVL2oHL9VWvRZmF4dY8xV1Aor8D8tSfUDl/txvRhNCveFBvGJ8fmVzp3kpDX3pGb95GtAVaNMOawrZpMsVQl6c6N/zw4cjKuixmPUjmFBDJ10j73FbNwrZmW9VZTSLbrdopDmwP7xr1pq/Gd9IKsT0fSUxqGdXiYQqbMYT3wJNSt2OfqSdw4kizABrMaxtCeTbI8rxBRLWrpBgRNUbF/u77DPzxUpZRx2Q/ZETEzTx5fx1bqYqZRieoV5i/BCM/MNpVJ6usC3CLUoq+NqSmgknhlD97Qqj90kvfs4edRaOZQ1xXpagXheyiZXWBoo1zjgoVuO5kVNxzdjxy1URQjMTFioD3YAnsPa2nFFjauE3zeMpdnbzLdTtzjWv3bzDa9ymWfwPSF6/INzKRDgdFIN4+uuUYBEfeAsS1gwbTYwKIB88Q7e8Nof9IpWmVKpyjNuHwjqnEVOQXPFhPEQ1+gJWfKk/hE58ZbiF8dtsn
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(136003)(376002)(451199021)(36840700001)(40470700004)(46966006)(70206006)(4326008)(70586007)(7636003)(40480700001)(356005)(82740400003)(2616005)(16526019)(186003)(86362001)(6666004)(36756003)(107886003)(1076003)(54906003)(26005)(478600001)(110136005)(40460700003)(82310400005)(36860700001)(8676002)(8936002)(4744005)(5660300002)(2906002)(47076005)(336012)(41300700001)(316002)(83380400001)(426003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2023 04:19:01.7246
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57363a90-7cc5-470f-32e5-08db7dd84559
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2023 04:20:03.2621
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06725a55-f600-4194-7a71-08db7dd820c5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6977
-Subject: [virtio-dev] [PATCH v10 1/4] admin: Split opcode table rows with a line
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: v7uoOpYR0GX/KcoDvriJLwup/5cIVBOkV5zjtpkMa48hrc6w2lg1qELzJxyTao2dvXzMJyTk3rG6yCgIo01jpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8056
+Subject: [virtio-dev] RE: [virtio-comment] [PATCH v9 0/4] admin: Access legacy registers
+ using admin commands
 
-Currently all opcode appears to be in a single row.
-Separate them with a line similar to other tables.
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
----
-changelog:
-v2->v3:
-- new patch
----
- admin.tex | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/admin.tex b/admin.tex
-index 2efd4d7..e51f9e6 100644
---- a/admin.tex
-+++ b/admin.tex
-@@ -114,7 +114,9 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
- opcode & Name & Command Description \\
- \hline \hline
- 0x0000 & VIRTIO_ADMIN_CMD_LIST_QUERY & Provides to driver list of commands supported for this group type    \\
-+\hline
- 0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
-+\hline
- 0x0002 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
- \hline
- 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
--- 
-2.26.2
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQoNCj4gRnJvbTogTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4NCj4gU2VudDog
+V2VkbmVzZGF5LCBKdWx5IDUsIDIwMjMgNzowOSBBTQ0KDQo+IE9LIEkgc2VudCBhIGJ1bmNoIG9m
+IGNvbW1lbnRzLiBQbHMgdHJ5IHRvIGFkZHJlc3MsIHVuZm9ydHVuYXRlbHkgSSBkaWRuJ3QgZ28g
+aW4NCj4gZGVwdGggb3ZlciB0aGUgbGFzdCBwYXRjaCwgYnV0IEkgZmVlbCBpdCBzaG91bGQgYmUg
+c3F1YXNoZWQgaW50byB0aGUgZ2VuZXJpYw0KPiBsZWdhY3kgY29tbWFuZCBzZWN0aW9ucyBhdm9p
+ZGluZyBuZWVkIGZvciBpbmRpcmVjdGlvbiwgc28gcmV3cml0aW5nIGl0IG5vdw0KPiB3b3VsZG4n
+dCBiZSBlZmZpY2llbnQuDQoNCkkgYWRkcmVzcyBhbGwgeW91ciBjb21tZW50cyBhbmQgb2YgQ29y
+bmVsaWEuDQpQQ0kgcGFydCBJIHN0aWxsIHByZWZlciB0byBiZSBzZXBhcmF0ZSBzbyBrZXB0IGl0
+Lg0KDQpUaGFua3MgYSBsb3QuDQo=
 
