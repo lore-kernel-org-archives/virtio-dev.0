@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13260-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13261-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C6B81EB64DD
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 16:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CB95CEB64D9
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 16:31:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1E29A26A4E
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 16:28:28 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 27A723F8E7
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 16:31:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1623398680B
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 16:28:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0A3D79867B6
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 16:31:54 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 07AC5986728; Thu,  6 Jul 2023 16:28:28 +0000 (UTC)
+	id E6C1F986728; Thu,  6 Jul 2023 16:31:53 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,97 +24,136 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E9CEA98672A
-	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2023 16:28:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D1F7B986729
+	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2023 16:31:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: JF8N1oC2NaG37XrsMgAPsQ-1
-From: Cornelia Huck <cohuck@redhat.com>
-To: Parav Pandit <parav@nvidia.com>, virtio-comment@lists.oasis-open.org,
- mst@redhat.com, david.edmondson@oracle.com
-Cc: virtio-dev@lists.oasis-open.org, sburla@marvell.com,
- jasowang@redhat.com, yishaih@nvidia.com, maorg@nvidia.com,
- shahafs@nvidia.com, Parav Pandit <parav@nvidia.com>
-In-Reply-To: <20230706041714.65600-5-parav@nvidia.com>
-Organization: Red Hat GmbH
-References: <20230706041714.65600-1-parav@nvidia.com>
- <20230706041714.65600-5-parav@nvidia.com>
-User-Agent: Notmuch/0.37 (https://notmuchmail.org)
-Date: Thu, 06 Jul 2023 18:28:21 +0200
-Message-ID: <87r0pluhqy.fsf@redhat.com>
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688661112; x=1691253112;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=oeN++xGg8e35F2/9iu+dQUFgpJqc7z1W6P3YqcVFJOE=;
+        b=dqNB7X0aPqB7FBhUi5wCtoVVOJd5j0UDaA0UBtMzIlLpuvRPA9fQpWGEwS+YwqbfDm
+         vkrRUcREP932wf6coUzMiEfcuzCVLWiLcccmZB3uGRhT6fP/V2HTBsnejg3pDzKcMH/R
+         W2L1x7qqM4daCDdHTBnTmbCNroVIfbZs/gQrIIJu995ntNEgw4t7Q32ePlzc1BUXhIlv
+         cK4bwXqGu4O6ycnsu+0iiDMaV5ZpmG1DcyHBSX0hpGJGAWIF/+OM1loyvOdIDG1cYAo8
+         hLNz3ZVhQ0roSj10pigLb4n5oWbukcuouYEh5dycntDzYAIB1F88xMlU0XEiN7TE4J6T
+         6XOA==
+X-Gm-Message-State: ABy/qLYHPRtdnEPJ74xRSapys4NokA/7jQt+SHt2ScvO5POEOb1q/Qn7
+	PHLEn528Sot3MvOMnseohFz6Fg==
+X-Google-Smtp-Source: APBJJlF1Iu5C6Ts+ksT1Js2KXqV/lcpvvQYluNMhRCdEbsAMS2K8fa/jEnZG+hCERq+/EyXuEF/a9g==
+X-Received: by 2002:a5d:5444:0:b0:314:1fdc:796d with SMTP id w4-20020a5d5444000000b003141fdc796dmr1805250wrv.70.1688661111900;
+        Thu, 06 Jul 2023 09:31:51 -0700 (PDT)
+References: <20230704123600.1808604-1-alex.bennee@linaro.org>
+User-agent: mu4e 1.11.8; emacs 29.0.92
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, slp@redhat.com,
+ mst@redhat.com, marcandre.lureau@redhat.com, stefanha@redhat.com,
+ viresh.kumar@linaro.org, sgarzare@redhat.com, takahiro.akashi@linaro.org,
+ erik.schilling@linaro.org, manos.pitsidianakis@linaro.org,
+ mathieu.poirier@linaro.org
+Date: Thu, 06 Jul 2023 17:31:15 +0100
+In-reply-to: <20230704123600.1808604-1-alex.bennee@linaro.org>
+Message-ID: <873521f1c9.fsf@linaro.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain
-Subject: [virtio-dev] Re: [PATCH v10 4/4] transport-pci: Introduce group legacy group
- member config region access
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [RFC PATCH] docs/interop: define STANDALONE protocol feature
+ for vhost-user
 
-On Thu, Jul 06 2023, Parav Pandit <parav@nvidia.com> wrote:
 
-> diff --git a/transport-pci-legacy-regs.tex b/transport-pci-legacy-regs.tex
-> new file mode 100644
-> index 0000000..ceea28c
-> --- /dev/null
-> +++ b/transport-pci-legacy-regs.tex
-> @@ -0,0 +1,42 @@
-> +\subsection{Legacy Interface: Group member device Configuration Region Access}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / Legacy Interface: Group Member Device Configuration Region Access}
+Alex Benn=C3=A9e <alex.bennee@linaro.org> writes:
+
+> Currently QEMU has to know some details about the back-end to be able
+> to setup the guest. While various parts of the setup can be delegated
+> to the backend (for example config handling) this is a very piecemeal
+> approach.
+>
+> This patch suggests a new feature flag (VHOST_USER_PROTOCOL_F_STANDALONE)
+> which the back-end can advertise which allows a probe message to be
+> sent to get all the details QEMU needs to know in one message.
+>
+> Signed-off-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
+>
+> ---
+> Initial RFC for discussion. I intend to prototype this work with QEMU
+> and one of the rust-vmm vhost-user daemons.
+> ---
+>  docs/interop/vhost-user.rst | 37 +++++++++++++++++++++++++++++++++++++
+>  hw/virtio/vhost-user.c      |  8 ++++++++
+>  2 files changed, 45 insertions(+)
+>
+> diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
+> index 5a070adbc1..85b1b1583a 100644
+> --- a/docs/interop/vhost-user.rst
+> +++ b/docs/interop/vhost-user.rst
+> @@ -275,6 +275,21 @@ Inflight description
+>=20=20
+>  :queue size: a 16-bit size of virtqueues
+>=20=20
+> +Backend specifications
+> +^^^^^^^^^^^^^^^^^^^^^^
 > +
-> +The PCI owner device or the member device or both support driver notifications using
-
-What about
-
-"The PCI owner device, the member device, or both can choose to
-support..." ?
-
-> +a notification region defined in \field{struct virtio_pci_legacy_notify_region}.
+> ++-----------+-------------+------------+------------+
+> +| device id | config size |   min_vqs  |   max_vqs  |
+> ++-----------+-------------+------------+------------+
 > +
-> +In \field{struct virtio_virtio_admin_cmd_legacy_notify_query_entry},
-> +\field{region_data} is defined as following:
+> +:device id: a 32-bit value holding the VirtIO device ID
 > +
-> +\begin{lstlisting}
-> +struct virtio_pci_legacy_notify_region {
-> +        u8 owner;  /* When set to 1, notification region is of the owner device */
-> +        u8 bar;    /* BAR of the member or owner device */
-> +        u8 padding[6];
-> +        le64 offset; /* Offset within bar. */
-> +};
-> +\end{lstlisting}
+> +:config size: a 32-bit value holding the config size (see ``VHOST_USER_G=
+ET_CONFIG``)
 > +
-> +The group owner device hardwires VF BAR0 to zero in the SR-IOV Extended
-> +capability.
+> +:min_vqs: a 32-bit value holding the minimum number of vqs supported
 > +
-> +The group member device does not use PCI BAR0 in all the Virtio PCI capabilities
-
-"in [or for?] any of the...", I guess?
-
-> +listed in section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
+> +:max_vqs: a 32-bit value holding the maximum number of vqs supported, mu=
+st be >=3D min_vqs
 > +
-> +\devicenormative{\subsubsection}{Legacy Interface: Group Member Device Legacy Configuration Region Access}{Virtio Transport Options / Virtio Over PCI Bus / Legacy Interface: Group Member Device Configuration Region Access}
+>  C structure
+>  -----------
+>=20=20
+> @@ -296,6 +311,7 @@ In QEMU the vhost-user message is implemented with th=
+e following struct:
+>            VhostUserConfig config;
+>            VhostUserVringArea area;
+>            VhostUserInflight inflight;
+> +          VhostUserBackendSpecs specs;
+>        };
+>    } QEMU_PACKED VhostUserMsg;
+>=20=20
+> @@ -316,6 +332,7 @@ replies. Here is a list of the ones that do:
+>  * ``VHOST_USER_GET_VRING_BASE``
+>  * ``VHOST_USER_SET_LOG_BASE`` (if ``VHOST_USER_PROTOCOL_F_LOG_SHMFD``)
+>  * ``VHOST_USER_GET_INFLIGHT_FD`` (if ``VHOST_USER_PROTOCOL_F_INFLIGHT_SH=
+MFD``)
+> +* ``VHOST_USER_GET_BACKEND_SPECS`` (if ``VHOST_USER_PROTOCOL_F_STANDALON=
+E``)
+>=20=20
+>  .. seealso::
+>=20=20
+> @@ -885,6 +902,13 @@ Protocol features
+>    #define VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS  15
+>    #define VHOST_USER_PROTOCOL_F_STATUS               16
+>    #define VHOST_USER_PROTOCOL_F_XEN_MMAP             17
+> +  #define VHOST_USER_PROTOCOL_F_STANDALONE           18
 > +
-> +When a PCI SR-IOV group owner device supports
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE commands, the group owner device MUST
-> +hardwire VF BAR0 to zero in the SR-IOV Extended capability and the group memberi
-
-s/memberi/member/
-
-> +device MUST NOT use BAR0 in any of the Virtio Structure PCI Capabilities.
+> +Some features are only valid in the presence of other supporting
+> +features. In the case of ``VHOST_USER_PROTOCOL_F_STANDALONE`` the
+> +backend must also support ``VHOST_USER_PROTOCOL_F_CONFIG`` and
+> +``VHOST_USER_PROTOCOL_F_STATUS``.
 > +
-> +The group owner device or the group member device or both MAY support driver
-> +notifications region.
 
-Make this "a driver notification region"?
+This is too tight a restriction as not all VirtIO backends manage a
+config space. So I suggest the following:
 
-> +
-> +For the SR-IOV group type, the owner device supporting
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_QUERY
-> +commands and its member device SHOULD follow the rules for the PCI Device ID,
-> +Revision ID and Subsystem Device ID of the non-transitional devices documented in
-> +section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
+  Some features are only valid in the presence of other supporting
+  features. In the case of ``VHOST_USER_PROTOCOL_F_STANDALONE`` the
+  backend must also support ``VHOST_USER_PROTOCOL_F_STATUS`` and
+  optionally ``VHOST_USER_PROTOCOL_F_CONFIG`` (if there is a config space).
 
+--=20
+Alex Benn=C3=A9e
+Virtualisation Tech Lead @ Linaro
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
