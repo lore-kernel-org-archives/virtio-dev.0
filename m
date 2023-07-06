@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13272-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13273-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6F6E5EB64D9
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 17:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F1474EB64D9
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 17:38:12 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DC19D76074
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 17:35:37 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 435C485084
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 17:38:12 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 78328986821
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 17:35:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 184DE986808
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 17:38:12 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D662F98672C; Thu,  6 Jul 2023 17:35:36 +0000 (UTC)
+	id F1A9F986728; Thu,  6 Jul 2023 17:38:11 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,31 +24,31 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DB00598672B
-	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2023 17:34:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DEB3F98672A
+	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2023 17:38:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 2CXYvWujPFS7JEZW-f7DXw-1
+X-MC-Unique: 5hLSWse3PnWVzpZpaqIBKA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688664842; x=1691256842;
+        d=1e100.net; s=20221208; t=1688665089; x=1691257089;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YRzRKb5moyAiHJAQ8tOibkFnjZTvQSllmW11w8EmmyE=;
-        b=dIcSXrPI4aCnzrcljEec9OzkrIMrZ6gwT7zrAdajhioKWWrs22gtdzUF3/Y4FsKALC
-         ww8NYXtYkYNbdf5+GOvQMIjCJ3hOQZVRaMvtIaVdhFdbyjzHAjbG2XESkGMeTKGY80+y
-         3SqrMcgrhMkUumi/2QhzolYa07Ir5hZTSWkeo5XtcgF/h1FsF9d92HMNdic6Hj6OtRH7
-         fDj0YNDG1otpNcgL7KAET81Fb6sq/e6zcbRBMuZ/oTf9kMQJAZx7Ih/o5Se9+7RY/Mwm
-         8rQmiFuCLJfRxoxf+DIvuCQd+XS7WZm1/fjkFpqLu2E/xfCsywkzE5RD5E9yGY5MJCUk
-         fb7w==
-X-Gm-Message-State: ABy/qLb2WT1Ix203oTVnC2+uAafMhNcL/ONuCQVsOVhL5aBq6UAmxYYP
-	whvcywBG2NrlDexAkomj7ZPCAjB1M0CIzqX2wjsfe7fSK46KxMAVSRISuzB4hic5kkOvSkWsHIN
-	MoYSk/ZqeLcamcCkaOhGeHTgM9MF/
-X-Received: by 2002:adf:e38e:0:b0:314:33a2:78fe with SMTP id e14-20020adfe38e000000b0031433a278femr2165646wrm.29.1688664842026;
-        Thu, 06 Jul 2023 10:34:02 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlGUM+ZXD75jxyt/Ca4/DtTzySD9WjqzPx6Wo2jUyEGxOV2yji3jRzLM3W+PUza9eJXABJlteg==
-X-Received: by 2002:adf:e38e:0:b0:314:33a2:78fe with SMTP id e14-20020adfe38e000000b0031433a278femr2165621wrm.29.1688664841493;
-        Thu, 06 Jul 2023 10:34:01 -0700 (PDT)
-Date: Thu, 6 Jul 2023 13:33:56 -0400
+        bh=1DiNWUiDEqbD4jRfnOmcDwZE938Q6lQ02F11ILk6Q34=;
+        b=eCI1Frxi5Gb9NilVGwTtXOZh6oTjO2y9pyCtWvmAVhDVbBO7sL1sJIUAMXcjiiJ1a7
+         5+jA/3pgPx6uAp2oQ7ENGPDtIin5DyASAExYZHZdXdCXrGF328Qu0uJFbeRO/lH7B2Qm
+         xaH/tQbQM5898uZUqbEEt+HYTg/Xpn81ZAv3qsupeH10USofzdWh7igFNcL0CqZWwwjV
+         HkcOIvRnXWyTMIJgbCfIxtury+MPGcpxs2QjYmtJKCc1yaL0+Oc8k7pDXutXB0zLoR35
+         wI+C+CfEFGVwWbbY6RBsyolqJSM5blbxR1bbLh+TTmnhqkFhBQEj6crmVbwHWyfnEAJk
+         2VNQ==
+X-Gm-Message-State: ABy/qLYV4ca93Hds19SvVJZJXU7OJvhRfuypRuRmaodaEYBhNIpVfEL4
+	HJ1f7U2UpqBg+3h+thVuwfng2UKd7nZjHx4/WsgRhMI38Wg2FRcIGloZewfNnTsu8ecgE4yxoLB
+	IOjSUa3/FXWp1DediCSsm0LRSiAKC
+X-Received: by 2002:a5d:61d2:0:b0:314:41e8:107d with SMTP id q18-20020a5d61d2000000b0031441e8107dmr2786455wrv.47.1688665088875;
+        Thu, 06 Jul 2023 10:38:08 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlEOCzV9SPvCTxfeNikgCbHre1TZ0Zjiiy6j1t7VmyVub3h8sswhs+wAVE0loDfBeXfFPua9QQ==
+X-Received: by 2002:a5d:61d2:0:b0:314:41e8:107d with SMTP id q18-20020a5d61d2000000b0031441e8107dmr2786439wrv.47.1688665088540;
+        Thu, 06 Jul 2023 10:38:08 -0700 (PDT)
+Date: Thu, 6 Jul 2023 13:38:04 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
 Cc: Cornelia Huck <cohuck@redhat.com>,
@@ -59,7 +59,7 @@ Cc: Cornelia Huck <cohuck@redhat.com>,
 	"jasowang@redhat.com" <jasowang@redhat.com>,
 	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
 	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230706132638-mutt-send-email-mst@kernel.org>
+Message-ID: <20230706133456-mutt-send-email-mst@kernel.org>
 References: <20230706041714.65600-1-parav@nvidia.com>
  <20230706041714.65600-5-parav@nvidia.com>
  <87r0pluhqy.fsf@redhat.com>
@@ -104,9 +104,7 @@ On Thu, Jul 06, 2023 at 04:58:51PM +0000, Parav Pandit wrote:
 > notifications are sent to the device via accessing such a notification region
 > using a memory or I/O operation instead of sending the notifications through
 > the administration command.
-
-This paragraph adds very little information - just some vague hints at how things work.
-
+> 
 > The driver of the owner device can send a driver notification to the member
 > device by executing VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE with the
 > \field{offset} matching \field{Queue Notify} and the \field{data} containing
@@ -134,25 +132,7 @@ This paragraph adds very little information - just some vague hints at how thing
 > group member device does not use PCI BAR0 in all the Virtio PCI capabilities
 > listed in section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / Virtio Structure PCI Capabilities}.
 
-After reading this I still have no clue at how these notifications work.
-maybe it's in some other patch. Let's see v11.
-
-Just making a wild guess:
-
-it is true that
-	to supply a driver notification to the device, it is possible
-for the driver to write the vq index of the vq to be notified, in little
-endian format, using a single 16 byte write at the address provided ?
-
-and I am guessing that
-	the write is an IO or a memory write, depending on the
-	type of the BAR referred to?
-
-then why don't we just say this?
-
-
--- 
-MST
+lots of comments wrt grammar. do post v11 and i will fix.
 
 
 ---------------------------------------------------------------------
