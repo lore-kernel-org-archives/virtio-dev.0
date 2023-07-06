@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13252-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13253-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DCBFCEB64D9
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 06:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9AF43EB64D9
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 08:27:35 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4253B6008D
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 06:10:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id BA30AEEA11
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 08:27:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1480D9867F9
-	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 06:10:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9014C98672C
+	for <virtio-dev@archiver.kernel.org>; Thu,  6 Jul 2023 08:27:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id DC6A5986724; Thu,  6 Jul 2023 06:10:16 +0000 (UTC)
+	id 71D3A986724; Thu,  6 Jul 2023 08:27:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,78 +24,209 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C47D6986726
-	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2023 06:10:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5CE74986726
+	for <virtio-dev@lists.oasis-open.org>; Thu,  6 Jul 2023 08:27:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: dqXdu5A5PZquxBcwgv7mQw-1
+X-MC-Unique: tczrbVCAMkGGBp0ly2Sv2A-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688623814; x=1691215814;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=akuF4yvADvDP2yHBTfV+EMwk9mnnynho/bRaZfcDiDc=;
-        b=ioXgtYrRY5RPaA1algmxWah9pKAvOO+tjgVXTmXB+H0KEIbdHeHmfPwJHeqDHsOjNQ
-         ARpEtZE18oCArKNlE8iXVaSWHEevRyZoDTzv9hcF3TQgtMFRlcgZPCKJ3wNw/rccOkAk
-         I/SkIDdIaxVBZLb3wERLDD7tIqmWAOrObdI1FPCofrN1K15NVKEkA2A0wxITH2xXGcnG
-         a5lEZVUoEIWihvTVAWNHEwcFJkBJqrmX+v5KuiAEvq4Bwexu75c30mc4tP3w1MTctDIS
-         WXbVTpyBIjruwHt9vHQAvabtMUjMzz1fmN/kWEwueokHeFx/knxN9Z1tPD2e/qze/Ldp
-         t5vw==
-X-Gm-Message-State: ABy/qLY1x9qxKUA1U8SPjSydBUATWBIwOU0QfGBTCFAkHWvmUuCWWZhc
-	RbmJpuCEYWPCxZIGGeH5ZCa6IU27lc0jaZF2YievQnmBBFdqyR6WbNPu6qdvA4MrUPVmpXlNoqz
-	VNKlJoZfegmLkY+8kYUuZNJ+Anqnj
-X-Received: by 2002:a05:6000:545:b0:314:3344:72f6 with SMTP id b5-20020a056000054500b00314334472f6mr705587wrf.32.1688623813946;
-        Wed, 05 Jul 2023 23:10:13 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlFbjaICPNH9Pg8ogZHrLrtARuLztQfY2locQUdYaVyhrqo+DQD+wNVOEdS5FikJ7SSUF3nGiQ==
-X-Received: by 2002:a05:6000:545:b0:314:3344:72f6 with SMTP id b5-20020a056000054500b00314334472f6mr705576wrf.32.1688623813682;
-        Wed, 05 Jul 2023 23:10:13 -0700 (PDT)
-Date: Thu, 6 Jul 2023 02:10:10 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"david.edmondson@oracle.com" <david.edmondson@oracle.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-	Shahaf Shuler <shahafs@nvidia.com>
-Message-ID: <20230706020803-mutt-send-email-mst@kernel.org>
-References: <20230704233724.22394-1-parav@nvidia.com>
- <20230705070758-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481D2368A718164DE18DCDCDC2CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+        d=1e100.net; s=20221208; t=1688632051; x=1691224051;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jc7IE0myDz5TPenigLGqwL759yJ0I5n4x+zWlEqGcvM=;
+        b=cOu1AF3Nbp5uTBSRyHGzZwEtZnUHQrHOSyJnb+LoTNWL/fT+1e+wwYHAKLp6SpMFQn
+         IQr67k9o/rC6kLCiXvcwyWV8WpqeMnl+44hoQZiIEBi6siGCbbNEV8O7An1vTTQomi2t
+         i6Etz4Gq9c/CWAXWCiALpOq34YjMmciD1P964XRf0Ydn3bUeKAlCbr4ZrvlVe/NsjWCM
+         iXCKTGET0hO++XT2T1VprGnKOnTLxVRTGc1kPVTeyA2QggwVpuKWCs4TgMsWejWtUzuk
+         cwj05gn9YEthwQPMRN61l0n3j2jLA0nu/jyPQfscNWqq5kEaGbZQnS3UlyBlc7trAB/I
+         fFGg==
+X-Gm-Message-State: ABy/qLbowRnZ/rKaw7sQQ/UMa5Wg/a9vLZ8sUrWeZGm3UAqQSGYhsYTw
+	2m1ymB5VMPzVgR4fjeGqTEsVhNB46gjzKgq/aI/4w9PZwUtRSMVM+Q2pcuaM6oqww45kVAHMVZf
+	os8sBIXMNp+ri3vkfa9gxshmQXX1zTg89wSFDk91av7X3
+X-Received: by 2002:a05:6a00:1952:b0:679:9639:1f6a with SMTP id s18-20020a056a00195200b0067996391f6amr1042525pfk.14.1688632050975;
+        Thu, 06 Jul 2023 01:27:30 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlHdyhfr8Anbq5R89YE33dBE6enM8WSJTYKKGfyrJdARHelk8STkHQit1SMKqxFNgD9og3NA8XgJT1Z0SkrhJsM=
+X-Received: by 2002:a05:6a00:1952:b0:679:9639:1f6a with SMTP id
+ s18-20020a056a00195200b0067996391f6amr1042499pfk.14.1688632050637; Thu, 06
+ Jul 2023 01:27:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481D2368A718164DE18DCDCDC2CA@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <CAPBb6MXBaKKFGg8Yt2Me8kjUwCm4utWcsVOiCS1Qunjhza4Ycg@mail.gmail.com>
+ <20230531020611-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230531020611-mutt-send-email-mst@kernel.org>
+From: Albert Esteve <aesteve@redhat.com>
+Date: Thu, 6 Jul 2023 10:27:19 +0200
+Message-ID: <CADSE00KRu3b94kZMVV4XMqA=rTFKGSZ1fK=orN71P9PTSFCZvg@mail.gmail.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Alexandre Courbot <acourbot@google.com>, virtio-comment@lists.oasis-open.org, 
+	virtio-dev@lists.oasis-open.org, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, 
+	Andrew Gazizov <andrew.gazizov@opensynergy.com>, 
+	Andrii Cherniavskyi <andrii.cherniavskyi@opensynergy.com>, Cornelia Huck <cohuck@redhat.com>, 
+	Daniel Almeida <daniel.almeida@collabora.com>, Enric Balletbo i Serra <eballetb@redhat.com>, 
+	Enrico Granata <egranata@google.com>, Gustavo Padovan <gustavo.padovan@collabora.com>, 
+	Keiichi Watanabe <keiichiw@chromium.org>, 
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
+	Alexander Gordeev <alexander.gordeev@opensynergy.com>, 
+	Kieran Bingham <kieran.bingham@ideasonboard.com>, Peter Griffin <peter.griffin@linaro.org>, 
+	Tomasz Figa <tfiga@chromium.org>, =?UTF-8?Q?Matti_M=C3=B6ll?= <Matti.Moell@opensynergy.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH v9 0/4] admin: Access legacy registers
- using admin commands
+Content-Type: multipart/alternative; boundary="00000000000088f01e05ffcd4927"
+Subject: [virtio-dev] Re: virtio-v4l2 specification draft
 
-On Thu, Jul 06, 2023 at 04:20:03AM +0000, Parav Pandit wrote:
-> 
-> 
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Wednesday, July 5, 2023 7:09 AM
-> 
-> > OK I sent a bunch of comments. Pls try to address, unfortunately I didn't go in
-> > depth over the last patch, but I feel it should be squashed into the generic
-> > legacy command sections avoiding need for indirection, so rewriting it now
-> > wouldn't be efficient.
-> 
-> I address all your comments and of Cornelia.
-> PCI part I still prefer to be separate so kept it.
-> 
-> Thanks a lot.
+--00000000000088f01e05ffcd4927
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I clarified some questions you asked about. Maybe v11 is justified
-in view of my answers. Let me know before I review again.
+Hi Alex,
 
--- 
-MST
+Sorry for the late reply. I think this is a nice solution, specially for
+the host-guest
+memory management part. I was intrigued with how would you solve this, as
+the v4l2 struct memory fields can't be directly used.
 
+In that sense, sending a field that is going to be ignored by both driver
+and device,
+feels like kindof a waste. But I guess there is not a good solution to that=
+.
+Have you considered avoiding using struct v4l2_buffer for QBUF and DQBUF
+ioctls,
+and having virtio-v4l2 specific struct for them? The device would have the
+burden to
+copy the all the fields and leave the `m` field out, so it may have its own
+downsides.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+In any case, the specs are short and clear to follow. Great work!
+
+I just have a couple comments/questions:
+
+- The text in `0.1.6.3` and `0.1.6.3.1` is saying the same thing twice (?).
+Maybe would be
+  clearer to unify?
+
+- If I understood correctly, the `stream_id` is assigned by the device
+after receiving
+  a VIRTIO_V4L2_CMD_OPEN? Is it supposed to be a correlative natural number
+(1, 2, etc.)?
+  I assume that after (successfully) closing the stream, its stream_id can
+be reused?
+
+- For section `0.1.6.7` I think it would be good to refer (again) to the
+section `0.1.6.5` so that
+  we can quickly navigate to the section that explains the memory fields in
+the presented events.
+
+Best regards,
+Albert
+
+On Wed, May 31, 2023 at 8:08=E2=80=AFAM Michael S. Tsirkin <mst@redhat.com>=
+ wrote:
+
+> On Wed, May 31, 2023 at 03:02:04PM +0900, Alexandre Courbot wrote:
+> > Hello everyone,
+> >
+> > With the virtio-video call taking place soon, I thought it would help
+> > everyone understand both proposals if I sent a more formal
+> > specification of what virtio-v4l2 looks like. Please find it attached
+> > to this email.
+> >
+> > I apologize for not finishing and sending this earlier, but hopefully
+> > at 7 and a half pages it should be rather quick to skim through. :)
+> >
+> > Despite its short size, this spec is capable of supporting camera and
+> > image processor devices (on top of decoder/encoders), and also allows
+> > for another kind of memory backing for buffers (host-managed) that is
+> > not supported by virtio-video.
+> >
+> > For convenience I have made use of clickable links to the relevant
+> > parts of the V4L2 documentation, since it is supposed to be used
+> > alongside this spec.
+> >
+> > Looking forward to a fruitful discussion tomorrow!
+> >
+> > Cheers,
+> > Alex.
+>
+>
+> Can you please post patch with tex source inline as opposed as
+> pdf as an attachment? Thanks!
+>
+> --
+> MST
+>
+>
+
+--00000000000088f01e05ffcd4927
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi Alex,<div><br></div><div>Sorry=C2=A0for the late reply.=
+ I think this is a nice solution, specially for the host-guest</div><div>me=
+mory management part. I was intrigued with how would you solve this, as</di=
+v><div>the v4l2 struct memory fields can&#39;t be directly used.</div><div>=
+<br></div><div>In that sense, sending a field that is going to be ignored b=
+y both driver and device,</div><div>feels like kindof a waste. But I guess =
+there is not a good solution to that.</div><div>Have you considered avoidin=
+g using struct v4l2_buffer for QBUF and DQBUF ioctls,</div><div>and having =
+virtio-v4l2 specific struct for them? The device would have the burden to</=
+div><div>copy the all the fields and leave the `m` field out, so it may hav=
+e its own downsides.</div><div></div><div><br></div><div>In any case, the s=
+pecs are short and clear to=C2=A0follow. Great work!</div><div><br></div><d=
+iv>I just have a couple comments/questions:</div><div><br></div><div>- The =
+text in `0.1.6.3` and `0.1.6.3.1` is saying the same thing twice (?). Maybe=
+ would be</div><div>=C2=A0 clearer to unify?</div><div><br></div><div>- If =
+I understood correctly, the `stream_id` is assigned by the device after rec=
+eiving</div><div>=C2=A0 a=C2=A0VIRTIO_V4L2_CMD_OPEN? Is it=C2=A0supposed=C2=
+=A0to be a correlative natural number (1, 2, etc.)?</div><div>=C2=A0 I assu=
+me that after (successfully) closing the stream, its stream_id can be reuse=
+d?</div><div><br></div><div>- For section `0.1.6.7` I think it would be goo=
+d to refer (again) to the section `0.1.6.5` so that</div><div>=C2=A0 we can=
+ quickly navigate to the section that explains the memory fields in the pre=
+sented events.</div><div><br></div><div>Best regards,</div><div>Albert</div=
+></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr"=
+>On Wed, May 31, 2023 at 8:08=E2=80=AFAM Michael S. Tsirkin &lt;<a href=3D"=
+mailto:mst@redhat.com">mst@redhat.com</a>&gt; wrote:<br></div><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">On Wed, May 31, 2023 at 03:02:04PM +09=
+00, Alexandre Courbot wrote:<br>
+&gt; Hello everyone,<br>
+&gt; <br>
+&gt; With the virtio-video call taking place soon, I thought it would help<=
+br>
+&gt; everyone understand both proposals if I sent a more formal<br>
+&gt; specification of what virtio-v4l2 looks like. Please find it attached<=
+br>
+&gt; to this email.<br>
+&gt; <br>
+&gt; I apologize for not finishing and sending this earlier, but hopefully<=
+br>
+&gt; at 7 and a half pages it should be rather quick to skim through. :)<br=
+>
+&gt; <br>
+&gt; Despite its short size, this spec is capable of supporting camera and<=
+br>
+&gt; image processor devices (on top of decoder/encoders), and also allows<=
+br>
+&gt; for another kind of memory backing for buffers (host-managed) that is<=
+br>
+&gt; not supported by virtio-video.<br>
+&gt; <br>
+&gt; For convenience I have made use of clickable links to the relevant<br>
+&gt; parts of the V4L2 documentation, since it is supposed to be used<br>
+&gt; alongside this spec.<br>
+&gt; <br>
+&gt; Looking forward to a fruitful discussion tomorrow!<br>
+&gt; <br>
+&gt; Cheers,<br>
+&gt; Alex.<br>
+<br>
+<br>
+Can you please post patch with tex source inline as opposed as<br>
+pdf as an attachment? Thanks!<br>
+<br>
+-- <br>
+MST<br>
+<br>
+</blockquote></div>
+
+--00000000000088f01e05ffcd4927--
 
