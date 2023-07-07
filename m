@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13302-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13303-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA262C001B0
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Jul 2023 07:21:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2FC2BC001B0
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Jul 2023 08:11:24 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 099622ACA4
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Jul 2023 07:21:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6ED6A2AED9
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Jul 2023 08:11:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EE671986814
-	for <virtio-dev@archiver.kernel.org>; Fri,  7 Jul 2023 07:21:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 502BB9867F9
+	for <virtio-dev@archiver.kernel.org>; Fri,  7 Jul 2023 08:11:23 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id DE9A7984091; Fri,  7 Jul 2023 07:21:16 +0000 (UTC)
+	id 39F73984091; Fri,  7 Jul 2023 08:11:23 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,301 +24,187 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C9CE69867EB;
-	Fri,  7 Jul 2023 07:21:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 261739867EB
+	for <virtio-dev@lists.oasis-open.org>; Fri,  7 Jul 2023 08:11:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <46ab6180-c639-6da4-d6c3-dc8b87345de9@quicinc.com>
-Date: Fri, 7 Jul 2023 15:21:03 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688717480; x=1691309480;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=tZSiuHkgL0yIE4O7HLzt7OeU1T4BdYuO8GxB/QwP7IE=;
+        b=CQaNFT1QL3zycWZyyux9BZ0131iIjqfHG9gRs6pGkiujTF+hIntvGQn6fYbXQvzqiX
+         RXrVPKEiXep7yMXdSCpu+uhMIbQ+9fYbdXXX3GP7APXHxXbYPJzlNYy5sqpGIfLU9Ak1
+         hXF67vxvrGmxPX15xm48Ev8uLAMjWUiTIag3Wrv4yT/t26C9bVG45qmZeOFWR5Pjtaxj
+         egINpIAQoYt91BpMptgBBlLEdfAfrOGzZ+fzl6Yx2T4m/I7V6mSg1SzIdMiH7JxHcSCF
+         gNSjXMrui2QgCWnylTZMe4Kefn8eQHhhE4aSXnaiC3bXy+CA+KD6q5wgZ6xoQN6cfV+f
+         +kYA==
+X-Gm-Message-State: ABy/qLbKt1otkAU1voMtfSyGbsCRTnlCUlFXeYYAJLM4j8Ci1Y2BZWdj
+	fCbpaOo0MWsLN6D1KsPtl4WQnQ==
+X-Google-Smtp-Source: APBJJlELgNlFsG5To0sX/neKfbROvRH2npY/Vu4w+FYIb8dQp2oL4hHsoTptBpUvIg2XpjB0R41XKQ==
+X-Received: by 2002:adf:f809:0:b0:314:421f:532f with SMTP id s9-20020adff809000000b00314421f532fmr3564042wrp.44.1688717480600;
+        Fri, 07 Jul 2023 01:11:20 -0700 (PDT)
+References: <20230704123600.1808604-1-alex.bennee@linaro.org>
+ <20230706124347-mutt-send-email-mst@kernel.org>
+User-agent: mu4e 1.11.9; emacs 29.0.92
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org, slp@redhat.com,
+ marcandre.lureau@redhat.com, stefanha@redhat.com, viresh.kumar@linaro.org,
+ sgarzare@redhat.com, takahiro.akashi@linaro.org,
+ erik.schilling@linaro.org, manos.pitsidianakis@linaro.org,
+ mathieu.poirier@linaro.org
+Date: Fri, 07 Jul 2023 08:58:00 +0100
+In-reply-to: <20230706124347-mutt-send-email-mst@kernel.org>
+Message-ID: <87ilawdtug.fsf@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-To: Jonathon Reinhart <jrreinhart@google.com>
-CC: Cornelia Huck <cohuck@redhat.com>, <quic_ztu@quicinc.com>,
-        <virtio-dev@lists.oasis-open.org>,
-        <virtio-comment@lists.oasis-open.org>
-References: <000000000000925c1305ff1f7c76@google.com>
- <fd2e0d5d-a3e9-027a-bec1-d0e821ec6421@quicinc.com>
- <CAJJa5HxA6T+xv--80aWEtGWNx=a-yfNXwNsnyz3s8praHqg6Ew@mail.gmail.com>
-Content-Language: en-US
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <CAJJa5HxA6T+xv--80aWEtGWNx=a-yfNXwNsnyz3s8praHqg6Ew@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: O2RIo0wdBiaWf-6IkrBzl_vy4Mh09s5q
-X-Proofpoint-GUID: O2RIo0wdBiaWf-6IkrBzl_vy4Mh09s5q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-07_04,2023-07-06_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 impostorscore=0 bulkscore=0 mlxscore=0 malwarescore=0
- suspectscore=0 clxscore=1015 spamscore=0 mlxlogscore=999 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2305260000 definitions=main-2307070066
-Subject: Re: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
-
-Hi Jonathon Reinhart,
-
-     Thank you so much for all your helpful advice and info!
-
-     I took a look at latest Linux SPI driver and found, for 
-cs_setup/cs_hold/cs_inactive set in device-tree, there are following two 
-conditions:
-     1) if SPI controller supports CS timing configuration and CS is not 
-using a GPIO line, then the SPI driver set the 
-cs_setup/cs_hold/ca_inactive values into the corresponding SPI CS registers;
-     2) if CS is using a GPIO line, or SPI controller doesn't support CS 
-timing configuration, it is the software to perform the 
-cs_setup/cs_hold/cs_inactive delays, which is implemented in function 
-spi_set_cs in driver/spi/spi.c.
-
-     So I agree it is necessary to pass cs_setup/cs_hold/cs_inactive to 
-the host for each transfer.
-
-     For condition 1, host should set these values into the CS timing 
-registers. And as you mentioned "one might require different CS 
-setup/hold times, depending on which slave_id they are talking to (on 
-the same bus)", if so, host need to overwrite the CS timing registers 
-between the two transfers talking to different salve_id.
-
-     For condition 2, SPI driver running in the host performing the 
-cs_setup/cs_hold/cs_inactive delays seems more accurate, compared with 
-performing delays in guest.
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [RFC PATCH] docs/interop: define STANDALONE protocol feature
+ for vhost-user
 
 
-     And the latest virtio spi transfer structure is defined as follows:
+"Michael S. Tsirkin" <mst@redhat.com> writes:
 
-      struct spi_transfer_head {
-         u8 slave_id;
-         u8 bits_per_word;
-         u8 cs_change;
-         u8 tx_nbits;
-	u8 rx_nbits;
-	u8 reserved[3];
-         u32 mode;
-         u32 freq;
-         u32 word_delay_ns;
-         u32 delay_ns;
-         u32 cs_change_delay_ns;
-         u32 cs_setup_ns;
-         u32 cs_hold_ns;
-         u32 cs_inactive_ns;
-      };
+> On Tue, Jul 04, 2023 at 01:36:00PM +0100, Alex Benn=C3=A9e wrote:
+>> Currently QEMU has to know some details about the back-end to be able
+>> to setup the guest. While various parts of the setup can be delegated
+>> to the backend (for example config handling) this is a very piecemeal
+>> approach.
+>
+>> This patch suggests a new feature flag (VHOST_USER_PROTOCOL_F_STANDALONE)
+>> which the back-end can advertise which allows a probe message to be
+>> sent to get all the details QEMU needs to know in one message.
+>
+> The reason we do piecemeal is that these existing pieces can be reused
+> as others evolve or fall by wayside.
 
-      @slave_id: chipselect index the SPI transfer used
-      @bits_per_word: the number of bits in each SPI transfer word
-      @cs_change: True to deselect device before starting the next transfer
-      @tx_nbits: number of bits used for writing
-      @rx_nbits: number of bits used for reading
-      @reserved: reserved for future use
-      @mode: the spi mode defines how data is clocked out and in
-      @freq: transfer speed
-      @word_delay_ns: delay to be inserted between consecutive words of 
-a transfer, in ns unit
-      @delay_ns: delay to be introduced after this transfer before 
-(optionally) changing the chipselect status, in ns unit
-      @cs_change_delay_ns: delay between cs deassert and assert when 
-cs_change is set, in ns unit
-      @cs_setup_ns: delay to be introduced by the controller after CS is 
-asserted, in ns unit
-      @cs_hold_ns: delay to be introduced by the controller before CS is 
-deasserted, in ns unit
-      @cs_inactive_ns: delay to be introduced by the controller after CS 
-is deasserted, in ns unit
+Sure I have no objection in principle but we then turn code like:
 
+        if (dev->protocol_features & (1ULL << VHOST_USER_PROTOCOL_F_STANDAL=
+ONE)) {
+            err =3D vhost_user_get_backend_specs(dev, errp);
+            if (err < 0) {
+                error_setg_errno(errp, EPROTO, "vhost_get_backend_specs fai=
+led");
+                return -EPROTO;
+            }
+        }
 
-     Could you please help check if this new structure contains enough 
-information. Really appreciate for kind help.
+to
 
-Best Regards
-Haixu Cui
+        if (dev->protocol_features & (1ULL << VHOST_USER_PROTOCOL_F_ID) &&
+            dev->protocol_features & (1ULL << VHOST_USER_PROTOCOL_F_CFGSZ) =
+&&
+            dev->protocol_features & (1ULL << VHOST_USER_PROTOCOL_F_MINVQ) =
+&&
+            dev->protocol_features & (1ULL << VHOST_USER_PROTOCOL_F_MAXVQ)
+        ) {
+            err =3D vhost_user_get_virtio_id(dev, errp);
+            if (err < 0) {
+                error_setg_errno(errp, EPROTO, "vhost_get_backend_id failed=
+");
+                return -EPROTO;
+            }
+            err =3D vhost_user_get_virtio_cfgsz(dev, errp);
+            if (err < 0) {
+                error_setg_errno(errp, EPROTO, "vhost_get_backend_cfgsz fai=
+led");
+                return -EPROTO;
+            }
+            err =3D vhost_user_get_virtio_minvq(dev, errp);
+            if (err < 0) {
+                error_setg_errno(errp, EPROTO, "vhost_get_backend_minvq fai=
+led");
+                return -EPROTO;
+            }
+            err =3D vhost_user_get_virtio_maxvq(dev, errp);
+            if (err < 0) {
+                error_setg_errno(errp, EPROTO, "vhost_get_backend_maxvq fai=
+led");
+                return -EPROTO;
+            }
+            dev->specs.valid =3D true;
+        }
 
-On 7/1/2023 5:59 AM, Jonathon Reinhart wrote:
->> Hi @jrreinhart@google.com,
->>       Thank you very much for your helpful comments.
->>
->>       I missed the delay and cs_change_delay parameters. I will add both
->> of them, although cs_change_delay can not be set from userspace, but can
->> be set in kernel space.
->>
->>
->>       For CS delays such as PRE_DELAY/POST_DELAY, it seems that they are
->> defined in structure spi_device:
->>
->>       @cs_setup: delay to be introduced by the controller after CS is
->> asserted.
->>
->>       @cs_hold: delay to be introduced by the controller before CS is
->> deasserted.
->>
->>       @cs_inactive: delay to be introduced by the controller after CS is
->> deasserted. If @cs_change_delay is used from @spi_transfer, then the
->> two delays will be added up.
->>
->>       They show the SPI controller ability to control the CS
->> assertion/deassertion timing and should not be changed for each transfer
->> (because thay can be updated by setting structure spi_transfer or
->> structure spi_ioc_transfer). I think it better to define these parameter
->> in host OS rather than in guest OS since it's the host OS to operate the
->> hardware SPI controller directly. Besides, it can also avoid passing the
->> same values from guest to host time after time.
->>
->>       What's your opinion on this topic? Again, thank you very much.
-> 
-> Hi Haixu,
-> 
-> I took another look at the Linux structures and attempted to map up the
-> delay parameters to the various points in a SPI sequence. Please correct
-> me if I'm wrong about any of this.
-> 
-> Consider this diagram where CS# is an active-low chip select, and SCLK
-> is the serial clock:
-> 
->        ___.                                                   ._____.
->    CS#    |___________________________________________________|     |___
->           .                                                   .     .
->           .                                                   .     .
->   SCLK ________NNNN___NNNN___NNNN_______NNNN___NNNN___NNNN______________
->           .   .    . .           .     .                  .   .     .
-> Delays:  +-A-+    +B+           +--C--+                  +-D-+--E--+
->           .   .    . .           .     .                  .   .     .
->           0   1    2 3           4     5                  6   7     8
->           .   .    .             .     .                  .   .
-> Terms:   .   +Word+             .     .                  .   .
->           .   .                  .     .                  .   .
->           .   +-------Frame------+     +-------Frame------+   .
->           .                                                   .
->           +-----------------Transfer--------------------------+
-> 
-> Using NXP terminology:
-> 
->    From 1 to 2 is a "word"     (with e.g. 8 bits).
->    From 1 to 4 is a "frame"    (with 3 words).
->    From 1 to 6 is a "transfer" (with 3 frames).
-> 
-> Linux does not have the concept of a frame, only a series of transfers
-> (a spi_message), each of which can specify whether CS changes or not.
-> 
-> I've identified these various timing points and attempted to match them
-> to the Linux spi_device and spi_transfer parameters:
-> 
-> A - CS Setup: Delay after CS asserted before clock starts.
->      spi_device.cs_setup
-> 
-> B - Word Delay: Delay between words.
->      spi_transfer.word_delay
-> 
-> C - Frame Delay: Delay between frames.
->      (Linux does not have the concept of a SPI "frame".)
-> 
-> D - CS Hold: Delay after clock stops, and before CS deasserted.
->      spi_device.cs_hold (+ spi_transfer.delay ??)
-> 
-> E - CS Inactive: Delay after CS deasserted, before asserting again.
->      spi_device.cs_inactive + spi_transfer.cs_change_delay
-> 
-> 
-> While I agree with you that some of these timings are unlikely to change
-> from transfer-to-transfer, the subset of which should be specified
-> at the device level vs. per-transfer seems somewhat arbitrary. As you
-> can see there is some overlap between them.
-> 
-> If I understand correctly, it appears that the CS hold time *can* be
-> controlled on a per-transfer bases, using spi_transfer.delay
-> ("after this transfer before changing the chipselect status").
-> 
-> That leaves CS setup as the only parameter that cannot be influenced on
-> a per-transfer basis.
-> 
-> Theoretically, one might require different CS setup/hold times,
-> depending on which slave_id they are talking to (on the same bus).
-> In that case, one must set those spi_device parameters to the worst-case
-> (maximum) values. However, this is already a Linux limitation, so I'm
-> not sure it needs to be improved here.
-> 
-> I think you've achieved parity with what the Linux kernel API allows,
-> and that's probably good enough. As you said, anything else can be
-> adjusted in the host OS -- I'm not sure how the guest would go about
-> achieving that, though. You're not proposing the use of configuration
-> space for virtio-spi, are you?
-> 
-> Regards,
-> Jonathon Reinhart
-> 
-> 
->>
->> Best Regards
->> Haixu Cui
->>
->> On 6/28/2023 1:06 AM, jrreinhart@google.com wrote:
->>> Hi Haixu,
->>>
->>>> +The \field{word_delay} defines how long to wait between words within
->>>> one SPI transfer,
->>>> +in ns unit.
->>>
->>> I'm a little surprised to see a word_delay but no frame_delay or
->>> transfer_delay.
->>>
->>> For example, many SPI peripherals require a delay after CS is asserted,
->>> but before the first SCLK edge, allowing them to prepare to send data.
->>> (E.g. an ADC might begin taking a sample.)
->>>
->>>
->>> The linux struct spi_transfer has three delay fields:
->>>
->>> * @cs_change_delay: delay between cs deassert and assert when
->>> *      @cs_change is set and @spi_transfer is not the last in
->>> *      @spi_message
->>> * @delay: delay to be introduced after this transfer before
->>> *    (optionally) changing the chipselect status, then starting the
->>> *    next transfer or completing this @spi_message.
->>> * @word_delay: inter word delay to be introduced after each word size
->>> *    (set by bits_per_word) transmission.
->>>
->>> The userspace spidev.h API has only two:
->>>
->>> * @delay_usecs: If nonzero, how long to delay after the last bit
->>> *       transfer before optionally deselecting the device before the
->>> *       next transfer.
->>> * @word_delay_usecs: If nonzero, how long to wait between words within
->>> *       one transfer. This property needs explicit support in the SPI
->>> *       controller, otherwise it is silently ignored.
->>>
->>> The NXP i.MX RT500 SPI (master) controller, for example, has four
->>> configurable delays:
->>>
->>> - PRE_DELAY: After CS assertion, before first SCLK edge.
->>> - POST_DELAY: After a transfer, before CS deassertion.
->>> - FRAME_DELAY: Between frames (which are arbitrarily defined by
->>>     software).
->>> - TRANSFER_DELAY: Minimum CS deassertion time between transfers.
->>>
->>> The NVIDIA Tegra114 SPI controller has:
->>>
->>> - nvidia,cs-setup-clk-count: CS setup timing parameter.
->>> - nvidia,cs-hold-clk-count: CS hold timing parameter.
->>>
->>>
->>> I understand that accurately representing all possible delays might be
->>> difficult or futile, but I'm curious to understand why, of all the
->>> possible delays, inter-word delay was chosen for inclusion.
->>>
->>> In a microcontroller, delays around CS (de)assertion can be customized
->>> by using a GPIO -- rather than the hardware SPI block -- to drive the CS
->>> signal. This way, delays can be inserted where needed. To do so with a
->>> virtualized SPI controller might prove difficult however, as the virtual
->>> channel carrying a CS GPIO signal might not be synchronized to the
->>> channel carrying the SPI data.
->>>
->>> Curious to hear your thoughts.
->>>
->>> Thanks,
->>> Jonathon Reinhart
+for little gain IMHO.
+
+> For example, I can think of instances where you want to connect
+> specifically to e.g. networking backend, and specify it
+> on command line. Reasons could be many, e.g. for debugging,
+> or to prevent connecting to wrong device on wrong channel
+> (kind of like type safety).
+
+I don't quite follow what you are trying to say here.
+
+> What is the reason to have 1 message? startup latency?
+> How about we allow pipelining several messages then?
+> Will be easier.
+
+I'm not overly worried about performance because this is all at
+start-up. I am worried about excessive complexity though. We already
+have quite a lot of interacting protocol messages.
+
+>
+>
+>>=20
+>> Signed-off-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
+>>=20
+>> ---
+>> Initial RFC for discussion. I intend to prototype this work with QEMU
+>> and one of the rust-vmm vhost-user daemons.
+>> ---
+>>  docs/interop/vhost-user.rst | 37 +++++++++++++++++++++++++++++++++++++
+>>  hw/virtio/vhost-user.c      |  8 ++++++++
+>>  2 files changed, 45 insertions(+)
+>>=20
+>> diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
+>> index 5a070adbc1..85b1b1583a 100644
+>> --- a/docs/interop/vhost-user.rst
+>> +++ b/docs/interop/vhost-user.rst
+>> @@ -275,6 +275,21 @@ Inflight description
+>>=20=20
+>>  :queue size: a 16-bit size of virtqueues
+>>=20=20
+>> +Backend specifications
+>> +^^^^^^^^^^^^^^^^^^^^^^
+>> +
+>> ++-----------+-------------+------------+------------+
+>> +| device id | config size |   min_vqs  |   max_vqs  |
+>> ++-----------+-------------+------------+------------+
+>> +
+>> +:device id: a 32-bit value holding the VirtIO device ID
+>> +
+>> +:config size: a 32-bit value holding the config size (see ``VHOST_USER_=
+GET_CONFIG``)
+>> +
+>> +:min_vqs: a 32-bit value holding the minimum number of vqs supported
+>> +
+>> +:max_vqs: a 32-bit value holding the maximum number of vqs supported, m=
+ust be >=3D min_vqs
+>> +
+>
+> looks like a weird set of info.
+
+It's basically the information you need for -device vhost-user-device to
+start-up (and what is essentially the information set by the stubs as
+they start-up).
+
+> why would we want # of vqs and not their sizes?
+
+I thought the vring's themselves where allocated by the driver. We only
+need to the number of vqs so we can allocate the tracking structures.
+
+> why config size but not config itself?
+
+We already have GET_CONFIG and SET_CONFIG but without knowing the size
+of the config space we can't properly set it up.
+
+<snip>
+
+--=20
+Alex Benn=C3=A9e
+Virtualisation Tech Lead @ Linaro
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
