@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13331-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13332-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A51EEB64DA
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 15:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D74F0EB64DA
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:18:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4BC682A895
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 15:30:10 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 06BEC29FCC
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:18:23 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id ECB59986682
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 15:30:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EFA0B986660
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:18:22 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D5B4C9864A2; Mon, 10 Jul 2023 15:30:09 +0000 (UTC)
+	id E33139864A2; Mon, 10 Jul 2023 16:18:22 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,161 +24,692 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8C41C98648C;
-	Mon, 10 Jul 2023 15:30:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CDF4098648C;
+	Mon, 10 Jul 2023 16:18:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q5S1JiK5SQT4V7mo4IHxVMjSmHjAy3114eChZVbFTjoy9B9MLIGZWUuGBgJd7uKDxGrADAWtQss8sV0bPrNfXfWgdzApCTMcD0PiG3V5UAib4N8owO20fVv05hlxGqXOWc0IMRvxvgJJS/OVLhSJmT/F3x5eCgWlMqYT0ykdUm70lG/Jbz/j1NMXiKLcGJxVvsCrWwTzy6QtNeOi2S9x0xf1Qav6z+isXEB2vu2NaoZC5mpH3lLNaFBeSwh8d3neMgWoldZe+7VLzQabqn2YixqzDWPhEOJ6ICUZGJTaC+mqwbwbLT0RIJcId5iiDWeLjmXmOZm08DJQAFtGzTb8yQ==
+ b=ILjiHwZx7KffEIDEvjSpClsqsWr6I0PBgboxnh1kowQlalFTN2A62DSGENrk/+cKNBoJMd2RVeLhaE4/cFiBQPmQH5giEBzHmTKd+BnXF88y+Ez5VvYtumF7YgQlAdwr/lqTUG4IUJLcsBdj4tBrxYfb9ipUjDbJ7kIbSjAOUTlWL8wGYg+5ExyVY1qRg/c8QaUkFCBIIA4R+Ev5YPEVUNFCuyYLQVnrrRfxokCcNBfNRa1UnGpxLqz1AOLwgdVChVlVJUVeNZFu1abZ5Zl3B3OG41g8ftjjARfp0uk2ABvjvTpEFD7Vl/kW3qnAO8hGNcSLmXIk3EG3smLYxrfcNg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sdsuAJrYoIsaDhvDeFnbdXgJtuXSAL17KmH5VjAGk/g=;
- b=OvIlOxoGdcOv0DLWhAQyVQ7F+Wu3g6BucSTpEawDQYKCKCEj4zWC4DeZS8k+lshvuKQ/OWOWXN3yjK65QznQPcnnW9+frxHTZ8nQ2ENtwiHkV5o823cvgJId9w6cAkt0P2QqUQRlao0iz+Ws7lCbYpMfbtB8SSGF6rlo5l83t0qoSRM0WCgTUxkB9kmq/GqzCwkdxVy64TlpZz0sG2toQT7lCo4R+NxSSPzNu27U4ANTM8Tf2CefLg3svxpX7IFMK2dxMzgslMyZO/OPPMQJ8vZ8OCYsRvykwP4awajWaUUwkPa/zxuTWSCFtQudbz3F7wZn06ZrW872Q+KtrbR5jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=gF79aJRBQ+SPd1DOtZyCDrFMZnhhSbIB11RrY53qt0U=;
+ b=l2cFhCEnDhtc8HMszE9Z2ZzxnmT9HgRlcqs7pMC3uu7hZSRXWrnNNcCKWQkPGGIVMLQdhDsXUVYYUYDrZJdlAoT4ISiQ+jszOgEA3/eT8V8shlQCXWQbziG236bKb3qSqdAtjEcV1hyiCg4rLHzqdKCvkJkD87VEeP50G8xWhUZ8dfblSmVPySzIYRea/idWqLlkxPHIwIgePNW5+OpOWwFIDlpJ4f+PUGjWbfDwH7DbpYSyyTe3aQ4cdAK+7KakktRPSFg7i+Nu7pBbeOJgv6o5SO8Ha13tTdXp7XGMfJxvNbzOwQZ1gyw9Ayn2bVxJz1zaKQdzvrEVD/bL967GTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.oasis-open.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "david.edmondson@oracle.com"
-	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
-	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
-	<shahafs@nvidia.com>
-Thread-Topic: [virtio-dev] [PATCH v13] admin: Add group member legacy register
- access commands
-Thread-Index: AQHZsOgWDJbZS5QbLUum6ujYtKcWkq+xdcMAgAGGM8CAACVmAIAAA4AA
-Date: Mon, 10 Jul 2023 15:30:04 +0000
-Message-ID:
- <PH0PR12MB5481A4185F544691295D5C1DDC30A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230707153019.147039-1-parav@nvidia.com>
- <20230709093550-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54813BA69D6474462F413BD8DC30A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230710110511-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230710110511-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH7PR12MB6609:EE_
-x-ms-office365-filtering-correlation-id: c74e4e89-4c63-45cc-6d67-08db815a88f1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- wn9udU9Rne4YiedvaPLYHTA/gKweoM+dAGRMoBbV1CAnsCcmwMyt1xkW9cmeVWcBASrZfPjHotZtOd3bHzSfTbEGfwhrazE2MjHePbzQTW7UqzBXwh62PbC4TBiuqDBBj1QmdGHGOs6/QsHacfGqiicKdnL7aMMxl3OVIx0N9k6+d3mNr7sCz3rBFre+UmlLrJ5mXKNbhtXoDc0t4WkwI6POxtIOg5qlyWdAYj+mJ6kDGqkJoV3WTcXQCpP/C12Medo0PusSjJXaAFkW9ValXphThIMW5BpJERV5GrMKeomCIcAzC0OaH96qexQpyXFOgRsLmfKR8Xcy2xR8Azfm/y4xrIxFcX4cLQlXT8uRo07t1vNdZ+z4Gbpc42DwtmzlC+EbAdD9qDSaVF2hGUpklNNFLtbt3Cr1PdMP9urt4y36HocaKFBy/ddfXOV9oqDiwq0x18bv2Js13w7SI81XoYlWNLyoIArOq7VBT7eeVQFz8aFbCHVi4RTqxhHMTLZ8V6zK13bHUpuhsTs73AdhZuH85Ed8mEMAF/2FgCP6n75QK/t+jtdqUUCBL0wfRkkEeIcEcjTkesbz2bUgVxsW7ngQKa1LdOokruo97o1BrulQwEmEOSrwxs7L9hxTcsZi
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(396003)(376002)(346002)(136003)(451199021)(316002)(54906003)(71200400001)(66446008)(66946007)(66556008)(66476007)(76116006)(186003)(6916009)(64756008)(7696005)(4326008)(478600001)(41300700001)(8936002)(8676002)(107886003)(5660300002)(9686003)(86362001)(6506007)(55016003)(52536014)(26005)(33656002)(83380400001)(122000001)(38070700005)(2906002)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?i67Bm/fpjda5h739ElFz4Y6NQa0MhS9USSaRXVhYQZpiLA9bp3KPUSkACnlA?=
- =?us-ascii?Q?UdBwGvQXtZ4FAPbN8CXqk78VWu7WexeEQoNBLwzr6wCWPBQ7CiwHsCznDZLl?=
- =?us-ascii?Q?19cr45wzjdX3xiQsJAHvZuVJR0At6O18GDnqjx3ROS4YCmMjsz2bc8wdWYVl?=
- =?us-ascii?Q?pJ79Rs88Y4wngLHaIYS64R1FN+7DapGtE7nOvU9hulvks0Ea1unSuI1Uwuby?=
- =?us-ascii?Q?Tx9ksp//RDdurI6pJ/fKqqnDVp2jBKrBYYF9fSXgsFsO6UuxzqjuPBM6+yNh?=
- =?us-ascii?Q?RdWW012FtuWkvlyFNFzxuiV8aRuhzFj+WOdmj5kUdADftObQzWHX431jnTSh?=
- =?us-ascii?Q?7VlwDnNwN7jxLtQX5OYyze1yF87gVfvwfslQYDFPEQvBKbOaH09zi7kzh1wX?=
- =?us-ascii?Q?ovfZD5L6VA/mFLB6kBzg3huyISFwYMJcxVEAr0JxXPtAqJ3Fk99sfURMXT/U?=
- =?us-ascii?Q?Zz4+HTnuTX9a4tSH+Ph/Rjmbut3pJKI9AGX3JeTgLunVHhObsYdzThl7hkhV?=
- =?us-ascii?Q?ULdS2nq6mQOj8UXXofI19m6euIOFwAUCAWVh2A+tWPehsaSCQH0Ztm8eDSDS?=
- =?us-ascii?Q?qSMemzBl6uJDfVVXqY6p8qBJm7I10otkOEj9ZBpnK0FdUTAkAsRJJ+bU0GWK?=
- =?us-ascii?Q?OYqpRa88k3lpCUeVIV8f2fgSTuQn4u95wKqEjypsQQhmMBC5N1R/msRShWgc?=
- =?us-ascii?Q?aCYEd6z70xFdL4CCYH3TAByZxOxYVH1+lMhXKcjPeNtrmCcyCUQ2jWcFKGMg?=
- =?us-ascii?Q?JlYw9Mot/LkI7DVgSgVgUPCH6Z2FyVUDmVP5/Tp4I1BBZWd2f/+50/83xG1k?=
- =?us-ascii?Q?QBniDRFCJ3qaRdsYnm15QWShLKwXluABTnDwIw2IoKWQCjLPVIU7TGepluy7?=
- =?us-ascii?Q?KUNYMBzJYfooHkJs8I53tapHigs1ED45UrC5YZQyW+KgeOUuY7rH3i8vkYi3?=
- =?us-ascii?Q?RO94hLeBfxTcP2z5LPCdhaAl7Uqyk8uFmPeZYTwEeMc/1WkseHirYGyZTA3F?=
- =?us-ascii?Q?xpsQBlcgVrm7mE9MAj/w88YAYhcmDk6pQ+IzyY2yn1rjdz9bxJ/hCoDIqofP?=
- =?us-ascii?Q?2hpVB5Jdv6aHw9qtjEBB7EUaS2+3vE1xfODbC/zzB2WQh0XPNmiyhib2DQN1?=
- =?us-ascii?Q?6Ct9hGWh3PfNpc2C/uv3xd7+Ua8rZN8W5kUYPkoYVuWOEfzvGHMUbYpuc+4t?=
- =?us-ascii?Q?XkILfanKp8R2p4N7KJkYgC3uIfXktO/XVKV2ZNpOVb+84V8AtqADI9x5P4nZ?=
- =?us-ascii?Q?KMzOUglWmULcnOk0Pm2sqkpvML9Y18zTsmYRmF63xYfDteNUxq1DIJDgM0w3?=
- =?us-ascii?Q?PZ2yY8NbJAfTHaSwMPzWq11OFKu0FfxzvwDCEQ3JDJ7jZk6sZAH+ITKDthPd?=
- =?us-ascii?Q?j7y1+ZZKRNHcn/F9+DMuuRQLrGlAfzcNUeTvk5/JvzFSLv0DHlp7IzIFG2/J?=
- =?us-ascii?Q?1gWJCVqV25+6XpF4qfAlvNCS6o3ul8s3/0ZwaCQJm9jTwS3a9uvxrM7mVE+E?=
- =?us-ascii?Q?rFNPcHiHZVaGgLEWxkTHMv3oLLEqBdzHijFqCitfAihwIk/M3TYb8wfsLOR5?=
- =?us-ascii?Q?geXKzkcfHC6ya4xvsCM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: <virtio-comment@lists.oasis-open.org>, <mst@redhat.com>,
+	<cohuck@redhat.com>, <david.edmondson@oracle.com>
+CC: <virtio-dev@lists.oasis-open.org>, <sburla@marvell.com>,
+	<jasowang@redhat.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
+	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
+Date: Mon, 10 Jul 2023 19:17:52 +0300
+Message-ID: <20230710161752.204248-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT039:EE_|BY5PR12MB4131:EE_
+X-MS-Office365-Filtering-Correlation-Id: ebf941d8-664e-404e-f206-08db816142f4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Ay/DuWtej3e5LnJ7eKtG4JAgOhWrnEBeMHEvvKJCYZwpgf2lo6Xq93mJSNBXP9+GJTRXfbmcO/sBtJZ3CmtOZufFrfYT7JtZR8W7C8x5DlEvNaXGIWyV6B6pohsrVHL29HuKTNI0ASDFtgQnL4QXsNsdhqptyLUsw+//Vt/9PlIl3efiEFlDA4Qd1EFiRv+DAZwQJVv8DCcpWUx21xUIYv0y/rcf9HR5XTOcHrblF9MWBXI6M3vw/56DNETkwnmc/Q8pBGFYnJG0/LAPGQg2b6J7LjhOQ3+sFllfcuqSgLRyEncQPBYK7BnPUQ2bAXwdrTFncmzzAqRE+g1hMBVKx0Dr01j+Bb//k6IQQEu5iRlX03A32a3KNU0CG0PR2O3+srqVcg6I/nXPz+doII4xdCr9Cy98sQneMt7FKsWmo39qh4FqWEsEW2Y7a4gVQRkD73uaXrJi3JzLHJaZ0NK4eJjmHavkIxIOBkvKe3g+pUQ9lepCkOh+aueU1T5d5S2jQHA7fv2hQWPn5CvlCPKr9cf7l8C2TKbE8CA0lavvNXI05p+F165PYJOg+8bflMxPoxXZEIdllyNThUPkDLU2dPwIW0hpgcZfa+U9eWOFfpOo/vRk+3BBUfY8hoiENPhh9DQrC0+lmZkF7kA4LTjuoBky6ZqsXQcOsTY88qeD6/MY4PUOlexiy0lQs9NOPGf6eFR9eSmu3+U8lZWZxT/EMMpKDXgZAW3JN4qBfs3NAlwmsrCtLddQ784JVYbsTFPFgxHAjhfOXwQE2O6dzOdauGs5fsV1sE0XOzJnfOaOlbg=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39850400004)(376002)(396003)(136003)(451199021)(46966006)(40470700004)(36840700001)(316002)(4326008)(107886003)(70206006)(83380400001)(70586007)(336012)(1076003)(186003)(40460700003)(16526019)(36860700001)(26005)(2616005)(47076005)(426003)(36756003)(356005)(30864003)(7636003)(2906002)(40480700001)(82310400005)(82740400003)(6666004)(966005)(478600001)(54906003)(110136005)(86362001)(5660300002)(8936002)(8676002)(41300700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c74e4e89-4c63-45cc-6d67-08db815a88f1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2023 15:30:04.7312
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2023 16:18:13.6654
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kR5JT4Ab5mZkGfIYVd6xp+0VcHa1ie2y44wjOuGCavXkG9Yn/vG+1f+4PZq3H5h5DbamleOGkiLQOVw2JQ4XJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6609
-Subject: RE: [virtio-dev] [PATCH v13] admin: Add group member legacy register
- access commands
+X-MS-Exchange-CrossTenant-Network-Message-Id: ebf941d8-664e-404e-f206-08db816142f4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4131
+Subject: [virtio-dev] [PATCH v14] admin: Add group member legacy register access commands
 
+Introduce group member legacy common configuration and legacy device
+configuration access read/write commands.
 
+Group member legacy registers access commands enable group owner driver
+software to access legacy registers on behalf of the guest virtual
+machine.
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Monday, July 10, 2023 11:17 AM
+Usecase:
+========
+1. A hypervisor/system needs to provide transitional
+   virtio devices to the guest VM at scale of thousands,
+   typically, one to eight devices per VM.
 
-> > > From: Michael S. Tsirkin <mst@redhat.com>
-> > > Sent: Sunday, July 9, 2023 9:47 AM
-> >
-> >
-> > > > +If within \field{struct
-> > > > +virtio_admin_cmd_legacy_notify_info_result}
-> > > > +returned by VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the
-> > > > +\field{flags} value for a specific \field{struct
-> > > > +virtio_pci_legacy_notify_info} entry is 0x0, the driver MUST
-> > > > +ignore this entry and all the following \field{entries}.
-> >
-> > Please see above, it appears to me that it covers what you asked for, n=
-o?
-> > What is missing?
->=20
-> Oh, my bad. I agree. following stresses this a bit more:
->=20
->=20
-> is 0x0, then the driver MUST ignore this entry as well as all the followi=
-ng
-> \field{entries} until the end of the structure.
->=20
->=20
-> > > The driver MUST additionally validate, for each
-> > > > +entry, that \begin{itemize} \item the \field{flags} is either
-> > > > +0x0,
-> > > > +0x1 or 0x2 \item the \field{bar} corresponds to a valid BAR of
-> > > > +either the owner or the member device, depending on the
-> > > > +\field{flags} \item the \field{offset} is 2-byte aligned and
-> > > > +corresponds to an address within the BAR specified by the
-> > > > +\field{bar} on \field{flags} \end{itemize}, any entry which does
-> > > > +not meet these constraints MUST be ignored by the driver.
-> > >
-> > > Wait a second.
-> > > - end of list not documented - we want conformance statements
-> > > - for end of list I am guessing other fields do not matter
-> > > - entries after end of list also do not matter?
-> >
-> > I reread the above driver conformance statement.
-> > It already indicates what you asked.
->=20
-> So the above two do not contradict. They kind of seem to since 1st one sa=
-ys
-> ignore second says validate, until you look closely and see that the resu=
-lt of
-> validation is to ignore.
-> I suggest we clarify it's other entries not each entry:
->=20
-> 	MUST ignore this entry and all the following \field{entries}.
->=20
-> 	Additionally, for all other entries, the driver MUST validate
-> 	that \begin{itemize} \item the \field{flags} is either
-> 	0x1 or 0x2  ....
-Sounds good. Revising it.
+2. A hypervisor/system needs to provide such devices using a
+   vendor agnostic driver in the hypervisor system.
+
+3. A hypervisor system prefers to have single stack regardless of
+   virtio device type (net/blk) and be future compatible with a
+   single vfio stack using SR-IOV or other scalable device
+   virtualization technology to map PCI devices to the guest VM.
+   (as transitional or otherwise)
+
+Motivation/Background:
+=====================
+The existing virtio transitional PCI device is missing support for
+PCI SR-IOV based devices. Currently it does not work beyond
+PCI PF, or as software emulated device in reality. Currently it
+has below cited system level limitations:
+
+[a] PCIe spec citation:
+VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
+
+[b] cpu arch citiation:
+Intel 64 and IA-32 Architectures Software Developer’s Manual:
+The processor’s I/O address space is separate and distinct from
+the physical-memory address space. The I/O address space consists
+of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
+
+[c] PCIe spec citation:
+If a bridge implements an I/O address range,...I/O address range will be
+aligned to a 4 KB boundary.
+
+Overview:
+=========
+Above usecase requirements is solved by PCI PF group owner accessing
+its group member PCI VFs legacy registers using the administration
+commands of the group owner PCI PF.
+
+Two types of administration commands are added which read/write PCI VF
+registers.
+
+Software usage example:
+=======================
+
+1. One way to use and map to the guest VM is by using vfio driver
+framework in Linux kernel.
+
+                +----------------------+
+                |pci_dev_id = 0x100X   |
++---------------|pci_rev_id = 0x0      |-----+
+|vfio device    |BAR0 = I/O region     |     |
+|               |Other attributes      |     |
+|               +----------------------+     |
+|                                            |
++   +--------------+     +-----------------+ |
+|   |I/O BAR to AQ |     | Other vfio      | |
+|   |rd/wr mapper& |     | functionalities | |
+|   | forwarder    |     |                 | |
+|   +--------------+     +-----------------+ |
+|                                            |
++------+-------------------------+-----------+
+       |                         |
+   Config region                 |
+     access                Driver notifications
+       |                         |
+  +----+------------+       +----+------------+
+  | +-----+         |       | PCI VF device A |
+  | | AQ  |-------------+---->+-------------+ |
+  | +-----+         |   |   | | legacy regs | |
+  | PCI PF device   |   |   | +-------------+ |
+  +-----------------+   |   +-----------------+
+                        |
+                        |   +----+------------+
+                        |   | PCI VF device N |
+                        +---->+-------------+ |
+                            | | legacy regs | |
+                            | +-------------+ |
+                            +-----------------+
+
+2. Continue to use the virtio pci driver to bind to the
+   listed device id and use it as in the host.
+
+3. Use it in a light weight hypervisor to run bare-metal OS.
+
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+changelog:
+v13->v14:
+- addressed below comments from Michael
+- reworded BAR 1 to 5 text as_is suggested by Michael
+- added text for skipping invalid entries
+- replaced 'contains' with 'contain'
+- removed 'related to the base address associated'
+- addressed comments from Cornelia
+- added article the at many places
+- replaced does not to do not
+- reworded the driver normative for flags parsing
+v12->v13:
+- added article
+- add hyphen between little and endian
+- mentioned vq index depth of 16-bit
+- rewrote alternative approach line
+- mention vq index, length and endianness in mmio description
+- fixed padding bytes size from 7 to 6 bytes
+- rewrote bar field description
+- offset alignment text added
+- added text to ignore reserved notification entries
+- device and driver conformance lines added for notification info command fields
+- dropped group member prefix to the driver
+- reworded text for flags requirements
+- reworded to say all driver notifications in conformance
+- itemize conformance section under command to ease reading
+v11->v12:
+- added missing article the at few places
+- rewrote group_member_id statements like other existing
+  commands which is cleaner and shorter
+- added length and alignment lines to multiple commands
+- rewrote fast path to separate dedicated mechanism
+- rewrote example and description para for legacy notification command
+- made separate paragraph for the notify info command
+- dropped citation to virtio pci capabilities for member device
+- notification region changed to notification address throughout
+- added description to all the fields of the info struct
+- avoided union in spirit of keeping all for pci
+- used single listing
+- moved description to end which was in between two structs
+- added 4 entry and preference description
+- added conformance line for notification via mmio works same way as
+  admin command
+v10->v11:
+- replaced tab with white spaces in read structure
+- included pci fields along side other generic fields to avoid
+  indirection
+- merged pci conformance section
+- avoid using definite in starting introduction
+- replace 'all of the' with 'any of the'
+- changed drivers notification normative to indicate use of
+  NOTIFY_INFO command
+- renamed NOTIFY_QUERY to NOTIFY_INFO name
+- merged 4th patch with 3rd
+- added normative line for notify_info command
+- reworded notification region command description to be more verbose
+- merged flags and owner field to indicate end of list
+v9->v10:
+- added white space at end of line
+- addressed below comments from Cornelia
+- added missing articles
+- reworded description for notification query command
+- grammar fixes
+- addressed below comments from Michael
+- added description for member group id setting
+- reworded device and driver conformance statements
+- opcode table description updated
+- fixed label for device read command
+- length alignment restriction text added
+- data length described for read write commands
+- notification description added and refined
+- reworded text around command specific result and data field usage
+v8->v9:
+- add missing articles in notify query command
+- replaced 'this notification' with 'such a notification'
+- addressed below comments from Michael
+- dropped 'Region' from the commands
+- added 7 reserved pad bytes in config write commands
+- rewrote from 'use following structure' to 'field' has the following
+  struct..
+- dropped mentioning to follow struct virtio_admin_cmd.
+- added note about command limited to only sriov group type for now
+- rewrote the description little differently
+v7->v8:
+- remove empty line at the end of file
+- removed white space at the end
+- addressed comments from Michael add link to pci
+- renamed region to region_data
+- made region_data width to be 16 bytes to cover for 8 bytes offset
+- moved generic notification region related normative from pci to
+  generic section
+v6->v7:
+- changed administrative to administration
+- renamed admin-access.tex to admin-interface.tex
+- large rewrite ad generic admin commands instead of pci
+- added theory of operation section
+- added driver notification region query command
+v5->v6:
+- fixed previous missed abbreviation of LCC and LD
+v4->v5:
+- split from pci transport specific patch
+- split conformance to transport and generic sections
+- written the description of the command as generic with member
+  and group device terminology
+- reflected many section names to remove VF
+- rename fields from register to region
+- avoided abbreviation for legacy, device and config
+---
+ admin-cmds-legacy-interface.tex | 361 ++++++++++++++++++++++++++++++++
+ admin.tex                       |  14 +-
+ conformance.tex                 |   2 +
+ 3 files changed, 376 insertions(+), 1 deletion(-)
+ create mode 100644 admin-cmds-legacy-interface.tex
+
+diff --git a/admin-cmds-legacy-interface.tex b/admin-cmds-legacy-interface.tex
+new file mode 100644
+index 0000000..477fd01
+--- /dev/null
++++ b/admin-cmds-legacy-interface.tex
+@@ -0,0 +1,361 @@
++\subsubsection{Legacy Interfaces}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group
++administration commands / Legacy Interface}
++
++In some systems, there is a need to support utilizing a legacy driver with
++a device that does not directly support the legacy interface. In such scenarios,
++a group owner device can provide the legacy interface functionality for the
++group member devices. The driver of the owner device can then access the legacy
++interface of a member device on behalf of the legacy member device driver.
++
++For example, with the SR-IOV group type, group members (VFs) can not present
++the legacy interface in an I/O BAR in BAR0 as expected by the legacy pci driver.
++If the legacy driver is running inside a virtual machine, the hypervisor
++executing the virtual machine can present a virtual device with an I/O BAR in
++BAR0. The hypervisor intercepts the legacy driver accesses to this I/O BAR and
++forwards them to the group owner device (PF) using group administration commands.
++
++The following commands support such a legacy interface functionality:
++
++\begin{enumerate}
++\item Legacy Common Configuration Write Command
++\item Legacy Common Configuration Read Command
++\item Legacy Device Configuration Write Command
++\item Legacy Device Configuration Read Command
++\end{enumerate}
++
++These commands are currently only defined for the SR-IOV group type and
++have, generally, the same effect as member device accesses through a legacy
++interface listed in section \ref{sec:Virtio Transport Options / Virtio Over PCI
++Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout} except
++that little-endian format is assumed unconditionally.
++
++\paragraph{Legacy Common Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group
++administration commands / Legacy Interface / Legacy Common Configuration Write Command}
++
++This command has the same effect as writing into the virtio common configuration
++structure through the legacy interface. The \field{command_specific_data} is in
++the format \field{struct virtio_admin_cmd_legacy_common_cfg_wr_data} describing
++the access to be performed.
++
++\begin{lstlisting}
++struct virtio_admin_cmd_legacy_common_cfg_wr_data {
++        u8 offset; /* Starting byte offset within the common configuration structure to write */
++        u8 reserved[7];
++        u8 data[];
++};
++\end{lstlisting}
++
++For the command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, \field{opcode}
++is set to 0x2.
++The \field{group_member_id} refers to the member device to be accessed.
++The \field{offset} refers to the offset to write within the virtio common
++configuration structure, and excluding the device-specific configuration.
++The length of the data to write is simply the length of \field{data}.
++
++No length or alignment restrictions are placed on the value of the
++\field{offset} and the length of the \field{data}, except that the resulting
++access refers to a single field and is completely within the virtio common
++configuration structure, excluding the device-specific configuration.
++
++This command has no command specific result.
++
++\paragraph{Legacy Common Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Common Configuration Read Command}
++
++This command has the same effect as reading from the virtio common configuration
++structure through the legacy interface. The \field{command_specific_data} is in
++the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_data} describing
++the access to be performed.
++
++\begin{lstlisting}
++struct virtio_admin_cmd_legacy_common_cfg_rd_data {
++        u8 offset; /* Starting byte offset within the common configuration structure to read */
++};
++\end{lstlisting}
++
++For the command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ, \field{opcode}
++is set to 0x3.
++The \field{group_member_id} refers to the member device to be accessed.
++The \field{offset} refers to the offset to read from the virtio common
++configuration structure, and excluding the device-specific configuration.
++
++\begin{lstlisting}
++struct virtio_admin_cmd_legacy_common_cfg_rd_result {
++        u8 data[];
++};
++\end{lstlisting}
++
++No length or alignment restrictions are placed on the value of the
++\field{offset} and the length of the \field{data}, except that the resulting
++access refers to a single field and is completely within the virtio common
++configuration structure, excluding the device-specific configuration.
++
++When the command completes successfully, \field{command_specific_result}
++is in the format of \field{struct virtio_admin_cmd_legacy_common_cfg_rd_result}
++returned by the device. The length of the data read is simply the length of
++\field{data}.
++
++\paragraph{Legacy Device Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Write Command}
++
++This command has the same effect as writing into the virtio device-specific
++configuration through the legacy interface. The \field{command_specific_data} is in
++the format \field{struct virtio_admin_cmd_legacy_dev_reg_wr_data} describing
++the access to be performed.
++
++\begin{lstlisting}
++struct virtio_admin_cmd_legacy_dev_reg_wr_data {
++        u8 offset; /* Starting byte offset within the device-specific configuration to write */
++        u8 reserved[7];
++        u8 data[];
++};
++\end{lstlisting}
++
++For the command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE, \field{opcode}
++is set to 0x4.
++The \field{group_member_id} refers to the member device to be accessed.
++The \field{offset} refers to the offset to write within the virtio
++device-specific configuration. The length of the data to write is simply
++the length of \field{data}.
++
++No length or alignment restrictions are placed on the value of the
++\field{offset} and the length of the \field{data}, except that the resulting
++access refers to a single field and is completely within the device-specific
++configuration.
++
++This command has no command specific result.
++
++\paragraph{Legacy Device Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Read Command}
++
++This command has the same effect as reading from the virtio device-specific
++configuration through the legacy interface. The \field{command_specific_data} is in
++the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_data} describing
++the access to be performed.
++
++\begin{lstlisting}
++struct virtio_admin_cmd_legacy_dev_cfg_rd_data {
++        u8 offset; /* Starting byte offset within the device-specific configuration to read */
++};
++\end{lstlisting}
++
++For the command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ, \field{opcode}
++is set to 0x5.
++The \field{group_member_id} refers to the member device to be accessed.
++The \field{offset} refers to the offset to read from the virtio device-specific
++configuration.
++
++\begin{lstlisting}
++struct virtio_admin_cmd_legacy_dev_reg_rd_result {
++        u8 data[];
++};
++\end{lstlisting}
++
++No length or alignment restrictions are placed on the value of the
++\field{offset} and the length of the \field{data}, except that the resulting
++access refers to a single field and is completely within the device-specific
++configuration.
++
++When the command completes successfully, \field{command_specific_result} is in
++the format of \field{struct virtio_admin_cmd_legacy_dev_reg_rd_result}
++returned by the device.
++
++The length of the data read is simply the length of \field{data}.
++
++\paragraph{Legacy Driver Notification}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Driver Notifications}
++
++The driver of the owner device can send a driver notification to the member
++device operated using the legacy interface by executing
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE with the \field{offset} matching
++\field{Queue Notify} and the \field{data} containing a 16-bit virtqueue index to
++be notified.
++
++However, as VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE is also used for slow path
++configuration a separate dedicated mechanism for sending such driver
++notifications to the member device can be made available by the owner device.
++For the SR-IOV group type, the optional command
++VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO addresses this need by returning to the
++driver one or more addresses which can be used to send such driver
++notifications. The notification address returned can be in the device memory
++(PCI BAR or VF BAR) of the device.
++
++In this alternative approach, driver notifications are sent by
++writing a 16-bit virtqueue index to be notified, in the little-endian
++format, to the notification address returned by
++the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command.
++
++Any driver notification sent through the notification address has the same effect
++as if it was sent using the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE command with
++the \field{offset} matching \field{Queue Notify}.
++
++This command is only defined for the SR-IOV group type.
++
++For the command VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, \field{opcode}
++is set to 0x6.
++The \field{group_member_id} refers to the member device to be accessed.
++This command does not use \field{command_specific_data}.
++
++When the device supports the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command, the
++group owner device hardwires VF BAR0 to zero in the SR-IOV Extended capability.
++
++\begin{lstlisting}
++struct virtio_pci_legacy_notify_info {
++        u8 flags;  /* 0 = end of list, 1 = owner device, 2 = member device */
++        u8 bar;    /* BAR of the member or the owner device */
++        u8 padding[6];
++        le64 offset; /* Offset within bar. */
++};
++
++struct virtio_admin_cmd_legacy_notify_info_result {
++        struct virtio_pci_legacy_notify_info entries[4];
++};
++\end{lstlisting}
++
++The \field{flags} value of 0x1 indicates that the notification address is of
++the owner device, value of 0x2 indicates that the notification address is of
++the member device, the value of 0 indicates that all the entries starting from
++that entry are invalid entries in \field{entries}. All other values in
++\field{flags} are reserved.
++
++The \field{bar} values 0x1 to 0x5 specify BAR1 to BAR5 respectively:
++when the \field{flags} is 0x1 this is specified by the Base Address Registers
++in the PCI header of the device,
++when the \field{flags} is 0x2 this is specified by the VF BARn
++registers in the SR-IOV Extended Capability of the device.
++
++The \field{offset} indicates the notification address relative to BAR indicated
++in \field{bar}. This value is 2-byte aligned.
++
++When the command completes successfully, \field{command_specific_result} is in
++the format of \field{struct virtio_admin_cmd_legacy_notify_info_result}. The
++device can supply up to 4 entries each with a different notification
++address. In this case, any of the entries can be used by the driver. The order
++of the entries serves as a preference hint to the driver. The driver is expected
++to utilize the entries placed earlier in the array to the later ones. The driver is
++also expected to ignore any reserved entries and to skip all invalid entries.
++
++\devicenormative{\paragraph}{Legacy Interface}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
++
++A device MUST either support all of, or none of
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands.
++
++For VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
++the device MUST decode and encode (respectively) the value of the
++\field{data} using the little-endian format.
++
++For the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ commands, 
++the device MUST fail the command when the value of the
++\field{offset} and the length of the \field{data} do not refer to a
++single field or is not completely within the virtio common configuration
++excluding the device-specific configuration.
++
++For the VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
++the device MUST fail the command when the value of the
++\field{offset} and the length of the \field{data} do not refer to a
++single field or is not completely within the virtio device-specific
++configuration.
++
++The command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE MUST have the same effect
++as writing into the virtio common configuration structure through the legacy
++interface.
++
++The command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ MUST have the same effect as
++reading from the virtio common configuration structure through the legacy
++interface.
++
++The command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE MUST have the same effect as
++writing into the virtio device-specific configuration through the legacy
++interface.
++
++The command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ MUST have the same effect as
++reading from the virtio device-specific configuration through the legacy
++interface.
++
++For the SR-IOV group type, when the owner device supports
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO
++commands,
++\begin{itemize}
++\item the owner device and the group member device SHOULD follow the rules
++for the PCI Revision ID and Subsystem Device ID of the non-transitional devices
++documented in section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
++
++\item the owner device SHOULD follow the rules for the PCI Device ID of the non-transitional
++devices documented in section
++\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
++
++\item any driver notification received by the device at any of the notification
++address supplied in the command result of
++VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO MUST function as if the device received
++the notification through VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE
++command at an offset \field{offset} matching \field{Queue Notify}.
++\end{itemize}
++
++If the device supports the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command,
++\begin{itemize}
++\item the device MUST also support all of VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands.
++
++\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the last
++\field{struct virtio_pci_legacy_notify_info} entry MUST have \field{flags} of
++zero.
++
++\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, valid
++entries MUST have a \field{bar} which is not hardwired to zero.
++
++\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, valid
++entries MUST have an \field{offset} aligned to 2-byte.
++
++\item the device MAY support VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO with entries
++of the owner device or the member device or both of them.
++
++\item for the SR-IOV group type, the group owner device MUST hardwire VF BAR0
++to zero in the SR-IOV Extended capability.
++\end{itemize}
++
++\drivernormative{\paragraph}{Legacy Interface}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
++
++For VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
++the driver MUST encode and decode (respectively) the value of the \field{data}
++using the little-endian format.
++
++For the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ commands,
++the driver SHOULD set \field{offset} and the length of the \field{data}
++to refer to a single field within the virtio common configuration structure
++excluding the device-specific configuration.
++
++For the VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
++VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
++the driver SHOULD set \field{offset} and the length of the \field{data}
++to refer to a single field within device specific configuration.
++
++If VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command is supported, the driver
++SHOULD use the notification address to send all driver notifications to the
++device.
++
++If within \field{struct virtio_admin_cmd_legacy_notify_info_result} returned by
++VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the \field{flags} value
++for a specific \field{struct virtio_pci_legacy_notify_info} entry is 0x0, the
++driver MUST ignore this entry and all the following \field{entries}.
++Additionally, for all other entries, the driver MUST validate that
++\begin{itemize}
++\item the \field{flags} is either 0x1 or 0x2
++\item the \field{bar} corresponds to a valid BAR of either the owner or the
++member device, depending on the \field{flags}
++\item the \field{offset} is 2-byte aligned and corresponds to an address
++within the BAR specified by the \field{bar}
++on \field{flags}
++\end{itemize}, any entry which does not meet these constraints MUST be ignored
++by the driver.
+diff --git a/admin.tex b/admin.tex
+index b0a1a91..0803c26 100644
+--- a/admin.tex
++++ b/admin.tex
+@@ -117,7 +117,17 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ \hline
+ 0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
+ \hline
+-0x0002 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
++0x0002 & VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE & Writes into the legacy common configuration structure \\
++\hline
++0x0003 & VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ & Reads from the legacy common configuration structure  \\
++\hline
++0x0004 & VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE & Writes into the legacy device configuration structure \\
++\hline
++0x0005 & VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ & Reads into the legacy device configuration structure \\
++\hline
++0x0006 & VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO & Query the notification region information \\
++\hline
++0x0007 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
+ \hline
+ 0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
+ \hline
+@@ -286,6 +296,8 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
+ supporting multiple group types, the list of supported commands
+ might differ between different group types.
+ 
++\input{admin-cmds-legacy-interface.tex}
++
+ \devicenormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
+ 
+ The device MUST validate \field{opcode}, \field{group_type} and
+diff --git a/conformance.tex b/conformance.tex
+index 01ccd69..dc00e84 100644
+--- a/conformance.tex
++++ b/conformance.tex
+@@ -260,6 +260,8 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+ \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
+ \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Endianness}
+ \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
++\item Section \ref{devicenormative:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
++\item Section \ref{drivernormative:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
+ \item Section \ref{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
+ \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
+-- 
+2.26.2
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
