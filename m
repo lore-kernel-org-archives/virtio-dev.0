@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13322-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13323-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8804C001B0
-	for <virtio-dev@archiver.kernel.org>; Sun,  9 Jul 2023 20:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EE91FEB64DC
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 07:32:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id EEA9E2A8F4
-	for <virtio-dev@archiver.kernel.org>; Sun,  9 Jul 2023 20:22:14 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4261A29FD5
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 07:32:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DE1D398637D
-	for <virtio-dev@archiver.kernel.org>; Sun,  9 Jul 2023 20:22:14 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3A8959864A3
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 07:32:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CDB53983C95; Sun,  9 Jul 2023 20:22:14 +0000 (UTC)
+	id 2CFD698640D; Mon, 10 Jul 2023 07:32:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,226 +24,560 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B3E08986262;
-	Sun,  9 Jul 2023 20:22:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 15E0798640C;
+	Mon, 10 Jul 2023 07:32:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cihlxyq/hFvGTYSW3aXl2082pJ1HfhE4ZxAxKaxIM4S144JDwBlJ4ViTOInme4x/B/qk5bQYfDnvV1At9JLcaug+Zvq38vd8HBiXoXMlz+eZkSIPEBO+q1vbvIJRoKIUHA1aYvkm00Utdj/NZwR8ppvLwP3yEeaC9OEU38uBfHgn3UyW0BjamW1UW0Ot3Z7R35lmidPLFguPtqJFfAe09zWtzBecbAQMINfRmjQFn1yzPAR4Xh3VzyBn/EzKKH2nWDN9Q7HB1KWuxoFElgmsE/+/86g5HZFYEgs9X1tzOz51fxzS+tLHNhEMRO0T3PL3xB5ryOM1AOl23YdcCSX0sw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YotFNLbZxPHWsLVHkv2aFI+rIAL+Qy0WI4hcqmVE+lk=;
- b=oFUjq4JIC4Xk8ssvQ3D4hJY7EU/O/9k/XcHfu7PLzBrGIRH2pSPWnZvU8vuowyE6Uq4H/laYEuZtqV1XQ2d8BIrigV8XQcaacZA113lX0DJQ0KtOdK+NzGuGe3MpCNrQiCH9pJ/8Mw4oQYPMJ+whr1/uTsuHgDlorzjrQWlxAJPOyuSIGUm9wu6EXGXLKVDyxEnC0/P9lUl2w67cyX6Kneu66fyTe92qMMPDdmTjA9tsIOPHa+ou4lqaDIowbYRuXNVxRS1k3Wf1/xYqKBxyFzLZC3G/MWNYY7M4ulTyxZ7SAjoxnKpBHqRphwn4EsF2IbovT8LIuM9XMFpBzHh6cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "david.edmondson@oracle.com"
-	<david.edmondson@oracle.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>, "sburla@marvell.com" <sburla@marvell.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>, Yishai Hadas
-	<yishaih@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>, Shahaf Shuler
-	<shahafs@nvidia.com>
-Thread-Topic: [virtio-dev] [PATCH v13] admin: Add group member legacy register
- access commands
-Thread-Index: AQHZsOgWDJbZS5QbLUum6ujYtKcWkq+xdcMAgABOfxA=
-Date: Sun, 9 Jul 2023 20:22:06 +0000
-Message-ID:
- <PH0PR12MB548100E0699602017B9D8267DC33A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230707153019.147039-1-parav@nvidia.com>
- <20230709093550-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230709093550-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB5040:EE_
-x-ms-office365-filtering-correlation-id: f844d871-5b35-456d-df60-08db80ba2a90
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- MvU3KGwnj8A9ZFHgEj8gjt6GFc5kPLlZinSrphidfBp8qypV5SV5d2674aWkKHX5LayhHObFsBJMHFQ/0cRQq1G9bGUxOgd3vX1CMNcK3mr3xqpHPTwRIm5AXgPBXH2g5CwOcpTX300AWI96lauAjzexx+IHKCIAF4xxhmn6a1lhDo+7BRemabfHJdAx12y6QdeHQNmbJhO3T7jLBK+xIOHWYj7SFsFl+OnqwDeRtwurdLS31igJi7Q7eF6G7XT4lCtPKtYYQKj/pvX8YZdlIK34duB3BhIbckNC0vp/eS4S1tXEWC+OOK+Z25jJbhLEGARnNmU1ZRhMWDmeSGz05+GCi3ap9TF4b56CMBnaqpxfRjdpNdFCBhG5gO0GaoEa0eO5USBa/qCBIVqjZqjSGZik2qWerk1FMNCcLkQYEA6xCTgCQAu0KIG0GlqGOnadic5kC6Q4t60c+Fycy4O/I21RUsHZ2QI7CbtmZDM0AVpW/ryVVLMPgyNwXRqBPnrEHINIDdxlXA5V/kirH72ebt1LHu4BH5YJ5NrDKIoxGe8RCYq/iWSE/7YcqYNVlivSD3fKyrrZA36b0qVDgzdWpHtOeV69IoplVznT/mQOQhwdZeXBWYykFUQtN894x0XxxBSGXTefqnon+HkEqc86DkU9A8OvlCEwrUGLg8pq5p6RY9H86h3CLWNXT0XpOrIZE71MFgSo/oYflZbdOREf+w==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(396003)(366004)(346002)(376002)(451199021)(7696005)(478600001)(76116006)(54906003)(71200400001)(83380400001)(33656002)(86362001)(38070700005)(55016003)(2906002)(66946007)(186003)(6506007)(107886003)(9686003)(966005)(38100700002)(122000001)(66556008)(66476007)(66446008)(64756008)(6916009)(4326008)(316002)(41300700001)(8936002)(8676002)(5660300002)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?VFRDSHNaR09EQVgwQzQ4WlhEZmExc2Y4bjAwd1lYNit5VUQ5UGtLT0h0Uyty?=
- =?utf-8?B?NFlISXd3WnJiZGg0K1JTTnFZcVBNL2V2RW1aM3AzVFdlN0M1ZnVNMk5XRDZM?=
- =?utf-8?B?a1BpS3Jhdnl3QzhXazR4OENrejI3UHFEcXZJNGZTeWhBTFhIQXZhT2NsTFhM?=
- =?utf-8?B?RXc0Nkl3RUwrRWxaMWlqVEZvTUhvalJLVGdCMGUramNFYUJFT0J4RXRybk9I?=
- =?utf-8?B?RlBVNm1pbUJjK2ZJNVhzY1ZkOCszaC9aUjBMc1lISEJjYitUcm84V3R3b09F?=
- =?utf-8?B?b1NaZ2tuZjVVMGkrR1hIQ3NjZjgzRzErR3BUbEdtditFTXF6eHhaYVNpREdN?=
- =?utf-8?B?dnV0bTUraW5xZmFNV0FDcnZVdDNKRzloLzZkc0lZRkNLZGNmTGI2Vjhsa1pY?=
- =?utf-8?B?YktwNHBtSjhtUzNhVElKZldsdWFqSm9MbnlpVkNJYlJJbHQ4a0RnWjZaaVZu?=
- =?utf-8?B?UlJQQU5aSVcxQ2p0MGs1Z014RGZ6OW8xaUVJMDRmdEJXdy8rbzBMMEJtN0NM?=
- =?utf-8?B?eEQzbWtSSTRnRjBRanhtNThrTStaS0wzWWs1WlBBV1h1Vlc2RWJRRUIzN3hw?=
- =?utf-8?B?YnNOZldLVXo0R0NUc1pFekdsa0xua25UQktOOE9WRHhTODkvM1dpMXBpT2xQ?=
- =?utf-8?B?S1dPSnBCM1BjWGI1YmFjS2VWU2ZleUhPdVl2R1hCTW5DNS9JME1WYVl0bkJC?=
- =?utf-8?B?dDRlYXJhT20vekF6dkFXcllPdWhLT1VSU0VKdCtNZUl1cjg3cTZ5ekZ1VUQ4?=
- =?utf-8?B?MFIxdE9wcFcwMjZMTmVkeUQ3SlBSTlZRaDZ2Y1NnQWlqWkxJb3MwZG5kYWN6?=
- =?utf-8?B?WTd1bmpSRzJoQjdybUQ4L0dRQ0lJVXJtZDVvMktNdSt3U1ZVeDJBa1FySzJU?=
- =?utf-8?B?b2hTZ1A2YWpzeFo5UlM3NGpSNExjSEV0SzJzNkJzVEo1cnZmOU1CMGQ0NmdQ?=
- =?utf-8?B?RE9YQWZFblNWZG1ld1BkMDA4SjA0WkdBUkRJSENibktRNHBtd2NMRWdpdDRa?=
- =?utf-8?B?M0JQTEEzTmpFNEhqOW9hOGRhRW5QaFlOdDk3SUFVa09LUFRsTW1rSG9TcVVm?=
- =?utf-8?B?OEIyR3lXaWVuUHh3dTZMaHBoa2ZEaWJNRzBPNjlVdG81UTJxd01WdjF1Wkdv?=
- =?utf-8?B?VFFDRExGRWI4QkxOWXNvem5oSjZPbkZBQ0xjU296WlZMczN1Zmk4T243clhV?=
- =?utf-8?B?c3FScy9xUHUyb1V5QlVVK1h4N3ZZQ1pwV29wczJuSXd2QWtFY2tPSjFJdkd1?=
- =?utf-8?B?NGRIaU55QlFxZ0tsQmtXa3prNERxcFdqTnQ0UU9RelRraW14WE13N1NUeXN3?=
- =?utf-8?B?NExXbTJwdVVoQyszMUxqdVg0Ym1TSjQ2TXFyeHMvKzdiS0E0UnQzU2lxbnc1?=
- =?utf-8?B?Y2x3eXJvcDR4WDI2dUVEazdVRkhMWHd0NmFwWXhPd2VwQjltRWM2aVBaTXg0?=
- =?utf-8?B?OXRGbjg3OXpPY2F4NHdUTzdMZkFXMzhHM0svb3AwSFhhWjNibzBRL3ozY0NN?=
- =?utf-8?B?c0x0aTR2ZmlPbHlPYlJnOVExZlZvc3JjaXFaUkRaWm9pQndEZmxDSnI2cFpm?=
- =?utf-8?B?TTRlMnA1TUkxN3l4V2NGbE1lMndMcXF4Z3RqOU52TUxCN3FtV081RlpZTUl3?=
- =?utf-8?B?alN0bWdpb2ZXT0l2bnpGNlVINllUcEdPUVBVbncrTDVQS3dVTGtuZVpybCt3?=
- =?utf-8?B?bE5vQ0FvZzdCeTdRajBCL0plWlJrT0lGRS9vd1h2bnZReHI3WlloampKdzZ4?=
- =?utf-8?B?WDFWanN4U1IyZ08xRTA5TkdHYUlYMjZLc2ZzSjNPVXlxUVViUGdWbWdZMFhR?=
- =?utf-8?B?c2FvQzYyamxwYmZEc1RwczNROGJvMVpRNTZZZlJaaEZEanVBb1Q4NnNIeEZn?=
- =?utf-8?B?YlFZQ2xnOGFhM0w5eWVvQlVESGJwN3cvZWRtMi8rc1BQeW9HdklOb2NwUlM0?=
- =?utf-8?B?R1cxNjZ4MGpCK1hGS21RTFB5QUZpYTRGRy9XZEZGVm9LZFRvWVpyckpGYjB2?=
- =?utf-8?B?K2tJZDFkSnA0SGxCOVprc1Q4Nks1cllZTWRKUXhiOVBOTXNuby9ZbkFlWjdp?=
- =?utf-8?B?TFJId0NZTzk3dTkrTWdQWm9pdWNwUVV1WHJOVWsyQXdVZmFPMmplbmU4cjdC?=
- =?utf-8?B?eDlxaEE0S24zY2dlNXk4ZjREYzkvN052TFBVL1BjcmJuRm5OTTNlSlVZSzY4?=
- =?utf-8?Q?XqXRsfNRa40/w7kXfgIrV50=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f844d871-5b35-456d-df60-08db80ba2a90
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2023 20:22:06.9443
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oRWW2u3RIHim00zcw/8qfi0iF8OPKOsMs5e21tj1+11Snn4fy/O9ZAlIduowCmqPUraE1xyiwDE/NOOkV9+xuw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5040
-Subject: RE: [virtio-dev] [PATCH v13] admin: Add group member legacy register
- access commands
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0Vn.3t8V_1688974343;
+Message-ID: <1688974120.7019765-1-xuanzhuo@linux.alibaba.com>
+Date: Mon, 10 Jul 2023 15:28:40 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: jasowang@redhat.com,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ virtio-dev@lists.oasis-open.org, "Parav Pandit" <parav@nvidia.com>,
+ virtio-comment@lists.oasis-open.org
+References: <20220315032402.6088-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20220315032402.6088-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [virtio-dev] [PATCH v12] virtio-net: support device stats
 
-DQo+IEZyb206IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+IFNlbnQ6IFN1
-bmRheSwgSnVseSA5LCAyMDIzIDk6NDcgQU0NCj4gPiBGaXhlczogaHR0cHM6Ly9naXRodWIuY29t
-L29hc2lzLXRjcy92aXJ0aW8tc3BlYy9pc3N1ZXMvMTY3DQo+ID4gU2lnbmVkLW9mZi1ieTogUGFy
-YXYgUGFuZGl0IDxwYXJhdkBudmlkaWEuY29tPg0KPiANCj4gVWdoLiBJIGhhdmUgYSBmZWVsaW5n
-IHlvdSBhcmUgcmV3cml0aW5nIHdoYXQgSSB3cm90ZSBzbyB3ZSBrZWVwIGRvaW5nIG1vcmUgYW5k
-DQo+IG1vcmUgcmV2aWV3IHJvdW5kcy4gIEkgd291bGQgcHJlZmVyIGl0IGlmIEkgY291bGQganVz
-dCBjb21tZW50IGluc3RlYWQgb2YNCj4gcmV3cml0aW5nIC0gdGhhdCdzIHJlYWxseSBnb2luZyB3
-YXkgYmV5b25kIG5vcm1hbCByZXZpZXcgLSBidXQgdGhhdCBzZWVtcyB0byBnZXQNCj4gdXMgbm93
-aGVyZSBzbyBoZXJlIHdlIGFyZS4gIEJ1dCBnaXZlbiB0aGlzLCBpZiB5b3UgZG9uJ3Qgd2FudCB0
-byB1c2Ugd2hhdCBJIHdyb3RlDQo+IHRoZW4gcGxlYXNlIGNvbW1lbnQuDQo+DQpQbGVhc2Ugc2Vl
-IGlubGluZSwgd2h5IHNvbWUgcGFydHMgYXJlIHJld3JpdHRlbi4NCk9ubHkgdHdvIGxpbmVzIHRv
-IG15IGtub3dsZWRnZSBhcmUgcmV3cml0dGVuIGJlY2F1c2UgeW91IHdyb3RlLA0KDQoiIHdoZW4g
-dGhlIFxmaWVsZHtmbGFnc30gaXMgMHgyIHRoaXMgaXMgc3BlY2lmaWVkIGJ5IHRoZSBWRiBCQVJu
-Ig0KDQpBYm92ZSAidGhpcyBpcyBzcGVjaWZpZWQiIHdhcyBjb25mdXNpbmcgdG8gcmVhZC4NCg0K
-SXQgbWVhbnQgdG8gbWUgYXMgdGhhdCAidGhpcyIgcmVmZXJzIHRvICJiYXIiLg0KU28gaXQgaW50
-ZXJwcmV0ZWQgdG8gbWUgYXMgDQoNCiJ3aGVuIGZsYWdzIGlzIDB4MiwgYmFyIGlzIHNwZWNpZmll
-ZCBieSB0aGUgQmFzZSBBZGRyZXNzIFJlZ2lzdGVycyBpbiB0aGUgUENJIC4uLiIuDQoNCkhlcmUg
-YmFyIGlzIG5vdCBzcGVjaWZpZWQsIGJhciBzcGVjaWZpZXMgd2hpY2ggcmVnaXN0ZXIgb2Ygd2hp
-Y2ggZGV2aWNlIHRvIHJlZmVyIHRvLg0KDQpXaGF0IHdlIHdhbnRlZCB0byBzYXkgdGhhdCwNCg0K
-ImJhciIgZmllbGQgaGVyZSBwb2ludHMgdG8gKHNwZWNpZmllcykgdGhlIEJhc2UgQWRkcmVzcyBS
-ZWdpc3RlcnMgaW4gdGhlIFBDSSAuLi4NCg0KU28gdGhhdCBwYXJ0IHdhcyByZXdyaXR0ZW4uDQoN
-Cj4gDQo+ID4gLS0tDQo+ID4gY2hhbmdlbG9nOg0KPiA+IHYxMi0+djEzOg0KPiA+IC0gYWRkZWQg
-YXJ0aWNsZQ0KPiA+IC0gYWRkIGh5cGhlbiBiZXR3ZWVuIGxpdHRsZSBhbmQgZW5kaWFuDQo+ID4g
-LSBtZW50aW9uZWQgdnEgaW5kZXggZGVwdGggb2YgMTYtYml0DQo+ID4gLSByZXdyb3RlIGFsdGVy
-bmF0aXZlIGFwcHJvYWNoIGxpbmUNCj4gPiAtIG1lbnRpb24gdnEgaW5kZXgsIGxlbmd0aCBhbmQg
-ZW5kaWFubmVzcyBpbiBtbWlvIGRlc2NyaXB0aW9uDQo+ID4gLSBmaXhlZCBwYWRkaW5nIGJ5dGVz
-IHNpemUgZnJvbSA3IHRvIDYgYnl0ZXMNCj4gPiAtIHJld3JvdGUgYmFyIGZpZWxkIGRlc2NyaXB0
-aW9uDQo+ID4gLSBvZmZzZXQgYWxpZ25tZW50IHRleHQgYWRkZWQNCj4gPiAtIGFkZGVkIHRleHQg
-dG8gaWdub3JlIHJlc2VydmVkIG5vdGlmaWNhdGlvbiBlbnRyaWVzDQo+ID4gLSBkZXZpY2UgYW5k
-IGRyaXZlciBjb25mb3JtYW5jZSBsaW5lcyBhZGRlZCBmb3Igbm90aWZpY2F0aW9uIGluZm8NCj4g
-PiBjb21tYW5kIGZpZWxkcw0KPiA+IC0gZHJvcHBlZCBncm91cCBtZW1iZXIgcHJlZml4IHRvIHRo
-ZSBkcml2ZXINCj4gPiAtIHJld29yZGVkIHRleHQgZm9yIGZsYWdzIHJlcXVpcmVtZW50cw0KPiA+
-IC0gcmV3b3JkZWQgdG8gc2F5IGFsbCBkcml2ZXIgbm90aWZpY2F0aW9ucyBpbiBjb25mb3JtYW5j
-ZQ0KPiA+IC0gaXRlbWl6ZSBjb25mb3JtYW5jZSBlbnRyaWVzIHVuZGVyIGNvbW1hbmQgdG8gZWFz
-ZSByZWFkaW5nDQoNCk1vc3Qgb2YgYWJvdmUgY29tbWVudHMgd2VyZSBhZGRyZXNzZWQgYXNfaXMg
-YXMgeW91IHdyb3RlIG9mIGFza2VkIHRvIHdyaXRlLg0KDQpbLi5dDQoNCj4gPiArc3RydWN0IHZp
-cnRpb19hZG1pbl9jbWRfbGVnYWN5X25vdGlmeV9pbmZvX3Jlc3VsdCB7DQo+ID4gKyAgICAgICAg
-c3RydWN0IHZpcnRpb19wY2lfbGVnYWN5X25vdGlmeV9pbmZvIGVudHJpZXNbNF07IH07DQo+ID4g
-K1xlbmR7bHN0bGlzdGluZ30NCj4gPiArDQo+ID4gK1RoZSBcZmllbGR7ZmxhZ3N9IHZhbHVlIG9m
-IDB4MSBpbmRpY2F0ZXMgdGhhdCB0aGUgbm90aWZpY2F0aW9uDQo+ID4gK2FkZHJlc3MgaXMgb2Yg
-dGhlIG93bmVyIGRldmljZSwgdmFsdWUgb2YgMHgyIGluZGljYXRlcyB0aGF0IHRoZQ0KPiA+ICtu
-b3RpZmljYXRpb24gYWRkcmVzcyBpcyBvZiB0aGUgbWVtYmVyIGRldmljZSwgdGhlIHZhbHVlIG9m
-IDANCj4gPiAraW5kaWNhdGVzIHRoYXQgYWxsIHRoZSBlbnRyaWVzIHN0YXJ0aW5nIGZyb20gdGhh
-dCBlbnRyeSBhcmUgaW52YWxpZA0KPiA+ICtlbnRyaWVzIGluIFxmaWVsZHtlbnRyaWVzfS4gQWxs
-IG90aGVyIHZhbHVlcyBpbiBcZmllbGR7ZmxhZ3N9IGFyZQ0KPiA+ICtyZXNlcnZlZC4gVGhlIGRy
-aXZlciBza2lwcyB0aGUgZW50cmllcyB3aG9zZSBcZmllbGR7ZmxhZ30gY29udGFpbnMgcmVzZXJ2
-ZWQNCj4gdmFsdWUuDQo+IA0KPiBjb250YWluIHJlc2VydmVkIHZhbHVlcy4NCj4NCldpbGwgZml4
-IHRoaXMuDQoNCj4gPiArDQo+ID4gK1RoZSBcZmllbGR7YmFyfSB2YWx1ZXMgMHgxIHRvIDB4NSBz
-cGVjaWZpZXMgYSBCYXNlIEFkZHJlc3MgcmVnaXN0ZXINCj4gPiArKEJBUiksDQo+IA0KPiBzcGVj
-aWZ5DQo+DQpXaWxsIGZpeCB0aGlzLg0KIA0KPiANCj4gPiArd2hlbiB0aGUgXGZpZWxke2ZsYWdz
-fSBpcyAweDEsIFxmaWVsZHtiYXJ9IHNwZWNpZmllcyB0aGUgQmFzZSBBZGRyZXNzDQo+ID4gK1Jl
-Z2lzdGVycw0KPiANCj4gb25lIG9mIHRoZSBCYXNlIEFkZHJlc3MgUmVnaXN0ZXJzDQo+IA0KPiA+
-ICtpbiB0aGUgUENJIGhlYWRlciBvZiB0aGUgb3duZXIgZGV2aWNlLCB3aGVuIHRoZSBcZmllbGR7
-ZmxhZ3N9IGlzIDB4MiwNCj4gPiArXGZpZWxke2Jhcn0gc3BlY2lmaWVzIHRoZSBWRiBCQVJuIHJl
-Z2lzdGVycyBpbiB0aGUgU1ItSU9WIEV4dGVuZGVkDQo+ID4gK0NhcGFiaWxpdHkgb2YgdGhlIGRl
-dmljZS4NCj4gDQpXaWxsIGZpeCB0aGlzLg0KDQo+IFRoZXNlIGF0dGVtcHRzIHRvIGNsYXJpZnkg
-b25seSBjb25mdXNlZC4NCj4gUHJvYmxlbSB3aXRoIHRoaXMgaXMgdGhhdCBWRiBCQVJuIGlzIG5v
-dCB2YWxsZWQgIkJhc2UgQWRkcmVzcyByZWdpc3RlciINCj4geW91IGFsc28gZGlkIG5vdCBjYXBp
-dGFsaXplICJyIiBoZXJlLiBBbmQgYWxzbyBWRiBCQVJuIGluIHRoZSBjYXBhYmlsaXR5IGFjdHVh
-bGx5DQo+IHJlZmVycyB0byBWRjAgb25seS4gT3RoZXJzIGFyZSBjYWxjdWxhdGVkIGZyb20gdGhh
-dC4NCj4gDQo+IFRoaXMgaXMgd2h5IEkgd3JvdGUgd2hhdCBJIHdyb3RlIGluIHRoZSBwcmV2aW91
-cyByZXZpZXcuDQo+DQpJdCBpcyBjb25mdXNpbmcsIGJ1dCBJIHdpbGwgdGFrZSBpdCBhc19pcy4N
-CiANCj4gDQo+IA0KPiA+ICsNCj4gPiArVGhlIFxmaWVsZHtvZmZzZXR9IGluZGljYXRlcyB0aGUg
-bm90aWZpY2F0aW9uIGFkZHJlc3MgcmVsYXRpdmUgdG8gdGhlDQo+ID4gK2Jhc2UgYWRkcmVzcyBh
-c3NvY2lhdGVkIHdpdGggdGhlIEJBUiBpbmRpY2F0ZWQgaW4gXGZpZWxke2Jhcn0uIFRoaXMNCj4g
-PiArdmFsdWUNCj4gDQo+IGxldCdzIG5vdCBpbnZlbnQgdGhlIG5ldyB0ZXJtIGJhc2UgYWRkcmVz
-cy4gSnVzdCAicmVsYXRpdmUgdG8gdGhlIEJBUiIgc2hvdWxkIGJlDQo+IGVub3VnaC4NCldpbGwg
-Zml4IGl0Lg0KDQo+IA0KPiA+ICtpcyAyLWJ5dGUgYWxpZ25lZC4NCj4gPiArDQo+ID4gK1doZW4g
-dGhlIGNvbW1hbmQgY29tcGxldGVzIHN1Y2Nlc3NmdWxseSwNCj4gPiArXGZpZWxke2NvbW1hbmRf
-c3BlY2lmaWNfcmVzdWx0fSBpcyBpbiB0aGUgZm9ybWF0IG9mIFxmaWVsZHtzdHJ1Y3QNCj4gPiAr
-dmlydGlvX2FkbWluX2NtZF9sZWdhY3lfbm90aWZ5X2luZm9fcmVzdWx0fS4gVGhlIGRldmljZSBj
-YW4gc3VwcGx5IHVwDQo+ID4gK3RvIDQgZW50cmllcyBlYWNoIHdpdGggYSBkaWZmZXJlbnQgbm90
-aWZpY2F0aW9uIGFkZHJlc3MuIEluIHRoaXMNCj4gPiArY2FzZSwgYW55IG9mIHRoZSBlbnRyaWVz
-IGNhbiBiZSB1c2VkIGJ5IHRoZSBkcml2ZXIuIFRoZSBvcmRlciBvZiB0aGUNCj4gPiArZW50cmll
-cyBzZXJ2ZXMgYXMgYSBwcmVmZXJlbmNlIGhpbnQgdG8gdGhlIGRyaXZlci4gVGhlIGRyaXZlciBp
-cw0KPiA+ICtleHBlY3RlZCB0byB1dGlsaXplIHRoZSBlbnRyaWVzIHBsYWNlZCBlYXJsaWVyIGlu
-IHRoZSBhcnJheSB0byB0aGUgbGF0ZXIgb25lcy4NCj4gVGhlIGRyaXZlciBpcyBhbHNvIGV4cGVj
-dGVkIHRvIGlnbm9yZSByZXNlcnZlZCBlbnRyaWVzLg0KPiANCj4gDQo+IFlvdSBuZWVkIHRvIGRv
-Y3VtZW50IGVuZCBvZiBsaXN0IHRvby4NCj4NCkVuZCBvZiBsaXN0IGlzIGRlc2NyaWJlZCB3aGVy
-ZSB0aGUgZmxhZyB2YWx1ZXMgMCwxLDIgYXJlIGRlc2NyaWJlZC4NClNob3VsZCB3ZSBkdXBsaWNh
-dGUgaGVyZT8NCiANCj4gSSB3cm90ZSBhbGwgb2YgdGhpcyBpbiBteSBwcmV2aW91cyByZXZpZXcu
-IERvbm51IHdoeSB5b3UgZGVjaWRlZCB0byByZXdyaXRlIHlldA0KPiBhZ2FpbiBidXQgaGVyZSB3
-ZSBhcmUuDQo+IA0KSSByZWNoZWNrZWQuDQpJIGRpZG7igJl0IGZpbmQgcmV3cml0ZSBmb3IgYWJv
-dmUgbGluZXMgaW4gWzFdLg0KWW91IHJld3JvdGUgdGhlIGNvbmZvcm1hbmNlIHNlY3Rpb24uDQoN
-ClsxXSBodHRwczovL2xpc3RzLm9hc2lzLW9wZW4ub3JnL2FyY2hpdmVzL3ZpcnRpby1jb21tZW50
-LzIwMjMwNy9tc2cwMDEyNS5odG1sDQoNCg0KPiA+ICtJZiB3aXRoaW4gXGZpZWxke3N0cnVjdCB2
-aXJ0aW9fYWRtaW5fY21kX2xlZ2FjeV9ub3RpZnlfaW5mb19yZXN1bHR9DQo+ID4gK3JldHVybmVk
-IGJ5IFZJUlRJT19BRE1JTl9DTURfTEVHQUNZX05PVElGWV9JTkZPLCB0aGUgXGZpZWxke2ZsYWdz
-fQ0KPiA+ICt2YWx1ZSBmb3IgYSBzcGVjaWZpYyBcZmllbGR7c3RydWN0IHZpcnRpb19wY2lfbGVn
-YWN5X25vdGlmeV9pbmZvfQ0KPiA+ICtlbnRyeSBpcyAweDAsIHRoZSBkcml2ZXIgTVVTVCBpZ25v
-cmUgdGhpcyBlbnRyeSBhbmQgYWxsIHRoZSBmb2xsb3dpbmcNCj4gPiArXGZpZWxke2VudHJpZXN9
-LiBUaGUgZHJpdmVyIE1VU1QgYWRkaXRpb25hbGx5IHZhbGlkYXRlLCBmb3IgZWFjaA0KPiA+ICtl
-bnRyeSwgdGhhdCBcYmVnaW57aXRlbWl6ZX0gXGl0ZW0gdGhlIFxmaWVsZHtmbGFnc30gaXMgZWl0
-aGVyIDB4MCwNCj4gPiArMHgxIG9yIDB4MiBcaXRlbSB0aGUgXGZpZWxke2Jhcn0gY29ycmVzcG9u
-ZHMgdG8gYSB2YWxpZCBCQVIgb2YgZWl0aGVyDQo+ID4gK3RoZSBvd25lciBvciB0aGUgbWVtYmVy
-IGRldmljZSwgZGVwZW5kaW5nIG9uIHRoZSBcZmllbGR7ZmxhZ3N9IFxpdGVtDQo+ID4gK3RoZSBc
-ZmllbGR7b2Zmc2V0fSBpcyAyLWJ5dGUgYWxpZ25lZCBhbmQgY29ycmVzcG9uZHMgdG8gYW4gYWRk
-cmVzcw0KPiA+ICt3aXRoaW4gdGhlIEJBUiBzcGVjaWZpZWQgYnkgdGhlIFxmaWVsZHtiYXJ9IG9u
-IFxmaWVsZHtmbGFnc30NCj4gPiArXGVuZHtpdGVtaXplfSwgYW55IGVudHJ5IHdoaWNoIGRvZXMg
-bm90IG1lZXQgdGhlc2UgY29uc3RyYWludHMgTVVTVA0KPiA+ICtiZSBpZ25vcmVkIGJ5IHRoZSBk
-cml2ZXIuDQo+DQpJIGRpZG7igJl0IHJld3JpdGUgdGhpcyBmdWxseS4NCg0KWW91IHdlcmUgbWlz
-c2luZyB0aGUgd29yZCAiaWdub3JlIiBhZnRlciBNVVNUIGluIFsyXSwgc28gSSBhZGRlZCBpdC4N
-ClsyXSBodHRwczovL2xpc3RzLm9hc2lzLW9wZW4ub3JnL2FyY2hpdmVzL3ZpcnRpby1jb21tZW50
-LzIwMjMwNy9tc2cwMDEyNS5odG1sDQoNCkkgYWRkZWQgbm9ybWF0aXZlIHdoaWNoIHlvdSBkaWRu
-4oCZdCB3cml0ZSwgYnV0IHlvdSBnYXZlIGNvbW1lbnRzIGZvciBvZmZzZXQsIGFsaWdubWVudC4N
-CkkgYWRkZWQgdGhvc2UuDQogDQpTZWNvbmRseSB5b3UgaGFkIGNvbW1lbnQgYWZ0ZXIgeW91ciBy
-ZXdyaXRlICBhczoNCg0KImFuZCBNVVNUIGlnbm9yZSBhbiBlbnRyeSBpZiBhbnkgb2YgdGhlc2Ug
-Y29uc3RyYWludHMgYXJlDQp2aW9sYXRlZDsgdGhpcyBpcyB0byBhbGxvdyBmb3IgZnV0dXJlIGV4
-dGVuc2lvbnMuIg0KDQpTdWNoIG11bHRpLWxpbmUgc2luZ2xlIHNlbnRlbmNlIGlzIGhhcmQgdG8g
-cmVhZC4NCkhlbmNlLCBJIGFkZGVkLCAiLCIgYW5kIHNsaWdodGx5IHJld29yZGVkIGFzICJhbnkg
-ZW50cnkgd2hpY2ggZG9lcyBub3QgIi4NCg0KSSBtaXNzZWQgdGhlIGVuZCBvZiBsaXN0IGNvbmZv
-cm1hbmNlIGxpbmUsIHNvcnJ5IGFib3V0IGl0LiBBZGRpbmcgaXQuDQoNCj4gV2FpdCBhIHNlY29u
-ZC4NCj4gLSBlbmQgb2YgbGlzdCBub3QgZG9jdW1lbnRlZCAtIHdlIHdhbnQgY29uZm9ybWFuY2Ug
-c3RhdGVtZW50cw0KPiAtIGZvciBlbmQgb2YgbGlzdCBJIGFtIGd1ZXNzaW5nIG90aGVyIGZpZWxk
-cyBkbyBub3QgbWF0dGVyDQo+IC0gZW50cmllcyBhZnRlciBlbmQgb2YgbGlzdCBhbHNvIGRvIG5v
-dCBtYXR0ZXI/DQo+DQpXZSBhZGRlZCB0aGUgZGVzY3JpcHRpb24gZm9yIGVuZCBvZiBsaXN0IHdo
-ZXJlIHRoZSBhY3R1YWwgZmxhZ3MgdmFsdWUgaXMgZGVzY3JpYmVkLg0KTWlzc2VkIGluIGNvbmZv
-cm1hbmNlLiBXaWxsIGFkZCBpdC4NCg==
+hi, guys
+
+After a lot of internal discussions, I removed some unimportant counters. Based
+on this v12 patch I am repling to, most of the requirements have been met.
+
+The patch link https://lore.kernel.org/all/20220315032402.6088-1-xuanzhuo@linux.alibaba.com/
+
+We still have these counters, let's see if they can be standardized.
+
+## limit
+
+* tx_bps_limit_drops
+* tx_pps_limit_drops
+* rx_bps_limit_drops
+* rx_pps_limit_drops
+
+In a cloud scenario, multiple users purchase different VMs, and these VMs share
+the capabilities of the same host. In order to ensure that each VM will not
+affect others, the network card(virtio-net) capability of each VM is limited.
+These users purchase VMs, this limit has already been determined.
+
+So if the network card traffic of a vm exceeds the upper limit, packet loss will
+occur. It is necessary for us to count these packet losses. And the device
+should expose to the user.
+
+## session
+
+* tx_session_full_drops The number of packet drops in the sending direction when
+                        the session is full
+* rx_session_full_drops The number of packets lost when the session is full in the receiving direction
+
+Our dpu supports tcp connection tracking, but there is an upper limit to the
+number of connections, and if it exceeds, packet loss will also occur.
+
+## ACL
+
+* tx_acl_drops ACL packet loss in the sending direction
+* rx_acl_drops The number of ACL packets lost in the receiving direction
+
+In our cloud service, for network cards, users are allowed to configure security
+rules,such as which IPs can access which ports of this machine.
+
+
+Thanks
+
+
+On Tue, 15 Mar 2022 11:24:02 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> This patch allows the driver to obtain some statistics from the device.
+>
+> In the back-end implementation, we can count a lot of such information,
+> which can be used for debugging and judging the running status of the
+> back-end. We hope to directly display it to the user through ethtool.
+>
+> To get stats atomically, try to get stats for all queue pairs in one
+> command.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  conformance.tex |   2 +
+>  content.tex     | 406 +++++++++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 405 insertions(+), 3 deletions(-)
+>
+> diff --git a/conformance.tex b/conformance.tex
+> index 42f8537..c67f877 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -142,6 +142,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+>  \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
+>  \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
+> +\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+>  \end{itemize}
+>
+>  \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance / Driver Conformance / Block Driver Conformance}
+> @@ -401,6 +402,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+>  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+>  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+> +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+>  \end{itemize}
+>
+>  \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance / Device Conformance / Block Device Conformance}
+> diff --git a/content.tex b/content.tex
+> index c6f116c..81f325d 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -3092,6 +3092,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+>  \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>      channel.
+>
+> +\item[VIRTIO_NET_F_CTRL_STATS(55)] Device can provide device-level statistics
+> +    to the driver through the control channel.
+> +
+>  \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike UFO
+>   (fragmenting the packet) the USO splits large UDP packet
+>   to several segments when each of these smaller packets has UDP header.
+> @@ -3137,6 +3140,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+>  \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+> +\item[VIRTIO_NET_F_CTRL_STATS] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+>  \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \end{description}
+> @@ -4015,6 +4019,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>          u8 command;
+>          u8 command-specific-data[];
+>          u8 ack;
+> +        u8 command-specific-data-reply[];
+>  };
+>
+>  /* ack values */
+> @@ -4023,9 +4028,11 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  \end{lstlisting}
+>
+>  The \field{class}, \field{command} and command-specific-data are set by the
+> -driver, and the device sets the \field{ack} byte. There is little it can
+> -do except issue a diagnostic if \field{ack} is not
+> -VIRTIO_NET_OK.
+> +driver, and the device sets the \field{ack} byte and optionally
+> +\field{command-specific-data-reply}. There is little the driver can
+> +do except issue a diagnostic if \field{ack} is not VIRTIO_NET_OK.
+> +
+> +The command VIRTIO_NET_CTRL_STATS_GET contains \field{command-specific-data-reply}.
+>
+>  \paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+>  \label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}%old label for latexdiff
+> @@ -4471,6 +4478,399 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  according to the native endian of the guest rather than
+>  (necessarily when not using the legacy interface) little-endian.
+>
+> +\paragraph{Device Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+> +
+> +If the VIRTIO_NET_F_CTRL_STATS feature is negotiated, the driver can
+> +get the device stats from the device in \field{command-specific-data-reply}.
+> +
+> +To get the stats, the following definitions are used:
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_CTRL_STATS         6
+> +#define VIRTIO_NET_CTRL_STATS_GET     0
+> +
+> +#define VIRTIO_NET_STATS_TYPE_CVQ      0
+> +#define VIRTIO_NET_STATS_TYPE_RX_BASIC 1
+> +#define VIRTIO_NET_STATS_TYPE_RX_CSUM  2
+> +#define VIRTIO_NET_STATS_TYPE_RX_GSO   3
+> +#define VIRTIO_NET_STATS_TYPE_RX_RESET 4
+> +#define VIRTIO_NET_STATS_TYPE_TX_BASIC 5
+> +#define VIRTIO_NET_STATS_TYPE_TX_CSUM  6
+> +#define VIRTIO_NET_STATS_TYPE_TX_GSO   7
+> +#define VIRTIO_NET_STATS_TYPE_TX_RESET 8
+> +
+> +\end{lstlisting}
+> +
+> +Use the command VIRTIO_NET_CTRL_STATS_GET and \field{command-specific-data}
+> +containing struct virtio_net_ctrl_queue_stats to get the device stats.
+> +The result is returned by \field{command-specific-data-reply}.
+> +The stats ware returned in the order of the type specified in the
+> +\field{virtio_net_ctrl_queue_stats}.
+> +
+> +The following layout structures are used:
+> +
+> +\field{command-specific-data}
+> +\begin{lstlisting}
+> +struct virtio_net_ctrl_queue_stats {
+> +	u16 nstats;
+> +	struct {
+> +	    u16 queue_num;
+> +	    u16 type;
+> +	} stats[];
+> +};
+> +\end{lstlisting}
+> +
+> +\field{command-specific-data-reply}
+> +\begin{lstlisting}
+> +struct virtio_net_stats_cvq {
+> +    le64 command_num;
+> +    le64 ok_num;
+> +};
+> +
+> +struct virtio_net_stats_rx_basic {
+> +    le64 rx_packets;
+> +    le64 rx_bytes;
+> +
+> +    le64 rx_notification;
+> +    le64 rx_interrupt;
+> +
+> +    le64 rx_drop;
+> +    le64 rx_drop_overruns;
+> +};
+> +
+> +struct virtio_net_stats_rx_csum {
+> +    le64 rx_csum_valid;
+> +    le64 rx_needs_csum;
+> +    le64 rx_csum_bad;
+> +    le64 rx_csum_none;
+> +};
+> +
+> +struct virtio_net_stats_rx_gso {
+> +    le64 rx_gso_packets;
+> +    le64 rx_gso_bytes;
+> +    le64 rx_gso_packets_coalesced;
+> +    le64 rx_gso_bytes_coalesced;
+> +    le64 rx_gso_segments;
+> +    le64 rx_gso_segments_bytes;
+> +};
+> +
+> +struct virtio_net_stats_rx_reset {
+> +    le64 rx_reset;
+> +};
+> +
+> +struct virtio_net_stats_tx_basic {
+> +    le64 tx_packets;
+> +    le64 tx_bytes;
+> +
+> +    le64 tx_notification;
+> +    le64 tx_interrupt;
+> +
+> +    le64 tx_drop;
+> +    le64 tx_drop_malformed;
+> +};
+> +
+> +struct virtio_net_stats_tx_csum {
+> +    le64 tx_csum_none;
+> +    le64 tx_needs_csum;
+> +};
+> +
+> +struct virtio_net_stats_tx_gso {
+> +    le64 tx_gso_packets;
+> +    le64 tx_gso_bytes;
+> +    le64 tx_gso_packets_split;
+> +    le64 tx_gso_bytes_split;
+> +    le64 tx_gso_segments;
+> +    le64 tx_gso_segments_bytes;
+> +};
+> +
+> +struct virtio_net_stats_tx_reset {
+> +    le64 tx_reset;
+> +};
+> +
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +    \item [nstats]
+> +        The number of \field{stats}.
+> +
+> +    \item [queue_num]
+> +        The number of the virtqueue to obtain the statistics.
+> +
+> +    \item [type]
+> +        The type of the stats to be obtained.
+> +
+> +\end{description}
+> +
+> +Correspondence between the vq type, the stats type, the stats structure and the
+> +required features.
+> +\begin{tabular}{ |l|l|l|l| }
+> +    \hline
+> +    VQ Type                  & Stats Type                     & Stats Structure           & Features \\ \hline
+> +
+> +    controlq                 & VIRTIO_NET_STATS_TYPE_CVQ      & virtio_net_stats_cvq      & \\ \hline
+> +
+> +    \multirow{4}*{receiveq}  & VIRTIO_NET_STATS_TYPE_RX_BASIC & virtio_net_stats_rx_basic & \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_RX_CSUM  & virtio_net_stats_rx_csum  & VIRTIO_NET_F_GUEST_CSUM \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_RX_GSO   & virtio_net_stats_rx_gso   & VIRTIO_NET_F_GUEST_TSO4 or\newline
+> +                                                                                            VIRTIO_NET_F_GUEST_TSO6 or\newline
+> +                                                                                            VIRTIO_NET_F_GUEST_UFO    \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_RX_RESET & virtio_net_stats_rx_reset & VIRTIO_F_RING_RESET \\ \hline
+> +
+> +    \multirow{4}*{transmitq} & VIRTIO_NET_STATS_TYPE_TX_BASIC & virtio_net_stats_tx_basic & \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_TX_CSUM  & virtio_net_stats_tx_csum  & VIRTIO_NET_F_CSUM \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_TX_GSO   & virtio_net_stats_tx_gso   & VIRTIO_NET_F_HOST_TSO4 or\newline
+> +                                                                                            VIRTIO_NET_F_HOST_TSO6 or\newline
+> +                                                                                            VIRTIO_NET_F_HOST_USO  or\newline
+> +                                                                                            VIRTIO_NET_F_HOST_UFO  \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_TX_RESET & virtio_net_stats_tx_reset & VIRTIO_F_RING_RESET \\
+> +    \hline
+> +\end{tabular}
+> +
+> +
+> +\subparagraph{Controlq Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Controlq Stats}
+> +
+> +The structure corresponding to the controlq stats is virtio_net_stats_cvq.
+> +
+> +\begin{description}
+> +    \item [command_num]
+> +        The number of commands, including the current command.
+> +
+> +    \item [ok_num]
+> +        The number of commands (including the current command) where the ack was VIRTIO_NET_OK.
+> +\end{description}
+> +
+> +
+> +\subparagraph{Receiveq Basic Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq Basic Stats}
+> +
+> +The structure corresponding to the receiveq basic stats is virtio_net_stats_rx_basic.
+> +
+> +Receiveq basic stats doesn't need any features, as long as the device supports
+> +VIRTIO_NET_F_CTRL_STATS. The following are the receiveq basic stats.
+> +
+> +\begin{description}
+> +    \item [rx_packets]
+> +        The number of packets received by device (not the packets passed to the
+> +        guest), including the dropped packets by device.
+> +
+> +    \item [rx_bytes]
+> +        The number of bytes received by device (not the packets passed to the
+> +        guest), including the dropped packets by device.
+> +
+> +    \item [rx_notification]
+> +        The number of driver notifications.
+> +
+> +    \item [rx_interrupt]
+> +        The number of device interrupts.
+> +
+> +    \item [rx_drop]
+> +        The number of packets dropped by the receiveq. Contains all kinds of
+> +        packet drop.
+> +
+> +    \item [rx_drop_overruns]
+> +        The number of packets dropped by the receiveq when no more descriptors
+> +        were available.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Transmitq Basic Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq Basic Stats}
+> +
+> +The structure corresponding to the transmitq basic stats is virtio_net_stats_tx_basic.
+> +
+> +Transmitq basic stats doesn't need any features, as long as the device supports
+> +VIRTIO_NET_F_CTRL_STATS. The following are the transmitq basic stats.
+> +
+> +\begin{description}
+> +    \item [tx_packets]
+> +        The number of packets sent by device (not the packets got from the
+> +        guest), excluding the dropped packets by device.
+> +
+> +    \item [tx_bytes]
+> +        The number of bytes sent by device (not the packets got from the
+> +        guest), excluding the dropped packets by device.
+> +
+> +    \item [tx_notification]
+> +        The number of driver notifications.
+> +
+> +    \item [tx_interrupt]
+> +        The number of device interrupts.
+> +
+> +    \item [tx_drop]
+> +        The number of packets dropped by the transmitq. Contains all kinds of
+> +        packet drop.
+> +
+> +    \item [tx_drop_malformed]
+> +        The number of packets dropped when the descriptor is in an error state.
+> +        For example, the buffer is too short.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Receiveq CSUM Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq CSUM Stats}
+> +
+> +The structure corresponding to the receiveq csum stats is virtio_net_stats_rx_csum.
+> +
+> +Only after the VIRTIO_NET_F_GUEST_CSUM negotiation is successful, the receiveq
+> +csum stats can be obtained.
+> +
+> +The following are the receiveq csum stats:
+> +
+> +\begin{description}
+> +    \item [rx_csum_valid]
+> +        The number of packets with VIRTIO_NET_HDR_F_DATA_VALID.
+> +
+> +    \item [rx_needs_csum]
+> +        The number of packets with VIRTIO_NET_HDR_F_NEEDS_CSUM.
+> +
+> +    \item [rx_csum_bad]
+> +        The number of packets with abnormal csum.
+> +
+> +    \item [rx_csum_none]
+> +        The number of packets without hardware csum. The packet here refers to
+> +        the non-TCP/UDP packet that the backend cannot recognize.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Transmitq CSUM Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq CSUM Stats}
+> +
+> +The structure corresponding to the transmitq csum stats is virtio_net_stats_tx_csum.
+> +
+> +Only after the VIRTIO_NET_F_CSUM negotiation is successful, the transmitq csum
+> +stats can be obtained.
+> +
+> +The following are the transmitq csum stats:
+> +
+> +\begin{description}
+> +    \item [tx_csum_none]
+> +        The number of packets that didn't require hardware csum.
+> +
+> +    \item [tx_needs_csum]
+> +        The number of packets that required hardware csum.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Receiveq GSO Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq GSO Stats}
+> +
+> +The structure corresponding to the receiveq gso stats is virtio_net_stats_rx_gso.
+> +
+> +If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, or UFO options have
+> +been negotiated, the receiveq gso stats can be obtained.
+> +
+> +Rx gso packets refer to packets passed by the device to the driver where
+> +\field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE.
+> +
+> +\begin{description}
+> +    \item [rx_gso_packets]
+> +        The number of the rx gso packets.
+> +
+> +    \item [rx_gso_bytes]
+> +        The number of bytes(excluding the virtio net header) of the rx gso packets.
+> +
+> +    \item [rx_gso_packets_coalesced]
+> +        The number of the rx gso packages generated by coalescing.
+> +
+> +    \item [rx_gso_bytes_coalesced]
+> +        The number of bytes(excluding the virtio net header) of the rx gso packets generated by coalescing.
+> +
+> +    \item [rx_gso_segments]
+> +        The number of coalesced segments.
+> +
+> +    \item [rx_gso_segments_bytes]
+> +        The number of bytes of coalesced segments.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Transmitq GSO Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq GSO Stats}
+> +
+> +The structure corresponding to the transmitq gso stats is virtio_net_stats_tx_gso.
+> +
+> +If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
+> +been negotiated, the transmitq gso stats can be obtained.
+> +
+> +Tx gso packets refer to packets passed by the driver to the device where
+> +\field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE.
+> +
+> +\begin{description}
+> +    \item [tx_gso_packets]
+> +        The number of the tx gso packets.
+> +
+> +    \item [tx_gso_bytes]
+> +        The number of bytes(excluding the virtio net header) of the tx gso packets.
+> +
+> +    \item [tx_gso_packets_split]
+> +        The number of the tx gso packets that been split.
+> +
+> +    \item [tx_gso_bytes_split]
+> +        The number of bytes(excluding the virtio net header) of the tx gso packets that been split.
+> +
+> +    \item [tx_gso_segments]
+> +        The number of segments split from the gso package.
+> +
+> +    \item [tx_gso_segments_bytes]
+> +        The number of bytes(excluding the virtio net header) of segments split from the gso package.
+> +\end{description}
+> +
+> +\subparagraph{Receiveq Reset Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq Reset Stats}
+> +
+> +The structure corresponding to the receiveq reset stats is virtio_net_stats_rx_reset.
+> +
+> +Only when VIRTIO_F_RING_RESET is successfully negotiated, the receiveq reset stats
+> +can be obtained.
+> +
+> +See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}
+> +for more about \field{rx_reset}.
+> +
+> +\begin{description}
+> +    \item [rx_reset]
+> +        The number of receiveq resets.
+> +\end{description}
+> +
+> +\subparagraph{Transmitq Reset Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq Reset Stats}
+> +
+> +The structure corresponding to the transmitq reset stats is virtio_net_stats_tx_reset.
+> +
+> +Only when VIRTIO_F_RING_RESET is successfully negotiated, the transmitq reset stats
+> +can be obtained.
+> +
+> +See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}
+> +for more about \field{tx_reset}.
+> +
+> +\begin{description}
+> +    \item [tx_reset]
+> +        The number of transmitq resets.
+> +\end{description}
+> +
+> +\devicenormative{\subparagraph}{Device Stats}{Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+> +
+> +If virtio_net_ctrl_queue_stats is incorrect (such as the following), the device
+> +MUST set \field{ack} to VIRTIO_NET_ERR. Even if there is only one error,
+> +the device MUST abort the entire command.
+> +\begin{itemize}
+> +    \item \field{queue_num} exceeds the queue range.
+> +    \item \field{type} is not a known value.
+> +    \item The type of vq does not match \field{type}. E.g. the driver tries to query
+> +        RX stats through a TX index.
+> +    \item The feature corresponding to the specified \field{type} was not successfully
+> +        negotiated.
+> +    \item The size of the buffer allocated by the driver for \field{command-specific-data-reply}
+> +        is less than the total size of the stats specialed by
+> +        \field{virtio_net_ctrl_queue_stats}.
+> +\end{itemize}
+> +
+> +The device MUST write the requested stats structures in
+> +\field{command-specific-data-reply} in the order specified by the structure
+> +virtio_net_ctrl_queue_stats.
+> +
+> +\drivernormative{\subparagraph}{Device Stats}{Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+> +
+> +When a driver tries to obtain a certain stats, it MUST confirm that the relevant
+> +feature negotiation is successful.
+> +
+> +\field{type} in struct virtio_net_ctrl_queue_stats MUST correspond to the vq
+> +specified by \field{queue_num}.
+> +
+> +The \field{command-specific-data-reply} buffer allocated by the driver MUST be
+> +able to hold all the stats specified by virtio_net_ctrl_queue_stats.
+> +
+> +When the driver reads the response, it MUST read
+> +\field{command-specific-data-reply} one by one based on the \field{type}.
+>
+>  \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+>  Types / Network Device / Legacy Interface: Framing Requirements}
+> --
+> 2.31.0
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
