@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13333-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13334-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 60590EB64D9
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7EB91EB64DA
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:43:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 830062B051
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:35:35 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id C7D413E30A
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:43:10 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 600F99864A3
-	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:35:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A87F19864BA
+	for <virtio-dev@archiver.kernel.org>; Mon, 10 Jul 2023 16:43:10 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 445F798648A; Mon, 10 Jul 2023 16:35:35 +0000 (UTC)
+	id 8C63698648A; Mon, 10 Jul 2023 16:43:10 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,719 +24,403 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0626B986491
-	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Jul 2023 16:35:31 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 78D0C98648C
+	for <virtio-dev@lists.oasis-open.org>; Mon, 10 Jul 2023 16:43:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: ggyLn4CAOz6XJqQUR6u78Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689006925; x=1691598925;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bVkKI6HljYBpLx46QYvQ2oSKtbNHQvaY11anzYZeLJc=;
-        b=I+2ypuJAKH5RNsKfNURFl95ShMzV9eqVmNQbzCcLwIvgyumfOQy9WGDB9qgxCqncfH
-         bcI19p4ai0UygdV87RUc3brid1PrVcVGTcsneLrwP6/WpKb+j/1kph4ACr5i7RxXcFaL
-         WaqFM5fqEOcHZ+tz5LD7znMVcaCw611YSIwfsQYmGy5zp1kcXn67unluBrZ5p3CnY+Jb
-         zp9c6bsFknv4IYlDGVcigBCvG7aBCj4aY4zHoyH4pjsFoLxrKpIwYSz+ReOH5hk74Qbo
-         Oo+MAbTZwQBwIJHVr6iRrEipJrqQb3239SADydvG3MahXmYMpz8sn+Ag9Ndf1RTR/2TB
-         83UQ==
-X-Gm-Message-State: ABy/qLYuEL3kh9+NNJsNR8Oe44qcJOUl6bs0nAlq2/GBEI6wfyCHB8zp
-	QLxBy4S+BD2AzIdhlRH8zZP+nUG50N8R+dCMlXTIizUfiNiKSaXNt+APa8+Ntik5ESZdVG4Xj3W
-	HPGcLf9ucpIrxVwKeXi9N/ZqXkgfN
-X-Received: by 2002:adf:e611:0:b0:313:e922:3941 with SMTP id p17-20020adfe611000000b00313e9223941mr15211034wrm.46.1689006925245;
-        Mon, 10 Jul 2023 09:35:25 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlFzWV3Q8BYbjKuxAyKN3PJ+mRw9BnSNtjpghvn2kSpMMRt71NjiLxeIZgFmHe7sPcZ1u4x/GQ==
-X-Received: by 2002:adf:e611:0:b0:313:e922:3941 with SMTP id p17-20020adfe611000000b00313e9223941mr15210998wrm.46.1689006924708;
-        Mon, 10 Jul 2023 09:35:24 -0700 (PDT)
-Date: Mon, 10 Jul 2023 12:35:20 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: virtio-comment@lists.oasis-open.org, cohuck@redhat.com,
-	david.edmondson@oracle.com, virtio-dev@lists.oasis-open.org,
-	sburla@marvell.com, jasowang@redhat.com, yishaih@nvidia.com,
-	maorg@nvidia.com, shahafs@nvidia.com
-Message-ID: <20230710122502-mutt-send-email-mst@kernel.org>
-References: <20230710161752.204248-1-parav@nvidia.com>
+        d=1e100.net; s=20221208; t=1689007389; x=1691599389;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=k9IVMmKuCXqln1h+0z8wu9M8RJOIhGbtOuIPskLs8OA=;
+        b=DNiw6Se1w9lwG/sk0KTNz5MZVg9n5OrnsdtqvZsvoMhNdTc5nLJziwxKyr3m00nFq7
+         ZxKFiqRoGdkp+kiSVlABUGZcnDHrWDIoOEhTT12frEvnu91MVl9y2bKjw3Y4N64tBjXQ
+         hzMk5/us0ihGjViH6Gq5C0YpBe+MOYE/zKNaLwn8fipBLZsEVguw2SgRZy04ChVb0VzQ
+         3KXf4zyogXotdYazS7nvssB1UqIwkiOEItvDzysCCNldn2fbZkiu9njMMSPTo1F9qxDw
+         y9RW3tGCekuo3l3IVn63JZSC6pdMHUaDGxcPr3ggoPAqQzG2oytWsmgYsvNA0A1nrNe3
+         fClQ==
+X-Gm-Message-State: ABy/qLaSf3Bai6m6iiVsln5yEoo5MiYDDSsXlVaUZHtZoDrDu6Zzcb8x
+	DMx9efBY3cuzpwmIh7i+jnU6MB+QIJj4e6uhMMsp5g==
+X-Google-Smtp-Source: APBJJlEUxdrk3RAcs8ZrE18Clh1Tozt/9AmP5/T1kMJpYMH9x6wcDP4tKk5lIppxSduhlSl+UnKfDX0AEecJ1pOLddI=
+X-Received: by 2002:a05:622a:246:b0:3ef:4319:c6c5 with SMTP id
+ c6-20020a05622a024600b003ef4319c6c5mr284461qtx.19.1689007388902; Mon, 10 Jul
+ 2023 09:43:08 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20230710161752.204248-1-parav@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH v14] admin: Add group member legacy register access
- commands
+References: <000000000000925c1305ff1f7c76@google.com> <fd2e0d5d-a3e9-027a-bec1-d0e821ec6421@quicinc.com>
+ <CAJJa5HxA6T+xv--80aWEtGWNx=a-yfNXwNsnyz3s8praHqg6Ew@mail.gmail.com> <46ab6180-c639-6da4-d6c3-dc8b87345de9@quicinc.com>
+In-Reply-To: <46ab6180-c639-6da4-d6c3-dc8b87345de9@quicinc.com>
+From: Jonathon Reinhart <jrreinhart@google.com>
+Date: Mon, 10 Jul 2023 12:42:57 -0400
+Message-ID: <CAJJa5HwV76co8n4WeeL-mcMwwL9sKVWz_Ejiv-EMWgemsGGS3w@mail.gmail.com>
+To: Haixu Cui <quic_haixcui@quicinc.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, quic_ztu@quicinc.com, 
+	virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
 
-On Mon, Jul 10, 2023 at 07:17:52PM +0300, Parav Pandit wrote:
-> Introduce group member legacy common configuration and legacy device
-> configuration access read/write commands.
-> 
-> Group member legacy registers access commands enable group owner driver
-> software to access legacy registers on behalf of the guest virtual
-> machine.
-> 
-> Usecase:
-> ========
-> 1. A hypervisor/system needs to provide transitional
->    virtio devices to the guest VM at scale of thousands,
->    typically, one to eight devices per VM.
-> 
-> 2. A hypervisor/system needs to provide such devices using a
->    vendor agnostic driver in the hypervisor system.
-> 
-> 3. A hypervisor system prefers to have single stack regardless of
->    virtio device type (net/blk) and be future compatible with a
->    single vfio stack using SR-IOV or other scalable device
->    virtualization technology to map PCI devices to the guest VM.
->    (as transitional or otherwise)
-> 
-> Motivation/Background:
-> =====================
-> The existing virtio transitional PCI device is missing support for
-> PCI SR-IOV based devices. Currently it does not work beyond
-> PCI PF, or as software emulated device in reality. Currently it
-> has below cited system level limitations:
-> 
-> [a] PCIe spec citation:
-> VFs do not support I/O Space and thus VF BARs shall not indicate I/O Space.
-> 
-> [b] cpu arch citiation:
-> Intel 64 and IA-32 Architectures Software Developer’s Manual:
-> The processor’s I/O address space is separate and distinct from
-> the physical-memory address space. The I/O address space consists
-> of 64K individually addressable 8-bit I/O ports, numbered 0 through FFFFH.
-> 
-> [c] PCIe spec citation:
-> If a bridge implements an I/O address range,...I/O address range will be
-> aligned to a 4 KB boundary.
-> 
-> Overview:
-> =========
-> Above usecase requirements is solved by PCI PF group owner accessing
-> its group member PCI VFs legacy registers using the administration
-> commands of the group owner PCI PF.
-> 
-> Two types of administration commands are added which read/write PCI VF
-> registers.
-> 
-> Software usage example:
-> =======================
-> 
-> 1. One way to use and map to the guest VM is by using vfio driver
-> framework in Linux kernel.
-> 
->                 +----------------------+
->                 |pci_dev_id = 0x100X   |
-> +---------------|pci_rev_id = 0x0      |-----+
-> |vfio device    |BAR0 = I/O region     |     |
-> |               |Other attributes      |     |
-> |               +----------------------+     |
-> |                                            |
-> +   +--------------+     +-----------------+ |
-> |   |I/O BAR to AQ |     | Other vfio      | |
-> |   |rd/wr mapper& |     | functionalities | |
-> |   | forwarder    |     |                 | |
-> |   +--------------+     +-----------------+ |
-> |                                            |
-> +------+-------------------------+-----------+
->        |                         |
->    Config region                 |
->      access                Driver notifications
->        |                         |
->   +----+------------+       +----+------------+
->   | +-----+         |       | PCI VF device A |
->   | | AQ  |-------------+---->+-------------+ |
->   | +-----+         |   |   | | legacy regs | |
->   | PCI PF device   |   |   | +-------------+ |
->   +-----------------+   |   +-----------------+
->                         |
->                         |   +----+------------+
->                         |   | PCI VF device N |
->                         +---->+-------------+ |
->                             | | legacy regs | |
->                             | +-------------+ |
->                             +-----------------+
-> 
-> 2. Continue to use the virtio pci driver to bind to the
->    listed device id and use it as in the host.
-> 
-> 3. Use it in a light weight hypervisor to run bare-metal OS.
-> 
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/167
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+On Fri, Jul 7, 2023 at 3:21=E2=80=AFAM Haixu Cui <quic_haixcui@quicinc.com>=
+ wrote:
+>
+> Hi Jonathon Reinhart,
+>
+>      Thank you so much for all your helpful advice and info!
+>
+>      I took a look at latest Linux SPI driver and found, for
+> cs_setup/cs_hold/cs_inactive set in device-tree, there are following two
+> conditions:
+>      1) if SPI controller supports CS timing configuration and CS is not
+> using a GPIO line, then the SPI driver set the
+> cs_setup/cs_hold/ca_inactive values into the corresponding SPI CS registe=
+rs;
+>      2) if CS is using a GPIO line, or SPI controller doesn't support CS
+> timing configuration, it is the software to perform the
+> cs_setup/cs_hold/cs_inactive delays, which is implemented in function
+> spi_set_cs in driver/spi/spi.c.
+>
+>      So I agree it is necessary to pass cs_setup/cs_hold/cs_inactive to
+> the host for each transfer.
+>
+>      For condition 1, host should set these values into the CS timing
+> registers. And as you mentioned "one might require different CS
+> setup/hold times, depending on which slave_id they are talking to (on
+> the same bus)", if so, host need to overwrite the CS timing registers
+> between the two transfers talking to different salve_id.
+>
+>      For condition 2, SPI driver running in the host performing the
+> cs_setup/cs_hold/cs_inactive delays seems more accurate, compared with
+> performing delays in guest.
+>
+>
+>      And the latest virtio spi transfer structure is defined as follows:
+>
+>       struct spi_transfer_head {
+>          u8 slave_id;
+>          u8 bits_per_word;
+>          u8 cs_change;
+>          u8 tx_nbits;
+>         u8 rx_nbits;
+>         u8 reserved[3];
+>          u32 mode;
+>          u32 freq;
+>          u32 word_delay_ns;
+>          u32 delay_ns;
+>          u32 cs_change_delay_ns;
+>          u32 cs_setup_ns;
+>          u32 cs_hold_ns;
+>          u32 cs_inactive_ns;
+>       };
+>
 
-OK good. Found one more issue, below. As long as we need another revision
-I suggest a couple more minor tweaks.
+Hello Haixu Cui,
 
-> ---
-> changelog:
-> v13->v14:
-> - addressed below comments from Michael
-> - reworded BAR 1 to 5 text as_is suggested by Michael
-> - added text for skipping invalid entries
-> - replaced 'contains' with 'contain'
-> - removed 'related to the base address associated'
-> - addressed comments from Cornelia
-> - added article the at many places
-> - replaced does not to do not
-> - reworded the driver normative for flags parsing
-> v12->v13:
-> - added article
-> - add hyphen between little and endian
-> - mentioned vq index depth of 16-bit
-> - rewrote alternative approach line
-> - mention vq index, length and endianness in mmio description
-> - fixed padding bytes size from 7 to 6 bytes
-> - rewrote bar field description
-> - offset alignment text added
-> - added text to ignore reserved notification entries
-> - device and driver conformance lines added for notification info command fields
-> - dropped group member prefix to the driver
-> - reworded text for flags requirements
-> - reworded to say all driver notifications in conformance
-> - itemize conformance section under command to ease reading
-> v11->v12:
-> - added missing article the at few places
-> - rewrote group_member_id statements like other existing
->   commands which is cleaner and shorter
-> - added length and alignment lines to multiple commands
-> - rewrote fast path to separate dedicated mechanism
-> - rewrote example and description para for legacy notification command
-> - made separate paragraph for the notify info command
-> - dropped citation to virtio pci capabilities for member device
-> - notification region changed to notification address throughout
-> - added description to all the fields of the info struct
-> - avoided union in spirit of keeping all for pci
-> - used single listing
-> - moved description to end which was in between two structs
-> - added 4 entry and preference description
-> - added conformance line for notification via mmio works same way as
->   admin command
-> v10->v11:
-> - replaced tab with white spaces in read structure
-> - included pci fields along side other generic fields to avoid
->   indirection
-> - merged pci conformance section
-> - avoid using definite in starting introduction
-> - replace 'all of the' with 'any of the'
-> - changed drivers notification normative to indicate use of
->   NOTIFY_INFO command
-> - renamed NOTIFY_QUERY to NOTIFY_INFO name
-> - merged 4th patch with 3rd
-> - added normative line for notify_info command
-> - reworded notification region command description to be more verbose
-> - merged flags and owner field to indicate end of list
-> v9->v10:
-> - added white space at end of line
-> - addressed below comments from Cornelia
-> - added missing articles
-> - reworded description for notification query command
-> - grammar fixes
-> - addressed below comments from Michael
-> - added description for member group id setting
-> - reworded device and driver conformance statements
-> - opcode table description updated
-> - fixed label for device read command
-> - length alignment restriction text added
-> - data length described for read write commands
-> - notification description added and refined
-> - reworded text around command specific result and data field usage
-> v8->v9:
-> - add missing articles in notify query command
-> - replaced 'this notification' with 'such a notification'
-> - addressed below comments from Michael
-> - dropped 'Region' from the commands
-> - added 7 reserved pad bytes in config write commands
-> - rewrote from 'use following structure' to 'field' has the following
->   struct..
-> - dropped mentioning to follow struct virtio_admin_cmd.
-> - added note about command limited to only sriov group type for now
-> - rewrote the description little differently
-> v7->v8:
-> - remove empty line at the end of file
-> - removed white space at the end
-> - addressed comments from Michael add link to pci
-> - renamed region to region_data
-> - made region_data width to be 16 bytes to cover for 8 bytes offset
-> - moved generic notification region related normative from pci to
->   generic section
-> v6->v7:
-> - changed administrative to administration
-> - renamed admin-access.tex to admin-interface.tex
-> - large rewrite ad generic admin commands instead of pci
-> - added theory of operation section
-> - added driver notification region query command
-> v5->v6:
-> - fixed previous missed abbreviation of LCC and LD
-> v4->v5:
-> - split from pci transport specific patch
-> - split conformance to transport and generic sections
-> - written the description of the command as generic with member
->   and group device terminology
-> - reflected many section names to remove VF
-> - rename fields from register to region
-> - avoided abbreviation for legacy, device and config
-> ---
->  admin-cmds-legacy-interface.tex | 361 ++++++++++++++++++++++++++++++++
->  admin.tex                       |  14 +-
->  conformance.tex                 |   2 +
->  3 files changed, 376 insertions(+), 1 deletion(-)
->  create mode 100644 admin-cmds-legacy-interface.tex
-> 
-> diff --git a/admin-cmds-legacy-interface.tex b/admin-cmds-legacy-interface.tex
-> new file mode 100644
-> index 0000000..477fd01
-> --- /dev/null
-> +++ b/admin-cmds-legacy-interface.tex
-> @@ -0,0 +1,361 @@
-> +\subsubsection{Legacy Interfaces}\label{sec:Basic Facilities of a Virtio Device / Device groups / Group
-> +administration commands / Legacy Interface}
-> +
-> +In some systems, there is a need to support utilizing a legacy driver with
-> +a device that does not directly support the legacy interface. In such scenarios,
-> +a group owner device can provide the legacy interface functionality for the
-> +group member devices. The driver of the owner device can then access the legacy
-> +interface of a member device on behalf of the legacy member device driver.
-> +
-> +For example, with the SR-IOV group type, group members (VFs) can not present
-> +the legacy interface in an I/O BAR in BAR0 as expected by the legacy pci driver.
-> +If the legacy driver is running inside a virtual machine, the hypervisor
-> +executing the virtual machine can present a virtual device with an I/O BAR in
-> +BAR0. The hypervisor intercepts the legacy driver accesses to this I/O BAR and
-> +forwards them to the group owner device (PF) using group administration commands.
-> +
-> +The following commands support such a legacy interface functionality:
-> +
-> +\begin{enumerate}
-> +\item Legacy Common Configuration Write Command
-> +\item Legacy Common Configuration Read Command
-> +\item Legacy Device Configuration Write Command
-> +\item Legacy Device Configuration Read Command
-> +\end{enumerate}
-> +
-> +These commands are currently only defined for the SR-IOV group type and
-> +have, generally, the same effect as member device accesses through a legacy
-> +interface listed in section \ref{sec:Virtio Transport Options / Virtio Over PCI
-> +Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout} except
-> +that little-endian format is assumed unconditionally.
-> +
-> +\paragraph{Legacy Common Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group
-> +administration commands / Legacy Interface / Legacy Common Configuration Write Command}
-> +
-> +This command has the same effect as writing into the virtio common configuration
-> +structure through the legacy interface. The \field{command_specific_data} is in
-> +the format \field{struct virtio_admin_cmd_legacy_common_cfg_wr_data} describing
-> +the access to be performed.
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_legacy_common_cfg_wr_data {
-> +        u8 offset; /* Starting byte offset within the common configuration structure to write */
-> +        u8 reserved[7];
-> +        u8 data[];
-> +};
-> +\end{lstlisting}
-> +
-> +For the command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, \field{opcode}
-> +is set to 0x2.
-> +The \field{group_member_id} refers to the member device to be accessed.
-> +The \field{offset} refers to the offset to write within the virtio common
+I think there may be some unnecessary redundancy in these fields. See below=
+.
 
-offset to write -> offset for the write
+>       @slave_id: chipselect index the SPI transfer used
+>       @bits_per_word: the number of bits in each SPI transfer word
+>       @cs_change: True to deselect device before starting the next transf=
+er
+>       @tx_nbits: number of bits used for writing
+>       @rx_nbits: number of bits used for reading
+>       @reserved: reserved for future use
+>       @mode: the spi mode defines how data is clocked out and in
+>       @freq: transfer speed
+>       @word_delay_ns: delay to be inserted between consecutive words of
+> a transfer, in ns unit
+>       @cs_setup_ns: delay to be introduced by the controller after CS is
+> asserted, in ns unit
 
-same elsewhere
+(I am reordering these in my quoted text to be grouped appropriately.)
 
-> +configuration structure, and excluding the device-specific configuration.
-> +The length of the data to write is simply the length of \field{data}.
-> +
-> +No length or alignment restrictions are placed on the value of the
-> +\field{offset} and the length of the \field{data}, except that the resulting
-> +access refers to a single field and is completely within the virtio common
-> +configuration structure, excluding the device-specific configuration.
-> +
-> +This command has no command specific result.
-> +
-> +\paragraph{Legacy Common Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Common Configuration Read Command}
-> +
-> +This command has the same effect as reading from the virtio common configuration
-> +structure through the legacy interface. The \field{command_specific_data} is in
-> +the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_data} describing
-> +the access to be performed.
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_legacy_common_cfg_rd_data {
-> +        u8 offset; /* Starting byte offset within the common configuration structure to read */
-> +};
-> +\end{lstlisting}
-> +
-> +For the command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ, \field{opcode}
-> +is set to 0x3.
-> +The \field{group_member_id} refers to the member device to be accessed.
-> +The \field{offset} refers to the offset to read from the virtio common
-> +configuration structure, and excluding the device-specific configuration.
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_legacy_common_cfg_rd_result {
-> +        u8 data[];
-> +};
-> +\end{lstlisting}
-> +
-> +No length or alignment restrictions are placed on the value of the
-> +\field{offset} and the length of the \field{data}, except that the resulting
-> +access refers to a single field and is completely within the virtio common
-> +configuration structure, excluding the device-specific configuration.
-> +
-> +When the command completes successfully, \field{command_specific_result}
-> +is in the format of \field{struct virtio_admin_cmd_legacy_common_cfg_rd_result}
+>       @delay_ns: delay to be introduced after this transfer before
+> (optionally) changing the chipselect status, in ns unit
+>       @cs_hold_ns: delay to be introduced by the controller before CS is
+> deasserted, in ns unit
 
-in the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_result}
+Aren't @delay_ns and @cs_hold_ns specifying the same thing?
 
-here and elsewhere, I think (format of typically means we are listing
-what is formatted e.g. format of key)
+Linux spi_transfer defines @delay as:
+    delay to be introduced after this transfer before
+    (optionally) changing the chipselect status, then starting the
+    next transfer or completing this spi_message.
+
+...and spi_device @cs_hold as: delay to be introduced by the
+    controller before CS is deasserted.
+
+(This is the period labeled "D" in my diagram.)
+
+I guess the only difference is if you have a series of transfers, where
+only the last transfer has @cs_change=3Dtrue, and all preceding messages
+have @cs_change=3Dfalse. In this case, @delay_ns would apply between each
+transfer, and after the last transfer @delay_ns + @cs_hold would apply
+before CS is deasserted:
+
+    Transfer[0] (cs_change=3Dfalse)
+    delay(@delay_ns)
+    Transfer[1] (cs_change=3Dfalse)
+    delay(@delay_ns)
+    Transfer[3] (cs_change=3Dtrue)
+    delay(@delay_ns) + delay(@cs_hold_ns)
+    CS deasserted
 
 
-> +returned by the device. The length of the data read is simply the length of
-> +\field{data}.
-> +
-> +\paragraph{Legacy Device Configuration Write Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Write Command}
-> +
-> +This command has the same effect as writing into the virtio device-specific
-> +configuration through the legacy interface. The \field{command_specific_data} is in
-> +the format \field{struct virtio_admin_cmd_legacy_dev_reg_wr_data} describing
-> +the access to be performed.
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_legacy_dev_reg_wr_data {
-> +        u8 offset; /* Starting byte offset within the device-specific configuration to write */
-> +        u8 reserved[7];
-> +        u8 data[];
-> +};
-> +\end{lstlisting}
-> +
-> +For the command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE, \field{opcode}
-> +is set to 0x4.
-> +The \field{group_member_id} refers to the member device to be accessed.
-> +The \field{offset} refers to the offset to write within the virtio
-> +device-specific configuration. The length of the data to write is simply
-> +the length of \field{data}.
-> +
-> +No length or alignment restrictions are placed on the value of the
-> +\field{offset} and the length of the \field{data}, except that the resulting
-> +access refers to a single field and is completely within the device-specific
-> +configuration.
-> +
-> +This command has no command specific result.
-> +
-> +\paragraph{Legacy Device Configuration Read Command}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Device Configuration Read Command}
-> +
-> +This command has the same effect as reading from the virtio device-specific
-> +configuration through the legacy interface. The \field{command_specific_data} is in
-> +the format \field{struct virtio_admin_cmd_legacy_common_cfg_rd_data} describing
-> +the access to be performed.
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_legacy_dev_cfg_rd_data {
-> +        u8 offset; /* Starting byte offset within the device-specific configuration to read */
-> +};
-> +\end{lstlisting}
-> +
-> +For the command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ, \field{opcode}
-> +is set to 0x5.
-> +The \field{group_member_id} refers to the member device to be accessed.
-> +The \field{offset} refers to the offset to read from the virtio device-specific
-> +configuration.
-> +
-> +\begin{lstlisting}
-> +struct virtio_admin_cmd_legacy_dev_reg_rd_result {
-> +        u8 data[];
-> +};
-> +\end{lstlisting}
-> +
-> +No length or alignment restrictions are placed on the value of the
-> +\field{offset} and the length of the \field{data}, except that the resulting
-> +access refers to a single field and is completely within the device-specific
-> +configuration.
-> +
-> +When the command completes successfully, \field{command_specific_result} is in
-> +the format of \field{struct virtio_admin_cmd_legacy_dev_reg_rd_result}
-> +returned by the device.
-> +
-> +The length of the data read is simply the length of \field{data}.
-> +
-> +\paragraph{Legacy Driver Notification}\label{par:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface / Legacy Driver Notifications}
-> +
-> +The driver of the owner device can send a driver notification to the member
-> +device operated using the legacy interface by executing
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE with the \field{offset} matching
-> +\field{Queue Notify} and the \field{data} containing a 16-bit virtqueue index to
-> +be notified.
-> +
-> +However, as VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE is also used for slow path
-> +configuration a separate dedicated mechanism for sending such driver
-> +notifications to the member device can be made available by the owner device.
-> +For the SR-IOV group type, the optional command
-> +VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO addresses this need by returning to the
-> +driver one or more addresses which can be used to send such driver
-> +notifications. The notification address returned can be in the device memory
-> +(PCI BAR or VF BAR) of the device.
-> +
-> +In this alternative approach, driver notifications are sent by
-> +writing a 16-bit virtqueue index to be notified, in the little-endian
-> +format, to the notification address returned by
-> +the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command.
-> +
-> +Any driver notification sent through the notification address has the same effect
-> +as if it was sent using the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE command with
-> +the \field{offset} matching \field{Queue Notify}.
-> +
-> +This command is only defined for the SR-IOV group type.
-> +
-> +For the command VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, \field{opcode}
-> +is set to 0x6.
-> +The \field{group_member_id} refers to the member device to be accessed.
-> +This command does not use \field{command_specific_data}.
-> +
-> +When the device supports the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command, the
-> +group owner device hardwires VF BAR0 to zero in the SR-IOV Extended capability.
-> +
-> +\begin{lstlisting}
-> +struct virtio_pci_legacy_notify_info {
-> +        u8 flags;  /* 0 = end of list, 1 = owner device, 2 = member device */
-> +        u8 bar;    /* BAR of the member or the owner device */
-> +        u8 padding[6];
-> +        le64 offset; /* Offset within bar. */
-> +};
-> +
-> +struct virtio_admin_cmd_legacy_notify_info_result {
-> +        struct virtio_pci_legacy_notify_info entries[4];
-> +};
-> +\end{lstlisting}
-> +
-> +The \field{flags} value of 0x1 indicates that the notification address is of
-> +the owner device, value of 0x2 indicates that the notification address is of
-> +the member device, the value of 0 indicates that all the entries starting from
+>       @cs_change_delay_ns: delay between cs deassert and assert when
+> cs_change is set, in ns unit
+>       @cs_inactive_ns: delay to be introduced by the controller after CS
+> is deasserted, in ns unit
 
-, the -> and value of 0x0 
+Similarly, aren't @cs_change_delay_ns and @cs_inactive_ns applied at the
+same point in the cycle?
+
+(This is the period labeled "E" in my diagram.)
+
+Linux spi_device defines @cs_inactive as: delay to be introduced by the
+    controller after CS is deasserted. If @cs_change_delay is used from
+    @spi_transfer, then the two delays will be added up.
+
+...and spi_transfer defines @cs_change_delay as: delay between cs
+    deassert and assert when @cs_change is set and @spi_transfer is not
+    the last in @spi_message.
+
+It even says they will be added up.
+
+The only difference seems to be that @cs_change_delay applies only when
+the transfer is not the last in a list (spi_message, which we don't have
+here.)
+
+    CS asserted
+    Transfer[0] (cs_change=3Dtrue)
+    CS deasserted
+    delay(@cs_inactive) + delay(@cs_change_delay)
+    CS asserted
+    Transfer[1] (cs_change=3Dtrue)
+    CS deasserted
+    delay(@cs_inactive)
 
 
-> +that entry are invalid entries in \field{entries}. All other values in
-> +\field{flags} are reserved.
-> +
-> +The \field{bar} values 0x1 to 0x5 specify BAR1 to BAR5 respectively:
-> +when the \field{flags} is 0x1 this is specified by the Base Address Registers
-> +in the PCI header of the device,
-> +when the \field{flags} is 0x2 this is specified by the VF BARn
-> +registers in the SR-IOV Extended Capability of the device.
-> +
-> +The \field{offset} indicates the notification address relative to BAR indicated
-> +in \field{bar}. This value is 2-byte aligned.
-> +
-> +When the command completes successfully, \field{command_specific_result} is in
-> +the format of \field{struct virtio_admin_cmd_legacy_notify_info_result}.
+In both cases of redundancy above, the difference in semantics between
+the spi_device and spi_transfer only seem to apply when a series of
+transfers (spi_message or SPI_IOC_MESSAGE) are involved. Since (AFAICT)
+you aren't proposing that construct here, maybe the separate fields are
+not necessary? IOW, maybe @delay_ns and @cs_change_delay can be
+eliminated?
 
+Please let me know if I've misunderstood anything.
 
-> The
-> +device can supply up to 4 entries each with a different notification
-> +address. In this case, any of the entries can be used by the driver. The order
-> +of the entries serves as a preference hint to the driver. The driver is expected
-> +to utilize the entries placed earlier in the array to the later ones.
+Jonathon
 
-to -> in preference to
-
-> The driver is
-> +also expected to ignore any reserved entries and to skip all invalid entries.
-
-is there a difference between ignore and skip?
-And what are reserved entries?
-
-	The driver is also expected to ignore any invalid entries, as well
-	as the end of list entry if present and any entries following
-	the end of list.
-
-> +
-> +\devicenormative{\paragraph}{Legacy Interface}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
-> +
-> +A device MUST either support all of, or none of
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands.
-> +
-> +For VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
-> +the device MUST decode and encode (respectively) the value of the
-> +\field{data} using the little-endian format.
-> +
-> +For the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ commands, 
-> +the device MUST fail the command when the value of the
-> +\field{offset} and the length of the \field{data} do not refer to a
-> +single field or is not completely within the virtio common configuration
-
-are not
-
-> +excluding the device-specific configuration.
-> +
-> +For the VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
-> +the device MUST fail the command when the value of the
-> +\field{offset} and the length of the \field{data} do not refer to a
-> +single field or is not completely within the virtio device-specific
-
-
-are not
-
-> +configuration.
-> +
-> +The command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE MUST have the same effect
-> +as writing into the virtio common configuration structure through the legacy
-> +interface.
-> +
-> +The command VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ MUST have the same effect as
-> +reading from the virtio common configuration structure through the legacy
-> +interface.
-> +
-> +The command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE MUST have the same effect as
-> +writing into the virtio device-specific configuration through the legacy
-> +interface.
-> +
-> +The command VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ MUST have the same effect as
-> +reading from the virtio device-specific configuration through the legacy
-> +interface.
-> +
-> +For the SR-IOV group type, when the owner device supports
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE, VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO
-> +commands,
-> +\begin{itemize}
-> +\item the owner device and the group member device SHOULD follow the rules
-> +for the PCI Revision ID and Subsystem Device ID of the non-transitional devices
-> +documented in section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
-> +
-> +\item the owner device SHOULD follow the rules for the PCI Device ID of the non-transitional
-> +devices documented in section
-> +\ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery}.
-> +
-> +\item any driver notification received by the device at any of the notification
-> +address supplied in the command result of
-> +VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO MUST function as if the device received
-> +the notification through VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE
-> +command at an offset \field{offset} matching \field{Queue Notify}.
-> +\end{itemize}
-> +
-> +If the device supports the VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command,
-> +\begin{itemize}
-> +\item the device MUST also support all of VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands.
-> +
-> +\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the last
-> +\field{struct virtio_pci_legacy_notify_info} entry MUST have \field{flags} of
-> +zero.
-> +
-> +\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, valid
-> +entries MUST have a \field{bar} which is not hardwired to zero.
-> +
-> +\item in the command result of VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, valid
-> +entries MUST have an \field{offset} aligned to 2-byte.
-> +
-> +\item the device MAY support VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO with entries
-> +of the owner device or the member device or both of them.
-> +
-> +\item for the SR-IOV group type, the group owner device MUST hardwire VF BAR0
-> +to zero in the SR-IOV Extended capability.
-> +\end{itemize}
-> +
-> +\drivernormative{\paragraph}{Legacy Interface}{Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
-> +
-> +For VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE,
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ,
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
-> +the driver MUST encode and decode (respectively) the value of the \field{data}
-> +using the little-endian format.
-> +
-> +For the VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ commands,
-> +the driver SHOULD set \field{offset} and the length of the \field{data}
-> +to refer to a single field within the virtio common configuration structure
-> +excluding the device-specific configuration.
-> +
-> +For the VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE and
-> +VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ commands,
-> +the driver SHOULD set \field{offset} and the length of the \field{data}
-> +to refer to a single field within device specific configuration.
-> +
-> +If VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO command is supported, the driver
-> +SHOULD use the notification address to send all driver notifications to the
-> +device.
-> +
-> +If within \field{struct virtio_admin_cmd_legacy_notify_info_result} returned by
-> +VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO, the \field{flags} value
-> +for a specific \field{struct virtio_pci_legacy_notify_info} entry is 0x0, the
-> +driver MUST ignore this entry and all the following \field{entries}.
-> +Additionally, for all other entries, the driver MUST validate that
-> +\begin{itemize}
-> +\item the \field{flags} is either 0x1 or 0x2
-> +\item the \field{bar} corresponds to a valid BAR of either the owner or the
-> +member device, depending on the \field{flags}
-> +\item the \field{offset} is 2-byte aligned and corresponds to an address
-> +within the BAR specified by the \field{bar}
-> +on \field{flags}
-> +\end{itemize}, any entry which does not meet these constraints MUST be ignored
-> +by the driver.
-> diff --git a/admin.tex b/admin.tex
-> index b0a1a91..0803c26 100644
-> --- a/admin.tex
-> +++ b/admin.tex
-> @@ -117,7 +117,17 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->  \hline
->  0x0001 & VIRTIO_ADMIN_CMD_LIST_USE & Provides to device list of commands used for this group type \\
->  \hline
-> -0x0002 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
-> +0x0002 & VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_WRITE & Writes into the legacy common configuration structure \\
-> +\hline
-> +0x0003 & VIRTIO_ADMIN_CMD_LEGACY_COMMON_CFG_READ & Reads from the legacy common configuration structure  \\
-> +\hline
-> +0x0004 & VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_WRITE & Writes into the legacy device configuration structure \\
-> +\hline
-> +0x0005 & VIRTIO_ADMIN_CMD_LEGACY_DEV_CFG_READ & Reads into the legacy device configuration structure \\
-> +\hline
-> +0x0006 & VIRTIO_ADMIN_CMD_LEGACY_NOTIFY_INFO & Query the notification region information \\
-> +\hline
-> +0x0007 - 0x7FFF & - & Commands using \field{struct virtio_admin_cmd}    \\
->  \hline
->  0x8000 - 0xFFFF & - & Reserved for future commands (possibly using a different structure)    \\
->  \hline
-> @@ -286,6 +296,8 @@ \subsection{Group administration commands}\label{sec:Basic Facilities of a Virti
->  supporting multiple group types, the list of supported commands
->  might differ between different group types.
->  
-> +\input{admin-cmds-legacy-interface.tex}
-> +
->  \devicenormative{\subsubsection}{Group administration commands}{Basic Facilities of a Virtio Device / Device groups / Group administration commands}
->  
->  The device MUST validate \field{opcode}, \field{group_type} and
-> diff --git a/conformance.tex b/conformance.tex
-> index 01ccd69..dc00e84 100644
-> --- a/conformance.tex
-> +++ b/conformance.tex
-> @@ -260,6 +260,8 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->  \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Layout}
->  \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Legacy Interfaces: A Note on Virtqueue Endianness}
->  \item Section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Message Framing / Legacy Interface: Message Framing}
-> +\item Section \ref{devicenormative:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
-> +\item Section \ref{drivernormative:Basic Facilities of a Virtio Device / Device groups / Group administration commands / Legacy Interface}
->  \item Section \ref{sec:General Initialization And Device Operation / Device Initialization / Legacy Interface: Device Initialization}
->  \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Discovery / Legacy Interfaces: A Note on PCI Device Discovery}
->  \item Section \ref{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
-> -- 
-> 2.26.2
-
+>
+>      Could you please help check if this new structure contains enough
+> information. Really appreciate for kind help.
+>
+> Best Regards
+> Haixu Cui
+>
+> On 7/1/2023 5:59 AM, Jonathon Reinhart wrote:
+> >> Hi @jrreinhart@google.com,
+> >>       Thank you very much for your helpful comments.
+> >>
+> >>       I missed the delay and cs_change_delay parameters. I will add bo=
+th
+> >> of them, although cs_change_delay can not be set from userspace, but c=
+an
+> >> be set in kernel space.
+> >>
+> >>
+> >>       For CS delays such as PRE_DELAY/POST_DELAY, it seems that they a=
+re
+> >> defined in structure spi_device:
+> >>
+> >>       @cs_setup: delay to be introduced by the controller after CS is
+> >> asserted.
+> >>
+> >>       @cs_hold: delay to be introduced by the controller before CS is
+> >> deasserted.
+> >>
+> >>       @cs_inactive: delay to be introduced by the controller after CS =
+is
+> >> deasserted. If @cs_change_delay is used from @spi_transfer, then the
+> >> two delays will be added up.
+> >>
+> >>       They show the SPI controller ability to control the CS
+> >> assertion/deassertion timing and should not be changed for each transf=
+er
+> >> (because thay can be updated by setting structure spi_transfer or
+> >> structure spi_ioc_transfer). I think it better to define these paramet=
+er
+> >> in host OS rather than in guest OS since it's the host OS to operate t=
+he
+> >> hardware SPI controller directly. Besides, it can also avoid passing t=
+he
+> >> same values from guest to host time after time.
+> >>
+> >>       What's your opinion on this topic? Again, thank you very much.
+> >
+> > Hi Haixu,
+> >
+> > I took another look at the Linux structures and attempted to map up the
+> > delay parameters to the various points in a SPI sequence. Please correc=
+t
+> > me if I'm wrong about any of this.
+> >
+> > Consider this diagram where CS# is an active-low chip select, and SCLK
+> > is the serial clock:
+> >
+> >        ___.                                                   ._____.
+> >    CS#    |___________________________________________________|     |__=
+_
+> >           .                                                   .     .
+> >           .                                                   .     .
+> >   SCLK ________NNNN___NNNN___NNNN_______NNNN___NNNN___NNNN_____________=
+_
+> >           .   .    . .           .     .                  .   .     .
+> > Delays:  +-A-+    +B+           +--C--+                  +-D-+--E--+
+> >           .   .    . .           .     .                  .   .     .
+> >           0   1    2 3           4     5                  6   7     8
+> >           .   .    .             .     .                  .   .
+> > Terms:   .   +Word+             .     .                  .   .
+> >           .   .                  .     .                  .   .
+> >           .   +-------Frame------+     +-------Frame------+   .
+> >           .                                                   .
+> >           +-----------------Transfer--------------------------+
+> >
+> > Using NXP terminology:
+> >
+> >    From 1 to 2 is a "word"     (with e.g. 8 bits).
+> >    From 1 to 4 is a "frame"    (with 3 words).
+> >    From 1 to 6 is a "transfer" (with 3 frames).
+> >
+> > Linux does not have the concept of a frame, only a series of transfers
+> > (a spi_message), each of which can specify whether CS changes or not.
+> >
+> > I've identified these various timing points and attempted to match them
+> > to the Linux spi_device and spi_transfer parameters:
+> >
+> > A - CS Setup: Delay after CS asserted before clock starts.
+> >      spi_device.cs_setup
+> >
+> > B - Word Delay: Delay between words.
+> >      spi_transfer.word_delay
+> >
+> > C - Frame Delay: Delay between frames.
+> >      (Linux does not have the concept of a SPI "frame".)
+> >
+> > D - CS Hold: Delay after clock stops, and before CS deasserted.
+> >      spi_device.cs_hold (+ spi_transfer.delay ??)
+> >
+> > E - CS Inactive: Delay after CS deasserted, before asserting again.
+> >      spi_device.cs_inactive + spi_transfer.cs_change_delay
+> >
+> >
+> > While I agree with you that some of these timings are unlikely to chang=
+e
+> > from transfer-to-transfer, the subset of which should be specified
+> > at the device level vs. per-transfer seems somewhat arbitrary. As you
+> > can see there is some overlap between them.
+> >
+> > If I understand correctly, it appears that the CS hold time *can* be
+> > controlled on a per-transfer bases, using spi_transfer.delay
+> > ("after this transfer before changing the chipselect status").
+> >
+> > That leaves CS setup as the only parameter that cannot be influenced on
+> > a per-transfer basis.
+> >
+> > Theoretically, one might require different CS setup/hold times,
+> > depending on which slave_id they are talking to (on the same bus).
+> > In that case, one must set those spi_device parameters to the worst-cas=
+e
+> > (maximum) values. However, this is already a Linux limitation, so I'm
+> > not sure it needs to be improved here.
+> >
+> > I think you've achieved parity with what the Linux kernel API allows,
+> > and that's probably good enough. As you said, anything else can be
+> > adjusted in the host OS -- I'm not sure how the guest would go about
+> > achieving that, though. You're not proposing the use of configuration
+> > space for virtio-spi, are you?
+> >
+> > Regards,
+> > Jonathon Reinhart
+> >
+> >
+> >>
+> >> Best Regards
+> >> Haixu Cui
+> >>
+> >> On 6/28/2023 1:06 AM, jrreinhart@google.com wrote:
+> >>> Hi Haixu,
+> >>>
+> >>>> +The \field{word_delay} defines how long to wait between words withi=
+n
+> >>>> one SPI transfer,
+> >>>> +in ns unit.
+> >>>
+> >>> I'm a little surprised to see a word_delay but no frame_delay or
+> >>> transfer_delay.
+> >>>
+> >>> For example, many SPI peripherals require a delay after CS is asserte=
+d,
+> >>> but before the first SCLK edge, allowing them to prepare to send data=
+.
+> >>> (E.g. an ADC might begin taking a sample.)
+> >>>
+> >>>
+> >>> The linux struct spi_transfer has three delay fields:
+> >>>
+> >>> * @cs_change_delay: delay between cs deassert and assert when
+> >>> *      @cs_change is set and @spi_transfer is not the last in
+> >>> *      @spi_message
+> >>> * @delay: delay to be introduced after this transfer before
+> >>> *    (optionally) changing the chipselect status, then starting the
+> >>> *    next transfer or completing this @spi_message.
+> >>> * @word_delay: inter word delay to be introduced after each word size
+> >>> *    (set by bits_per_word) transmission.
+> >>>
+> >>> The userspace spidev.h API has only two:
+> >>>
+> >>> * @delay_usecs: If nonzero, how long to delay after the last bit
+> >>> *       transfer before optionally deselecting the device before the
+> >>> *       next transfer.
+> >>> * @word_delay_usecs: If nonzero, how long to wait between words withi=
+n
+> >>> *       one transfer. This property needs explicit support in the SPI
+> >>> *       controller, otherwise it is silently ignored.
+> >>>
+> >>> The NXP i.MX RT500 SPI (master) controller, for example, has four
+> >>> configurable delays:
+> >>>
+> >>> - PRE_DELAY: After CS assertion, before first SCLK edge.
+> >>> - POST_DELAY: After a transfer, before CS deassertion.
+> >>> - FRAME_DELAY: Between frames (which are arbitrarily defined by
+> >>>     software).
+> >>> - TRANSFER_DELAY: Minimum CS deassertion time between transfers.
+> >>>
+> >>> The NVIDIA Tegra114 SPI controller has:
+> >>>
+> >>> - nvidia,cs-setup-clk-count: CS setup timing parameter.
+> >>> - nvidia,cs-hold-clk-count: CS hold timing parameter.
+> >>>
+> >>>
+> >>> I understand that accurately representing all possible delays might b=
+e
+> >>> difficult or futile, but I'm curious to understand why, of all the
+> >>> possible delays, inter-word delay was chosen for inclusion.
+> >>>
+> >>> In a microcontroller, delays around CS (de)assertion can be customize=
+d
+> >>> by using a GPIO -- rather than the hardware SPI block -- to drive the=
+ CS
+> >>> signal. This way, delays can be inserted where needed. To do so with =
+a
+> >>> virtualized SPI controller might prove difficult however, as the virt=
+ual
+> >>> channel carrying a CS GPIO signal might not be synchronized to the
+> >>> channel carrying the SPI data.
+> >>>
+> >>> Curious to hear your thoughts.
+> >>>
+> >>> Thanks,
+> >>> Jonathon Reinhart
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
