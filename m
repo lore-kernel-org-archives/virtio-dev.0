@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13357-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13358-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 911DCEB64DD
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 22:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 56442EB64DA
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 22:24:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C4B28120D49
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 22:24:35 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id DF06F1CA24B
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 22:24:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AFF4D9867E1
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 22:24:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BEE469867E2
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 22:24:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id A15E99867B3; Wed, 12 Jul 2023 22:24:35 +0000 (UTC)
+	id B3E869867B8; Wed, 12 Jul 2023 22:24:36 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 87E6A9867B4;
-	Wed, 12 Jul 2023 22:24:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 962A39867BF;
+	Wed, 12 Jul 2023 22:24:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F5HRlAf7k1PNGVuMsQ+dnfrfNXWkTm16M2K+a4eM7W7l6M8OMC3o0K1ZX3SMPQJoOBt4VyYRqGJoRQHT6xkLGUpTYvsU/BoreTZ/YgbmvFy9EuS8HKn+AxGkwP46PHZV2nXZ/BkyvhQmTWPAymx/Uwb0o6MsX8g8YQWWvjkSj1sKwyacykw8TcgLLSAUk0i0rnIE12JjssVJTWNsYWfr8JT0a6x5eYNvch7IDguPynIXMwgqOSgtunwuJUkxnQtNLo6SCmL+QdDAxCns978tt9qTcoXRU4+P2Fy/8ZIp5l2r57kpnaYts1VXWfA9hj7WmdD+cLpHgEH8GMTW73N5IQ==
+ b=NcdIXAMDCC9xpzHc8M45+NKSK9cendwzqaoSix5Rd67o9YSU3oqyMSdxhYEiecdlvpVNzBzCfNG3lho9f7U9n4q2Q5gSmdP9BqJcl3i6OLUXx8B8d1gWhitgvFSCFbJqAduWfbjCJJdV0dTAbaju/iQbXx1RwYFED0zK7ZIdtsUwyI9mxIWigvaJIHJbEomxn3BsVXLLFeuFQtqjqzJK0TFx3eUqYvyrT6SyxIQBRXH+MYuQ8uQZ6dGzueJu8aRxfWxPmt789KCU73Uv392TpLgW1n9wJI/dt65aCcvp1yyiPvElexIRhdKirdjfqlZyMgMzvWLKftgcLHeWqsAAbg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k5gBksaLW6nX7PZWQPUIiC9+Knp/E4gnjh8F8YjoRf0=;
- b=Uor010M2nEZwJKoCm4bI8z8g0Dd8EaEHMJKn8SBAZy/+lVm6ZUw1vRA7bMEolYUsuF+pB0lSIWo1rPO1XjStHWFd7JK2iN/TEnQ0L1Iz+aJiGreKM15Lo2KL8zs7ujEHMaixo9jo2tGPxfM9BvGO85/toBqorg2f8+0jBlrSzGy9aDZieTOljnM/Im3EWt/wenmnaOy06M2esM4XndD4/6/So/2N2dMnxtq+o2PDk4rN+NkJGEtcj/ae6yJAPPWvO2YJOQ6YOlsdGpnW4oMQfmcihgDV3sQpDGM9cDQUfeBfVTgv6wC9m5DCCR/lgBkA09J9qJ6ELfQS1pvd+Bg+Kg==
+ bh=7ZMujk5InFmEfuilWUhY0gwg1oSwgu/rVCgRBWApzCc=;
+ b=LUYXmZGTFJX30/a3YLiDrrqIlDrfg2MiLtuCCJZlhxB1VTPaVNJa1vcb7aTF2XnwiuBk4WI2Wp2uwgwWt5ksTUExHX925wmd8NQRAVkvmlcRS1xDzV7EAG+rVSg8O7TG58HNwviDMtZvRnt3ZfqIVv1vNoJRuVNAIi13En+CPBL+zZYwHzG9fbXhHwPVoCRqbZpivhiwTTDYa1nsnUS/maZ+jtMeAhUERT9RRNFPeNdRZ6vw1KF9p3OnWw2kiLjXYV6/uLyaSLkSPrcLo/U+XfhjN6215ZcQ4noZuim9aVR9DsYuk7QZ5RKBb+Uwc7ugZpdaTIU9DkaVE2poQRMzWQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=lists.oasis-open.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
@@ -49,11 +49,9 @@ To: <virtio-comment@lists.oasis-open.org>, <mst@redhat.com>,
 	<cohuck@redhat.com>
 CC: <virtio-dev@lists.oasis-open.org>, <hengqi@linux.alibaba.com>,
 	<shahafs@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Date: Thu, 13 Jul 2023 01:24:02 +0300
-Message-ID: <20230712222405.455201-2-parav@nvidia.com>
+Date: Thu, 13 Jul 2023 01:24:01 +0300
+Message-ID: <20230712222405.455201-1-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20230712222405.455201-1-parav@nvidia.com>
-References: <20230712222405.455201-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,56 +60,55 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT029:EE_|BL1PR12MB5271:EE_
-X-MS-Office365-Filtering-Correlation-Id: ad31c085-8138-4066-a66f-08db8326c285
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT029:EE_|SA3PR12MB9158:EE_
+X-MS-Office365-Filtering-Correlation-Id: addec0ea-35d9-4b94-c6a1-08db8326c1bf
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	KZ5xdNdJZAefdNBTjyacW5EN2SFsFEL72MgAjV+VU+wjeXFgihIvh6AaWpMLXy86j/1ZKaOb4MCy/rNPVGSc6Z1eC5L8ERkaSU19+1Y1FviKouvaEEkRtoW3HrIQt9ecZfB85T9j0nO9NNWcRl0LSOteuyJliH9Kcgfus6sldW0a9a5G928n0D9HeS8W+CqyzbclUvCUttILQEHfLlC+yhkPddSRaF5C1UOdMGvsAX+ou7yvsLovhJaDoM3TruSY7VUs62P56nua8A+tY28RXndX8gNHBrmAYgGuzz31a0cQZLVH0+agqJ06SXhae1skFYPP/ndDzPYnVGqi3TOxdgcjry3ONDAz/wuBrRdniJG+EWDAam45+nw4s1CIy0MzMOYLKADJxmVMbNfxaOmAfeATrgYM2oyzDhUtnSwvt/3GoR7hRR8kUmpdbaCvZbS3N8VggK157wGTIiwQztXanUaBaORM/qom1sn278KG9VSrBthilkXFm2Hv88JLiKPHbMERJxjTTARGDOOG3ANh1fmJ3oy1hcEtal2zeYzDy8schFSOFIM7J6MPxIAn5FfZoTwyqeDR3BnaRw0ZeAaT89A1NsoC75ZHADfCX1do6B+3sVYe8o4F/rkpX23j+ws8bx+hVN2KZ51GZDrcjKjGHC1obJUyF8vrDRmkKqPIret6Ek5SOCpibUhVYINB6Z7t1JDdY++ehNDTyJMNY5kIAKzYKdLqNmjXe3pVcy40JFduMUQnI0Y3ZAu9HygGZQxo
+	iJjZTPBtqNAtxk+N34DkhQhDCiM12uRqnyonnLMRTAPNf7vD6+VkEVIOn8KXdbquPncuBcVf63/UcHI/nflaId+NfGz/DSI8nAO4ObA1wYVxMcR0S/dMyEafmX/bipa2HpwkcaaiShV0UcPXKfEumuM+PuOZ9NuqQW12theD/MySpyDuDanudZwVM5PYYFXko30Vj4hyQf7FV7ZYzvbio1ulW3xEMqCaeIRbYFggqf8mQuNyoqhJA5oC2vZBRWb0AMaBXd+VV6wepexdHzgM6EUKbiCVPTM0qqKrzfHDKwqOgdrIU7Tg1h4uHBVaZ8ltMIoPFO7oaIGWIPt/0Ny58t1x8NFoay2csa1O+4yEovFtTHFYfQVSGXSLajt8NOcf4ht9fsSxLVPP+Esku4VAdqSRqJThiL9Po4gNlCjuJ5YUCjEz2lmryPpbeEfVdXJg2ENJeQFQGK/wbeLTT9zjtRvzinU4VqAdtoCeyO581iKxXzv57shQPb4D7tqnIZrMznrbsq4ll4bnzJWexa4JSyNp2Cn3P1p/V2udOe6booDr2EPCBUWZJhe9XZxshiyP/Chx9FN0ehcW3Jh11U9WjGlXZBQlGRpPBjpRaM3j6dYDABs1QDrhEYqSi9pjjNN0tWc6FBjW6/vVYQAi+0t05sUY3A1EmwpzRj8WB34kFJRLSOefXCKWs6seOCXngCwyXAk1EVZX53Z8QtIZ0nCJOOm+C2gBG+zi7v0RWOQppVJ2H1zrYdr7UZQNP3Mp6erQTR7GqnDQQqZttw1xjJxnPWH5CW45duC8/FsvCWLWPKJI4073KfuCHQbPL501QABl
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(39860400002)(136003)(376002)(451199021)(40470700004)(46966006)(36840700001)(4326008)(70206006)(70586007)(316002)(2906002)(41300700001)(478600001)(8676002)(8936002)(110136005)(54906003)(5660300002)(36860700001)(6666004)(40460700003)(107886003)(40480700001)(1076003)(186003)(16526019)(36756003)(426003)(83380400001)(336012)(47076005)(7636003)(82740400003)(356005)(26005)(82310400005)(2616005)(86362001);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(39860400002)(136003)(376002)(451199021)(40470700004)(46966006)(36840700001)(4326008)(70206006)(70586007)(316002)(2906002)(4744005)(41300700001)(478600001)(8676002)(8936002)(110136005)(54906003)(5660300002)(36860700001)(6666004)(40460700003)(966005)(107886003)(40480700001)(1076003)(186003)(16526019)(36756003)(426003)(83380400001)(336012)(47076005)(7636003)(82740400003)(356005)(26005)(82310400005)(2616005)(86362001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2023 22:24:29.7185
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2023 22:24:28.4217
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad31c085-8138-4066-a66f-08db8326c285
+X-MS-Exchange-CrossTenant-Network-Message-Id: addec0ea-35d9-4b94-c6a1-08db8326c1bf
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	DM6NAM11FT029.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5271
-Subject: [virtio-dev] [PATCH 1/4] virtio-net: Place C code under listing
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9158
+Subject: [virtio-dev] [PATCH 0/4] Short document fixes to inner hash feature
 
-With extra white space for the define, pdf generation fails.
-Also place the C code under listing.
+This short patches fixes the editing errors that stops the pdf and html
+generation.
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- device-types/net/description.tex | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+These 3 fixes are for the patch [1] for the github issue [2].
 
-diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-index 206020d..6fd4a20 100644
---- a/device-types/net/description.tex
-+++ b/device-types/net/description.tex
-@@ -1024,12 +1024,14 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
- If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the driver can send the command
- VIRTIO_NET_CTRL_HASH_TUNNEL_SET to configure the calculation of the inner header hash.
- 
-+\begin{lstlisting}
- struct virtnet_hash_tunnel {
-     le32 enabled_tunnel_types;
- };
- 
- #define VIRTIO_NET_CTRL_HASH_TUNNEL 7
-- #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
-+#define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
-+\end{lstlisting}
- 
- Field \field{enabled_tunnel_types} contains the bitmask of encapsulation types enabled for inner header hash.
- See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets /
+[1] https://lists.oasis-open.org/archives/virtio-comment/202307/msg00024.html
+[2] https://github.com/oasis-tcs/virtio-spec/issues/173
+
+Patch summary:
+patch-1 place C code under listing
+patch-2 avoid hyphen and extra braces
+patch-3 use table as hyperlink do not work well in C code listing
+patch-4 refer 'advice' as 'note'
+
+Patch 1 to 3 appears to be must in the testing.
+Patch 4 is not a fix and can be done later if it requires discussion.
+
+Parav Pandit (4):
+  virtio-net: Place C code under listing
+  virtio-net: Avoid hyphen and extra braces
+  virtio-net: Use table to describe inner hash to rfc mapping
+  virtio-net: Use note instead of advice
+
+ device-types/net/description.tex | 45 ++++++++++++++++++++++----------
+ introduction.tex                 | 15 +++++------
+ 2 files changed, 38 insertions(+), 22 deletions(-)
+
 -- 
 2.26.2
 
