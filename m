@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13351-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13352-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8F4C0EB64DD
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 12:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53986EB64DA
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 12:59:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C756D26A53
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 12:42:13 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7635E41EEC
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 12:59:53 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0AA49867B7
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 12:42:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6E7F19867B7
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 12:59:53 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id B1E34986663; Wed, 12 Jul 2023 12:42:13 +0000 (UTC)
+	id 631E3986663; Wed, 12 Jul 2023 12:59:53 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,85 +24,108 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9F047986687
-	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jul 2023 12:42:11 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4E1DF986682;
+	Wed, 12 Jul 2023 12:59:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: WKUouus1N_qJ-E0C67W25g-1
-From: Cornelia Huck <cohuck@redhat.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, virtio-comment@lists.oasis-open.org,
- virtio-dev@lists.oasis-open.org, Parav Pandit <parav@nvidia.com>, Jason
- Wang <jasowang@redhat.com>, Yuri Benditovich
- <yuri.benditovich@daynix.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230712082508-mutt-send-email-mst@kernel.org>
-Organization: Red Hat GmbH
-References: <20230703152711.106008-1-hengqi@linux.alibaba.com>
- <87pm4xjp4t.fsf@redhat.com>
- <20230712082508-mutt-send-email-mst@kernel.org>
-User-Agent: Notmuch/0.37 (https://notmuchmail.org)
-Date: Wed, 12 Jul 2023 14:42:05 +0200
-Message-ID: <87jzv5jo82.fsf@redhat.com>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R261e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VnD9uXi_1689166782;
+Message-ID: <e0e2b21d-a7f9-fbf1-7d93-d142c7a7618a@linux.alibaba.com>
+Date: Wed, 12 Jul 2023 20:59:38 +0800
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain
-Subject: [virtio-dev] Re: [PATCH v21] virtio-net: support inner header hash
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.12.0
+To: Cornelia Huck <cohuck@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20230703152711.106008-1-hengqi@linux.alibaba.com>
+ <87pm4xjp4t.fsf@redhat.com> <20230712082508-mutt-send-email-mst@kernel.org>
+ <87jzv5jo82.fsf@redhat.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <87jzv5jo82.fsf@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH v21] virtio-net: support inner header
+ hash
 
-On Wed, Jul 12 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> On Wed, Jul 12, 2023 at 02:22:26PM +0200, Cornelia Huck wrote:
->> On Mon, Jul 03 2023, Heng Qi <hengqi@linux.alibaba.com> wrote:
->> 
->> (...)
->> 
->> > +\paragraph{Inner Header Hash}
->> > +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Inner Header Hash}
->> > +
->> > +If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the driver can send the command
->> > +VIRTIO_NET_CTRL_HASH_TUNNEL_SET to configure the calculation of the inner header hash.
->> > +
->> > +struct virtnet_hash_tunnel {
->> > +    le32 enabled_tunnel_types;
->> > +};
->> > +
->> > +#define VIRTIO_NET_CTRL_HASH_TUNNEL 7
->> > + #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
->> 
->> This needs to be wrapped in \begin{lstlisting}..\end{lstlisting}, can do
->> so when applying.
->> 
->> (...)
->> 
->> > +Encapsulation types applicable for inner header hash:
->> > +\begin{lstlisting}
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 0) /* \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 1) /* \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 2) /* \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 3) /* \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 4) /* \hyperref[intro:vxlan]{[VXLAN]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 5) /* \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 6) /* \hyperref[intro:geneve]{[GENEVE]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 7) /* \hyperref[intro:ipip]{[IPIP]} */
->> > +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 8) /* \hyperref[intro:nvgre]{[NVGRE]} */
->> > +\end{lstlisting}
->> 
->> I'm afraid this one doesn't come out quite as intended, we'll end up
->> with verbatim "\hyperref" text instead of a link. Anyone have a good
->> idea on how to fix that?
->> 
->> I'd prefer to push this now with the first issue addressed and to do an
->> (editorial) patch on top to deal with the second issue (unless someone
->> can come up with a really trivial fix for it, then I can apply that
->> straightaway.)
+
+在 2023/7/12 下午8:42, Cornelia Huck 写道:
+> On Wed, Jul 12 2023, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 >
-> Someone suggested using escapechar:
-> https://tex.stackexchange.com/questions/314903/inline-links-in-code-listings
->
-> Didn't try.
+>> On Wed, Jul 12, 2023 at 02:22:26PM +0200, Cornelia Huck wrote:
+>>> On Mon, Jul 03 2023, Heng Qi <hengqi@linux.alibaba.com> wrote:
+>>>
+>>> (...)
+>>>
+>>>> +\paragraph{Inner Header Hash}
+>>>> +\label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Inner Header Hash}
+>>>> +
+>>>> +If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the driver can send the command
+>>>> +VIRTIO_NET_CTRL_HASH_TUNNEL_SET to configure the calculation of the inner header hash.
+>>>> +
+>>>> +struct virtnet_hash_tunnel {
+>>>> +    le32 enabled_tunnel_types;
+>>>> +};
+>>>> +
+>>>> +#define VIRTIO_NET_CTRL_HASH_TUNNEL 7
+>>>> + #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
+>>> This needs to be wrapped in \begin{lstlisting}..\end{lstlisting}, can do
+>>> so when applying.
+>>>
+>>> (...)
+>>>
+>>>> +Encapsulation types applicable for inner header hash:
+>>>> +\begin{lstlisting}
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 0) /* \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 1) /* \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 2) /* \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 3) /* \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 4) /* \hyperref[intro:vxlan]{[VXLAN]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 5) /* \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 6) /* \hyperref[intro:geneve]{[GENEVE]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 7) /* \hyperref[intro:ipip]{[IPIP]} */
+>>>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 8) /* \hyperref[intro:nvgre]{[NVGRE]} */
+>>>> +\end{lstlisting}
+>>> I'm afraid this one doesn't come out quite as intended, we'll end up
+>>> with verbatim "\hyperref" text instead of a link. Anyone have a good
+>>> idea on how to fix that?
+>>>
+>>> I'd prefer to push this now with the first issue addressed and to do an
+>>> (editorial) patch on top to deal with the second issue (unless someone
+>>> can come up with a really trivial fix for it, then I can apply that
+>>> straightaway.)
+>> Someone suggested using escapechar:
+>> https://tex.stackexchange.com/questions/314903/inline-links-in-code-listings
+>>
+>> Didn't try.
+> Looks reasonable (and also revealed a typo for VXLAN-GPE). I think I'll
+> go ahead with this one.
 
-Looks reasonable (and also revealed a typo for VXLAN-GPE). I think I'll
-go ahead with this one.
+Yes. "intro:vxlan_gpe" -> "intro:vxlan-gpe".
+
+May I ask if the fix to these two problems is for me to make fix patches 
+or for you to solve it when editing?
+
+Thanks!
+
+>
+>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
 
 
 ---------------------------------------------------------------------
