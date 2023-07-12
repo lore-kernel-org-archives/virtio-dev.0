@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13343-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13344-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 63EBDEB64D9
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 09:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 34A5EEB64D9
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 11:35:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1A7F8157F06
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 09:37:05 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5BDC169F6A
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 11:35:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0B336986720
-	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 09:37:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 38DC19867B0
+	for <virtio-dev@archiver.kernel.org>; Wed, 12 Jul 2023 11:35:32 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id F2A21986661; Wed, 12 Jul 2023 09:37:04 +0000 (UTC)
+	id 189EC986663; Wed, 12 Jul 2023 11:35:32 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,152 +24,538 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C7DAD9867E6;
-	Wed, 12 Jul 2023 09:37:00 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DB747986682
+	for <virtio-dev@lists.oasis-open.org>; Wed, 12 Jul 2023 11:34:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R6OgNGziRKDrV16V3rdxHgIcyZRD2Td3JI5c0KF60OIe6GHew2tx0lMLahUvWtwieIpyzy1Te7zP388aM7JMPc/Rcm9Ih9TnTF7KsSbpgXxmHiJ37K5UcTmLYK//L7WTOyw/Ijkl/m15bYS/fEv9K7EFrfQebb6ZoGufEUNbRO5BmWCPa96th+qBadzFwMWH5gfyqLnAIi84ydcS2fZbtHWTE8qwaUehJb/7ZiDjJXwOgCDPVoleKc8dCVnc46HJdfozZx2+UPjWOaACBw5Cd6NqaoA48Ppxv/sQcNXX7F1Ajdt3NskuhlYZLHdEkUGbcoczvvSVfOvb0aAzwNe+1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qvm1RqCxJeHFITpl9C7OrfKyeNXuZVfbrxGxLQvFxu8=;
- b=cqAg4VlE/xa8kNCkz+0ZY4CLbDBgtyq+L3Qfv/r43ysZebpaQRQG7ZoyxZgFbKlX1v3m020MQmw0L3qKhYaRn39I8ZozGucOMTrfnM7fRebExy/wpPZUwQqQEtVnwstPXzCUSnqZLjyH+Z38OIpAdfaLtOYIcgvlsPJRSZHOJJMuG7v8UQET3JC1y3tKra2bzJ9tLVEjM7J73oRjzeuxk/Cyapx1KsGyVjxCb9MXHh9mO7qa3ARPiqqeSz+QMtZ56U3ZtB8lkSaqzvX/aQ5bAqIistN75v0SoPW1dgv2dWnfa0oj6j6K/YQ111DTcCvRKCG1gVt3gaOBOICbPykvXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-From: Jiqian Chen <Jiqian.Chen@amd.com>
-To: Gerd Hoffmann <kraxel@redhat.com>, =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?=
-	<marcandre.lureau@gmail.com>, Robert Beckett <bob.beckett@collabora.com>,
-	<virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>
-CC: Stefano Stabellini <sstabellini@kernel.org>,
-	=?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>, Alex Deucher
-	<Alexander.Deucher@amd.com>, Christian Koenig <Christian.Koenig@amd.com>,
-	Stewart Hildebrand <Stewart.Hildebrand@amd.com>, Xenia Ragiadakou
-	<burzalodowa@gmail.com>, Honglei Huang <Honglei1.Huang@amd.com>, Julia Zhang
-	<Julia.Zhang@amd.com>, Huang Rui <Ray.Huang@amd.com>, Jiqian Chen
-	<Jiqian.Chen@amd.com>
-Date: Wed, 12 Jul 2023 17:36:29 +0800
-Message-ID: <20230712093629.1410765-2-Jiqian.Chen@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230712093629.1410765-1-Jiqian.Chen@amd.com>
-References: <20230712093629.1410765-1-Jiqian.Chen@amd.com>
+X-MC-Unique: nECqZbAIPcSQREghXyeYGQ-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689161683; x=1691753683;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=u4SKmVHGPExG3eIIwVlixRuFYSx4AcUJySN/jm9T2dU=;
+        b=iHjjsxuSM1U72+ZIeBxjwP0bIdKbyWAdRFnd7/P9JT1TESg2LUzk9YjWZXG2ktDWy6
+         BAc9Xqz3OO08PNY8FCMB00YpSQwoNh7+xDrjH2/RWdvMvJPNblUpC1yXs+lvu4dP5IHv
+         NItM7kL75O9GQM+sDl87kNDAVWwzkWNUqCwG1mUsHRVzrYAmjF2b4DynO0D74T6VkY6U
+         DPgyFT1NIMqKdl2RK0isEjNYxnU6nVqbuWevXQfWRByT1zFJPIB00LehD9Hn4pIzrkA1
+         BFqsvwlMPyqc6Ez6+h2h8rWSOenOkMPoWD2XVPxs2VppiXSPMnVg4qAu67VoZTXQ92m8
+         0CWw==
+X-Gm-Message-State: ABy/qLa+FJtzgZuQSLiu0U8jio1srO314ougyFpHfZ4OKVYMm+aTS8Ck
+	90astZDD3yMc7Zoo+cHp7jrpj6SLvl1AaOfT0UQ/9COi/lkH1yS83gWjk8vc5sh+i+nWAsea372
+	U7lpjAZyln5FK0DvNiq/hRmL/oz9X
+X-Received: by 2002:adf:edca:0:b0:314:3b70:1c72 with SMTP id v10-20020adfedca000000b003143b701c72mr16553662wro.12.1689161683184;
+        Wed, 12 Jul 2023 04:34:43 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlHj1OP4UmkslnJC8gOyrnk/QPhCYve9WQ5euyYwbADa2HzTth0S4ao65U/ZEixq3nDpTA6aRw==
+X-Received: by 2002:adf:edca:0:b0:314:3b70:1c72 with SMTP id v10-20020adfedca000000b003143b701c72mr16553644wro.12.1689161682781;
+        Wed, 12 Jul 2023 04:34:42 -0700 (PDT)
+Date: Wed, 12 Jul 2023 07:34:38 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: virtio-dev@lists.oasis-open.org, jasowang@redhat.com,
+	Parav Pandit <parav@nvidia.com>
+Message-ID: <20230712072050-mutt-send-email-mst@kernel.org>
+References: <20220315032402.6088-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT024:EE_|DM6PR12MB4338:EE_
-X-MS-Office365-Filtering-Correlation-Id: b17b56b5-feaf-4975-d70a-08db82bb87ab
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	RkTE/QxHui5Sc479tsxmkDE8+yGRpRBsPb5Vt3hb5uCM+u54hCvIhHNi/EwqVlvKd0U6rvzuXj0E9LWT4wMxY4j1qGal5I9COis1ybClxQmFmCVrpfWSVopwc8UQIzsC2+cvZE+Os3R/7Rz3/PgtAR+K7wngylc+JQGIAFBjE8sCco465NGZpkCUgwX/I1CtPOEmKufHF9fFtaTng55yO3D+JmioJi0ax6kIXoYhF+XGQAJK7tzvuKSY8hQ0lf7sPtGr2NlEafBsaA5yiGOiNqcASM/CyzDDdCvLP+C7JNQ9ygZu4fnTUxpmDayBY2LEcUOs7mY8pialI9U8dsre3aQwwMr3N63rjsvUe31JeXiCfPiYnuRjN3KbA3aet8LQg9nnL/5rmdwvboAIyuxFrOz3d0mVoE/bGCFleoIlbbaYd4h6Cq375jUjWSNgrf0pmc7rGiv/2dMyTMIZz+9HfYUUupQXXDoS3TyQSwz/e8kuORU5fAifiqCZQbwAKEjQMvEPpL39JJiCGWBJkhClEo3vojEFNiR3QyNIGX+OJVa2RzrcqAjau9n7qzfFGlbyqu7eKmPASjQDVPSMrFvEK2CcaFU7qB+9BHvfFsxHXlqJVEwtLx6qnuVv5oPpTcMfGWS35IRGMPvcEQoG+iXCyytqkF9XUhIAz0V1vvZZXMi3iFGi2bcdJLyzuSA/9RTMK0PV8ZmoLGknjfd5Ydzw/KmNVc90Ho97/Ptty4fkBxdNuacywtzINvWPXzpqqKwUgDzq6bXnWCeAmV3m0Ea0MA==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(376002)(396003)(346002)(451199021)(46966006)(40470700004)(36840700001)(316002)(4326008)(70206006)(36860700001)(47076005)(2616005)(83380400001)(70586007)(1076003)(186003)(16526019)(40460700003)(336012)(26005)(81166007)(426003)(36756003)(356005)(2906002)(40480700001)(6666004)(82310400005)(7696005)(82740400003)(110136005)(86362001)(478600001)(54906003)(5660300002)(8936002)(8676002)(41300700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2023 09:36:54.8957
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b17b56b5-feaf-4975-d70a-08db82bb87ab
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4338
-Subject: [virtio-dev] [VIRTIO GPU PATCH v2 1/1] virtio-gpu: Add new feature flag VIRTIO_GPU_F_FREEZING
+In-Reply-To: <20220315032402.6088-1-xuanzhuo@linux.alibaba.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [virtio-dev] Re: [PATCH v12] virtio-net: support device stats
 
-When we suspend/resume guest on Xen, the display can't come back.
-This is because when guest suspended, it called into Qemu. Then
-Qemu destroyed all resources which is used for display. So that
-guest's display can't come back to the time when it was suspended.
+On Tue, Mar 15, 2022 at 11:24:02AM +0800, Xuan Zhuo wrote:
+> This patch allows the driver to obtain some statistics from the device.
+> 
+> In the back-end implementation, we can count a lot of such information,
+> which can be used for debugging and judging the running status of the
+> back-end. We hope to directly display it to the user through ethtool.
+> 
+> To get stats atomically, try to get stats for all queue pairs in one
+> command.
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
 
-To solve above problem, I added a new mechanism that when guest is
-suspending, it will notify Qemu, and then Qemu will not destroy
-resources.
+Functionally, I think this is close to ok now.  But the text needs
+of work.  Are you trying to target 1.3 with this?
 
-Due to that mechanism needs cooperation between guest and host,
-I need to add a new feature flag, so that guest and host can
-negotiate whenever freezing is supported or not.
+Feedback from other hw vendors would be nice. Parav could you take
+a look and say whether the list of counters seems rich enough for
+you? Any counters you'd like to add?
 
-Signed-off-by: Jiqian Chen <Jiqian.Chen@amd.com>
----
- device-types/gpu/description.tex | 35 ++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
 
-diff --git a/device-types/gpu/description.tex b/device-types/gpu/description.tex
-index 4435248..729dde5 100644
---- a/device-types/gpu/description.tex
-+++ b/device-types/gpu/description.tex
-@@ -37,6 +37,8 @@ \subsection{Feature bits}\label{sec:Device Types / GPU Device / Feature bits}
-   resources is supported.
- \item[VIRTIO_GPU_F_CONTEXT_INIT (4)] multiple context types and
-   synchronization timelines supported.  Requires VIRTIO_GPU_F_VIRGL.
-+\item[VIRTIO_GPU_F_FREEZING (5)] freezing virtio-gpu and keeping resources
-+  alive is supported.
- \end{description}
- 
- \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
-@@ -228,6 +230,9 @@ \subsubsection{Device Operation: Request header}\label{sec:Device Types / GPU De
-         VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
-         VIRTIO_GPU_CMD_MOVE_CURSOR,
- 
-+        /* status */
-+        VIRTIO_GPU_CMD_STATUS_FREEZING = 0x0400,
-+
-         /* success responses */
-         VIRTIO_GPU_RESP_OK_NODATA = 0x1100,
-         VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
-@@ -838,6 +843,36 @@ \subsubsection{Device Operation: cursorq}\label{sec:Device Types / GPU Device /
- 
- \end{description}
- 
-+\subsubsection{Device Operation: status}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: cursorq}
-+
-+\begin{lstlisting}
-+struct virtio_gpu_status_freezing {
-+  struct virtio_gpu_ctrl_hdr hdr;
-+  __u32 freezing;
-+};
-+\end{lstlisting}
-+
-+\begin{description}
-+
-+\item[VIRTIO_GPU_CMD_STATUS_FREEZING]
-+Notify freezing status through controlq.
-+Request data is \field{struct virtio_gpu_status_freezing}.
-+Response type is VIRTIO_GPU_RESP_OK_NODATA.
-+
-+This is added for S3 function in guest with virtio-gpu. When guest does
-+S3, let it notify QEMU if virtio-gpu is in freezing status or not in
-+\field{freezing}. Zero means it is not in freezing status, none-zero
-+is the opposite. When virtio-gpu is in freezing status, QEMU will not
-+destroy resources which are created by using commands
-+VIRTIO_GPU_CMD_RESOURCE_CREATE_*, so that guest can use those resources
-+to resume display.
-+
-+Note: this change is not enough to solve the problems of S4 function.
-+QEMU may lose resources after hibernation. It needs more research and
-+development.
-+
-+\end{description}
-+
- \subsection{VGA Compatibility}\label{sec:Device Types / GPU Device / VGA Compatibility}
- 
- Applies to Virtio Over PCI only.  The GPU device can come with and
--- 
-2.34.1
+> ---
+>  conformance.tex |   2 +
+>  content.tex     | 406 +++++++++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 405 insertions(+), 3 deletions(-)
+> 
+> diff --git a/conformance.tex b/conformance.tex
+> index 42f8537..c67f877 100644
+> --- a/conformance.tex
+> +++ b/conformance.tex
+> @@ -142,6 +142,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+>  \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration / Setting Offloads State}
+>  \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
+> +\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+>  \end{itemize}
+>  
+>  \conformance{\subsection}{Block Driver Conformance}\label{sec:Conformance / Driver Conformance / Block Driver Conformance}
+> @@ -401,6 +402,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
+>  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Gratuitous Packet Sending}
+>  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Automatic receive steering in multiqueue mode}
+>  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+> +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+>  \end{itemize}
+>  
+>  \conformance{\subsection}{Block Device Conformance}\label{sec:Conformance / Device Conformance / Block Device Conformance}
+> diff --git a/content.tex b/content.tex
+> index c6f116c..81f325d 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -3092,6 +3092,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+>  \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>      channel.
+>  
+> +\item[VIRTIO_NET_F_CTRL_STATS(55)] Device can provide device-level statistics
+> +    to the driver through the control channel.
+> +
+>  \item[VIRTIO_NET_F_HOST_USO (56)] Device can receive USO packets. Unlike UFO
+>   (fragmenting the packet) the USO splits large UDP packet
+>   to several segments when each of these smaller packets has UDP header.
+> @@ -3137,6 +3140,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+>  \item[VIRTIO_NET_F_GUEST_ANNOUNCE] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_MQ] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_CTRL_MAC_ADDR] Requires VIRTIO_NET_F_CTRL_VQ.
+> +\item[VIRTIO_NET_F_CTRL_STATS] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \item[VIRTIO_NET_F_RSC_EXT] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
+>  \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>  \end{description}
+> @@ -4015,6 +4019,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>          u8 command;
+>          u8 command-specific-data[];
+>          u8 ack;
+> +        u8 command-specific-data-reply[];
+>  };
+>  
+>  /* ack values */
+> @@ -4023,9 +4028,11 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  \end{lstlisting}
+>  
+>  The \field{class}, \field{command} and command-specific-data are set by the
+> -driver, and the device sets the \field{ack} byte. There is little it can
+> -do except issue a diagnostic if \field{ack} is not
+> -VIRTIO_NET_OK.
+> +driver, and the device sets the \field{ack} byte and optionally
+> +\field{command-specific-data-reply}. There is little the driver can
+> +do except issue a diagnostic if \field{ack} is not VIRTIO_NET_OK.
+> +
+> +The command VIRTIO_NET_CTRL_STATS_GET contains \field{command-specific-data-reply}.
+>  
+>  \paragraph{Packet Receive Filtering}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+>  \label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Setting Promiscuous Mode}%old label for latexdiff
+> @@ -4471,6 +4478,399 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>  according to the native endian of the guest rather than
+>  (necessarily when not using the legacy interface) little-endian.
+>  
+> +\paragraph{Device Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+> +
+> +If the VIRTIO_NET_F_CTRL_STATS feature is negotiated, the driver can
+> +get the device stats from the device in \field{command-specific-data-reply}.
+> +
+> +To get the stats, the following definitions are used:
+> +\begin{lstlisting}
+> +#define VIRTIO_NET_CTRL_STATS         6
+> +#define VIRTIO_NET_CTRL_STATS_GET     0
+> +
+> +#define VIRTIO_NET_STATS_TYPE_CVQ      0
+> +#define VIRTIO_NET_STATS_TYPE_RX_BASIC 1
+> +#define VIRTIO_NET_STATS_TYPE_RX_CSUM  2
+> +#define VIRTIO_NET_STATS_TYPE_RX_GSO   3
+> +#define VIRTIO_NET_STATS_TYPE_RX_RESET 4
+> +#define VIRTIO_NET_STATS_TYPE_TX_BASIC 5
+> +#define VIRTIO_NET_STATS_TYPE_TX_CSUM  6
+> +#define VIRTIO_NET_STATS_TYPE_TX_GSO   7
+> +#define VIRTIO_NET_STATS_TYPE_TX_RESET 8
+> +
+> +\end{lstlisting}
+> +
+> +Use the command VIRTIO_NET_CTRL_STATS_GET and \field{command-specific-data}
+> +containing struct virtio_net_ctrl_queue_stats to get the device stats.
+> +The result is returned by \field{command-specific-data-reply}.
+> +The stats ware returned in the order of the type specified in the
+> +\field{virtio_net_ctrl_queue_stats}.
+> +
+> +The following layout structures are used:
+> +
+> +\field{command-specific-data}
+> +\begin{lstlisting}
+> +struct virtio_net_ctrl_queue_stats {
+> +	u16 nstats;
+> +	struct {
+> +	    u16 queue_num;
+> +	    u16 type;
+> +	} stats[];
+> +};
+> +\end{lstlisting}
+> +
+> +\field{command-specific-data-reply}
+> +\begin{lstlisting}
+> +struct virtio_net_stats_cvq {
+> +    le64 command_num;
+> +    le64 ok_num;
+> +};
+> +
+> +struct virtio_net_stats_rx_basic {
+> +    le64 rx_packets;
+> +    le64 rx_bytes;
+> +
+> +    le64 rx_notification;
+> +    le64 rx_interrupt;
+> +
+> +    le64 rx_drop;
+> +    le64 rx_drop_overruns;
+> +};
+> +
+> +struct virtio_net_stats_rx_csum {
+> +    le64 rx_csum_valid;
+> +    le64 rx_needs_csum;
+> +    le64 rx_csum_bad;
+> +    le64 rx_csum_none;
+> +};
+> +
+> +struct virtio_net_stats_rx_gso {
+> +    le64 rx_gso_packets;
+> +    le64 rx_gso_bytes;
+> +    le64 rx_gso_packets_coalesced;
+> +    le64 rx_gso_bytes_coalesced;
+> +    le64 rx_gso_segments;
+> +    le64 rx_gso_segments_bytes;
+> +};
+> +
+> +struct virtio_net_stats_rx_reset {
+> +    le64 rx_reset;
+> +};
+> +
+> +struct virtio_net_stats_tx_basic {
+> +    le64 tx_packets;
+> +    le64 tx_bytes;
+> +
+> +    le64 tx_notification;
+> +    le64 tx_interrupt;
+> +
+> +    le64 tx_drop;
+> +    le64 tx_drop_malformed;
+> +};
+> +
+> +struct virtio_net_stats_tx_csum {
+> +    le64 tx_csum_none;
+> +    le64 tx_needs_csum;
+> +};
+> +
+> +struct virtio_net_stats_tx_gso {
+> +    le64 tx_gso_packets;
+> +    le64 tx_gso_bytes;
+> +    le64 tx_gso_packets_split;
+> +    le64 tx_gso_bytes_split;
+> +    le64 tx_gso_segments;
+> +    le64 tx_gso_segments_bytes;
+> +};
+> +
+> +struct virtio_net_stats_tx_reset {
+> +    le64 tx_reset;
+> +};
+> +
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +    \item [nstats]
+> +        The number of \field{stats}.
+> +
+> +    \item [queue_num]
+> +        The number of the virtqueue to obtain the statistics.
+> +
+> +    \item [type]
+> +        The type of the stats to be obtained.
+> +
+> +\end{description}
+> +
+> +Correspondence between the vq type, the stats type, the stats structure and the
+> +required features.
+> +\begin{tabular}{ |l|l|l|l| }
+> +    \hline
+> +    VQ Type                  & Stats Type                     & Stats Structure           & Features \\ \hline
+> +
+> +    controlq                 & VIRTIO_NET_STATS_TYPE_CVQ      & virtio_net_stats_cvq      & \\ \hline
+> +
+> +    \multirow{4}*{receiveq}  & VIRTIO_NET_STATS_TYPE_RX_BASIC & virtio_net_stats_rx_basic & \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_RX_CSUM  & virtio_net_stats_rx_csum  & VIRTIO_NET_F_GUEST_CSUM \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_RX_GSO   & virtio_net_stats_rx_gso   & VIRTIO_NET_F_GUEST_TSO4 or\newline
+> +                                                                                            VIRTIO_NET_F_GUEST_TSO6 or\newline
+> +                                                                                            VIRTIO_NET_F_GUEST_UFO    \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_RX_RESET & virtio_net_stats_rx_reset & VIRTIO_F_RING_RESET \\ \hline
+> +
+> +    \multirow{4}*{transmitq} & VIRTIO_NET_STATS_TYPE_TX_BASIC & virtio_net_stats_tx_basic & \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_TX_CSUM  & virtio_net_stats_tx_csum  & VIRTIO_NET_F_CSUM \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_TX_GSO   & virtio_net_stats_tx_gso   & VIRTIO_NET_F_HOST_TSO4 or\newline
+> +                                                                                            VIRTIO_NET_F_HOST_TSO6 or\newline
+> +                                                                                            VIRTIO_NET_F_HOST_USO  or\newline
+> +                                                                                            VIRTIO_NET_F_HOST_UFO  \\ \cline{2-4}
+> +                             & VIRTIO_NET_STATS_TYPE_TX_RESET & virtio_net_stats_tx_reset & VIRTIO_F_RING_RESET \\
+> +    \hline
+> +\end{tabular}
+> +
+> +
+> +\subparagraph{Controlq Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Controlq Stats}
+> +
+> +The structure corresponding to the controlq stats is virtio_net_stats_cvq.
+> +
+> +\begin{description}
+> +    \item [command_num]
+> +        The number of commands, including the current command.
+> +
+> +    \item [ok_num]
+> +        The number of commands (including the current command) where the ack was VIRTIO_NET_OK.
+> +\end{description}
+> +
+> +
+> +\subparagraph{Receiveq Basic Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq Basic Stats}
+> +
+> +The structure corresponding to the receiveq basic stats is virtio_net_stats_rx_basic.
+> +
+> +Receiveq basic stats doesn't need any features, as long as the device supports
+> +VIRTIO_NET_F_CTRL_STATS. The following are the receiveq basic stats.
+> +
+> +\begin{description}
+> +    \item [rx_packets]
+> +        The number of packets received by device (not the packets passed to the
+> +        guest), including the dropped packets by device.
+> +
+> +    \item [rx_bytes]
+> +        The number of bytes received by device (not the packets passed to the
+> +        guest), including the dropped packets by device.
+> +
+> +    \item [rx_notification]
+> +        The number of driver notifications.
+> +
+> +    \item [rx_interrupt]
+> +        The number of device interrupts.
+> +
+> +    \item [rx_drop]
+> +        The number of packets dropped by the receiveq. Contains all kinds of
+> +        packet drop.
+> +
+> +    \item [rx_drop_overruns]
+> +        The number of packets dropped by the receiveq when no more descriptors
+> +        were available.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Transmitq Basic Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq Basic Stats}
+> +
+> +The structure corresponding to the transmitq basic stats is virtio_net_stats_tx_basic.
+> +
+> +Transmitq basic stats doesn't need any features, as long as the device supports
+> +VIRTIO_NET_F_CTRL_STATS. The following are the transmitq basic stats.
+> +
+> +\begin{description}
+> +    \item [tx_packets]
+> +        The number of packets sent by device (not the packets got from the
+> +        guest), excluding the dropped packets by device.
+> +
+> +    \item [tx_bytes]
+> +        The number of bytes sent by device (not the packets got from the
+> +        guest), excluding the dropped packets by device.
+> +
+> +    \item [tx_notification]
+> +        The number of driver notifications.
+> +
+> +    \item [tx_interrupt]
+> +        The number of device interrupts.
+> +
+> +    \item [tx_drop]
+> +        The number of packets dropped by the transmitq. Contains all kinds of
+> +        packet drop.
+> +
+> +    \item [tx_drop_malformed]
+> +        The number of packets dropped when the descriptor is in an error state.
+> +        For example, the buffer is too short.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Receiveq CSUM Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq CSUM Stats}
+> +
+> +The structure corresponding to the receiveq csum stats is virtio_net_stats_rx_csum.
+> +
+> +Only after the VIRTIO_NET_F_GUEST_CSUM negotiation is successful, the receiveq
+> +csum stats can be obtained.
+> +
+> +The following are the receiveq csum stats:
+> +
+> +\begin{description}
+> +    \item [rx_csum_valid]
+> +        The number of packets with VIRTIO_NET_HDR_F_DATA_VALID.
+> +
+> +    \item [rx_needs_csum]
+> +        The number of packets with VIRTIO_NET_HDR_F_NEEDS_CSUM.
+> +
+> +    \item [rx_csum_bad]
+> +        The number of packets with abnormal csum.
+> +
+> +    \item [rx_csum_none]
+> +        The number of packets without hardware csum. The packet here refers to
+> +        the non-TCP/UDP packet that the backend cannot recognize.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Transmitq CSUM Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq CSUM Stats}
+> +
+> +The structure corresponding to the transmitq csum stats is virtio_net_stats_tx_csum.
+> +
+> +Only after the VIRTIO_NET_F_CSUM negotiation is successful, the transmitq csum
+> +stats can be obtained.
+> +
+> +The following are the transmitq csum stats:
+> +
+> +\begin{description}
+> +    \item [tx_csum_none]
+> +        The number of packets that didn't require hardware csum.
+> +
+> +    \item [tx_needs_csum]
+> +        The number of packets that required hardware csum.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Receiveq GSO Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq GSO Stats}
+> +
+> +The structure corresponding to the receiveq gso stats is virtio_net_stats_rx_gso.
+> +
+> +If one of the VIRTIO_NET_F_GUEST_TSO4, TSO6, or UFO options have
+> +been negotiated, the receiveq gso stats can be obtained.
+> +
+> +Rx gso packets refer to packets passed by the device to the driver where
+> +\field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE.
+> +
+> +\begin{description}
+> +    \item [rx_gso_packets]
+> +        The number of the rx gso packets.
+> +
+> +    \item [rx_gso_bytes]
+> +        The number of bytes(excluding the virtio net header) of the rx gso packets.
+> +
+> +    \item [rx_gso_packets_coalesced]
+> +        The number of the rx gso packages generated by coalescing.
+> +
+> +    \item [rx_gso_bytes_coalesced]
+> +        The number of bytes(excluding the virtio net header) of the rx gso packets generated by coalescing.
+> +
+> +    \item [rx_gso_segments]
+> +        The number of coalesced segments.
+> +
+> +    \item [rx_gso_segments_bytes]
+> +        The number of bytes of coalesced segments.
+> +
+> +\end{description}
+> +
+> +\subparagraph{Transmitq GSO Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq GSO Stats}
+> +
+> +The structure corresponding to the transmitq gso stats is virtio_net_stats_tx_gso.
+> +
+> +If one of the VIRTIO_NET_F_HOST_TSO4, TSO6, USO or UFO options have
+> +been negotiated, the transmitq gso stats can be obtained.
+> +
+> +Tx gso packets refer to packets passed by the driver to the device where
+> +\field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE.
+> +
+> +\begin{description}
+> +    \item [tx_gso_packets]
+> +        The number of the tx gso packets.
+> +
+> +    \item [tx_gso_bytes]
+> +        The number of bytes(excluding the virtio net header) of the tx gso packets.
+> +
+> +    \item [tx_gso_packets_split]
+> +        The number of the tx gso packets that been split.
+> +
+> +    \item [tx_gso_bytes_split]
+> +        The number of bytes(excluding the virtio net header) of the tx gso packets that been split.
+> +
+> +    \item [tx_gso_segments]
+> +        The number of segments split from the gso package.
+> +
+> +    \item [tx_gso_segments_bytes]
+> +        The number of bytes(excluding the virtio net header) of segments split from the gso package.
+> +\end{description}
+> +
+> +\subparagraph{Receiveq Reset Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Receiveq Reset Stats}
+> +
+> +The structure corresponding to the receiveq reset stats is virtio_net_stats_rx_reset.
+> +
+> +Only when VIRTIO_F_RING_RESET is successfully negotiated, the receiveq reset stats
+> +can be obtained.
+> +
+> +See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}
+> +for more about \field{rx_reset}.
+> +
+> +\begin{description}
+> +    \item [rx_reset]
+> +        The number of receiveq resets.
+> +\end{description}
+> +
+> +\subparagraph{Transmitq Reset Stats}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats / Transmitq Reset Stats}
+> +
+> +The structure corresponding to the transmitq reset stats is virtio_net_stats_tx_reset.
+> +
+> +Only when VIRTIO_F_RING_RESET is successfully negotiated, the transmitq reset stats
+> +can be obtained.
+> +
+> +See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}
+> +for more about \field{tx_reset}.
+> +
+> +\begin{description}
+> +    \item [tx_reset]
+> +        The number of transmitq resets.
+> +\end{description}
+> +
+> +\devicenormative{\subparagraph}{Device Stats}{Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+> +
+> +If virtio_net_ctrl_queue_stats is incorrect (such as the following), the device
+> +MUST set \field{ack} to VIRTIO_NET_ERR. Even if there is only one error,
+> +the device MUST abort the entire command.
+> +\begin{itemize}
+> +    \item \field{queue_num} exceeds the queue range.
+> +    \item \field{type} is not a known value.
+> +    \item The type of vq does not match \field{type}. E.g. the driver tries to query
+> +        RX stats through a TX index.
+> +    \item The feature corresponding to the specified \field{type} was not successfully
+> +        negotiated.
+> +    \item The size of the buffer allocated by the driver for \field{command-specific-data-reply}
+> +        is less than the total size of the stats specialed by
+> +        \field{virtio_net_ctrl_queue_stats}.
+> +\end{itemize}
+> +
+> +The device MUST write the requested stats structures in
+> +\field{command-specific-data-reply} in the order specified by the structure
+> +virtio_net_ctrl_queue_stats.
+> +
+> +\drivernormative{\subparagraph}{Device Stats}{Device Types / Network Device / Device Operation / Control Virtqueue / Device Stats}
+> +
+> +When a driver tries to obtain a certain stats, it MUST confirm that the relevant
+> +feature negotiation is successful.
+> +
+> +\field{type} in struct virtio_net_ctrl_queue_stats MUST correspond to the vq
+> +specified by \field{queue_num}.
+> +
+> +The \field{command-specific-data-reply} buffer allocated by the driver MUST be
+> +able to hold all the stats specified by virtio_net_ctrl_queue_stats.
+> +
+> +When the driver reads the response, it MUST read
+> +\field{command-specific-data-reply} one by one based on the \field{type}.
+>  
+>  \subsubsection{Legacy Interface: Framing Requirements}\label{sec:Device
+>  Types / Network Device / Legacy Interface: Framing Requirements}
+> -- 
+> 2.31.0
 
 
 ---------------------------------------------------------------------
