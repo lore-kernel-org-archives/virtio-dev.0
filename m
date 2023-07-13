@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13378-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13379-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 58361C001DF
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 11:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ABB8FC001DC
+	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 11:59:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B06091318D7
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 11:44:53 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id F31792A891
+	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 11:59:06 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A55F69867DE
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 11:44:53 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DDE019867C6
+	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 11:59:06 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 9769C9867C4; Thu, 13 Jul 2023 11:44:53 +0000 (UTC)
+	id CC1CE9867C3; Thu, 13 Jul 2023 11:59:06 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,144 +24,148 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8193C9867C2;
-	Thu, 13 Jul 2023 11:44:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B5E489867C2;
+	Thu, 13 Jul 2023 11:59:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CK2QrVX/cGKF0k0I4XCg/wEEaMuO31DMgqApPiEsAT7yrr9IVlKIqomXHmboFPkzPF9F38PVjFvBcbsatzjWn2fMTwKZyI3RAJkdejqko1Ya5HukTSgmsbv8XMPl26dLMhmX89/K9WhV5AOBXzrn0jJ8nBMMVUl+lAN00s+1jrjg/jEv5epA/JUORynJ8rhNd1TBgl0duMwV5sx2DP7NEz+byQeyUjjmCiYZStqLiW9VqvyxflqFNmtOGTc1xnce21E41p61yrMHQEmyOQjx1/H4AU+40XB3vnI47B1bS/3e7dyoJNxws6NMHoRWJgukuXZQNKIvGDhfawWSRdTHQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4DQLyydb1VbGqSXUd9x9VimazGPNkfVKXC40UYipFU8=;
- b=FZv5LjJNH6G3tt3WEaIoix5dYOp//eclmgNzqivTp9WQ4sF98GPZBQ2XOsI9z3u6fGzI/jG8ZdhwPBgolCNehrwBiJkRxalunzdzN3nEq4XMzn4ZUyXtXXDuhC/NZQAYa5Prs442ENXFpWYIDAug3/PTG2mNrBXJvH0sUdYcjAxA+YFA5sx2zAE8DG7k32J7GvFjQw1y3k13B2/VnwLe37+e7Q0uXfH40/TrZ/r+lJzp49WGLI/7FZ7v1fJ3ge2SwGc/lP5uyd8DaTSUdU182OnfV3nUL5sTbArYfKzoPtYj1karewjLBcd9/GqnnCnTnI/wBeLiws5EoZVY7KLXVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: Cornelia Huck <cohuck@redhat.com>, "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"hengqi@linux.alibaba.com" <hengqi@linux.alibaba.com>, Shahaf Shuler
-	<shahafs@nvidia.com>
-Thread-Topic: [virtio-comment] [PATCH 1/4] virtio-net: Place C code under
- listing
-Thread-Index: AQHZtQ+iy8fc5TGtGEKaORMq55t136+3alYAgAAqPCA=
-Date: Thu, 13 Jul 2023 11:44:43 +0000
-Message-ID:
- <PH0PR12MB54810D3B270A5EA161E6507DDC37A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230712222405.455201-1-parav@nvidia.com>
- <20230712222405.455201-2-parav@nvidia.com> <87wmz4qin3.fsf@redhat.com>
-In-Reply-To: <87wmz4qin3.fsf@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|IA0PR12MB7506:EE_
-x-ms-office365-filtering-correlation-id: 007c1d0f-d822-449c-809e-08db83968cce
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- ueo4dg63H5luj5rzZLQOs7XGE/jRczUaAKzDZKbY51lGtofpZ0FzcOEQx/V6GZzOv0Z5lLrE5/8B8Gdiu8tf+XtL8mmCPXcCWwRNIM/TKs4bg/aD46IpB8aD5Ilqa2JaiI1ha0ZMGwUB0s+fIiy1/UnX3Jie42b4J9jaKa+tGkdLZVDJ78rWR49v+jGejKAQcr07o3MIDfBQrXWfif/YCA82eLv4zlyEUbdOWBEEP1MCiQzHr7Knko3zDMWu6k8S0oQkrwKVDF50VQwEkLADkeI56dteHZzDVJCkkDjvG+sHMYWEvvkZbTCWJGQeCOg+NVPHFaNnYKP84yO485WUg0AYoRDNeKOHqti6GjUAMKu3seh2XczHdzg+UvkJJbR/gObQ/r34i1JnUs+pc5J8XTWsLKpYc1wtN3q2WHqBNkF9YXjTwezWLmLesyke9eoiF0lhPZsn1WnCtdRj5BGkSue88uEBBZslD8iyf3bPLpt/dbChFVrMXOykl0IwtjffmqqwqbBaEbpPsYNpoU+haAASm6Oa0XO84xw4Nj2sx9fzl9CHLzDtfqXlQmJvmXjaSDIg07VPrN7ShFxfQ1x8sbz4HpsRKwQCwGXL753HeyOn/YUhYzC7LNbuIK5z55zs
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(376002)(396003)(346002)(366004)(451199021)(66446008)(41300700001)(4326008)(2906002)(52536014)(66946007)(64756008)(66556008)(66476007)(5660300002)(71200400001)(478600001)(316002)(76116006)(86362001)(38100700002)(8936002)(7696005)(8676002)(9686003)(107886003)(26005)(83380400001)(6506007)(38070700005)(53546011)(33656002)(186003)(110136005)(122000001)(54906003)(55016003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?m/nqf13Jw93n6BgV/uIPtzz+9nvRN4qY8eVnqfRO4Mxh74r1DgKyZqT9E4uW?=
- =?us-ascii?Q?+pywNGTNCoOyl2BcaYgFcMCx2ZGtcsIkWFzjZhZcHVkO6NMOFRMHy8ZJcR+5?=
- =?us-ascii?Q?QJh64qecvXFku72nt45KNFsNervFUvwAkPU6GRSt1yC15tCOGYE9ogajzqpv?=
- =?us-ascii?Q?B+wfS46QhfuTXUbyvknBcCGEDzDsWx62h26k0f7Q4xmH19R85VkK5o26ft7u?=
- =?us-ascii?Q?CD9mtdud6yZDyXUswhDCQUmohOCH4EGLQt1A1BxuFJXWEvNT8f9UJh16oA4S?=
- =?us-ascii?Q?Hp79C409j/V0aRyLlzI+3q5CT/Ha0M6Eke/LN7YVR9ThZS0G8jP+WBmryKvr?=
- =?us-ascii?Q?pqXVKfqoKavq0JrqIfUt1ZTnkod4ubkPVe8mg49J3QCqgMQg98qWE06vwTbi?=
- =?us-ascii?Q?qX0F19J6CzkWmd7642v+arXsEDb4y6u/5QN55t9MPIHnAgDzcaFNf6OAQdIO?=
- =?us-ascii?Q?RmqAExxdNZbc7GWdlqMIdzxEvUgL2/XF7DKkoWQh7X+HzBnCwwwp56MNd6X8?=
- =?us-ascii?Q?Kl+uItYNz7Nl50vyo2Lx+0ixuvwfLooUR89cKhFP2SlIoYCxGDpekD1p+b3g?=
- =?us-ascii?Q?uLfvfYsnOC4LRZP0iE5lJa8qDcSBTeN4H7lmRNCTtX/81dtQ7l8Os1lAUYvo?=
- =?us-ascii?Q?ZhjFY8PGPrpGHFJceh49A3fj4t8FYthevqpSWzdv3lH+IYRctZijmHxFDvmx?=
- =?us-ascii?Q?8k5rTSpL3c5IlnxhgSetEwIyECpa85lBDoEGFq1DdJ4Ymyv2dO2JP5F+DNvG?=
- =?us-ascii?Q?Hl8NQDFwkzh4dIS+9sc5F4EJ63RHtiU03nif/xcuK3aoNba/8OT90j5XzBmz?=
- =?us-ascii?Q?95tMyLXHiygUAJNwtTj5pgweix8V/vtBFtRKIGjEOMHhYeftERlwHR6IDB7M?=
- =?us-ascii?Q?g01EV+UTZ3ccMIePcz8oKEwqSx/rpJPc2B9ZLY6JeTuKdOZ7NhIHEH/RrF6e?=
- =?us-ascii?Q?jJFjpBCosWw1JTGIwxTqchbBij+duc3XFRaijAUgxbv1ITYhISg43JR72VTN?=
- =?us-ascii?Q?WMp4Baw6pm13c/p1rgDmFwl29D2sPT4R2CRCT+ws78BZz02ycn+OLXwJfIAa?=
- =?us-ascii?Q?dWkxrVR/yKjKeTrq9yHgP0ng8ltJdjy0y6pkeoXt/PhkeF/mdTPu/hi/TBSt?=
- =?us-ascii?Q?6sjQ4UXltoLp6D5yea5wbVmCnIuBaw1ZI53Uwg4qKu1V9CD7tqV9qLfj39wV?=
- =?us-ascii?Q?EMf2vFLMyE30jIy+BlPTUinLj+SK6nltj9LSGJ9fs2nbQpFQ1ZNoJ6zf3Ta2?=
- =?us-ascii?Q?eInKNfinc0mREcIKsTA0MzP2qfMdnbAQsT4/slFHrw7LLgwrD4q/UfQQ79PR?=
- =?us-ascii?Q?heYuRq9rwqc6S2Pd73sIorleo1mpDCkErM/FmmoCIbJdWgyPtW8nHTv51v5p?=
- =?us-ascii?Q?huDruuXIoqU/bWZe0LrG4JtEjaFM3EtJW9i0HgM8SUiZm9+qvyVXTXbcuSM0?=
- =?us-ascii?Q?q1dpfF57lMrpa2e4nfZA1w0Nhr4+kBzcM9qPCgfxXeInH6/lznEocNXsNKyt?=
- =?us-ascii?Q?AHIrN9N2RGpNnEhwgS9vCAv4bEcLRJBvhBFSeEDqPzsa9poRkPoqZ4A0GGAJ?=
- =?us-ascii?Q?zraPoQ1KOPadFheAJmA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VnHh5rG_1689249537;
+Message-ID: <e8222b54-9229-a9e7-6d34-8a47791228d8@linux.alibaba.com>
+Date: Thu, 13 Jul 2023 19:58:53 +0800
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 007c1d0f-d822-449c-809e-08db83968cce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2023 11:44:43.3260
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pTvYZFE8u+OFn7juQ0bAKwitczm40RI/yBUirEKVqdv8VvYINCrULum0VFFPH9b1ubEoaA5k7iLIcQ/cPmLQUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7506
-Subject: [virtio-dev] RE: [virtio-comment] [PATCH 1/4] virtio-net: Place C code under
- listing
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.12.0
+To: "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+Cc: Parav Pandit <parav@nvidia.com>, virtio-comment@lists.oasis-open.org,
+ virtio-dev@lists.oasis-open.org, shahafs@nvidia.com
+References: <20230712222405.455201-1-parav@nvidia.com>
+ <87zg40qioi.fsf@redhat.com> <20230713073051-mutt-send-email-mst@kernel.org>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <20230713073051-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [PATCH 0/4] Short document fixes to inner hash feature
 
 
 
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Thursday, July 13, 2023 5:13 AM
-> To: Parav Pandit <parav@nvidia.com>; virtio-comment@lists.oasis-open.org;
-> mst@redhat.com
-> On Thu, Jul 13 2023, Parav Pandit <parav@nvidia.com> wrote:
->=20
-> > With extra white space for the define, pdf generation fails.
-> > Also place the C code under listing.
-> >
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > ---
-> >  device-types/net/description.tex | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/device-types/net/description.tex
-> > b/device-types/net/description.tex
-> > index 206020d..6fd4a20 100644
-> > --- a/device-types/net/description.tex
-> > +++ b/device-types/net/description.tex
-> > @@ -1024,12 +1024,14 @@ \subsubsection{Processing of Incoming
-> > Packets}\label{sec:Device Types / Network  If VIRTIO_NET_F_HASH_TUNNEL
-> > has been negotiated, the driver can send the command
-> VIRTIO_NET_CTRL_HASH_TUNNEL_SET to configure the calculation of the inner
-> header hash.
-> >
-> > +\begin{lstlisting}
-> >  struct virtnet_hash_tunnel {
-> >      le32 enabled_tunnel_types;
-> >  };
-> >
-> >  #define VIRTIO_NET_CTRL_HASH_TUNNEL 7
-> > - #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
-> > +#define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
->=20
-> I think the indentation here is intentional (as in other, similare
-> sections.)
->=20
-Oh right. It is the command part.
+在 2023/7/13 下午7:33, Michael S. Tsirkin 写道:
+> On Thu, Jul 13, 2023 at 11:12:13AM +0200, Cornelia Huck wrote:
+>> On Thu, Jul 13 2023, Parav Pandit <parav@nvidia.com> wrote:
+>>
+>>> This short patches fixes the editing errors that stops the pdf and html
+>>> generation.
+>>>
+>>> These 3 fixes are for the patch [1] for the github issue [2].
+>>>
+>>> [1] https://lists.oasis-open.org/archives/virtio-comment/202307/msg00024.html
+>>> [2] https://github.com/oasis-tcs/virtio-spec/issues/173
+>>>
+>>> Patch summary:
+>>> patch-1 place C code under listing
+>>> patch-2 avoid hyphen and extra braces
+>>> patch-3 use table as hyperlink do not work well in C code listing
+>>> patch-4 refer 'advice' as 'note'
+>>>
+>>> Patch 1 to 3 appears to be must in the testing.
+>>> Patch 4 is not a fix and can be done later if it requires discussion.
+>>>
+>>> Parav Pandit (4):
+>>>    virtio-net: Place C code under listing
+>>>    virtio-net: Avoid hyphen and extra braces
+>>>    virtio-net: Use table to describe inner hash to rfc mapping
+>>>    virtio-net: Use note instead of advice
+>>>
+>>>   device-types/net/description.tex | 45 ++++++++++++++++++++++----------
+>>>   introduction.tex                 | 15 +++++------
+>>>   2 files changed, 38 insertions(+), 22 deletions(-)
+>>>
+>> FTR, this is the diff I have locally (I had missed one underscore in the
+>> references yesterday...); maybe we can make the intra-reference links in
+>> introdcution.tex a bit nicer, but otherwise, this should be the minimal
+>> change to make this build:
+> Perfect. Seems like clearly an editorial fix.
+>
+> Heng Qi, in the future I'd like to ask you to please build the
+> spec and review the resulting PDF and HTML, before posting.
 
-> > +\end{lstlisting}
-> >
-> >  Field \field{enabled_tunnel_types} contains the bitmask of encapsulati=
-on
-> types enabled for inner header hash.
-> >  See \ref{sec:Device Types / Network Device / Device Operation /
-> > Processing of Incoming Packets /
+Yes, I will!
+
+>
+>
+>
+>> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+>> index 206020de567d..76585b0dd6d3 100644
+>> --- a/device-types/net/description.tex
+>> +++ b/device-types/net/description.tex
+>> @@ -1024,12 +1024,14 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>>   If VIRTIO_NET_F_HASH_TUNNEL has been negotiated, the driver can send the command
+>>   VIRTIO_NET_CTRL_HASH_TUNNEL_SET to configure the calculation of the inner header hash.
+>>   
+>> +\begin{lstlisting}
+>>   struct virtnet_hash_tunnel {
+>>       le32 enabled_tunnel_types;
+>>   };
+>>   
+>>   #define VIRTIO_NET_CTRL_HASH_TUNNEL 7
+>>    #define VIRTIO_NET_CTRL_HASH_TUNNEL_SET 0
+>> +\end{lstlisting}
+>>   
+>>   Field \field{enabled_tunnel_types} contains the bitmask of encapsulation types enabled for inner header hash.
+>>   See \ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets /
+>> @@ -1063,16 +1065,16 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>>   Hash calculation for incoming packets / Encapsulation types supported/enabled for inner header hash}
+>>   
+>>   Encapsulation types applicable for inner header hash:
+>> -\begin{lstlisting}
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 0) /* \hyperref[intro:gre_rfc2784]{[GRE_rfc2784]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 1) /* \hyperref[intro:gre_rfc2890]{[GRE_rfc2890]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 2) /* \hyperref[intro:gre_rfc7676]{[GRE_rfc7676]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 3) /* \hyperref[intro:gre_in_udp_rfc8086]{[GRE-in-UDP]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 4) /* \hyperref[intro:vxlan]{[VXLAN]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 5) /* \hyperref[intro:vxlan_gpe]{[VXLAN-GPE]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 6) /* \hyperref[intro:geneve]{[GENEVE]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 7) /* \hyperref[intro:ipip]{[IPIP]} */
+>> -#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 8) /* \hyperref[intro:nvgre]{[NVGRE]} */
+>> +\begin{lstlisting}[escapechar=|]
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2784    (1 << 0) /* |\hyperref[intro:rfc2784]{[RFC2784]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_2890    (1 << 1) /* |\hyperref[intro:rfc2890]{[RFC2890]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_7676    (1 << 2) /* |\hyperref[intro:rfc7676]{[RFC7676]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GRE_UDP     (1 << 3) /* |\hyperref[intro:rfc8086]{[GRE-in-UDP]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN       (1 << 4) /* |\hyperref[intro:vxlan]{[VXLAN]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_VXLAN_GPE   (1 << 5) /* |\hyperref[intro:vxlan-gpe]{[VXLAN-GPE]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_GENEVE      (1 << 6) /* |\hyperref[intro:geneve]{[GENEVE]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_IPIP        (1 << 7) /* |\hyperref[intro:ipip]{[IPIP]}| */
+>> +#define VIRTIO_NET_HASH_TUNNEL_TYPE_NVGRE       (1 << 8) /* |\hyperref[intro:nvgre]{[NVGRE]}| */
+>>   \end{lstlisting}
+>>   
+>>   \subparagraph{Advice}
+>> diff --git a/introduction.tex b/introduction.tex
+>> index 81f07a4fee19..6f10a94b6fde 100644
+>> --- a/introduction.tex
+>> +++ b/introduction.tex
+>> @@ -102,18 +102,18 @@ \section{Normative References}\label{sec:Normative References}
+>>       Standards for Efficient Cryptography Group(SECG), ``SEC1: Elliptic Cureve Cryptography'', Version 1.0, September 2000.
+>>   	\newline\url{https://www.secg.org/sec1-v2.pdf}\\
+>>   
+>> -	\phantomsection\label{intro:gre_rfc2784}\textbf{[GRE_rfc2784]} &
+>> +	\phantomsection\label{intro:rfc2784}\textbf{[RFC2784]} &
+>>       Generic Routing Encapsulation. This protocol is only specified for IPv4 and used as either the payload or delivery protocol.
+>>   	\newline\url{https://datatracker.ietf.org/doc/rfc2784/}\\
+>> -	\phantomsection\label{intro:gre_rfc2890}\textbf{[GRE_rfc2890]} &
+>> -    Key and Sequence Number Extensions to GRE \ref{intro:gre_rfc2784}. This protocol describes extensions by which two fields, Key and
+>> -    Sequence Number, can be optionally carried in the GRE Header \ref{intro:gre_rfc2784}.
+>> +	\phantomsection\label{intro:rfc2890}\textbf{[RFC2890]} &
+>> +    Key and Sequence Number Extensions to GRE \ref{intro:rfc2784}. This protocol describes extensions by which two fields, Key and
+>> +    Sequence Number, can be optionally carried in the GRE Header \ref{intro:rfc2784}.
+>>   	\newline\url{https://www.rfc-editor.org/rfc/rfc2890}\\
+>> -	\phantomsection\label{intro:gre_rfc7676}\textbf{[GRE_rfc7676]} &
+>> +	\phantomsection\label{intro:rfc7676}\textbf{[RFC7676]} &
+>>       IPv6 Support for Generic Routing Encapsulation (GRE). This protocol is specified for IPv6 and used as either the payload or
+>>       delivery protocol. Note that this does not change the GRE header format or any behaviors specified by RFC 2784 or RFC 2890.
+>>   	\newline\url{https://datatracker.ietf.org/doc/rfc7676/}\\
+>> -	\phantomsection\label{intro:gre_in_udp_rfc8086}\textbf{[GRE-in-UDP]} &
+>> +	\phantomsection\label{intro:rfc8086}\textbf{[GRE-in-UDP]} &
+>>       GRE-in-UDP Encapsulation. This specifies a method of encapsulating network protocol packets within GRE and UDP headers.
+>>       This protocol is specified for IPv4 and IPv6, and used as either the payload or delivery protocol.
+>>   	\newline\url{https://www.rfc-editor.org/rfc/rfc8086}\\
 
 
 ---------------------------------------------------------------------
