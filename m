@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13380-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13381-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B300BC001B0
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 13:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A45FC0015E
+	for <virtio-dev@archiver.kernel.org>; Mon, 17 Jul 2023 14:53:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1D39E157EF2
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 13:44:08 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id DAC4369F6D
+	for <virtio-dev@archiver.kernel.org>; Mon, 17 Jul 2023 14:53:55 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1072E9867F0
-	for <virtio-dev@archiver.kernel.org>; Thu, 13 Jul 2023 13:44:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D697998665E
+	for <virtio-dev@archiver.kernel.org>; Mon, 17 Jul 2023 14:53:55 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id F3CD49867CD; Thu, 13 Jul 2023 13:44:07 +0000 (UTC)
+	id C87EC9865C3; Mon, 17 Jul 2023 14:53:55 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,166 +24,446 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DE3C19867C3;
-	Thu, 13 Jul 2023 13:44:04 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B00419865B8;
+	Mon, 17 Jul 2023 14:53:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JdgGPxrejtjeM6wP570R2jnolkl9iMflbGIfM+bV8Dor5rzRkQoAHiyHSVTdYCq92B8+59JkQFGjfaPJRZylum9yhY8vjwFTC16Clgl++x3Ds+Tms4Ag+XtAk3Mj8AzNK508ua7nA54W4GXUkpololKW5wD32xSBFWpFBhzNNfk0Zxco2/hkvNgpStiGRRWbRmkqb7U5iXpd1HAesnTNy/bfcmOPWLgRW+alyST5QVrAl+DrtKUIB6N4spf6Ynhq/ruF4m7g+2L6iOInwuJ0D66rAMaeWSR7r36RweFjRHCdyIeZZ+Omr+ZQL6o+4Euey74t5mw4hME9/wcud9m3pQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0vbtbPjTemjfZ/2KPBN8oRv7POFpNKzTXa+oHMORwGI=;
- b=kPfGzHwtq0TfFN1bHw0BU6AE7/Azg/v2qHssNkgT/AJPPbpwxUy0IZhGr3yvkjKAmPzkbJfTwBzdwIPR7kNl44nrx+TioWWjjznCeo9Qp5XRpQBNOZfO9gfE6cbJrSsMaqf2+SIqDqvWVGJBhWKLCjtxNFQZqwvN81CkOyw/tpgAfwwwkQC+tuqdAKa/RuTXIzfA84/QMWbnY8/q6prWsdV6/XSjlmWWrDlGljOuVBmi2lySuDyh/t5sBjfjkLW7rZMK0LS9WYVlGKUdag/pf74XKVUG3aNvwFsuM9qa3uemE1Ync4WecW53q1JKSmzqp3KYZMmfyfu1pFGuNwnqvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "virtio-comment@lists.oasis-open.org"
-	<virtio-comment@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>, "david.edmondson@oracle.com"
-	<david.edmondson@oracle.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"sburla@marvell.com" <sburla@marvell.com>, "jasowang@redhat.com"
-	<jasowang@redhat.com>, Yishai Hadas <yishaih@nvidia.com>, Maor Gottlieb
-	<maorg@nvidia.com>, Shahaf Shuler <shahafs@nvidia.com>
-Thread-Topic: [PATCH v15] admin: Add group member legacy register access
- commands
-Thread-Index: AQHZtAishc61CLqjq06oop2Od1rEha+3togw
-Date: Thu, 13 Jul 2023 13:44:01 +0000
-Message-ID:
- <PH0PR12MB548114295F2A6A5747B8B626DC37A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230711150135.222793-1-parav@nvidia.com>
-In-Reply-To: <20230711150135.222793-1-parav@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BL3PR12MB6449:EE_
-x-ms-office365-filtering-correlation-id: 63477de7-326d-471e-3bba-08db83a73735
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- e66jTGV1HTdwSV6c31WYcQMtr5yYIYC/gFegd4fac4JexUqeP8Es14lKrkNxXzvog7RTsTOxRTSDFjZWVLHEoD4yqJw/tNpqHPma06FvgAIa6foqD7pHCe5jffFZwiwTcywju0c3HbIQAdr7X/R+uDI0rukkxUA7MKi+DzpsA1YnnV0sEF6KUCXpjyPbUimFAeC3sLEF89ZVhwlRC/pVoMhJMamY9tWP5kFJsRlBWpqxmYSP+baj0ax5T5ytYRpScYPDuNEkZriw0IW6xXsFgqPd7a4z/RoKZWrtFgvRx5XmKCpTOuzv3iwV9KQPyYfTrmBRQJiscW+mtTFwHe6IxF6r2sEqAznK1TuO7JEAesREoMkQwRmDoQYI95xDLHAjkI2gILzk1rbbunDjliQ0jrXjuzmTcjyvPtDiHPeeZUAopdLWe+QxUzWrHsk4L+5BcNiLZVcjXN9A38ZYpsrDlsD17lz97kvfYcrwY5WdIBKGhaz3G9Mmf1I63kM2R5QyAo4Bta5ychiL2YWgMo8oG3SZxYe1kpXBrubmF6P68YPNe/qC/SxMUEq3vXt6sGNBQ2FRcaqv+o7WElzOtalvXPBM1FxUIWRtAbRDQOMqAnJsW3KUTqEPlb6cEMOx9VN3dMkQwaf7xQ595XF62B/sNiUK/IBSc/1BLmjYZ31OZ5o=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(136003)(396003)(39860400002)(366004)(451199021)(7696005)(9686003)(966005)(71200400001)(33656002)(186003)(6506007)(53546011)(83380400001)(38070700005)(86362001)(38100700002)(122000001)(107886003)(55016003)(26005)(4326008)(64756008)(66446008)(76116006)(66946007)(66556008)(66476007)(41300700001)(2906002)(316002)(52536014)(5660300002)(8676002)(8936002)(110136005)(54906003)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?YWllYVBWSzNzQVgrRXZiMWhsOEpXRDE5c1RoZ05VWk91d09Ba0dha2RZZm81?=
- =?utf-8?B?ZzRLaDFSL2hiejE3eExrMFY2TVZUQzJ6Y2JkOGhzMEc5MlczVFpLc09DY0cz?=
- =?utf-8?B?ZmdkV0M0eVRicGV6ZnRXZGFtL2FueXd5aGg5WHRnbGVVN21QL055V2pqeEVT?=
- =?utf-8?B?d1RTbHZad2xreVl4YkRGUmtpWFIyalhzTWJ1b1lHUGhDKzVGNzdHKzNWbHNw?=
- =?utf-8?B?Y0o3endDWTZrOElVWWJWS1dRamMzVE5PTzJGdUM3M2c4a2Y3RGdiNDhmV09v?=
- =?utf-8?B?UUZLNVc5WmVwZGQ1akU2Z2pUaFZwVU5HcUJ0UWJzYmwwWEk3KzBMNEJZRlZp?=
- =?utf-8?B?SDM2aDB6NmxGQzVqakJLZVJJR2tBeUJtWEg0OU9XZ2RMbEZVdWVZdHozdUll?=
- =?utf-8?B?eGVLSkxSQVhGYUx4dlVOakhxL2c5QitNLzRPVUVHanRYTFNZVGIycVFlb3gy?=
- =?utf-8?B?bmY5Sm1VM1czNkROZHF3TlUyMFpWbG1KaE5aMnlRcGJiNzRtS3JGalRjRHFO?=
- =?utf-8?B?aXkvVzBwTjJ1SC8rdHZaQzlxUnUwTEc2aHFRdzRobnFMbWxmdlZoNFhId0xn?=
- =?utf-8?B?UHR2NVZsY2VCODVrZDNOQTNNaWhxeW1MbkNXaENncHBHTUVQbGhZS0p1Rkxs?=
- =?utf-8?B?SkpiN04rSnFvaW5SVnVrVjFoZm9jV1UzbnB0MzlvRERYMkxkVEE0MkRUZ3FW?=
- =?utf-8?B?eTJBbHFXSW1ycHVncHFPRTFnQ1EvZ0h2UGg0TlVnOHgyQU9Edzk5M0FzUFA2?=
- =?utf-8?B?RkIrblNmMHh0WWp4bWdSRHdWSTRNQlBmaVdHTVgwZkZPR1NTeThsSmpYTGh6?=
- =?utf-8?B?QnN2VndtY1YyUm1lcExOT1U2dkhmNDd5Wmo2SE1iVU5uYnY1UXl2Tnc5R1dr?=
- =?utf-8?B?QmxaRHM5SEZkVzNsQWlCMlZLUnVaYTJqUjFBMS9KQ1BuMmtwVkZidmE2YWFk?=
- =?utf-8?B?UjFPcWYwUTdVRDRJRWVIK2VPMHQ1Z01pU2pXWW5sTlA0Zi8yOXdzemFKczBy?=
- =?utf-8?B?VUJtMWY3MkpuZDdtYjhwcC82MWJZOWUra0NNNmxmNC9HRER1RkxWa3o0clYx?=
- =?utf-8?B?VW03ZDM2c0pIZGJtZDBpVFBNK09WbkU4aVg3RU5nY1htNTVEdkVVVWp1QTBk?=
- =?utf-8?B?THZxQzRVd01WWTYyNTlyRnhDWnRZdGlJT0wwV2h3a0tDOUliRE1CZlNtWXRj?=
- =?utf-8?B?VHkrazJwRXdvazdiRi9tcGdJUTFrK1o2VUdGa3pVRlRDdVoxU1FqOHBxY0wx?=
- =?utf-8?B?clZwVmFjWHdqZ1V2blQ5MHlJbjFvcWNuclJTTWwvejFGTU83eGdSdVAwT2Nz?=
- =?utf-8?B?ZGszVG5JUHpMVDVvOGEwMURHUnpmaWVsRGsyaG5ab1FBUUtIVW8zMnNTYzRi?=
- =?utf-8?B?OXlMUXp6R1Q2ZE1FYm8weEl5aGxCc0FiQTl2MVdaNDVMNjBaQ25sb3V2UjJW?=
- =?utf-8?B?UWcxUWlYVmY0VjNkWVV5TnFvZ21FazhLYUYvWS9kOGsyS1Rrb0d2bVNZZ3ZI?=
- =?utf-8?B?TUYyeUlUaXVsY2hTcTJzT2xpY2MyLzBtYlFOUGFhdzhDQ0dGWmxXc1FZeElr?=
- =?utf-8?B?UlZ1RW56VCt0Mm10VHdUT21EaThubE53U1BoWnpDckF0RVh2SWc3TlVqOUhl?=
- =?utf-8?B?NHpXY2phcERxL2JOdGV6ek82ai85UlBUL3h4MEFHam9ESDk3SkdjT21FQU5F?=
- =?utf-8?B?ai9NdkhOb1E5aXlkYzFLdzNpdmFtVU5XZjdHTmRveDlUS293djZGNDJEc0Iz?=
- =?utf-8?B?YXlBVzV6RXZBVEpPdFlRc2tNUUV2Q2VYSEMyenVjN04raWtyTEx2SVJsMzVS?=
- =?utf-8?B?U0JHU2xJaVFMczd6RGFqUUs1enkzbUdubGd4Tk5DbEd0VkZycjNCUGtySVFL?=
- =?utf-8?B?MEhCNzVFUFZrSDJWUVBqcWx3QWMwV2hTaXlJOVlPTHpzOWowNW5WMXZqTjAr?=
- =?utf-8?B?eXY2TWlpbUVodjZRZkl0MFNJbmdmQTN0bVE5UVVnemxqTjlheXJEdGxuMzls?=
- =?utf-8?B?aXlXS3NPMEEzQmttT01IQitVZWc0RytWaWxTWmVWdTNoRm9FTHA5aFZUUU5y?=
- =?utf-8?B?UUw0VWlhVmZBSEtBSXJJUmhCZGd5WXFxd2dsTWIycHp5akorenRhVjNacmRS?=
- =?utf-8?Q?4NXU=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <e778aec9-5401-d11d-9363-f8ac2436ad76@quicinc.com>
+Date: Mon, 17 Jul 2023 22:53:41 +0800
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 63477de7-326d-471e-3bba-08db83a73735
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2023 13:44:01.1706
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tdde705ptTtXuCe7kF7RGJW+5oxr6lyTZpiqcFlKDQzlN0+R9X1XeWNTjXz1sVSjHvQo2s9dUdzUexWOC2RlZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6449
-Subject: [virtio-dev] RE: [PATCH v15] admin: Add group member legacy register access
- commands
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Content-Language: en-US
+To: Jonathon Reinhart <jrreinhart@google.com>
+CC: Cornelia Huck <cohuck@redhat.com>, <quic_ztu@quicinc.com>,
+        <virtio-dev@lists.oasis-open.org>,
+        <virtio-comment@lists.oasis-open.org>
+References: <000000000000925c1305ff1f7c76@google.com>
+ <fd2e0d5d-a3e9-027a-bec1-d0e821ec6421@quicinc.com>
+ <CAJJa5HxA6T+xv--80aWEtGWNx=a-yfNXwNsnyz3s8praHqg6Ew@mail.gmail.com>
+ <46ab6180-c639-6da4-d6c3-dc8b87345de9@quicinc.com>
+ <CAJJa5HwV76co8n4WeeL-mcMwwL9sKVWz_Ejiv-EMWgemsGGS3w@mail.gmail.com>
+From: Haixu Cui <quic_haixcui@quicinc.com>
+In-Reply-To: <CAJJa5HwV76co8n4WeeL-mcMwwL9sKVWz_Ejiv-EMWgemsGGS3w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 15o0Vi7MLedMg8p2Aty2liXkWXL-DbKi
+X-Proofpoint-GUID: 15o0Vi7MLedMg8p2Aty2liXkWXL-DbKi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-17_11,2023-07-13_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
+ suspectscore=0 bulkscore=0 mlxscore=0 adultscore=0 spamscore=0
+ impostorscore=0 phishscore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2306200000 definitions=main-2307170136
+Subject: Re: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
 
-SGkgTWljaGFlbCwgQ29ybmVsaWEsDQoNCj4gRnJvbTogUGFyYXYgUGFuZGl0IDxwYXJhdkBudmlk
-aWEuY29tPg0KPiBTZW50OiBUdWVzZGF5LCBKdWx5IDExLCAyMDIzIDExOjAyIEFNDQo+IFRvOiB2
-aXJ0aW8tY29tbWVudEBsaXN0cy5vYXNpcy1vcGVuLm9yZzsgbXN0QHJlZGhhdC5jb207DQo+IGNv
-aHVja0ByZWRoYXQuY29tOyBkYXZpZC5lZG1vbmRzb25Ab3JhY2xlLmNvbQ0KDQpbLi5dDQoNCj4g
-Rml4ZXM6IGh0dHBzOi8vZ2l0aHViLmNvbS9vYXNpcy10Y3MvdmlydGlvLXNwZWMvaXNzdWVzLzE2
-Nw0KPiBTaWduZWQtb2ZmLWJ5OiBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+DQo+IFNp
-Z25lZC1vZmYtYnk6IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+DQo+IC0tLQ0K
-PiBjaGFuZ2Vsb2c6DQo+IHYxNC0+djE1Og0KPiAtIGFkZHJlc3NlZCBiZWxvdyBlZGl0b3JpYWwg
-Y29tbWVudHMgZnJvbSBNaWNoYWVsDQo+IC0gcmVwbGFjZWQgJ2lzJyB3aXRoICdhcmUnIGZvciBj
-b21tYW5kIGRlc2NyaXB0aW9uDQo+IC0gc2ltcGxpZmllZCB3b3JkaW5nIGFyb3VuZCBpZ25vcmUg
-YW5kIHNraXAgdG8ganVzdCB1c2UgaWdub3JlDQo+IC0gdG8gLT4gaW4gcHJlZmVyZW5jZSB0bw0K
-PiAtIHNtYWxsIHJld29yZGluZyBmb3IgZmxhZ3MgZGVzY3JpcHRpb24NCj4gdjEzLT52MTQ6DQo+
-IC0gYWRkcmVzc2VkIGJlbG93IGNvbW1lbnRzIGZyb20gTWljaGFlbA0KPiAtIHJld29yZGVkIEJB
-UiAxIHRvIDUgdGV4dCBhc19pcyBzdWdnZXN0ZWQgYnkgTWljaGFlbA0KPiAtIGFkZGVkIHRleHQg
-Zm9yIHNraXBwaW5nIGludmFsaWQgZW50cmllcw0KPiAtIHJlcGxhY2VkICdjb250YWlucycgd2l0
-aCAnY29udGFpbicNCj4gLSByZW1vdmVkICdyZWxhdGVkIHRvIHRoZSBiYXNlIGFkZHJlc3MgYXNz
-b2NpYXRlZCcNCj4gLSBhZGRyZXNzZWQgY29tbWVudHMgZnJvbSBDb3JuZWxpYQ0KPiAtIGFkZGVk
-IGFydGljbGUgdGhlIGF0IG1hbnkgcGxhY2VzDQo+IC0gcmVwbGFjZWQgZG9lcyBub3QgdG8gZG8g
-bm90DQo+IC0gcmV3b3JkZWQgdGhlIGRyaXZlciBub3JtYXRpdmUgZm9yIGZsYWdzIHBhcnNpbmcN
-Cj4gdjEyLT52MTM6DQo+IC0gYWRkZWQgYXJ0aWNsZQ0KPiAtIGFkZCBoeXBoZW4gYmV0d2VlbiBs
-aXR0bGUgYW5kIGVuZGlhbg0KPiAtIG1lbnRpb25lZCB2cSBpbmRleCBkZXB0aCBvZiAxNi1iaXQN
-Cj4gLSByZXdyb3RlIGFsdGVybmF0aXZlIGFwcHJvYWNoIGxpbmUNCj4gLSBtZW50aW9uIHZxIGlu
-ZGV4LCBsZW5ndGggYW5kIGVuZGlhbm5lc3MgaW4gbW1pbyBkZXNjcmlwdGlvbg0KPiAtIGZpeGVk
-IHBhZGRpbmcgYnl0ZXMgc2l6ZSBmcm9tIDcgdG8gNiBieXRlcw0KPiAtIHJld3JvdGUgYmFyIGZp
-ZWxkIGRlc2NyaXB0aW9uDQo+IC0gb2Zmc2V0IGFsaWdubWVudCB0ZXh0IGFkZGVkDQo+IC0gYWRk
-ZWQgdGV4dCB0byBpZ25vcmUgcmVzZXJ2ZWQgbm90aWZpY2F0aW9uIGVudHJpZXMNCj4gLSBkZXZp
-Y2UgYW5kIGRyaXZlciBjb25mb3JtYW5jZSBsaW5lcyBhZGRlZCBmb3Igbm90aWZpY2F0aW9uIGlu
-Zm8gY29tbWFuZA0KPiBmaWVsZHMNCj4gLSBkcm9wcGVkIGdyb3VwIG1lbWJlciBwcmVmaXggdG8g
-dGhlIGRyaXZlcg0KPiAtIHJld29yZGVkIHRleHQgZm9yIGZsYWdzIHJlcXVpcmVtZW50cw0KPiAt
-IHJld29yZGVkIHRvIHNheSBhbGwgZHJpdmVyIG5vdGlmaWNhdGlvbnMgaW4gY29uZm9ybWFuY2UN
-Cj4gLSBpdGVtaXplIGNvbmZvcm1hbmNlIHNlY3Rpb24gdW5kZXIgY29tbWFuZCB0byBlYXNlIHJl
-YWRpbmcNCj4gdjExLT52MTI6DQo+IC0gYWRkZWQgbWlzc2luZyBhcnRpY2xlIHRoZSBhdCBmZXcg
-cGxhY2VzDQo+IC0gcmV3cm90ZSBncm91cF9tZW1iZXJfaWQgc3RhdGVtZW50cyBsaWtlIG90aGVy
-IGV4aXN0aW5nDQo+ICAgY29tbWFuZHMgd2hpY2ggaXMgY2xlYW5lciBhbmQgc2hvcnRlcg0KPiAt
-IGFkZGVkIGxlbmd0aCBhbmQgYWxpZ25tZW50IGxpbmVzIHRvIG11bHRpcGxlIGNvbW1hbmRzDQo+
-IC0gcmV3cm90ZSBmYXN0IHBhdGggdG8gc2VwYXJhdGUgZGVkaWNhdGVkIG1lY2hhbmlzbQ0KPiAt
-IHJld3JvdGUgZXhhbXBsZSBhbmQgZGVzY3JpcHRpb24gcGFyYSBmb3IgbGVnYWN5IG5vdGlmaWNh
-dGlvbiBjb21tYW5kDQo+IC0gbWFkZSBzZXBhcmF0ZSBwYXJhZ3JhcGggZm9yIHRoZSBub3RpZnkg
-aW5mbyBjb21tYW5kDQo+IC0gZHJvcHBlZCBjaXRhdGlvbiB0byB2aXJ0aW8gcGNpIGNhcGFiaWxp
-dGllcyBmb3IgbWVtYmVyIGRldmljZQ0KPiAtIG5vdGlmaWNhdGlvbiByZWdpb24gY2hhbmdlZCB0
-byBub3RpZmljYXRpb24gYWRkcmVzcyB0aHJvdWdob3V0DQo+IC0gYWRkZWQgZGVzY3JpcHRpb24g
-dG8gYWxsIHRoZSBmaWVsZHMgb2YgdGhlIGluZm8gc3RydWN0DQo+IC0gYXZvaWRlZCB1bmlvbiBp
-biBzcGlyaXQgb2Yga2VlcGluZyBhbGwgZm9yIHBjaQ0KPiAtIHVzZWQgc2luZ2xlIGxpc3RpbmcN
-Cj4gLSBtb3ZlZCBkZXNjcmlwdGlvbiB0byBlbmQgd2hpY2ggd2FzIGluIGJldHdlZW4gdHdvIHN0
-cnVjdHMNCj4gLSBhZGRlZCA0IGVudHJ5IGFuZCBwcmVmZXJlbmNlIGRlc2NyaXB0aW9uDQo+IC0g
-YWRkZWQgY29uZm9ybWFuY2UgbGluZSBmb3Igbm90aWZpY2F0aW9uIHZpYSBtbWlvIHdvcmtzIHNh
-bWUgd2F5IGFzDQo+ICAgYWRtaW4gY29tbWFuZA0KPiB2MTAtPnYxMToNCj4gLSByZXBsYWNlZCB0
-YWIgd2l0aCB3aGl0ZSBzcGFjZXMgaW4gcmVhZCBzdHJ1Y3R1cmUNCj4gLSBpbmNsdWRlZCBwY2kg
-ZmllbGRzIGFsb25nIHNpZGUgb3RoZXIgZ2VuZXJpYyBmaWVsZHMgdG8gYXZvaWQNCj4gICBpbmRp
-cmVjdGlvbg0KPiAtIG1lcmdlZCBwY2kgY29uZm9ybWFuY2Ugc2VjdGlvbg0KPiAtIGF2b2lkIHVz
-aW5nIGRlZmluaXRlIGluIHN0YXJ0aW5nIGludHJvZHVjdGlvbg0KPiAtIHJlcGxhY2UgJ2FsbCBv
-ZiB0aGUnIHdpdGggJ2FueSBvZiB0aGUnDQo+IC0gY2hhbmdlZCBkcml2ZXJzIG5vdGlmaWNhdGlv
-biBub3JtYXRpdmUgdG8gaW5kaWNhdGUgdXNlIG9mDQo+ICAgTk9USUZZX0lORk8gY29tbWFuZA0K
-PiAtIHJlbmFtZWQgTk9USUZZX1FVRVJZIHRvIE5PVElGWV9JTkZPIG5hbWUNCj4gLSBtZXJnZWQg
-NHRoIHBhdGNoIHdpdGggM3JkDQo+IC0gYWRkZWQgbm9ybWF0aXZlIGxpbmUgZm9yIG5vdGlmeV9p
-bmZvIGNvbW1hbmQNCj4gLSByZXdvcmRlZCBub3RpZmljYXRpb24gcmVnaW9uIGNvbW1hbmQgZGVz
-Y3JpcHRpb24gdG8gYmUgbW9yZSB2ZXJib3NlDQo+IC0gbWVyZ2VkIGZsYWdzIGFuZCBvd25lciBm
-aWVsZCB0byBpbmRpY2F0ZSBlbmQgb2YgbGlzdA0KDQpOb3cgdGhhdCBsYXN0IGZldyBpdGVyYXRp
-b25zIGhhbmRsZWQgYWxsIHRoZSBzdWdnZXN0ZWQgZWRpdHMsDQpDYW4geW91IHBsZWFzZSBzdGFy
-dCB0aGUgdm90aW5nIGZvciBpdD8NCg0KaHR0cHM6Ly9naXRodWIuY29tL29hc2lzLXRjcy92aXJ0
-aW8tc3BlYy9pc3N1ZXMvMTY3DQo=
+Hi Jonathon Reinhart,
+     Thank you very much for your comments.
+
+On 7/11/2023 12:42 AM, Jonathon Reinhart wrote:
+> On Fri, Jul 7, 2023 at 3:21 AM Haixu Cui <quic_haixcui@quicinc.com> wrote:
+>>
+>> Hi Jonathon Reinhart,
+>>
+>>       Thank you so much for all your helpful advice and info!
+>>
+>>       I took a look at latest Linux SPI driver and found, for
+>> cs_setup/cs_hold/cs_inactive set in device-tree, there are following two
+>> conditions:
+>>       1) if SPI controller supports CS timing configuration and CS is not
+>> using a GPIO line, then the SPI driver set the
+>> cs_setup/cs_hold/ca_inactive values into the corresponding SPI CS registers;
+>>       2) if CS is using a GPIO line, or SPI controller doesn't support CS
+>> timing configuration, it is the software to perform the
+>> cs_setup/cs_hold/cs_inactive delays, which is implemented in function
+>> spi_set_cs in driver/spi/spi.c.
+>>
+>>       So I agree it is necessary to pass cs_setup/cs_hold/cs_inactive to
+>> the host for each transfer.
+>>
+>>       For condition 1, host should set these values into the CS timing
+>> registers. And as you mentioned "one might require different CS
+>> setup/hold times, depending on which slave_id they are talking to (on
+>> the same bus)", if so, host need to overwrite the CS timing registers
+>> between the two transfers talking to different salve_id.
+>>
+>>       For condition 2, SPI driver running in the host performing the
+>> cs_setup/cs_hold/cs_inactive delays seems more accurate, compared with
+>> performing delays in guest.
+>>
+>>
+>>       And the latest virtio spi transfer structure is defined as follows:
+>>
+>>        struct spi_transfer_head {
+>>           u8 slave_id;
+>>           u8 bits_per_word;
+>>           u8 cs_change;
+>>           u8 tx_nbits;
+>>          u8 rx_nbits;
+>>          u8 reserved[3];
+>>           u32 mode;
+>>           u32 freq;
+>>           u32 word_delay_ns;
+>>           u32 delay_ns;
+>>           u32 cs_change_delay_ns;
+>>           u32 cs_setup_ns;
+>>           u32 cs_hold_ns;
+>>           u32 cs_inactive_ns;
+>>        };
+>>
+> 
+> Hello Haixu Cui,
+> 
+> I think there may be some unnecessary redundancy in these fields. See below.
+> 
+>>        @slave_id: chipselect index the SPI transfer used
+>>        @bits_per_word: the number of bits in each SPI transfer word
+>>        @cs_change: True to deselect device before starting the next transfer
+>>        @tx_nbits: number of bits used for writing
+>>        @rx_nbits: number of bits used for reading
+>>        @reserved: reserved for future use
+>>        @mode: the spi mode defines how data is clocked out and in
+>>        @freq: transfer speed
+>>        @word_delay_ns: delay to be inserted between consecutive words of
+>> a transfer, in ns unit
+>>        @cs_setup_ns: delay to be introduced by the controller after CS is
+>> asserted, in ns unit
+> 
+> (I am reordering these in my quoted text to be grouped appropriately.)
+> 
+>>        @delay_ns: delay to be introduced after this transfer before
+>> (optionally) changing the chipselect status, in ns unit
+>>        @cs_hold_ns: delay to be introduced by the controller before CS is
+>> deasserted, in ns unit
+> 
+> Aren't @delay_ns and @cs_hold_ns specifying the same thing?
+
+I think they are not the same thing, delay_ns is the spi transfer 
+property while cs_hold_ns is the spi device property， although they take 
+effect at the same stage.
+
+I list 4 conditions, here transfer cs delay including 
+spi_transfer->delay and spi_transfer->cs_change_delay, and device cs 
+delay including spi_device->cs_hold, spi_device->cs_setup and 
+spi_device->cs_inactive.
+
+condition 1:
+     virtio-spi controller only has transfer_one interface but no 
+transfer_one_message interface, and spi_transfer_one_message is the 
+default transfer_one_message interface of virtio-spi controller.
+     Hardware SPI controller doesn't support CS timing configuration.
+
+     In this case, both transfer cs delay and device cs delay are 
+executed by software in spi_transfer_one_message function in guest Linux 
+OS. So guest doesn't need pass these cs timing parameters to host.
+
+condition 2:
+     virtio-spi controller only has transfer_one interface but no 
+transfer_one_message interface, and spi_transfer_one_message is the 
+default transfer_one_message interface of virtio-spi controller.
+     Hardware SPI controller supports device CS timing configuration, 
+which means it has registers to hold these configuration values.
+
+     In this case, transfer cs delay is executed in 
+spi_transfer_one_message function, and guest need pass device cs delay 
+to host. Because one SPI number may have more than one slave, these 
+slaves also may have different device cs delay values, so for each 
+transfer, guest should pass device cs delay along with the slave_id to 
+host to overwrite the corresponding registers.
+
+condition 3:
+     virtio-spi controller has transfer_one_message interface but no 
+transfer_one interface.
+     Hardware SPI controller doesn't support CS timing configuration.
+
+     In this case, host SPI driver should implement all cs delay 
+operations with the transfer cs delay and device cs delay received from 
+the guest.
+
+condition 4:
+     virtio-spi controller has transfer_one_message interface but no 
+transfer_one interface.
+     Hardware SPI controller supports CS timing configuration.
+
+     In this case, guest pass transfer cs delay and device cs delay to 
+guest, and guest SPI driver should implement logic to execute transfer 
+cs delay then overwrite the corresponding register with the device cs 
+delay values.
+
+Except for condition 1, in other three conditions, guest should pass 
+both transfer cs delay and device cs delay to host.
+
+Best Regards
+Haixu Cui
+
+> 
+> Linux spi_transfer defines @delay as:
+>      delay to be introduced after this transfer before
+>      (optionally) changing the chipselect status, then starting the
+>      next transfer or completing this spi_message.
+> 
+> ...and spi_device @cs_hold as: delay to be introduced by the
+>      controller before CS is deasserted.
+> 
+> (This is the period labeled "D" in my diagram.)
+> 
+> I guess the only difference is if you have a series of transfers, where
+> only the last transfer has @cs_change=true, and all preceding messages
+> have @cs_change=false. In this case, @delay_ns would apply between each
+> transfer, and after the last transfer @delay_ns + @cs_hold would apply
+> before CS is deasserted:
+> 
+>      Transfer[0] (cs_change=false)
+>      delay(@delay_ns)
+>      Transfer[1] (cs_change=false)
+>      delay(@delay_ns)
+>      Transfer[3] (cs_change=true)
+>      delay(@delay_ns) + delay(@cs_hold_ns)
+>      CS deasserted
+> 
+> 
+>>        @cs_change_delay_ns: delay between cs deassert and assert when
+>> cs_change is set, in ns unit
+>>        @cs_inactive_ns: delay to be introduced by the controller after CS
+>> is deasserted, in ns unit
+> 
+> Similarly, aren't @cs_change_delay_ns and @cs_inactive_ns applied at the
+> same point in the cycle?
+> 
+> (This is the period labeled "E" in my diagram.)
+> 
+> Linux spi_device defines @cs_inactive as: delay to be introduced by the
+>      controller after CS is deasserted. If @cs_change_delay is used from
+>      @spi_transfer, then the two delays will be added up.
+> 
+> ...and spi_transfer defines @cs_change_delay as: delay between cs
+>      deassert and assert when @cs_change is set and @spi_transfer is not
+>      the last in @spi_message.
+> 
+> It even says they will be added up.
+> 
+> The only difference seems to be that @cs_change_delay applies only when
+> the transfer is not the last in a list (spi_message, which we don't have
+> here.)
+> 
+>      CS asserted
+>      Transfer[0] (cs_change=true)
+>      CS deasserted
+>      delay(@cs_inactive) + delay(@cs_change_delay)
+>      CS asserted
+>      Transfer[1] (cs_change=true)
+>      CS deasserted
+>      delay(@cs_inactive)
+> 
+> 
+> In both cases of redundancy above, the difference in semantics between
+> the spi_device and spi_transfer only seem to apply when a series of
+> transfers (spi_message or SPI_IOC_MESSAGE) are involved. Since (AFAICT)
+> you aren't proposing that construct here, maybe the separate fields are
+> not necessary? IOW, maybe @delay_ns and @cs_change_delay can be
+> eliminated?
+> 
+> Please let me know if I've misunderstood anything.
+> 
+> Jonathon
+> 
+>>
+>>       Could you please help check if this new structure contains enough
+>> information. Really appreciate for kind help.
+>>
+>> Best Regards
+>> Haixu Cui
+>>
+>> On 7/1/2023 5:59 AM, Jonathon Reinhart wrote:
+>>>> Hi @jrreinhart@google.com,
+>>>>        Thank you very much for your helpful comments.
+>>>>
+>>>>        I missed the delay and cs_change_delay parameters. I will add both
+>>>> of them, although cs_change_delay can not be set from userspace, but can
+>>>> be set in kernel space.
+>>>>
+>>>>
+>>>>        For CS delays such as PRE_DELAY/POST_DELAY, it seems that they are
+>>>> defined in structure spi_device:
+>>>>
+>>>>        @cs_setup: delay to be introduced by the controller after CS is
+>>>> asserted.
+>>>>
+>>>>        @cs_hold: delay to be introduced by the controller before CS is
+>>>> deasserted.
+>>>>
+>>>>        @cs_inactive: delay to be introduced by the controller after CS is
+>>>> deasserted. If @cs_change_delay is used from @spi_transfer, then the
+>>>> two delays will be added up.
+>>>>
+>>>>        They show the SPI controller ability to control the CS
+>>>> assertion/deassertion timing and should not be changed for each transfer
+>>>> (because thay can be updated by setting structure spi_transfer or
+>>>> structure spi_ioc_transfer). I think it better to define these parameter
+>>>> in host OS rather than in guest OS since it's the host OS to operate the
+>>>> hardware SPI controller directly. Besides, it can also avoid passing the
+>>>> same values from guest to host time after time.
+>>>>
+>>>>        What's your opinion on this topic? Again, thank you very much.
+>>>
+>>> Hi Haixu,
+>>>
+>>> I took another look at the Linux structures and attempted to map up the
+>>> delay parameters to the various points in a SPI sequence. Please correct
+>>> me if I'm wrong about any of this.
+>>>
+>>> Consider this diagram where CS# is an active-low chip select, and SCLK
+>>> is the serial clock:
+>>>
+>>>         ___.                                                   ._____.
+>>>     CS#    |___________________________________________________|     |___
+>>>            .                                                   .     .
+>>>            .                                                   .     .
+>>>    SCLK ________NNNN___NNNN___NNNN_______NNNN___NNNN___NNNN______________
+>>>            .   .    . .           .     .                  .   .     .
+>>> Delays:  +-A-+    +B+           +--C--+                  +-D-+--E--+
+>>>            .   .    . .           .     .                  .   .     .
+>>>            0   1    2 3           4     5                  6   7     8
+>>>            .   .    .             .     .                  .   .
+>>> Terms:   .   +Word+             .     .                  .   .
+>>>            .   .                  .     .                  .   .
+>>>            .   +-------Frame------+     +-------Frame------+   .
+>>>            .                                                   .
+>>>            +-----------------Transfer--------------------------+
+>>>
+>>> Using NXP terminology:
+>>>
+>>>     From 1 to 2 is a "word"     (with e.g. 8 bits).
+>>>     From 1 to 4 is a "frame"    (with 3 words).
+>>>     From 1 to 6 is a "transfer" (with 3 frames).
+>>>
+>>> Linux does not have the concept of a frame, only a series of transfers
+>>> (a spi_message), each of which can specify whether CS changes or not.
+>>>
+>>> I've identified these various timing points and attempted to match them
+>>> to the Linux spi_device and spi_transfer parameters:
+>>>
+>>> A - CS Setup: Delay after CS asserted before clock starts.
+>>>       spi_device.cs_setup
+>>>
+>>> B - Word Delay: Delay between words.
+>>>       spi_transfer.word_delay
+>>>
+>>> C - Frame Delay: Delay between frames.
+>>>       (Linux does not have the concept of a SPI "frame".)
+>>>
+>>> D - CS Hold: Delay after clock stops, and before CS deasserted.
+>>>       spi_device.cs_hold (+ spi_transfer.delay ??)
+>>>
+>>> E - CS Inactive: Delay after CS deasserted, before asserting again.
+>>>       spi_device.cs_inactive + spi_transfer.cs_change_delay
+>>>
+>>>
+>>> While I agree with you that some of these timings are unlikely to change
+>>> from transfer-to-transfer, the subset of which should be specified
+>>> at the device level vs. per-transfer seems somewhat arbitrary. As you
+>>> can see there is some overlap between them.
+>>>
+>>> If I understand correctly, it appears that the CS hold time *can* be
+>>> controlled on a per-transfer bases, using spi_transfer.delay
+>>> ("after this transfer before changing the chipselect status").
+>>>
+>>> That leaves CS setup as the only parameter that cannot be influenced on
+>>> a per-transfer basis.
+>>>
+>>> Theoretically, one might require different CS setup/hold times,
+>>> depending on which slave_id they are talking to (on the same bus).
+>>> In that case, one must set those spi_device parameters to the worst-case
+>>> (maximum) values. However, this is already a Linux limitation, so I'm
+>>> not sure it needs to be improved here.
+>>>
+>>> I think you've achieved parity with what the Linux kernel API allows,
+>>> and that's probably good enough. As you said, anything else can be
+>>> adjusted in the host OS -- I'm not sure how the guest would go about
+>>> achieving that, though. You're not proposing the use of configuration
+>>> space for virtio-spi, are you?
+>>>
+>>> Regards,
+>>> Jonathon Reinhart
+>>>
+>>>
+>>>>
+>>>> Best Regards
+>>>> Haixu Cui
+>>>>
+>>>> On 6/28/2023 1:06 AM, jrreinhart@google.com wrote:
+>>>>> Hi Haixu,
+>>>>>
+>>>>>> +The \field{word_delay} defines how long to wait between words within
+>>>>>> one SPI transfer,
+>>>>>> +in ns unit.
+>>>>>
+>>>>> I'm a little surprised to see a word_delay but no frame_delay or
+>>>>> transfer_delay.
+>>>>>
+>>>>> For example, many SPI peripherals require a delay after CS is asserted,
+>>>>> but before the first SCLK edge, allowing them to prepare to send data.
+>>>>> (E.g. an ADC might begin taking a sample.)
+>>>>>
+>>>>>
+>>>>> The linux struct spi_transfer has three delay fields:
+>>>>>
+>>>>> * @cs_change_delay: delay between cs deassert and assert when
+>>>>> *      @cs_change is set and @spi_transfer is not the last in
+>>>>> *      @spi_message
+>>>>> * @delay: delay to be introduced after this transfer before
+>>>>> *    (optionally) changing the chipselect status, then starting the
+>>>>> *    next transfer or completing this @spi_message.
+>>>>> * @word_delay: inter word delay to be introduced after each word size
+>>>>> *    (set by bits_per_word) transmission.
+>>>>>
+>>>>> The userspace spidev.h API has only two:
+>>>>>
+>>>>> * @delay_usecs: If nonzero, how long to delay after the last bit
+>>>>> *       transfer before optionally deselecting the device before the
+>>>>> *       next transfer.
+>>>>> * @word_delay_usecs: If nonzero, how long to wait between words within
+>>>>> *       one transfer. This property needs explicit support in the SPI
+>>>>> *       controller, otherwise it is silently ignored.
+>>>>>
+>>>>> The NXP i.MX RT500 SPI (master) controller, for example, has four
+>>>>> configurable delays:
+>>>>>
+>>>>> - PRE_DELAY: After CS assertion, before first SCLK edge.
+>>>>> - POST_DELAY: After a transfer, before CS deassertion.
+>>>>> - FRAME_DELAY: Between frames (which are arbitrarily defined by
+>>>>>      software).
+>>>>> - TRANSFER_DELAY: Minimum CS deassertion time between transfers.
+>>>>>
+>>>>> The NVIDIA Tegra114 SPI controller has:
+>>>>>
+>>>>> - nvidia,cs-setup-clk-count: CS setup timing parameter.
+>>>>> - nvidia,cs-hold-clk-count: CS hold timing parameter.
+>>>>>
+>>>>>
+>>>>> I understand that accurately representing all possible delays might be
+>>>>> difficult or futile, but I'm curious to understand why, of all the
+>>>>> possible delays, inter-word delay was chosen for inclusion.
+>>>>>
+>>>>> In a microcontroller, delays around CS (de)assertion can be customized
+>>>>> by using a GPIO -- rather than the hardware SPI block -- to drive the CS
+>>>>> signal. This way, delays can be inserted where needed. To do so with a
+>>>>> virtualized SPI controller might prove difficult however, as the virtual
+>>>>> channel carrying a CS GPIO signal might not be synchronized to the
+>>>>> channel carrying the SPI data.
+>>>>>
+>>>>> Curious to hear your thoughts.
+>>>>>
+>>>>> Thanks,
+>>>>> Jonathon Reinhart
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
