@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13382-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13383-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0E2CEB64DC
-	for <virtio-dev@archiver.kernel.org>; Mon, 17 Jul 2023 16:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E27CFEB64DC
+	for <virtio-dev@archiver.kernel.org>; Tue, 18 Jul 2023 18:29:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id E8FC842C2E
-	for <virtio-dev@archiver.kernel.org>; Mon, 17 Jul 2023 16:20:28 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B6C5042B1D
+	for <virtio-dev@archiver.kernel.org>; Tue, 18 Jul 2023 18:29:00 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C4948986603
-	for <virtio-dev@archiver.kernel.org>; Mon, 17 Jul 2023 16:20:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 951F098669C
+	for <virtio-dev@archiver.kernel.org>; Tue, 18 Jul 2023 18:29:00 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id A7D85986191; Mon, 17 Jul 2023 16:20:28 +0000 (UTC)
+	id 7837D98668A; Tue, 18 Jul 2023 18:29:00 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,532 +24,369 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3EC4F9865B8
-	for <virtio-dev@lists.oasis-open.org>; Mon, 17 Jul 2023 16:19:59 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6256998668B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 18 Jul 2023 18:29:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689610797; x=1692202797;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vxKkZzCw2WuLi/1NzNBJipGRWCAd6HH+/Lz/1WbjzJ8=;
-        b=ermatJ7EZJxwVWeoOMYUSguOXJULenb8gcpi9kcbxCmZLqTF4DR3/1H5w5DF/9aJYI
-         N/8oshcVOmIQFIoZMLcnmDDW9ajvxEuucAonOUhBlRMaLovW4A+iUTe/7O8jpIGQNpXY
-         oCIfig3LCyjhlBOrnLOfR62tp3zCnHiZw8jjAwYUw8cW0iKId7gD1wrzJrW9ZzRx8wVv
-         W3KAu2KGt8PdlLE1a07R0kR2D/qfP5y3nRCcR5+OQvcnjWLHBQYb9V81pe5kS3DqkMp+
-         R86VwpULhdAv+9h7Lfoj1CQJaEchL/cdjymFIj+IiQjhkqs+T95Gr9VetgQbyqUwWb8Z
-         QdWA==
-X-Gm-Message-State: ABy/qLYVFMindnCmXtqlxrs5/mVTxOib7q61Hy5zyPI6xyYUa5bAmffX
-	vdimtr9EVeyGZ8p2T5oemgTdESD72DJOJKUYV24tog==
-X-Google-Smtp-Source: APBJJlGwvRkO/DTVjy5lhJG6PVII0i3t1wc3ZzRogqmAi5nEmsZLz3YLke1b/CL6pIYs1L6DQ5n+tmRk+qx0I2Iimss=
-X-Received: by 2002:a05:6e02:1bcf:b0:346:5a8b:545e with SMTP id
- x15-20020a056e021bcf00b003465a8b545emr1430434ilv.14.1689610796588; Mon, 17
- Jul 2023 09:19:56 -0700 (PDT)
+X-TM-MAIL-RECEIVED-TIME: 1689704709.056000
+X-TM-MAIL-UUID: 9ce3ee1d-bc9c-4701-be4b-653f5a9e2b2b
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cEgrAoYlHpZ2WGglnqCMiwrx7L8XZ9qkokmqNpO2BNStqADDQ90I/Cf7JU8pfTa9VmBkkaksz92HVQiqoe4o4xHiwtAM1JYRBun0kG7Jjt1jX/sysFE/8zIAg47b+yFL1CcJJXuHd+0vYmMbeIwFoU5jWyr7Frre2Few+PDvzQqctN8jqXTfKFUrrqFdvphmaSMZei3DZkQteLRiXgHaGBVJm1Wyh+B/cad7we8K+Z64NfY74gyztqRMCfO0BE/oJMuJbHX5ViF/rMWSRN5sD/ZOI6XldnI9XEWfVCgFYf9k6JWfdYwJSt/spoGNB0ITlRfbi98sKCZOrPBIGmtvBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QrEx+9xmdNioj4UCKVKYSLrZ8xpQ2HOIMNyQvDvYhFQ=;
+ b=EQwn5ISHbwbqOv58xxYoC+349jCnoN9QN8pfm1BUZPyTxEtGRIp8U/PF50g5asYlPlKL7UxlhnWTTe64sCxnqpaTgP1/WXa5RQ0ZSX2gRNcII6Nrp9wllqQJR5k1vJLcteIGIFcuec4LaJx6FVpVdBHJo/xtucNBJaCHaQ9jcbGf5HTNdgvT9Nivjas3hDgLdueG0cwBW5ecDe9hG2kRmvbf8U+XPBVMGnauGy3QShFcguRtr3jNJYnGwLBb/9ffX7TrHqNQYAS0efqw8evf1fBEpg8/WekQg4AAk7YaWyF8hwVVsvpyS9fCSfq4pOMTqt7fzAbengktrcYLHPRebA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+From: Harald Mommer <harald.mommer@opensynergy.com>
+To: Haixu Cui <quic_haixcui@quicinc.com>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>, "cohuck@redhat.com" <cohuck@redhat.com>
+CC: "quic_ztu@quicinc.com" <quic_ztu@quicinc.com>, Mikhail Golubev-Ciuchea
+	<Mikhail.Golubev-Ciuchea@opensynergy.com>
+Thread-Topic: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
+Thread-Index: Adm5pS2hSk+d7ke9D0ayBELxYEtDdg==
+Date: Tue, 18 Jul 2023 18:25:07 +0000
+Message-ID: <ae8892c5-5eb2-72c9-9b74-cde7162094a2@opensynergy.com>
+References: <20230417140353.870-1-quic_haixcui@quicinc.com>
+ <20230417140353.870-3-quic_haixcui@quicinc.com>
+In-Reply-To: <20230417140353.870-3-quic_haixcui@quicinc.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+x-clientproxiedby: FR3P281CA0159.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a2::19) To BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:4a::9)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BE1P281MB3400:EE_|BEZP281MB2104:EE_
+x-ms-office365-filtering-correlation-id: e5bf2cea-3993-45fc-ed8f-08db87bc5025
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ W2Y0d5rd2ARVfc5mygFPD+1r1mvopL8eTwRdXRE8M5BxIIkLS5KC0bx2+1ob5aOfyck+wymRiuHLtSZog3Ggq9i0nJ1Y0InMJhm/XEEPV9dd5AhyeOonNaj0WpNFoeCVP1fCo9vq30fbq5ev1RLgUSxIgHmssXuq+rchUcVXdNrozE5xhRp5RtKezKOhaMDCEzHNUpEskSFodc4+rLJOYJX01kotCgD0dXGFqa8qJaqaZKd76ZMqSYxgGN8MzXTT2JdK7HLYm5FcrdEHuutJeLQKgcjnEUIKsfbauV29PzkpV29ct/CScAOZjeiqMlgeqeik0VhPGCxL7NsFLLuC33bjFqU5gNnqY6yHEl9tyYjYse7+I3vLL6Uc3OuOvfTBtLJcw/pH7gGH2iHAn5psTYHFrxvqU+7A5saTcII8Bo9S5gTLUp2mKQ2hxQsMcVJB9MJA8Ne8Ee8JKASet2YVM3MFE0dGT+q/p5y8qz3F6g9t8267kJWCntg1Oq0q5KelR4Vxp94iBBSIFrq4Fh6SWTI9Ei1bBUnUnaZlkLindPiWNOuLrtmatSSOVrzGpnSPMFYv+mamBm/TdWGMYBkWR+m7G+fKj8r4L+/GDICTBAIuVl5i/eqolpWRJ1SVeBD4Z8uMu1pBH+I2I18UCeJ4vPdHI9ZaKBPWOr98LJXefLk=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(136003)(396003)(366004)(376002)(39840400004)(346002)(451199021)(53546011)(26005)(107886003)(54906003)(110136005)(36756003)(38100700002)(31696002)(122000001)(44832011)(5660300002)(30864003)(2906002)(4326008)(42186006)(316002)(8936002)(64756008)(66446008)(66476007)(66556008)(66946007)(8676002)(41300700001)(86362001)(71200400001)(478600001)(2616005)(31686004)(83380400001)(186003)(21314003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?VDJQNTBJY2VOL0J1TjdlOHZpVldCenVLSkVxanBlVGNXUVQ2RVdjRUxPVGp6?=
+ =?utf-8?B?UWRvQUdNRW4xMS9hbjVNbXZIRWlNZ2VJNnFmakVQVyt5QVR5UnZLRmswT2xn?=
+ =?utf-8?B?VzhnT1h3dHRTR1dvU1B0ZUtUSGdyOXI2TGloT05kc3JZbVROME9YWWxNeGc3?=
+ =?utf-8?B?TitTV1dYWGZVczJ2QkJmUVpxYmRzdGZwREl2QWE2R01uTW5ZU0ZPTUhmOEVN?=
+ =?utf-8?B?S0FUSTVkdTYvbGhwc3N2eXpSVUNwUTg1YThQVlJKekxsa3pnNUd5dGFpUzJp?=
+ =?utf-8?B?VU96elQrM1cvVEZTUS9hR1o1SUVPbG9vYjdnbVpPb09PV1BlL1A1STUzeU1k?=
+ =?utf-8?B?SjhHaHU1NjZtQ1JmNm83am10NUhQRlNYdW9wSDZ0QjN2MWVvOWZ6V1VaL3g2?=
+ =?utf-8?B?MDhybEI5cGxVUStESEFsOTdtK1hzejd4QUFrdTl3cWRaaGpTWGRSY2ZQZGNm?=
+ =?utf-8?B?aEFSNWNzOFZ4RTNPbWEvOXZYMlVtOG90bVlBN1BRMWtrdXZWOC9oSXhsRVJ0?=
+ =?utf-8?B?VGNOV1g5Q2VwaitLRHgzRm1WRG9EUFJqelVQd3ppdTVHNGdQWjk5NVhnV2pE?=
+ =?utf-8?B?QVB3UlpLdlU4ekxDS0k1aGQ2Z0xsVGdFanBSdTBPenM4Mmg5V3NNVy9qRzFl?=
+ =?utf-8?B?cmpic0J5aVhXTjBEbUpneHptVnF6NHpUY2FqNEVUNVBFTmdrR3ZXYndSNFpO?=
+ =?utf-8?B?ODRSY1hGaVYwNmlUdmszcXZjOEVlUm05cmFsWHpyK2pZVStFMG44M3NaVVZF?=
+ =?utf-8?B?c2VPS2N3TDdqZlVkRnpMdjh0bTduaU9DT0hQaTQrb1lSOFg2ZXV2RmZjL3Vn?=
+ =?utf-8?B?Q1dXOTZjUnRXZ21sMDQ5cHhEQzNvblBpeHJqWGtHRW9nc0xQT0wwUVJqZHVR?=
+ =?utf-8?B?STU1WU1mTzlVOTl5enhpeDRjM3cyMEtSekZDRmFRT3ZzLzJpc2c0NmtYb2FL?=
+ =?utf-8?B?TTZrWWlYRVAyamVma3UvcEU5Zk80akM3c2p0TytsSWh3VnpzaDQ4Lzc5anZS?=
+ =?utf-8?B?N3NSVlNBWWZIalNzZFUzeU1EajB1akZHVDl0Sk80RkZFd3JkcHl2WW9uVy84?=
+ =?utf-8?B?eTNNNXFSRGRFYzFscUVzemxHTTNsbURsR0EzT2lpTEZ1cDhuVFpTOWp6aDVi?=
+ =?utf-8?B?emJ2NXl1ZXhwcGM2MWRLa3ZwdG9VZ29zTDRSY1luc0RtcEhaYzJJM0VrMEF2?=
+ =?utf-8?B?Rk1GOXZqaFhkZ2owOU1EaXNkZktLeUxuLzBncEpqTEo5TWZqbU84Qno0ckh0?=
+ =?utf-8?B?VXJFZ2s0VDVuQk5Ob3g3NUc2TkJuY1ZRM0NOUkloc0NQSE9LdW9ESWtJaTBQ?=
+ =?utf-8?B?NmQrNU5ReVNaeS9hZ29OU2Z4YThyM3FQOWsxVmNoODZkdjRRVjlKdFg3blhl?=
+ =?utf-8?B?UnQ4eXdESFg2ZlhvbzlXcVI4WStMN3B6QTRYRE52Y3JNRkNTSU9TbmNWdm1z?=
+ =?utf-8?B?eGh4YW5Na2srTlNOUkgwN3Zkd1hVbmhzc1hPSHppQnZXVEhOOVE1Q0hKbXZy?=
+ =?utf-8?B?dEh4bHZ6UHQ3czVoZGFpRGhSeVhJZG9qRlJxMXQ2ZWtOekoxb211UTVGd0Z1?=
+ =?utf-8?B?Tloxb2pzQjN3ZldjODFuOVd1SUdEVHZPOFVldkNIUmdQaFhHVWh5ekpjb051?=
+ =?utf-8?B?eVR2Ukx2ZW9lLzVhaUxtdm1tVXIrNXNFcFJ2bWtORnVwQXpCenRTdFZXbU1k?=
+ =?utf-8?B?b2VmeWRYK25XNjJ0UDZsVmh1MXVCRmVRK29WTUJ0bk1wZU55bkN0blRLakxw?=
+ =?utf-8?B?RE5pOExoam5Hc2hZSkVRUnh1cy9wL3FkajdyS3d4UzRodHQ2OHB2dktxSFhT?=
+ =?utf-8?B?SjdFd2lDODFGMjRIQng3UHJ5OFBOL01nRjRXWU1VM1V2VEZ1ZWc5a09XdEtv?=
+ =?utf-8?B?ZEVERU1ITUl4d0ZrcE50ZzhXeVpIQ2JncldhZEI1SXNqd01YR1NWTWtGQUpS?=
+ =?utf-8?B?YzRMekRRaDJDQ3UzT3laQnNvMXQvSWg0Tm43eG5IeXN1bDREbnpFWHc1c1VQ?=
+ =?utf-8?B?MnZjTlk0MjNoVnFoNzVmMXdPblNxa3hwTDdoeTBJT05hWlVLMm5hUHBIM1NN?=
+ =?utf-8?B?VVhqWWFmWkR6UDhhTjN1UktJK0x3NXVwb0x5ZWVJbkRvSWZTbm1IOGpnTWVZ?=
+ =?utf-8?Q?6pnukBBrbirccQkDdKYsc1WfH?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <40BB97693DFAF140B81E1E76C740EB4F@DEUP281.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <000000000000925c1305ff1f7c76@google.com> <fd2e0d5d-a3e9-027a-bec1-d0e821ec6421@quicinc.com>
- <CAJJa5HxA6T+xv--80aWEtGWNx=a-yfNXwNsnyz3s8praHqg6Ew@mail.gmail.com>
- <46ab6180-c639-6da4-d6c3-dc8b87345de9@quicinc.com> <CAJJa5HwV76co8n4WeeL-mcMwwL9sKVWz_Ejiv-EMWgemsGGS3w@mail.gmail.com>
- <e778aec9-5401-d11d-9363-f8ac2436ad76@quicinc.com>
-In-Reply-To: <e778aec9-5401-d11d-9363-f8ac2436ad76@quicinc.com>
-From: Jonathon Reinhart <jrreinhart@google.com>
-Date: Mon, 17 Jul 2023 12:19:45 -0400
-Message-ID: <CAJJa5HxvVFtcjX=PVw5UnAStG=GiDRUkEr_LRbyAmwvfAMTFwA@mail.gmail.com>
-To: Haixu Cui <quic_haixcui@quicinc.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, quic_ztu@quicinc.com, 
-	virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5bf2cea-3993-45fc-ed8f-08db87bc5025
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2023 18:25:07.0886
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: v6GQGT/eY+D+HQb59ELGxlzF4X5Bs8OMDloUg33zeH2trx55d05JMGD/TQFDyDNbCz/KspNk0qHliXQkbpKohA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BEZP281MB2104
+X-TM-AS-ERS: 104.47.11.170-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1011-27760.001
+X-TMASE-Result: 10--37.188300-4.000000
+X-TMASE-MatchedRID: b/1IsOqez6f5ETspAEX/non73EnA6dC3oJ9fUBwJTsw1ppCx/XmLn3+4
+	FZKlZ1QUkb7J4E2ZQTwcekl4M+Meg3xAibVVXcJ+GG92L3YEEC4IyIQE9neGFchGESF2QtYSsgk
+	fnaHAFPzubOjYjWcZRrbB9ArGGOy5iRz4gknBIqBJF1UGj9ejeRqqRtM3sdE1+3snSRm3xiWufs
+	SK0rLvfnwU9iAJFw7ctixQQa7UCEBIt+FgQh3uJnPQQ1YUlcaaXpSxZKDDzFgwHv3eTkw1IYICu
+	zM49S+p/EKmSF1YCUcwe/7GFj7dZOpEvRkfp609IQ9KMXhJuaOJa69fq6pvWgzi15COXRBdv35Q
+	BYC7sOF7Ufm42WdDdyYbxzInNm/3kXgWOllZwEL3ym8exfs4OM9pbisPwZaMlSA6CRY6tWxz3h/
+	NOzc2CwXYOhnYEktn+jp9Lef038rnhil/tF89f9wK3aKXLlLAPnBGN4ozxI0PbkwnBlKslGCmvo
+	YG1wlnF8m1hqicLmldybk6PefGStGWdb4fn9mB/DiKLErvIkKoyxuWqVv0tt+wkZvgWQrd7AoLe
+	U0JRZFAc1nlCEtYszWEKzNu7uKojMFB9cFA5L/JtoyGVE0N8KOIgmpEUTFNIUqjkDQkUXkvY3Qy
+	BYwbohR3jP+447akMosNl60u7XcWLAqs72euSnppv9U2kXXdBL9WLZztcxYfI0Sd61Sdgjrx9zW
+	a3u6BgLum+P/dovUCmAqpsEUa67KmSu8I3LxW+wgn0U2OrUiou3Varf0rmF6PD+MQY5QMT0BRZN
+	I+YwbANog326X8vo19zNGhZoVDuGFtyDwZQ5oPgj7ZC2enRaJYuGaIjh0/6T/LTDsmJmg=
+X-TMASE-XGENCLOUD: 14ee587b-56f4-430e-b346-76dba04e277a-0-0-200-0
+X-TM-Deliver-Signature: 141842E672AB03E09F907067E0BEFF04
+X-TM-Addin-Auth: KSvD8jOb9812x9kfMCxqYeF8uSE046kzGT9cYmmL+zm6YV68TbOwbogdQaR
+	fRt1cNXJtsG9If20y4KyswepMJT9blNB9XgoW3uj/NAeBKHDGJHg1UuDGPBluBEHPVr4sRL50iD
+	nh5N4RU/bAW6l3z2WVQIvoe62IEGmkbJ8mZwGYo8qgmfM9uosG2hBP8chqksvGja0ozjxwvwkeR
+	cME6H7HJIFKOiduP/FMqwr+X956xuCyE0SAfDkdpy1NZ7d9yJwOHG09HKn9eiczaJIoo4Pt1cPj
+	/583InfcxdE9EQc=.uPLdS6CODE32a5xhlAqDDhCd6fU8uz+0JFjdmVGYs/AQJhQSYQVIaXRDtU
+	9Eod7wAebl3Pxgggt11XCRhseTvFiQ4sbMTIYvB84aTSJ/AIVkQO9F+7k1uxPj2mcjYrCqgignJ
+	/J4hlqQ3NEj9w6/8TMvRAxuCJSbmwl2v4h3QueSt3Pn+U9O3lOB8k3Q7rSWywpKEaaAJHxYV1mO
+	IWgq7gZGRUTAHYUvzUoNu8jfMdVlAN/8uCGJ5At39Rq3T5h+iAwECzZikThFe5K1a3lV5zKHSgT
+	QCpqMxvU1Y1iZJiVvS3cl62ncl+KP0x0bsJ9dHZEpF0O7vaN8CF9RPH2MNQ==
+X-TM-Addin-ProductCode: EMS
 Subject: Re: [virtio-dev][PATCH 2/2] virtio-spi: add the device specification
 
-On Mon, Jul 17, 2023 at 10:53=E2=80=AFAM Haixu Cui <quic_haixcui@quicinc.co=
-m> wrote:
->
-> Hi Jonathon Reinhart,
->      Thank you very much for your comments.
->
-> On 7/11/2023 12:42 AM, Jonathon Reinhart wrote:
-> > On Fri, Jul 7, 2023 at 3:21=E2=80=AFAM Haixu Cui <quic_haixcui@quicinc.=
-com> wrote:
-> >>
-> >> Hi Jonathon Reinhart,
-> >>
-> >>       Thank you so much for all your helpful advice and info!
-> >>
-> >>       I took a look at latest Linux SPI driver and found, for
-> >> cs_setup/cs_hold/cs_inactive set in device-tree, there are following t=
-wo
-> >> conditions:
-> >>       1) if SPI controller supports CS timing configuration and CS is =
-not
-> >> using a GPIO line, then the SPI driver set the
-> >> cs_setup/cs_hold/ca_inactive values into the corresponding SPI CS regi=
-sters;
-> >>       2) if CS is using a GPIO line, or SPI controller doesn't support=
- CS
-> >> timing configuration, it is the software to perform the
-> >> cs_setup/cs_hold/cs_inactive delays, which is implemented in function
-> >> spi_set_cs in driver/spi/spi.c.
-> >>
-> >>       So I agree it is necessary to pass cs_setup/cs_hold/cs_inactive =
-to
-> >> the host for each transfer.
-> >>
-> >>       For condition 1, host should set these values into the CS timing
-> >> registers. And as you mentioned "one might require different CS
-> >> setup/hold times, depending on which slave_id they are talking to (on
-> >> the same bus)", if so, host need to overwrite the CS timing registers
-> >> between the two transfers talking to different salve_id.
-> >>
-> >>       For condition 2, SPI driver running in the host performing the
-> >> cs_setup/cs_hold/cs_inactive delays seems more accurate, compared with
-> >> performing delays in guest.
-> >>
-> >>
-> >>       And the latest virtio spi transfer structure is defined as follo=
-ws:
-> >>
-> >>        struct spi_transfer_head {
-> >>           u8 slave_id;
-> >>           u8 bits_per_word;
-> >>           u8 cs_change;
-> >>           u8 tx_nbits;
-> >>          u8 rx_nbits;
-> >>          u8 reserved[3];
-> >>           u32 mode;
-> >>           u32 freq;
-> >>           u32 word_delay_ns;
-> >>           u32 delay_ns;
-> >>           u32 cs_change_delay_ns;
-> >>           u32 cs_setup_ns;
-> >>           u32 cs_hold_ns;
-> >>           u32 cs_inactive_ns;
-> >>        };
-> >>
-> >
-> > Hello Haixu Cui,
-> >
-> > I think there may be some unnecessary redundancy in these fields. See b=
-elow.
-> >
-> >>        @slave_id: chipselect index the SPI transfer used
-> >>        @bits_per_word: the number of bits in each SPI transfer word
-> >>        @cs_change: True to deselect device before starting the next tr=
-ansfer
-> >>        @tx_nbits: number of bits used for writing
-> >>        @rx_nbits: number of bits used for reading
-> >>        @reserved: reserved for future use
-> >>        @mode: the spi mode defines how data is clocked out and in
-> >>        @freq: transfer speed
-> >>        @word_delay_ns: delay to be inserted between consecutive words =
-of
-> >> a transfer, in ns unit
-> >>        @cs_setup_ns: delay to be introduced by the controller after CS=
- is
-> >> asserted, in ns unit
-> >
-> > (I am reordering these in my quoted text to be grouped appropriately.)
-> >
-> >>        @delay_ns: delay to be introduced after this transfer before
-> >> (optionally) changing the chipselect status, in ns unit
-> >>        @cs_hold_ns: delay to be introduced by the controller before CS=
- is
-> >> deasserted, in ns unit
-> >
-> > Aren't @delay_ns and @cs_hold_ns specifying the same thing?
->
-> I think they are not the same thing, delay_ns is the spi transfer
-> property while cs_hold_ns is the spi device property=EF=BC=8C although th=
-ey take
-> effect at the same stage.
-
-I see. I think we have differing perspectives here.
-
-I assume that you are looking at this from the perspective of a Linux
-guest on a Linux host, where virtio-spi is connecting a virtual spi
-driver in the guest to a hardware spi driver on the host. In this
-case, it makes sense to have parity between the fields in Linux
-spi_device / spi_transfer and the fields in the virtio
-spi_transfer_head. It makes the implementation easier if there is a
-simple 1:1 mapping between them, even if you have to copy some
-spi_transfer_head fields to spi_device (like the cs_ fields).
-
-My interest in virtio-spi is actually a bit different. We are looking
-to connect a virtual spi driver in a guest running Linux to another
-instance of QEMU emulating a baremetal firmware image. For a use-case
-like mine, the redundancy in the fields complicates things slightly.
-Because there is no physical SPI controller represented by the
-spi_device, all fields on spi_transfer_head have to be implemented in
-software -- including adding together the delays when appropriate
-(@delay_ns + @cs_hold_ns, and @cs_change_delay_ns + @cs_inactive_ns).
-
-It's not a deal-breaker, but I wanted you to consider the non-Linux
-perspective. From a purely protocol-centric view, I think the fields
-can still be seen as redundant.
-
-> I list 4 conditions, here transfer cs delay including
-> spi_transfer->delay and spi_transfer->cs_change_delay, and device cs
-> delay including spi_device->cs_hold, spi_device->cs_setup and
-> spi_device->cs_inactive.
->
-> condition 1:
->      virtio-spi controller only has transfer_one interface but no
-> transfer_one_message interface, and spi_transfer_one_message is the
-> default transfer_one_message interface of virtio-spi controller.
->      Hardware SPI controller doesn't support CS timing configuration.
->
->      In this case, both transfer cs delay and device cs delay are
-> executed by software in spi_transfer_one_message function in guest Linux
-> OS. So guest doesn't need pass these cs timing parameters to host.
->
-> condition 2:
->      virtio-spi controller only has transfer_one interface but no
-> transfer_one_message interface, and spi_transfer_one_message is the
-> default transfer_one_message interface of virtio-spi controller.
->      Hardware SPI controller supports device CS timing configuration,
-> which means it has registers to hold these configuration values.
->
->      In this case, transfer cs delay is executed in
-> spi_transfer_one_message function, and guest need pass device cs delay
-> to host. Because one SPI number may have more than one slave, these
-> slaves also may have different device cs delay values, so for each
-> transfer, guest should pass device cs delay along with the slave_id to
-> host to overwrite the corresponding registers.
->
-> condition 3:
->      virtio-spi controller has transfer_one_message interface but no
-> transfer_one interface.
->      Hardware SPI controller doesn't support CS timing configuration.
->
->      In this case, host SPI driver should implement all cs delay
-> operations with the transfer cs delay and device cs delay received from
-> the guest.
->
-> condition 4:
->      virtio-spi controller has transfer_one_message interface but no
-> transfer_one interface.
->      Hardware SPI controller supports CS timing configuration.
->
->      In this case, guest pass transfer cs delay and device cs delay to
-> guest, and guest SPI driver should implement logic to execute transfer
-> cs delay then overwrite the corresponding register with the device cs
-> delay values.
->
-> Except for condition 1, in other three conditions, guest should pass
-> both transfer cs delay and device cs delay to host.
->
->
-> Best Regards
-> Haixu Cui
->
-> >
-> > Linux spi_transfer defines @delay as:
-> >      delay to be introduced after this transfer before
-> >      (optionally) changing the chipselect status, then starting the
-> >      next transfer or completing this spi_message.
-> >
-> > ...and spi_device @cs_hold as: delay to be introduced by the
-> >      controller before CS is deasserted.
-> >
-> > (This is the period labeled "D" in my diagram.)
-> >
-> > I guess the only difference is if you have a series of transfers, where
-> > only the last transfer has @cs_change=3Dtrue, and all preceding message=
-s
-> > have @cs_change=3Dfalse. In this case, @delay_ns would apply between ea=
-ch
-> > transfer, and after the last transfer @delay_ns + @cs_hold would apply
-> > before CS is deasserted:
-> >
-> >      Transfer[0] (cs_change=3Dfalse)
-> >      delay(@delay_ns)
-> >      Transfer[1] (cs_change=3Dfalse)
-> >      delay(@delay_ns)
-> >      Transfer[3] (cs_change=3Dtrue)
-> >      delay(@delay_ns) + delay(@cs_hold_ns)
-> >      CS deasserted
-> >
-> >
-> >>        @cs_change_delay_ns: delay between cs deassert and assert when
-> >> cs_change is set, in ns unit
-> >>        @cs_inactive_ns: delay to be introduced by the controller after=
- CS
-> >> is deasserted, in ns unit
-> >
-> > Similarly, aren't @cs_change_delay_ns and @cs_inactive_ns applied at th=
-e
-> > same point in the cycle?
-> >
-> > (This is the period labeled "E" in my diagram.)
-> >
-> > Linux spi_device defines @cs_inactive as: delay to be introduced by the
-> >      controller after CS is deasserted. If @cs_change_delay is used fro=
-m
-> >      @spi_transfer, then the two delays will be added up.
-> >
-> > ...and spi_transfer defines @cs_change_delay as: delay between cs
-> >      deassert and assert when @cs_change is set and @spi_transfer is no=
-t
-> >      the last in @spi_message.
-> >
-> > It even says they will be added up.
-> >
-> > The only difference seems to be that @cs_change_delay applies only when
-> > the transfer is not the last in a list (spi_message, which we don't hav=
-e
-> > here.)
-> >
-> >      CS asserted
-> >      Transfer[0] (cs_change=3Dtrue)
-> >      CS deasserted
-> >      delay(@cs_inactive) + delay(@cs_change_delay)
-> >      CS asserted
-> >      Transfer[1] (cs_change=3Dtrue)
-> >      CS deasserted
-> >      delay(@cs_inactive)
-> >
-> >
-> > In both cases of redundancy above, the difference in semantics between
-> > the spi_device and spi_transfer only seem to apply when a series of
-> > transfers (spi_message or SPI_IOC_MESSAGE) are involved. Since (AFAICT)
-> > you aren't proposing that construct here, maybe the separate fields are
-> > not necessary? IOW, maybe @delay_ns and @cs_change_delay can be
-> > eliminated?
-> >
-> > Please let me know if I've misunderstood anything.
-> >
-> > Jonathon
-> >
-> >>
-> >>       Could you please help check if this new structure contains enoug=
-h
-> >> information. Really appreciate for kind help.
-> >>
-> >> Best Regards
-> >> Haixu Cui
-> >>
-> >> On 7/1/2023 5:59 AM, Jonathon Reinhart wrote:
-> >>>> Hi @jrreinhart@google.com,
-> >>>>        Thank you very much for your helpful comments.
-> >>>>
-> >>>>        I missed the delay and cs_change_delay parameters. I will add=
- both
-> >>>> of them, although cs_change_delay can not be set from userspace, but=
- can
-> >>>> be set in kernel space.
-> >>>>
-> >>>>
-> >>>>        For CS delays such as PRE_DELAY/POST_DELAY, it seems that the=
-y are
-> >>>> defined in structure spi_device:
-> >>>>
-> >>>>        @cs_setup: delay to be introduced by the controller after CS =
-is
-> >>>> asserted.
-> >>>>
-> >>>>        @cs_hold: delay to be introduced by the controller before CS =
-is
-> >>>> deasserted.
-> >>>>
-> >>>>        @cs_inactive: delay to be introduced by the controller after =
-CS is
-> >>>> deasserted. If @cs_change_delay is used from @spi_transfer, then the
-> >>>> two delays will be added up.
-> >>>>
-> >>>>        They show the SPI controller ability to control the CS
-> >>>> assertion/deassertion timing and should not be changed for each tran=
-sfer
-> >>>> (because thay can be updated by setting structure spi_transfer or
-> >>>> structure spi_ioc_transfer). I think it better to define these param=
-eter
-> >>>> in host OS rather than in guest OS since it's the host OS to operate=
- the
-> >>>> hardware SPI controller directly. Besides, it can also avoid passing=
- the
-> >>>> same values from guest to host time after time.
-> >>>>
-> >>>>        What's your opinion on this topic? Again, thank you very much=
-.
-> >>>
-> >>> Hi Haixu,
-> >>>
-> >>> I took another look at the Linux structures and attempted to map up t=
-he
-> >>> delay parameters to the various points in a SPI sequence. Please corr=
-ect
-> >>> me if I'm wrong about any of this.
-> >>>
-> >>> Consider this diagram where CS# is an active-low chip select, and SCL=
-K
-> >>> is the serial clock:
-> >>>
-> >>>         ___.                                                   ._____=
-.
-> >>>     CS#    |___________________________________________________|     =
-|___
-> >>>            .                                                   .     =
-.
-> >>>            .                                                   .     =
-.
-> >>>    SCLK ________NNNN___NNNN___NNNN_______NNNN___NNNN___NNNN__________=
-____
-> >>>            .   .    . .           .     .                  .   .     =
-.
-> >>> Delays:  +-A-+    +B+           +--C--+                  +-D-+--E--+
-> >>>            .   .    . .           .     .                  .   .     =
-.
-> >>>            0   1    2 3           4     5                  6   7     =
-8
-> >>>            .   .    .             .     .                  .   .
-> >>> Terms:   .   +Word+             .     .                  .   .
-> >>>            .   .                  .     .                  .   .
-> >>>            .   +-------Frame------+     +-------Frame------+   .
-> >>>            .                                                   .
-> >>>            +-----------------Transfer--------------------------+
-> >>>
-> >>> Using NXP terminology:
-> >>>
-> >>>     From 1 to 2 is a "word"     (with e.g. 8 bits).
-> >>>     From 1 to 4 is a "frame"    (with 3 words).
-> >>>     From 1 to 6 is a "transfer" (with 3 frames).
-> >>>
-> >>> Linux does not have the concept of a frame, only a series of transfer=
-s
-> >>> (a spi_message), each of which can specify whether CS changes or not.
-> >>>
-> >>> I've identified these various timing points and attempted to match th=
-em
-> >>> to the Linux spi_device and spi_transfer parameters:
-> >>>
-> >>> A - CS Setup: Delay after CS asserted before clock starts.
-> >>>       spi_device.cs_setup
-> >>>
-> >>> B - Word Delay: Delay between words.
-> >>>       spi_transfer.word_delay
-> >>>
-> >>> C - Frame Delay: Delay between frames.
-> >>>       (Linux does not have the concept of a SPI "frame".)
-> >>>
-> >>> D - CS Hold: Delay after clock stops, and before CS deasserted.
-> >>>       spi_device.cs_hold (+ spi_transfer.delay ??)
-> >>>
-> >>> E - CS Inactive: Delay after CS deasserted, before asserting again.
-> >>>       spi_device.cs_inactive + spi_transfer.cs_change_delay
-> >>>
-> >>>
-> >>> While I agree with you that some of these timings are unlikely to cha=
-nge
-> >>> from transfer-to-transfer, the subset of which should be specified
-> >>> at the device level vs. per-transfer seems somewhat arbitrary. As you
-> >>> can see there is some overlap between them.
-> >>>
-> >>> If I understand correctly, it appears that the CS hold time *can* be
-> >>> controlled on a per-transfer bases, using spi_transfer.delay
-> >>> ("after this transfer before changing the chipselect status").
-> >>>
-> >>> That leaves CS setup as the only parameter that cannot be influenced =
-on
-> >>> a per-transfer basis.
-> >>>
-> >>> Theoretically, one might require different CS setup/hold times,
-> >>> depending on which slave_id they are talking to (on the same bus).
-> >>> In that case, one must set those spi_device parameters to the worst-c=
-ase
-> >>> (maximum) values. However, this is already a Linux limitation, so I'm
-> >>> not sure it needs to be improved here.
-> >>>
-> >>> I think you've achieved parity with what the Linux kernel API allows,
-> >>> and that's probably good enough. As you said, anything else can be
-> >>> adjusted in the host OS -- I'm not sure how the guest would go about
-> >>> achieving that, though. You're not proposing the use of configuration
-> >>> space for virtio-spi, are you?
-> >>>
-> >>> Regards,
-> >>> Jonathon Reinhart
-> >>>
-> >>>
-> >>>>
-> >>>> Best Regards
-> >>>> Haixu Cui
-> >>>>
-> >>>> On 6/28/2023 1:06 AM, jrreinhart@google.com wrote:
-> >>>>> Hi Haixu,
-> >>>>>
-> >>>>>> +The \field{word_delay} defines how long to wait between words wit=
-hin
-> >>>>>> one SPI transfer,
-> >>>>>> +in ns unit.
-> >>>>>
-> >>>>> I'm a little surprised to see a word_delay but no frame_delay or
-> >>>>> transfer_delay.
-> >>>>>
-> >>>>> For example, many SPI peripherals require a delay after CS is asser=
-ted,
-> >>>>> but before the first SCLK edge, allowing them to prepare to send da=
-ta.
-> >>>>> (E.g. an ADC might begin taking a sample.)
-> >>>>>
-> >>>>>
-> >>>>> The linux struct spi_transfer has three delay fields:
-> >>>>>
-> >>>>> * @cs_change_delay: delay between cs deassert and assert when
-> >>>>> *      @cs_change is set and @spi_transfer is not the last in
-> >>>>> *      @spi_message
-> >>>>> * @delay: delay to be introduced after this transfer before
-> >>>>> *    (optionally) changing the chipselect status, then starting the
-> >>>>> *    next transfer or completing this @spi_message.
-> >>>>> * @word_delay: inter word delay to be introduced after each word si=
-ze
-> >>>>> *    (set by bits_per_word) transmission.
-> >>>>>
-> >>>>> The userspace spidev.h API has only two:
-> >>>>>
-> >>>>> * @delay_usecs: If nonzero, how long to delay after the last bit
-> >>>>> *       transfer before optionally deselecting the device before th=
-e
-> >>>>> *       next transfer.
-> >>>>> * @word_delay_usecs: If nonzero, how long to wait between words wit=
-hin
-> >>>>> *       one transfer. This property needs explicit support in the S=
-PI
-> >>>>> *       controller, otherwise it is silently ignored.
-> >>>>>
-> >>>>> The NXP i.MX RT500 SPI (master) controller, for example, has four
-> >>>>> configurable delays:
-> >>>>>
-> >>>>> - PRE_DELAY: After CS assertion, before first SCLK edge.
-> >>>>> - POST_DELAY: After a transfer, before CS deassertion.
-> >>>>> - FRAME_DELAY: Between frames (which are arbitrarily defined by
-> >>>>>      software).
-> >>>>> - TRANSFER_DELAY: Minimum CS deassertion time between transfers.
-> >>>>>
-> >>>>> The NVIDIA Tegra114 SPI controller has:
-> >>>>>
-> >>>>> - nvidia,cs-setup-clk-count: CS setup timing parameter.
-> >>>>> - nvidia,cs-hold-clk-count: CS hold timing parameter.
-> >>>>>
-> >>>>>
-> >>>>> I understand that accurately representing all possible delays might=
- be
-> >>>>> difficult or futile, but I'm curious to understand why, of all the
-> >>>>> possible delays, inter-word delay was chosen for inclusion.
-> >>>>>
-> >>>>> In a microcontroller, delays around CS (de)assertion can be customi=
-zed
-> >>>>> by using a GPIO -- rather than the hardware SPI block -- to drive t=
-he CS
-> >>>>> signal. This way, delays can be inserted where needed. To do so wit=
-h a
-> >>>>> virtualized SPI controller might prove difficult however, as the vi=
-rtual
-> >>>>> channel carrying a CS GPIO signal might not be synchronized to the
-> >>>>> channel carrying the SPI data.
-> >>>>>
-> >>>>> Curious to hear your thoughts.
-> >>>>>
-> >>>>> Thanks,
-> >>>>> Jonathon Reinhart
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+SGVsbG8sDQoNCkkndmUgc29tZSBjb21tZW50cyBvbiB0aGUgZHJhZnQgc3BlY2lmaWNhdGlvbi4g
+TG9va3MgcHJvbWlzaW5nIGJ1dCANCnBvaW50ZXJzIGluIHN0cnVjdHVyZXMgdXNlZCB0byBleGNo
+YW5nZSBpbmZvcm1hdGlvbiBiZXR3ZWVuIGRyaXZlciBhbmQgDQpkZXZpY2UgYXJlIGEgbm8gZ28u
+IEFuZCB0aGVyZSBhcmUgc29tZSB0aGluZ3Mgd2hpY2ggbmVlZCB0byBiZSAoYmV0dGVyKSANCmRl
+ZmluZWQgYW5kIGNsYXJpZmllZCB0byBpbXBsZW1lbnQgYW4gU1BJIGRldmljZSBvciBkcml2ZXIg
+ZnJvbSB0aGlzIA0KZHJhZnQgc3BlY2lmaWNhdGlvbi4NCg0KT24gMTcuMDQuMjMgMTY6MDMsIEhh
+aXh1IEN1aSB3cm90ZToNCj4gdmlydGlvLXNwaSBpcyBhIHZpcnR1YWwgU1BJIG1hc3RlciBhbmQg
+aXQgYWxsb3dzIGEgZ3VzZXQgdG8gb3BlcmF0ZSBhbmQNCj4gdXNlIHRoZSBwaHlzaWNhbCBTUEkg
+bWFzdGVyIGNvbnRyb2xsZWQgYnkgdGhlIGhvc3QuDQo+IC0tLQ0KPiAgIGRldmljZS10eXBlcy9z
+cGkvZGVzY3JpcHRpb24udGV4ICAgICAgICB8IDE1NSArKysrKysrKysrKysrKysrKysrKysrKysN
+Cj4gICBkZXZpY2UtdHlwZXMvc3BpL2RldmljZS1jb25mb3JtYW5jZS50ZXggfCAgIDcgKysNCj4g
+ICBkZXZpY2UtdHlwZXMvc3BpL2RyaXZlci1jb25mb3JtYW5jZS50ZXggfCAgIDcgKysNCj4gICAz
+IGZpbGVzIGNoYW5nZWQsIDE2OSBpbnNlcnRpb25zKCspDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0
+IGRldmljZS10eXBlcy9zcGkvZGVzY3JpcHRpb24udGV4DQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0
+IGRldmljZS10eXBlcy9zcGkvZGV2aWNlLWNvbmZvcm1hbmNlLnRleA0KPiAgIGNyZWF0ZSBtb2Rl
+IDEwMDY0NCBkZXZpY2UtdHlwZXMvc3BpL2RyaXZlci1jb25mb3JtYW5jZS50ZXgNCj4NCj4gZGlm
+ZiAtLWdpdCBhL2RldmljZS10eXBlcy9zcGkvZGVzY3JpcHRpb24udGV4IGIvZGV2aWNlLXR5cGVz
+L3NwaS9kZXNjcmlwdGlvbi50ZXgNCj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAw
+MDAwMC4uYTY4ZTVmNA0KPiAtLS0gL2Rldi9udWxsDQo+ICsrKyBiL2RldmljZS10eXBlcy9zcGkv
+ZGVzY3JpcHRpb24udGV4DQo+IEBAIC0wLDAgKzEsMTU1IEBADQo+ICtcc2VjdGlvbntTUEkgTWFz
+dGVyIERldmljZX1cbGFiZWx7c2VjOkRldmljZSBUeXBlcyAvIFNQSSBNYXN0ZXIgRGV2aWNlfQ0K
+PiArDQo+ICt2aXJ0aW8tc3BpIGlzIGEgdmlydHVhbCBTUEkoU2VyaWFsIFBlcmlwaGVyYWwgSW50
+ZXJmYWNlKSBtYXN0ZXIgYW5kIGl0IGFsbG93cyBhDQo+ICtndWVzdCB0byBvcGVyYXRlIGFuZCB1
+c2UgdGhlIHBoeXNpY2FsIFNQSSBtYXN0ZXIgZGV2aWNlcyBjb250cm9sbGVkIGJ5IHRoZSBob3N0
+Lg0KPiArQnkgYXR0YWNoaW5nIHRoZSBob3N0IFNQSSBjb250cm9sbGVkIG5vZGVzIHRvIHRoZSB2
+aXJ0dWFsIFNQSSBtYXN0ZXIgZGV2aWNlLCB0aGUNCj4gK2d1ZXN0IGNhbiBjb21tdW5pY2F0ZSB3
+aXRoIHRoZW0gd2l0aG91dCBjaGFuZ2luZyBvciBhZGRpbmcgZXh0cmEgZHJpdmVycyBmb3IgdGhl
+c2UNCj4gK2NvbnRyb2xsZWQgU1BJIGRldmljZXMuDQo+ICsNCj4gK0luIGEgdHlwaWNhbCBob3N0
+IGFuZCBndWVzdCBhcmNoaXRlY3R1cmUgd2l0aCBWaXJ0aW8gU1BJLCBWaXJ0aW8gU1BJIGRyaXZl
+cg0KPiAraXMgdGhlIGZyb250LWVuZCBhbmQgZXhpc3RzIGluIHRoZSBndWVzdCBrZXJuZWwsIFZp
+cnRpbyBTUEkgZGV2aWNlIGFjdHMgYXMNCj4gK3RoZSBiYWNrLWVuZCBhbmQgZXhpc3RzIGluIHRo
+ZSBob3N0LiBBbmQgVmlydFF1ZXVlIGlzIHVzZWQgZm9yIGNvbW11bmljYXRpb24NCj4gK2JldHdl
+ZW4gdGhlIGZyb250LWVuZCBhbmQgdGhlIGJhY2stZW5kLg0KPiArDQo+ICtcc3Vic2VjdGlvbntE
+ZXZpY2UgSUR9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBTUEkgTWFzdGVyIERldmljZSAvIERl
+dmljZSBJRH0NCj4gKzQ1DQo+ICsNCj4gK1xzdWJzZWN0aW9ue1ZpcnRxdWV1ZXN9XGxhYmVse3Nl
+YzpEZXZpY2UgVHlwZXMgLyBTUEkgTWFzdGVyIERldmljZSAvIFZpcnRxdWV1ZXN9DQo+ICsNCj4g
+K1xiZWdpbntkZXNjcmlwdGlvbn0NCj4gK1xpdGVtWzBdIHJlcXVlc3RxDQo+ICtcZW5ke2Rlc2Ny
+aXB0aW9ufQ0KPiArDQo+ICtcc3Vic2VjdGlvbntGZWF0dXJlIGJpdHN9XGxhYmVse3NlYzpEZXZp
+Y2UgVHlwZXMgLyBTUEkgTWFzdGVyIERldmljZSAvIEZlYXR1cmUgYml0c30NCj4gKw0KPiArTm9u
+ZS4NCj4gKw0KPiArXHN1YnNlY3Rpb257RGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fVxsYWJl
+bHtzZWM6RGV2aWNlIFR5cGVzIC8gU1BJIE1hc3RlciBEZXZpY2UgLyBEZXZpY2UgY29uZmlndXJh
+dGlvbiBsYXlvdXR9DQo+ICsNCj4gK0FsbCBmaWVsZHMgb2YgdGhpcyBjb25maWd1cmF0aW9uIGFy
+ZSBhbHdheXMgYXZhaWxhYmxlIGFuZCByZWFkLW9ubHkgZm9yIHRoZSBWaXJ0aW8gU1BJIGRyaXZl
+ci4NCj4gKw0KPiArXGJlZ2lue2xzdGxpc3Rpbmd9DQo+ICtzdHJ1Y3QgdmlydGlvX3NwaV9jb25m
+aWcgew0KPiArICAgIHUzMiBidXNfbnVtOw0KPiArICAgIHUzMiBjaGlwX3NlbGVjdF9tYXhfbnVt
+YmVyOw0KPiArfTsNCj4gK1xlbmR7bHN0bGlzdGluZ30NCj4gKw0KPiArXGJlZ2lue2Rlc2NyaXB0
+aW9ufQ0KPiArXGl0ZW1bXGZpZWxke2J1c19udW19XSBpcyB0aGUgcGh5c2ljYWwgc3BpIG1hc3Rl
+ciBhc3NpZ25lZCB0byBndXNldCwgYW5kIHRoaXMgaXMgU09DLXNwZWNpZmljLg0KPiArDQo+ICtc
+aXRlbVtcZmllbGR7Y2hpcF9zZWxlY3RfbWF4X251bWJlcn1dIGlzIHRoZSBudW1iZXIgb2YgY2hp
+cHNlbGVjdCB0aGUgcGh5c2ljYWwgc3BpIG1hc3RlciBzdXBwb3J0ZWQuDQo+ICtcZW5ke2Rlc2Ny
+aXB0aW9ufQ0KPiArDQo+ICtcc3Vic2VjdGlvbntEZXZpY2UgSW5pdGlhbGl6YXRpb259XGxhYmVs
+e3NlYzpEZXZpY2UgVHlwZXMgLyBTUEkgTWFzdGVyIERldmljZSAvIERldmljZSBJbml0aWFsaXph
+dGlvbn0NCj4gKw0KPiArXGJlZ2lue2l0ZW1pemV9DQo+ICtcaXRlbSBUaGUgVmlydGlvIFNQSSBk
+cml2ZXIgY29uZmlndXJlcyBhbmQgaW5pdGlhbGl6ZXMgdGhlIHZpcnRxdWV1ZS4NCj4gKw0KPiAr
+XGl0ZW0gVGhlIFZpcnRpbyBTUEkgZHJpdmVyIGFsbG9jYXRlcyBhbmQgcmVnaXN0ZXJzIHRoZSB2
+aXJ0dWFsIFNQSSBtYXN0ZXIuDQo+ICtcZW5ke2l0ZW1pemV9DQo+ICsNCj4gK1xzdWJzZWN0aW9u
+e0RldmljZSBPcGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBTUEkgTWFzdGVyIERl
+dmljZSAvIERldmljZSBPcGVyYXRpb259DQo+ICsNCj4gK1xzdWJzdWJzZWN0aW9ue0RldmljZSBP
+cGVyYXRpb246IFJlcXVlc3QgUXVldWV9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBTUEkgTWFz
+dGVyIERldmljZSAvIERldmljZSBPcGVyYXRpb246IFJlcXVlc3QgUXVldWV9DQo+ICsNCj4gK1Ro
+ZSBWaXJ0aW8gU1BJIGRyaXZlciBxdWV1ZXMgcmVxdWVzdHMgdG8gdGhlIHZpcnRxdWV1ZSwgYW5k
+IHRoZXkgYXJlIHVzZWQgYnkgdGhlDQo+ICtWaXJ0aW8gU1BJIGRldmljZS4gRWFjaCByZXF1ZXN0
+IHJlcHJlc2VudHMgb25lIFNQSSB0cmFuc2ZlciBhbmQgaXQgaXMgb2YgdGhlIGZvcm06DQo+ICsN
+Cj4gK1xiZWdpbntsc3RsaXN0aW5nfQ0KPiArc3RydWN0IHZpcnRpb19zcGlfdHJhbnNmZXJfaGVh
+ZCB7DQo+ICsgICAgdTMyIG1vZGU7DQo+ICsgICAgdTMyIGZyZXE7DQo+ICsgICAgdTMyIHdvcmRf
+ZGVsYXk7DQo+ICsgICAgdTggc2xhdmVfaWQ7DQo+ICsgICAgdTggYml0c19wZXJfd29yZDsNCj4g
+KyAgICB1OCBjc19jaGFuZ2U7DQo+ICsgICAgdTggcmVzZXJ2ZWQ7DQo+ICt9Ow0KDQpIdW50aW5n
+IGZvciBzb21lIGxlbmd0aCBpbmZvcm1hdGlvbiBvZiB0eF9idWYgYW5kIHJ4X2J1Zi4NCg0KVGhl
+IGRyaXZlciBwcm92aWRlcyB0aGUgZGV2aWNlIHJlYWRhYmxlIGFuZCB0aGUgZGV2aWNlIHdyaXRh
+YmxlIGJ1ZmZlcnMuDQoNClNvIGZvciBoYWxmIGR1cGxleCB3cml0ZSB0aGUgbGVuZ3RoIG9mIHR4
+X2J1ZiBpcyB0aGUgdG90YWwgbGVuZ3RoIG9mIHRoZSANCmRldmljZSByZWFkYWJsZSBkZXNjcmlw
+dG9ycyAtIHRyYW5zZmVyIGhlYWQuDQoNClNvIGZvciBoYWxmIGR1cGxleCByZWFkIHRoZSBsZW5n
+dGggb2YgcnhfYnVmIGlzIHRoZSB0b3RhbCBsZW5ndGggb2YgdGhlIA0KZGV2aWNlIHdyaXRhYmxl
+IGRlc2NyaXB0b3JzIC0gdHJhbnNmZXIgZW5kLg0KDQppZiAodG90YWwgc2l6ZSBvZiBkZXZpY2Ug
+cmVhZGFibGUgZGVzY3JpcHRvcnMgPT0gdHJhbnNmZXIgaGVhZCkgPT4gaGFsZiANCmR1cGxleCBy
+ZWFkDQoNCmlmICh0b3RhbCBzaXplIG9mIGRldmljZSB3cml0YWJsZSBkZXNjcmlwdG9ycyA9PSB0
+cmFuc2ZlciBlbmQpID0+IGhhbGYgDQpkdXBsZXggd3JpdGUNCg0Kb3RoZXJ3aXNlIGl0J3MgZnVs
+bCBkdXBsZXgNCg0KVGhlICJtb2RlIiBmaWVsZCBzZWVtcyB0byBiZSBmb3Jlc2VlbiB0byBkZXRl
+cm1pbmUgImhhbGYgZHVwbGV4IHJlYWQiLCANCiJoYWxmIGR1cGxleCB3cml0ZSIgb3IgImZ1bGwg
+ZHVwbGV4Ii4gU28gdGhlICJtb2RlIiBmaWVsZCBpcyByZWR1bmRhbnQgDQppbmZvcm1hdGlvbiBi
+dXQgdGhpcyBpcyByZWFsbHkgbm8gaXNzdWUuDQoNCkkgdGhpbmsgSSBnb3QgaXQgbm93IGhvdyB0
+byBnZXQgdGhlIGxlbmd0aCBpbmZvcm1hdGlvbiBmb3IgYWxsIHRoZSANCnBvc3NpYmxlIHRyYW5z
+ZmVycyB3aXRob3V0IGhhdmluZyBhbnkgYnVmZmVyIGxlbmd0aCBpbmZvcm1hdGlvbiBpbiB0aGUg
+DQp0cmFuc2ZlciBoZWFkLiBUcmlja3kuIFNob3VsZCByZWFsbHkgYmUgZWxhYm9yYXRlZCBpbiB0
+aGUgc3BlY2lmaWNhdGlvbiwgDQp0b29rIG1lIGhvdXJzIHRvIGdldCBpdCBhbmQgSSdtIG5vdCBj
+b252aW5jZWQgeWV0IGl0J3MgdGhhdC4gSW5pdGlhbGx5IEkgDQp0aG91Z2h0IHRoZSBsZW5ndGgg
+aW5mb3JtYXRpb24gaW4gdGhlIHRyYW5zZmVyIGhlYWQgd2FzIHNpbXBseSBtaXNzaW5nIA0KYnV0
+IG1vc3QgcHJvYmFibHkgaXQgaXMgaW5kZWVkIG5vdCBiZWNhdXNlIHRoZSBpbmZvcm1hdGlvbiBj
+YW4gYmUgDQpvYnRhaW5lZCBpbiBhIGRpZmZlcmVudCB3YXkgZnJvbSB0aGUgdmlydHF1ZXVlcy4N
+Cg0KV2hhdCB0byBzZW5kIGZvciBoYWxmIGR1cGxleCByZWFkPyBJcyBpdCBkb24ndCBjYXJlIG9y
+IDB4RkYsIDB4MDAgb3IgDQpzb21ldGhpbmcgZWxzZSB3aGljaCBuZWVkcyB0byBiZSBkZXRlcm1p
+bmFibGU/IEluIHRoZSBwYXN0IEkgaGFkIHRvIHVzZSANClNQSSBhbHdheXMgZnVsbCBkdXBsZXgg
+b24gdGhlIHNtYWxsIGNvbnRyb2xsZXJzIEkgd29ya2VkIHdpdGggc28gdGhlIA0KcXVlc3Rpb24g
+ZGlkIG5vdCBhcmlzZS4NCg0KPiArXGVuZHtsc3RsaXN0aW5nfQ0KPiArDQo+ICtcYmVnaW57bHN0
+bGlzdGluZ30NCj4gK3N0cnVjdCB2aXJ0aW9fc3BpX3RyYW5zZmVyX2VuZCB7DQo+ICsgICAgdTgg
+c3RhdHVzOyAvLyBEZXZpY2U9PkRyaXZlciwgZGV2aWNlIHdyaXRhYmxlDQo+ICt9Ow0KPiArXGVu
+ZHtsc3RsaXN0aW5nfQ0KPiArDQo+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gK3N0cnVjdCB2aXJ0
+aW9fc3BpX3JlcSB7DQo+ICsgICAgc3RydWN0IHZpcnRpb19zcGlfdHJhbnNmZXJfaGVhZCBoZWFk
+OyAvLyBEcml2ZXI9PkRldmljZSwgZGV2aWNlIHJlYWRhYmxlDQo+ICsgICAgdTggKnJ4X2J1Zjsg
+Ly8gRGV2aWNlPT5Ecml2ZXIsIGRldmljZSB3cml0YWJsZQ0KPiArICAgIHU4ICp0eF9idWY7IC8v
+IERyaXZlcj0+RGV2aWNlLCBkZXZpY2UgcmVhZGFibGUNCg0KV29uJ3Qgd29yayAxOg0KDQoiMi43
+LjQuMiBEcml2ZXIgUmVxdWlyZW1lbnRzOiBNZXNzYWdlIEZyYW1pbmcNClRoZSBkcml2ZXIgTVVT
+VCBwbGFjZSBhbnkgZGV2aWNlwq0td3JpdGFibGUgZGVzY3JpcHRvciBlbGVtZW50cyBhZnRlciBh
+bnkgDQpkZXZpY2XCrS1yZWFkYWJsZSBkZXNjcmlwdG9yIGVsZcKtbWVudHMuIg0KDQo9PiBGaXJz
+dCB0eF9idWYgYW5kIGFmdGVyd2FyZHMgcnhfYnVmLiBUaGUgZWxlbWVudHMgbmVlZCB0byBiZSBl
+eGNoYW5nZWQuDQoNCldvbid0IHdvcmsgMjoNCg0KWW91IGNhbm5vdCBzZW5kIHBvaW50ZXJzIGFy
+b3VuZCBpbiB2aXJ0aW8uIEEgcG9pbnRlciBpbiB0aGUgdmlydHVhbCANCmFkZHJlc3Mgc3BhY2Ug
+b2YgdGhlIGRldmljZSBoYXMgbm8gbWVhbmluZyBpbiB0aGUgdmlydHVhbCBhZGRyZXNzIHNwYWNl
+IA0Kb2YgdGhlIGRyaXZlciBhbmQgdmljZSB2ZXJzYS4gQW5kIHdoYXQncyBhIHBvaW50ZXI/IElz
+IGl0IDMyIGJpdCBvciA2NCANCmJpdD8gQ2FzdGluZyB0byBsZTY0IHdvbid0IGhlbHAgYWxzby4g
+WW91IG5lZWQgdG8gaGF2ZSBidWZmZXJzIG9mIA0Kc3VmZmljaWVudCBzaXplIGluc3RlYWQgb2Yg
+dGhlIHBvaW50ZXJzIGluIHRoZSBzdHJ1Y3R1cmUuDQoNCkNvbXBhcmUgdGhpcyB3aXRoIHN0cnVj
+dCB2aXJ0aW9faTJjX3JlcSBmcm9tIHRoZSBJMkMgY2hhcHRlcjoNCg0KdTggYnVmW13Nvg0KDQpU
+aGlzIGlzIGEgYnVmZmVyIG9mIHN1ZmZpY2llbnQgc2l6ZSwgbm90IGEgcG9pbnRlci4gQXMgdGhl
+cmUgaXMgb25seSAxIA0KZGV2aWNlIHdyaXRhYmxlIGRlc2NyaXB0b3IgKHN0cnVjdCB2aXJ0aW9f
+aTJjX2luX2hkcikgd2UgaGF2ZSB0aGVyZSBhbHNvIA0Kbm8gaXNzdWUgZmluZGluZyB0aGUgc3Rh
+dHVzLiBEaWZmZXJlbnQgaGVyZS4gV2UgaGF2ZSB0eF9idWYgaW4gZnJvbnQgb2YgDQp0aGUgc3Rh
+dHVzIGFuZCB3ZSBkb24ndCBrbm93IGhvdyBsb25nIHRoaXMgaXMuDQoNClRoZSBidWZbXSBsZW5n
+dGggaW4gSTJDIG1heSBiZSBvYnRhaW5lZCBieSB0aGUgZGV2aWNlIGZyb20gdGhlIGJ5dGVzIA0K
+d3JpdHRlbiBieSB0aGUgZHJpdmVyIHRvIHRoZSB2aXJ0cXVldWUgKG5lZWQgdG8gY2hlY2sgYWdh
+aW4pIHNvIG5vIGlzc3VlIA0KZm9yIEkyQyBhcyB0aGV5IHNlZW0gbm90IHRvIGhhdmUgYSBkZWRp
+Y2F0ZWQgbGVuZ3RoIGluZm9ybWF0aW9uIGluIHRoZWlyIA0KbWVzc2FnZSBzdHJ1Y3R1cmVzLg0K
+DQo9Pg0KDQp1OCB0eF9idWZbXTsNCg0KdTggcnhfYnVmW107DQoNCj4gKyAgICBzdHJ1Y3Qgdmly
+dGlvX3NwaV90cmFuc2Zlcl9lbmQgZW5kOw0KPiArfTsNCj4gK1xlbmR7bHN0bGlzdGluZ30NCj4g
+Kw0KPiArVGhlIFxmaWVsZHttb2RlfSBkZWZpbmVzIHRoZSBTUEkgdHJhbnNmZXIgbW9kZS4NCg0K
+RGlmZmljdWx0LiBZb3VyIGVudW1lcmF0aW9uIGJlbG93IGxvb2tzIGxpa2UgYSBlbnVtZXJhdGlv
+biBpbiB0aGUgdGV4dCANCmFuZCBub3QgbGlrZSB0aGUgZGVmaW5pdGlvbiBvZiB2YWx1ZXMuIEJl
+dHRlciBpcyB0byBjbGVhcmx5IGRlZmluZSB0aGUgDQp2YWx1ZXMuDQoNCiNkZWZpbmUgVklSVElP
+X1NQSV9NT0RFX1hYWCAxIC8qIG9yIHdoYXRldmVyICovDQoNCiNkZWZpbmUgVklSVElPX1NQSV9N
+T0RFX1lZWSAyIC8qIG9yIHdoYXRldmVyICovDQoNCiNkZWZpbmUgVklSVElPX1NQSV9NT0RFX1pa
+WiAzIC8qIG9yIHdoYXRldmVyICovDQoNCj4gKw0KPiArVGhlIFxmaWVsZHtmcmVxfSBkZWZpbmVz
+IHRoZSBTUEkgdHJhbnNmZXIgc3BlZWQgaW4gSHouDQo+ICsNCj4gK1RoZSBcZmllbGR7d29yZF9k
+ZWxheX0gZGVmaW5lcyBob3cgbG9uZyB0byB3YWl0IGJldHdlZW4gd29yZHMgd2l0aGluIG9uZSBT
+UEkgdHJhbnNmZXIsDQo+ICtpbiBucyB1bml0Lg0KPiArDQo+ICtUaGUgXGZpZWxke3NsYXZlX2lk
+fSBkZWZpbmVzIHRoZSBjaGlwc2VsZWN0IGluZGV4IHRoZSBTUEkgdHJhbnNmZXIgdXNlZC4NCj4g
+Kw0KPiArVGhlIFxmaWVsZHtiaXRzX3Blcl93b3JkfSBkZWZpbmVzIHRoZSBudW1iZXIgb2YgYml0
+cyBpbiBlYWNoIFNQSSB0cmFuc2ZlciB3b3JkLg0KPiArDQo+ICtUaGUgXGZpZWxke2NzX2NoYW5n
+ZX0gZGVmaW5lcyB3aGV0aGVyIHRvIGRlc2VsZWN0IGRldmljZSBiZWZvcmUgc3RhcnRpbmcgdGhl
+IG5leHQgU1BJIHRyYW5zZmVyLg0KTW9zdCBwcm9iYWJseSAwIGlzICJkb24ndCBkZXNlbGVjdCIg
+YW5kIDEgaXMgImRlc2VsZWN0Ii4gQmV0dGVyIGRlZmluZSANCnRoaXMgY2xlYXJseS4NCj4gKw0K
+PiArVGhlIFxmaWVsZHtyeF9idWZ9IGlzIHRoZSByZWNlaXZlIGJ1ZmZlciwgdXNlZCB0byBob2xk
+IHRoZSBkYXRhIHJlY2VpdmVkIGZyb20gdGhlIGV4dGVybmFsIGRldmljZS4NCj4gKw0KPiArVGhl
+IFxmaWVsZHt0eF9idWZ9IGlzIHRoZSB0cmFuc21pdCBidWZmZXIsIHVzZWQgdG8gaG9sZCB0aGUg
+ZGF0YSBzZW50IHRvIHRoZSBleHRlcm5hbCBkZXZpY2UuDQo+ICsNCj4gK1RoZSBmaW5hbCBcZmll
+bGR7c3RhdHVzfSBieXRlIG9mIHRoZSByZXF1ZXN0IGlzIHdyaXR0ZW4gYnkgdGhlIFZpcnRpbyBT
+UEkgZGV2aWNlOiBlaXRoZXINCj4gK1ZJUlRJT19TUElfTVNHX09LIGZvciBzdWNjZXNzIG9yIFZJ
+UlRJT19TUElfTVNHX0VSUiBmb3IgZXJyb3IuDQo+ICsNCj4gK1xiZWdpbntsc3RsaXN0aW5nfQ0K
+PiArI2RlZmluZSBWSVJUSU9fU1BJX01TR19PSyAgICAgMA0KPiArI2RlZmluZSBWSVJUSU9fU1BJ
+X01TR19FUlIgICAgMQ0KPiArXGVuZHtsc3RsaXN0aW5nfQ0KPiArDQo+ICtcc3Vic3Vic2VjdGlv
+bntEZXZpY2UgT3BlcmF0aW9uOiBPcGVyYXRpb24gU3RhdHVzfVxsYWJlbHtzZWM6RGV2aWNlIFR5
+cGVzIC8gU1BJIE1hc3RlciBEZXZpY2UgLyBEZXZpY2UgT3BlcmF0aW9uOiBPcGVyYXRpb24gU3Rh
+dHVzfQ0KPiArDQo+ICtNZW1iZXJzIGluIFxmaWVsZHtzdHJ1Y3QgdmlydGlvX3NwaV90cmFuc2Zl
+cl9oZWFkfSBhcmUgZGV0ZXJtaW5lZCBieSB0aGUgVmlydGlvIFNQSSBkcml2ZXIsIHdoaWxlIFxm
+aWVsZHtzdGF0dXN9DQo+ICtpbiBcZmllbGR7c3RydWN0IHZpcnRpb19zcGlfdHJhbnNmZXJfZW5k
+fSBpcyBkZXRlcm1pbmVkIGJ5IHRoZSBwcm9jZXNzaW5nIG9mIHRoZSBWaXJ0aW8gU1BJIGRldmlj
+ZS4NCiJkZXRlcm1pbmVkIiA9ICJ3cml0dGVuIiBvciAiZmlsbGVkIj8gQmVsb3cgeW91IHVzZSAi
+ZmlsbGVkIi4gQmV3YXJlIA0KRW5nbGlzaCBpcyBub3QgbXkgbmF0aXZlIGxhbmd1YWdlIGJ1dCBh
+dCBsZWFzdCBpbiB0aGUgdHJhbnNsYXRpb24gdG8gDQpHZXJtYW4gImRldGVybWluZWQiIGJlY29t
+ZXMgYW1iaWd1b3VzIHNvIGl0IG1heSBiZSBpbmRlZWQgYW1iaWd1b3VzLg0KPiArDQo+ICtWaXJ0
+aW8gU1BJIHN1cHBvcnRzIHRocmVlIHRyYW5zZmVyIHR5cGVzOiAxKSBoYWxmLWR1cGxleCByZWFk
+LCAyKSBoYWxmLWR1cGxleCB3cml0ZSwgMykgZnVsbC1kdXBsZXggcmVhZCBhbmQgd3JpdGUuDQo+
+ICtGb3IgaGFsZi1kdXBsZXggcmVhZCB0cmFuc2ZlciwgXGZpZWxke3J4X2J1Zn0gaXMgZmlsbGVk
+IGJ5IHRoZSBWaXJ0aW8gU1BJIGRldmljZSBhbmQgY29uc3VtZWQgYnkgdGhlIFZpcnRpbyBTUEkg
+ZHJpdmVyLg0KPiArRm9yIGhhbGYtZHVwbGV4IHdyaXRlIHRyYW5zZmVyLCBcZmllbGR7dHhfYnVm
+fSBpcyBmaWxsZWQgYnkgdGhlIFZpcnRpbyBTUEkgZHJpdmVyIGFuZCBjb25zdW1lZCBieSB0aGUg
+VmlydGlvIFNQSSBkZXZpY2UuDQo+ICtBbmQgZm9yIGZ1bGwtZHVwbGV4IHJlYWQgYW5kIHdyaXRl
+IHRyYW5zZmVyLCBib3RoIFxmaWVsZHt0eF9idWZ9IGFuZCBcZmllbGR7cnhfYnVmfSBhcmUgdXNl
+ZC4NClRoZSAidHJhbnNmZXIgbW9kZSIgYWJvdmUgaGFzIGJlY29tZSBhICJ0cmFuc2ZlciB0eXBl
+IiBoZXJlLg0KPiArDQo+ICtcZHJpdmVybm9ybWF0aXZle1xzdWJzdWJzZWN0aW9ufXtEZXZpY2Ug
+T3BlcmF0aW9ufXtEZXZpY2UgVHlwZXMgLyBTUEkgTWFzdGVyIERldmljZSAvIERldmljZSBPcGVy
+YXRpb259DQo+ICsNCj4gK1RoZSBWaXJ0aW8gU1BJIGRyaXZlciBNVVNUIHNlbmQgbWVzc2FnZXMg
+b24gdGhlIHJlcXVlc3RxIHZpcnRxdWV1ZS4NCj4gKw0KPiArVGhlIFxmaWVsZHtzdHJ1Y3Qgc3Bp
+X3RyYW5zZmVyX2hlYWR9IE1VU1QgYmUgZmlsbGVkIGJ5IHRoZSBWaXJ0aW8gU1BJIGRyaXZlcg0K
+PiArYW5kIE1VU1QgYmUgcmVhZGFibGUgZm9yIHRoZSBWaXJ0aW8gU1BJIGRldmljZS4NCj4gKw0K
+PiArVGhlIFxmaWVsZHtzdHJ1Y3Qgc3BpX3RyYW5zZmVyX2VuZH0gTVVTVCBiZSBmaWxsZWQgYnkg
+dGhlIFZpcnRpbyBTUEkgZGV2aWNlDQo+ICthbmQgTVVTVCBiZSB3cml0YWJsZSBmb3IgdGhlIFZp
+cnRpbyBTUEkgZGV2aWNlLg0KDQpJc24ndCBpdCBvYnZpb3VzIHRoYXQgdGhlIHBhcnRzIHdoaWNo
+IE1VU1QgYmUgd3JpdHRlbiBieSBzaWRlIFggbXVzdCBiZSANCnJlYWRhYmxlIGJ5IHNpZGUgWT8g
+Tm90aGluZyB3cm9uZyBoZXJlLg0KDQpIb3dldmVyIHRoaXMgaGVyZSBpcyB1bmRlciB0aGUgaGVh
+ZGxpbmUgb2YgImRyaXZlcm5vcm1hdGl2ZSIgYW5kIEkgc2VlIGEgDQoiTVVTVCBiZSBmaWxsZWQg
+YnkgdGhlIFZpcnRpbyBTUEkgZGV2aWNlIiB3aGljaCBpcyBhIHJlcXVpcmVtZW50IGZvciB0aGUg
+DQpkZXZpY2UuDQoNCj4gKw0KPiArRm9yIGhhbGYtZHVwbGV4IHJlYWQsIHRoZSBWaXJ0aW8gU1BJ
+IGRyaXZlciBNVVNUIHNlbmQgXGZpZWxke3N0cnVjdCBzcGlfdHJhbnNmZXJfaGVhZH0sDQo+ICtc
+ZmllbGR7cnhfYnVmfSBhbmQgXGZpZWxke3N0cnVjdCBzcGlfdHJhbnNmZXJfZW5kfSB0byB0aGUg
+U1BJIFZpcnRpbyBEZXZpY2UgaW4gb3JkZXIuDQo+ICsNCj4gK0ZvciBoYWxmLWR1cGxleCB3cml0
+ZSwgdGhlIFZpcnRpbyBTUEkgZHJpdmVyIE1VU1Qgc2VuZCBcZmllbGR7c3RydWN0IHNwaV90cmFu
+c2Zlcl9oZWFkfSwNCj4gK1xmaWVsZHt0eF9idWZ9IGFuZCBcZmllbGR7c3RydWN0IHNwaV90cmFu
+c2Zlcl9lbmR9IHRvIHRoZSBTUEkgVmlydGlvIERldmljZSBpbiBvcmRlci4NCj4gKw0KPiArRm9y
+IGZ1bGwtZHVwbGV4IHJlYWQgYW5kIHdyaXRlLCB0aGUgVmlydGlvIFNQSSBkcml2ZXIgTVVTVCBz
+ZW5kIFxmaWVsZHtzdHJ1Y3Qgc3BpX3RyYW5zZmVyX2hlYWR9LA0KPiArXGZpZWxke3J4X2J1Zn0s
+IFxmaWVsZHt0eF9idWZ9IGFuZCBcZmllbGR7c3RydWN0IHNwaV90cmFuc2Zlcl9lbmR9IHRvIHRo
+ZSBTUEkgVmlydGlvIERldmljZSBpbiBvcmRlci4NCj4gKw0KPiArRm9yIGhhbGYtZHVwbGV4IHdy
+aXRlIG9yIGZ1bGwtZHVwbGV4IHJlYWQgYW5kIHdyaXRlLCB0aGUgVmlydGlvIFNQSSBkcml2ZXIg
+TVVTVCBub3QgdXNlDQo+ICtcZmllbGR7cnhfYnVmfSBpZiB0aGUgZmluYWwgXGZpZWxke3N0YXR1
+c30gcmV0dXJuZWQgZnJvbSB0aGUgVmlydGlvIFNQSSBkZXZpY2UgaXMgVklSVElPX1NQSV9NU0df
+RVJSLg0KPiArDQo+ICtcZGV2aWNlbm9ybWF0aXZle1xzdWJzdWJzZWN0aW9ufXtEZXZpY2UgT3Bl
+cmF0aW9ufXtEZXZpY2UgVHlwZXMgLyBTUEkgTWFzdGVyIERldmljZSAvIERldmljZSBPcGVyYXRp
+b259DQo+ICsNCj4gK1RoZSBWaXJ0aW8gU1BJIGRldmljZSBNVVNUIHNldCBhbGwgdGhlIGZpZWxk
+cyBvZiB0aGUgXGZpZWxke3N0cnVjdCB2aXJ0aW9fc3BpX2NvbmZpZ30gb24NCj4gK3JlY2Vpdmlu
+ZyBhIGNvbmZpZ3VyYXRpb24gcmVxdWVzdCBmcm9tIHRoZSBWaXJ0aW8gU1BJIGRyaXZlci4NCj4g
+Kw0KPiArVGhlIFZpcnRpbyBTUEkgZGV2aWNlIE1VU1Qgc2V0IHRoZSBcZmllbGR7c3RydWN0IHNw
+aV90cmFuc2Zlcl9lbmR9IGJlZm9yZSBzZW5kaW5nIGl0DQo+ICtiYWNrIHRvIHRoZSBWaXJ0aW8g
+U1BJIGRyaXZlci4NCj4gKw0KPiArVGhlIFZpcnRpbyBTUEkgZGV2aWNlIE1VU1QgYmUgYWJsZSB0
+byBpZGVudGlmeSB0aGUgdHJhbnNmZXIgdHlwZSBhY2NvcmRpbmcgdG8gdGhlDQo+ICtyZWNlaXZl
+ZCBWaXJ0UXVldWUgZGVzY3JpcHRvcnMuDQoNCkhhdmluZyBkaWZmaWN1bHRpZXMuICJUeXBlIiBp
+cyAiTW9kZSI/IEJ5IHJlYWRpbmcgdGhlICJtb2RlIiBmaWVsZD8gVGhpcyANCndvdWxkIGJlIHRo
+ZSB0cml2aWFsIG1lYW5pbmcgb2YgdGhlIHNlbnRlbmNlLg0KDQpPciBpcyB0aGVyZSBhIG1vcmUg
+ZGVlcCBtZWFuaW5nIG9mICJhY2NvcmRpbmcgdG8gdGhlIHJlY2VpdmVkIFZpcnRRdWV1ZSANCmRl
+c2NyaXB0b3JzIj8NCg0KSWYgdGhlIGxlbmd0aCBpbmZvcm1hdGlvbiBvZiB0eF9idWYgYW5kIHJ4
+X2J1ZiBhcmUgaW5kZWVkIG5vdCBtaXNzaW5nIGluIA0KdGhlIHRyYW5zZmVyIGhlYWQgc3RydWN0
+dXJlIGl0IHdvdWxkIGJlIHByb2JhYmx5IGdvb2QgdG8gZWxhYm9yYXRlIG9uIA0Kb2J0YWluaW5n
+IHRoZSBsZW5ndGggaW5mb3JtYXRpb24gaGVyZS4NCg0KPiArDQo+ICtUaGUgVmlydGlvIFNQSSBk
+ZXZpY2UgTVVTVCBOT1QgY2hhbmdlIHRoZSB2YWx1ZSBvZiB0aGUgc2VuZCBidWZmZXIgaWYgdHJh
+bnNmZXIgdHlwZQ0KPiAraXMgaGFsZi1kdXBsZXggd3JpdGUgb3IgZnVsbC1kdXBsZXggcmVhZCBh
+bmQgd3JpdGUuDQo+IGRpZmYgLS1naXQgYS9kZXZpY2UtdHlwZXMvc3BpL2RldmljZS1jb25mb3Jt
+YW5jZS50ZXggYi9kZXZpY2UtdHlwZXMvc3BpL2RldmljZS1jb25mb3JtYW5jZS50ZXgNCj4gbmV3
+IGZpbGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAwMC4uYjlkZWE5MQ0KPiAtLS0gL2Rldi9u
+dWxsDQo+ICsrKyBiL2RldmljZS10eXBlcy9zcGkvZGV2aWNlLWNvbmZvcm1hbmNlLnRleA0KPiBA
+QCAtMCwwICsxLDcgQEANCj4gK1xjb25mb3JtYW5jZXtcc3Vic2VjdGlvbn17U1BJIE1hc3RlciBE
+ZXZpY2UgQ29uZm9ybWFuY2V9XGxhYmVse3NlYzpDb25mb3JtYW5jZSAvIERldmljZSBDb25mb3Jt
+YW5jZSAvIFNQSSBNYXN0ZXIgRGV2aWNlIENvbmZvcm1hbmNlfQ0KPiArDQo+ICtBIFNQSSBNYXN0
+ZXIgZGV2aWNlIE1VU1QgY29uZm9ybSB0byB0aGUgZm9sbG93aW5nIG5vcm1hdGl2ZSBzdGF0ZW1l
+bnRzOg0KPiArDQo+ICtcYmVnaW57aXRlbWl6ZX0NCj4gK1xpdGVtIFxyZWZ7ZGV2aWNlbm9ybWF0
+aXZlOkRldmljZSBUeXBlcyAvIFNQSSBNYXN0ZXIgRGV2aWNlIC8gRGV2aWNlIE9wZXJhdGlvbn0N
+Cj4gK1xlbmR7aXRlbWl6ZX0NCj4gZGlmZiAtLWdpdCBhL2RldmljZS10eXBlcy9zcGkvZHJpdmVy
+LWNvbmZvcm1hbmNlLnRleCBiL2RldmljZS10eXBlcy9zcGkvZHJpdmVyLWNvbmZvcm1hbmNlLnRl
+eA0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiBpbmRleCAwMDAwMDAwLi43MTliNDJlDQo+IC0t
+LSAvZGV2L251bGwNCj4gKysrIGIvZGV2aWNlLXR5cGVzL3NwaS9kcml2ZXItY29uZm9ybWFuY2Uu
+dGV4DQo+IEBAIC0wLDAgKzEsNyBAQA0KPiArXGNvbmZvcm1hbmNle1xzdWJzZWN0aW9ufXtTUEkg
+TWFzdGVyIERyaXZlciBDb25mb3JtYW5jZX1cbGFiZWx7c2VjOkNvbmZvcm1hbmNlIC8gRHJpdmVy
+IENvbmZvcm1hbmNlIC8gU1BJIE1hc3RlciBEcml2ZXIgQ29uZm9ybWFuY2V9DQo+ICsNCj4gK0Eg
+U1BJIE1hc3RlciBkcml2ZXIgTVVTVCBjb25mb3JtIHRvIHRoZSBmb2xsb3dpbmcgbm9ybWF0aXZl
+IHN0YXRlbWVudHM6DQo+ICsNCj4gK1xiZWdpbntpdGVtaXplfQ0KPiArXGl0ZW0gXHJlZntkcml2
+ZXJub3JtYXRpdmU6RGV2aWNlIFR5cGVzIC8gU1BJIE1hc3RlciBEZXZpY2UgLyBEZXZpY2UgT3Bl
+cmF0aW9ufQ0KPiArXGVuZHtpdGVtaXplfQ0KDQpSZWdhcmRzDQpIYXJhbGQgTW9tbWVyDQoNCg0K
 
