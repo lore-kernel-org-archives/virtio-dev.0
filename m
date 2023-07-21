@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13396-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13397-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 29A74EB64DA
-	for <virtio-dev@archiver.kernel.org>; Thu, 20 Jul 2023 22:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C640CEB64DC
+	for <virtio-dev@archiver.kernel.org>; Fri, 21 Jul 2023 07:44:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 63445444C
-	for <virtio-dev@archiver.kernel.org>; Thu, 20 Jul 2023 22:22:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0E4CF3357B
+	for <virtio-dev@archiver.kernel.org>; Fri, 21 Jul 2023 07:44:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3B3B8986837
-	for <virtio-dev@archiver.kernel.org>; Thu, 20 Jul 2023 22:22:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D53B3986848
+	for <virtio-dev@archiver.kernel.org>; Fri, 21 Jul 2023 07:44:43 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1E4B0983D01; Thu, 20 Jul 2023 22:22:17 +0000 (UTC)
+	id B9E0298683F; Fri, 21 Jul 2023 07:44:43 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,122 +24,84 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0AEB3986835
-	for <virtio-dev@lists.oasis-open.org>; Thu, 20 Jul 2023 22:22:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A2245986840
+	for <virtio-dev@lists.oasis-open.org>; Fri, 21 Jul 2023 07:44:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: cuLGB1N2ML-rJbsr2_jCZg-1
+X-MC-Unique: kMqdUM2XM8GlDUZk-9X2_g-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689891733; x=1690496533;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/5ZSWgQ7hYPT6II/PNiOy01U/I9L4WpoP4ciI4EhJlU=;
-        b=kS1PZ1uRizRlQrXXNe99vpBm5vJcaKL6GFUeE0ve6WNRJmOCQHwbVSVvL2V9OrFyvy
-         wZszLFI8GPsLnJg4KIwib4nMuiNlzOkgefnFpjPKSF3HGnuRRCIH83CcKbWMv3UCdIbB
-         F/dM90V1d8R8thm5YzMd7wVTOzRPxpYbXM7mn/6/MWSAXDY7FNujvcVX2T2LIPgRT3fC
-         JwdoU9e5Vs/KJDR9X4FuMwTzlzs8guvgk49PHUh6HjYVWmUYM0MDE5tptq8MHjY8KNTf
-         DrSC9SkT8TzaCLYPwU9eRoAPM8qHa4jOwffC84Csxn7Et+1RyD1M6H3X7E4PVBe43k+T
-         vN5A==
-X-Gm-Message-State: ABy/qLay14KPuxs42GYF4gNAIa/tQu3LO3HRWdS3wL67Yv0EpCUz/fH0
-	lpwYbsEZVyLPIh6HvBdmjY07FZNBqY9OpLu2B9U5jqPOzcTnBsSiokLLOYyrZCuG+gc5g6JL6N9
-	4BhoUuaQ3PuddTlEvadNTWYW1gTFs
-X-Received: by 2002:a2e:7813:0:b0:2b0:297c:cbdf with SMTP id t19-20020a2e7813000000b002b0297ccbdfmr214458ljc.1.1689891733055;
-        Thu, 20 Jul 2023 15:22:13 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlH3KHrbBmUCxPgfPpbLxqktxIENvAldsQp/fzQUmaan/5XD49H+rZTOplA2Kz67oIrPn2OCTQ==
-X-Received: by 2002:a2e:7813:0:b0:2b0:297c:cbdf with SMTP id t19-20020a2e7813000000b002b0297ccbdfmr214436ljc.1.1689891732691;
-        Thu, 20 Jul 2023 15:22:12 -0700 (PDT)
-Date: Thu, 20 Jul 2023 18:22:08 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Stefan Hajnoczi <stefanha@gmail.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>,
-	Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-	qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org,
-	slp@redhat.com, marcandre.lureau@redhat.com,
-	viresh.kumar@linaro.org, sgarzare@redhat.com,
-	takahiro.akashi@linaro.org, erik.schilling@linaro.org,
-	manos.pitsidianakis@linaro.org, mathieu.poirier@linaro.org
-Message-ID: <20230720182128-mutt-send-email-mst@kernel.org>
-References: <20230704123600.1808604-1-alex.bennee@linaro.org>
- <20230706124347-mutt-send-email-mst@kernel.org>
- <20230720195837.GJ210977@fedora>
- <20230720171321-mutt-send-email-mst@kernel.org>
- <CAJSP0QVDBA0Fb+LVjJVWq7Dp7FosXAJsRJUCcAtdNr-VyzYipg@mail.gmail.com>
+        d=1e100.net; s=20221208; t=1689925481; x=1690530281;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VciaJ1gGIInEf67D/Jk0z/wlE+DJyDO31/bBt3CHuN0=;
+        b=d1MahQFlAXUR8zsDTZC6jwRB/l1rB0IksviN22EbEizTbfkqZAr6rtPCUoHt5jACKx
+         JPNALOKKnNbyLls+/vJTbelSlIv6rZfSMVS00QAESHbmmDXg+RAe4p/BIlod52ykg8bd
+         tsWWDCK3/bP3ffpx8WORrSifY5QnNt4FMLkjOEnHjEJkMC/DOQiyZeLYH1gr3Fkj4bUC
+         8z2psg2bnfHQNErl+KQeRB7BDbiaTzeYTlNC71ef3DkX3V3Q3wKN1cEx2yC/Zkz+VdOr
+         eLrj9JJjo6NkPKRuuG/wMZiB3wMKseQ3GVEXqczpVdT9mCJNe6QFim9v9vs8AEM4nNbD
+         ubVQ==
+X-Gm-Message-State: ABy/qLbGBaNxVS5ZlLsptAvs7IbII/vxxJWEqp0viEs4H8SCfQuGHP9b
+	le24vF/f/wBKP4i8GRkE8mHAsIh2BgnkOyoAQ9QimYRDQJPO1MbHIxm+Rt1DRMnFmOZQTINo8IZ
+	wjcmx/zYbpDsxiLtysq+qJLss+m13
+X-Received: by 2002:a0c:e1c3:0:b0:635:e56e:ccf1 with SMTP id v3-20020a0ce1c3000000b00635e56eccf1mr1322763qvl.46.1689925481113;
+        Fri, 21 Jul 2023 00:44:41 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlFcLQqEfTKDCHSI/jeoJRFNOMja8kuPmcLF4hAXuDu0x+bHFF0PN3cuAMOUPwr8DJPh2P2Bog==
+X-Received: by 2002:a0c:e1c3:0:b0:635:e56e:ccf1 with SMTP id v3-20020a0ce1c3000000b00635e56eccf1mr1322755qvl.46.1689925480876;
+        Fri, 21 Jul 2023 00:44:40 -0700 (PDT)
+From: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+X-Google-Original-From: Matias Ezequiel Vara Larsen <MVARALAR@redhat.com>
+Date: Fri, 21 Jul 2023 09:44:36 +0200
+To: Roman Kiryanov <rkir@google.com>
+Cc: virtio-dev@lists.oasis-open.org, JP Cottin <jpcottin@google.com>,
+	Jorge Moreira Broche <jemoreira@google.com>
+Message-ID: <ZLo3ZDfJvS/hAJVp@fedora>
+References: <CAOGAQeoLSGR2RtRHX0kyS5dxK=wa+mDZ8BRyZX5oDKaL16LdSg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJSP0QVDBA0Fb+LVjJVWq7Dp7FosXAJsRJUCcAtdNr-VyzYipg@mail.gmail.com>
+In-Reply-To: <CAOGAQeoLSGR2RtRHX0kyS5dxK=wa+mDZ8BRyZX5oDKaL16LdSg@mail.gmail.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [RFC PATCH] docs/interop: define STANDALONE protocol feature for
- vhost-user
+Subject: Re: [virtio-dev] virtio-snd and snapshots (e.g. in QEMU) when audio
+ is active
 
-On Thu, Jul 20, 2023 at 05:31:03PM -0400, Stefan Hajnoczi wrote:
-> On Thu, 20 Jul 2023 at 17:15, Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Thu, Jul 20, 2023 at 03:58:37PM -0400, Stefan Hajnoczi wrote:
-> > > On Thu, Jul 06, 2023 at 12:48:20PM -0400, Michael S. Tsirkin wrote:
-> > > > On Tue, Jul 04, 2023 at 01:36:00PM +0100, Alex Bennée wrote:
-> > > > > Currently QEMU has to know some details about the back-end to be able
-> > > > > to setup the guest. While various parts of the setup can be delegated
-> > > > > to the backend (for example config handling) this is a very piecemeal
-> > > > > approach.
-> > > >
-> > > > > This patch suggests a new feature flag (VHOST_USER_PROTOCOL_F_STANDALONE)
-> > > > > which the back-end can advertise which allows a probe message to be
-> > > > > sent to get all the details QEMU needs to know in one message.
-> > > >
-> > > > The reason we do piecemeal is that these existing pieces can be reused
-> > > > as others evolve or fall by wayside.
-> > > >
-> > > > For example, I can think of instances where you want to connect
-> > > > specifically to e.g. networking backend, and specify it
-> > > > on command line. Reasons could be many, e.g. for debugging,
-> > > > or to prevent connecting to wrong device on wrong channel
-> > > > (kind of like type safety).
-> > > >
-> > > > What is the reason to have 1 message? startup latency?
-> > > > How about we allow pipelining several messages then?
-> > > > Will be easier.
-> > >
-> > > This flag effectively says that the back-end is a full VIRTIO device
-> > > with a Device Status Register, Configuration Space, Virtqueues, the
-> > > device type, etc. This is different from previous vhost-user devices
-> > > which sometimes just offloaded certain virtqueues without providing the
-> > > full VIRTIO device (parts were emulated in the VMM).
-> > >
-> > > So for example, a vhost-user-net device does not support the controlq.
-> > > Alex's "standalone" device is a mode where the vhost-user protocol is
-> > > used but the back-end must implement a full virtio-net device.
-> > > Standalone devices are like vDPA device in this respect.
-> > >
-> > > I think it is important to have a protocol feature bit that advertises
-> > > that this is a standalone device, since the semantics are different for
-> > > traditional vhost-user-net devices.
-> >
-> > Not sure what that would gain as compared to a feature bit per
-> > message as we did previously.
-> 
-> Having a single feature bit makes it easier to distinguish between a
-> traditional vhost-user device and a standalone device.
-> 
-> For example, the presence of VHOST_USER_F_GET_DEVICE_ID doesn't tell
-> you whether this device is a standalone device that is appropriate for
-> a new generic QEMU --device vhost-user-device feature that Alex is
-> working on. It could be a traditional vhost-user device that is not
-> standalone but implements the VHOST_USER_GET_DEVICE_ID message.
-> 
-> How will we detect standalone devices? It will be messy if there is no
-> single feature bit that advertises that this back-end is a standalone
-> device.
-> 
-> Stefan
+Hello Roman,
 
-Looks like standalone implies some 5-6 messages to be supported.
-So just test the 6 bits are all ones.
+On Wed, Jul 19, 2023 at 04:21:08PM -0700, Roman Kiryanov wrote:
+> Hi,
+> 
+> I work in Android Studio Emulator and we use virtio-snd (implemented
+> ourselves) for audio output/input. According to the spec (1.2), the
+> device has one TX virtqueue for all output streams and one RX
+> virtqueue for all input streams. Each stream may and usually have more
+> than one period (I request 4 periods).
+> 
+> Because virtqueues are shared between streams (if there are more than
+> one stream in the same direction), I cannot fetch vq messages when a
+> stream needs one. I fetch vq messages (and put them into my own buffer
+> to process them later) when the kernel puts them into a vq. I hope
+> this is correct. 
 
--- 
-MST
+I think this is correct. If I understand correctly, this is the idea of
+the pre-buffering after the PREPARE command, i.e., to feed the audio
+engine before to START streaming (see section 5.14.6.6.1 PCM Command
+Lifecycle).
+
+> I think I tried processing them immediately (at least
+> for TX) but the kernel was not happy with this because I was draining
+> the buffer too fast causing XRUN.
+> If a snapshot request comes when audio streams are active I may have
+> several unprocessed messages for several streams for both TX and RX.
+> In my case messages are VirtQueueElement* which I don't think can be
+> saved directly.
+> 
+> Could you please advise what a device is expected to do in this case?
+> 
+
+Do you mean what a VMM shall do when taking a snapshot regarding the
+virtio-snd device?
+
+Matias
 
 
 ---------------------------------------------------------------------
