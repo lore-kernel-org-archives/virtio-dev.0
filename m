@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13411-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13412-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D61D8C001DF
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Jul 2023 16:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3AAACC0015E
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Jul 2023 16:02:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 22CCD2B028
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Jul 2023 16:01:20 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7D31329FC8
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Jul 2023 16:02:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0FDE19866C4
-	for <virtio-dev@archiver.kernel.org>; Wed, 26 Jul 2023 16:01:20 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7523C9866C3
+	for <virtio-dev@archiver.kernel.org>; Wed, 26 Jul 2023 16:02:49 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id ECC639866BE; Wed, 26 Jul 2023 16:01:19 +0000 (UTC)
+	id 6407D9866BE; Wed, 26 Jul 2023 16:02:49 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,108 +24,134 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D8EA89866BF
-	for <virtio-dev@lists.oasis-open.org>; Wed, 26 Jul 2023 16:01:19 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 520B39866BF
+	for <virtio-dev@lists.oasis-open.org>; Wed, 26 Jul 2023 16:02:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: PgSqdVU6MoW2ewWfOekZRw-1
+X-MC-Unique: YkOx1YI6OyWi7Ff5kErTkw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690387272; x=1690992072;
+        d=1e100.net; s=20221208; t=1690387366; x=1690992166;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AhY1Hs7QOV6A70CnYUt6ytS3aAg6p7aC6MnWNaWl6HI=;
-        b=QHRazLVQHuw5ZH6imNGHI0indHkarQndjmFHh9giWOTRL9nrS1VssphZwVYBlFyJmx
-         oagiKH4xQOgUb8df7+tqMNVoPKYvHvc+QajdHGKbZz54IvI1lIGbOmpdLPr2qoAnMFac
-         gDb7ZXkpV90glkK8LAzFii4yVwa+r8iQ7V/MbtJ+I+fuOYCRzr/T0v6Y7YKVbOnnhqQR
-         cuAubJP4S33i7C2I/AE/Nk/ofh0lVPVgG9RvK0TgjJ2LI7Yby1aUPoEZuS+8pAvsR/BU
-         odafgfGYW2cKUmD8lPz3OHc+t8tLMHAAp+rwRgNOBruSvpSQqoIjkLkSfetcyFGMHvSJ
-         zOoA==
-X-Gm-Message-State: ABy/qLaCqnL9czD3EqFWpE0ZVV6vXltlPANm4tEwXVzkM0XFgh/OnqE5
-	Xwp3X4Vtejd0XEwt+IYdPDAiUFAEP/I33o9XBMNULubonKWX/qHkSQUGgw1DBJNUJ3V3YoupONL
-	buKPRWXda0uer+z4Tp+6UeFDtQX6Y
-X-Received: by 2002:a17:906:6495:b0:977:e310:1ce7 with SMTP id e21-20020a170906649500b00977e3101ce7mr2239638ejm.38.1690387272806;
-        Wed, 26 Jul 2023 09:01:12 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlG1L+AG4ddmpoqNyrxJMl0PWlzoUaXUY6KXA4UGwKS/61jEW0cDEnSsh6rhCfqHmaoIX95XJg==
-X-Received: by 2002:a17:906:6495:b0:977:e310:1ce7 with SMTP id e21-20020a170906649500b00977e3101ce7mr2239613ejm.38.1690387272455;
-        Wed, 26 Jul 2023 09:01:12 -0700 (PDT)
-Date: Wed, 26 Jul 2023 12:01:01 -0400
+        bh=rZZLy8l+7VAilXfQQ7ZH9vv3kVijAPeW8XYe8UBV+I4=;
+        b=eZ0+gVnRzTkgk2oWttV0X7+Oai72sTAqudbBvsQZR+aKZvrSbz5/b0Bb79Mchnn85v
+         YT6ocljiQRuIpoL/VsS3Myd+lFeLfK87SVSj3CxRbb9bN61ZxN9SkxKD+4HfQm6paXlv
+         Vjx0Yda8DHLZmcFofEXQGsZ6NSeweFUoZ+4TzaM6lG/JNH7EL7pxDcgzqU9ioQNgnZdG
+         30bou6nSdxp0ltBwFONPX+AR/II+dnAIGBzs+6kB9ZSfOv7yt89S5DesXLUprBznkshd
+         jj+IjLBaHiPLvunTd/DB2PnPTe0vXPeU+4AmxnWK/IQcMnJAPnAs9bfIz5ILErmanHhm
+         1Gng==
+X-Gm-Message-State: ABy/qLYNAcO/zZ6dd5W9IaS00L1UhofVMCgsJ1E77Ad6iQdzcxNVcul/
+	Ny76unYcDJdQ5922mEeLxEDmx7M2MJTf5d3fhSRAK2/majwKCXaqhCDxdLC7+MpWnVxOhG+QLa1
+	F/lox10goEadwUEle/6xGc8AKdXW0
+X-Received: by 2002:a5d:6a85:0:b0:317:61d8:3c7e with SMTP id s5-20020a5d6a85000000b0031761d83c7emr1689610wru.26.1690387365976;
+        Wed, 26 Jul 2023 09:02:45 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlENEFAIWEpwv+cBFcnxTKpWLe+SVN6Bhmmem6FbzFvp+dXBQq4UD/En9Br0bdMc6cm8D1+Flg==
+X-Received: by 2002:a5d:6a85:0:b0:317:61d8:3c7e with SMTP id s5-20020a5d6a85000000b0031761d83c7emr1689587wru.26.1690387365626;
+        Wed, 26 Jul 2023 09:02:45 -0700 (PDT)
+Date: Wed, 26 Jul 2023 12:02:33 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Stefano Garzarella <sgarzare@redhat.com>,
+Cc: Stefan Hajnoczi <stefanha@gmail.com>,
 	Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
 	qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org,
 	slp@redhat.com, marcandre.lureau@redhat.com,
-	viresh.kumar@linaro.org, takahiro.akashi@linaro.org,
-	erik.schilling@linaro.org, manos.pitsidianakis@linaro.org,
-	mathieu.poirier@linaro.org
-Message-ID: <20230726120004-mutt-send-email-mst@kernel.org>
+	viresh.kumar@linaro.org, sgarzare@redhat.com,
+	takahiro.akashi@linaro.org, erik.schilling@linaro.org,
+	manos.pitsidianakis@linaro.org, mathieu.poirier@linaro.org
+Message-ID: <20230726120158-mutt-send-email-mst@kernel.org>
 References: <20230704123600.1808604-1-alex.bennee@linaro.org>
- <3ogh7u3ezp7vlrp3ticquoajgsnpnglplm44osrsd7gvxv2lyn@g22qgf4vwgp5>
- <87o7krg0sn.fsf@linaro.org>
- <qmwvywoy7lfkgr7kcc6cxghulgd5g2gvnv76mvkuxbqclbwmti@4qyiktfiu2ej>
- <20230720193601.GI210977@fedora>
+ <20230706124347-mutt-send-email-mst@kernel.org>
+ <20230720195837.GJ210977@fedora>
+ <20230720171321-mutt-send-email-mst@kernel.org>
+ <CAJSP0QVDBA0Fb+LVjJVWq7Dp7FosXAJsRJUCcAtdNr-VyzYipg@mail.gmail.com>
+ <20230720182128-mutt-send-email-mst@kernel.org>
+ <20230724180839.GC222590@fedora>
 MIME-Version: 1.0
-In-Reply-To: <20230720193601.GI210977@fedora>
+In-Reply-To: <20230724180839.GC222590@fedora>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] [RFC PATCH] docs/interop: define STANDALONE
- protocol feature for vhost-user
+Subject: [virtio-dev] Re: [RFC PATCH] docs/interop: define STANDALONE protocol feature for
+ vhost-user
 
-On Thu, Jul 20, 2023 at 03:36:01PM -0400, Stefan Hajnoczi wrote:
-> On Fri, Jul 07, 2023 at 12:27:39PM +0200, Stefano Garzarella wrote:
-> > On Tue, Jul 04, 2023 at 04:02:42PM +0100, Alex Bennée wrote:
+On Mon, Jul 24, 2023 at 02:08:39PM -0400, Stefan Hajnoczi wrote:
+> On Thu, Jul 20, 2023 at 06:22:08PM -0400, Michael S. Tsirkin wrote:
+> > On Thu, Jul 20, 2023 at 05:31:03PM -0400, Stefan Hajnoczi wrote:
+> > > On Thu, 20 Jul 2023 at 17:15, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Thu, Jul 20, 2023 at 03:58:37PM -0400, Stefan Hajnoczi wrote:
+> > > > > On Thu, Jul 06, 2023 at 12:48:20PM -0400, Michael S. Tsirkin wrote:
+> > > > > > On Tue, Jul 04, 2023 at 01:36:00PM +0100, Alex Bennée wrote:
+> > > > > > > Currently QEMU has to know some details about the back-end to be able
+> > > > > > > to setup the guest. While various parts of the setup can be delegated
+> > > > > > > to the backend (for example config handling) this is a very piecemeal
+> > > > > > > approach.
+> > > > > >
+> > > > > > > This patch suggests a new feature flag (VHOST_USER_PROTOCOL_F_STANDALONE)
+> > > > > > > which the back-end can advertise which allows a probe message to be
+> > > > > > > sent to get all the details QEMU needs to know in one message.
+> > > > > >
+> > > > > > The reason we do piecemeal is that these existing pieces can be reused
+> > > > > > as others evolve or fall by wayside.
+> > > > > >
+> > > > > > For example, I can think of instances where you want to connect
+> > > > > > specifically to e.g. networking backend, and specify it
+> > > > > > on command line. Reasons could be many, e.g. for debugging,
+> > > > > > or to prevent connecting to wrong device on wrong channel
+> > > > > > (kind of like type safety).
+> > > > > >
+> > > > > > What is the reason to have 1 message? startup latency?
+> > > > > > How about we allow pipelining several messages then?
+> > > > > > Will be easier.
+> > > > >
+> > > > > This flag effectively says that the back-end is a full VIRTIO device
+> > > > > with a Device Status Register, Configuration Space, Virtqueues, the
+> > > > > device type, etc. This is different from previous vhost-user devices
+> > > > > which sometimes just offloaded certain virtqueues without providing the
+> > > > > full VIRTIO device (parts were emulated in the VMM).
+> > > > >
+> > > > > So for example, a vhost-user-net device does not support the controlq.
+> > > > > Alex's "standalone" device is a mode where the vhost-user protocol is
+> > > > > used but the back-end must implement a full virtio-net device.
+> > > > > Standalone devices are like vDPA device in this respect.
+> > > > >
+> > > > > I think it is important to have a protocol feature bit that advertises
+> > > > > that this is a standalone device, since the semantics are different for
+> > > > > traditional vhost-user-net devices.
+> > > >
+> > > > Not sure what that would gain as compared to a feature bit per
+> > > > message as we did previously.
 > > > 
-> > > Stefano Garzarella <sgarzare@redhat.com> writes:
+> > > Having a single feature bit makes it easier to distinguish between a
+> > > traditional vhost-user device and a standalone device.
 > > > 
-> > > > On Tue, Jul 04, 2023 at 01:36:00PM +0100, Alex Bennée wrote:
-> > > > > diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
-> > > > > index 5a070adbc1..85b1b1583a 100644
-> > > > > --- a/docs/interop/vhost-user.rst
-> > > > > +++ b/docs/interop/vhost-user.rst
-> > > > > @@ -275,6 +275,21 @@ Inflight description
-> > > > > 
-> > > > > :queue size: a 16-bit size of virtqueues
-> > > > > 
-> > > > > +Backend specifications
-> > > > > +^^^^^^^^^^^^^^^^^^^^^^
-> > > > > +
-> > > > > ++-----------+-------------+------------+------------+
-> > > > > +| device id | config size |   min_vqs  |   max_vqs  |
-> > > > > ++-----------+-------------+------------+------------+
-> > > > > +
-> > > > > +:device id: a 32-bit value holding the VirtIO device ID
-> > > > > +
-> > > > > +:config size: a 32-bit value holding the config size (see ``VHOST_USER_GET_CONFIG``)
-> > > > > +
-> > > > > +:min_vqs: a 32-bit value holding the minimum number of vqs supported
-> > > > 
-> > > > Why do we need the minimum?
+> > > For example, the presence of VHOST_USER_F_GET_DEVICE_ID doesn't tell
+> > > you whether this device is a standalone device that is appropriate for
+> > > a new generic QEMU --device vhost-user-device feature that Alex is
+> > > working on. It could be a traditional vhost-user device that is not
+> > > standalone but implements the VHOST_USER_GET_DEVICE_ID message.
 > > > 
-> > > We need to know the minimum number because some devices have fixed VQs
-> > > that must be present.
+> > > How will we detect standalone devices? It will be messy if there is no
+> > > single feature bit that advertises that this back-end is a standalone
+> > > device.
+> > > 
+> > > Stefan
 > > 
-> > But does QEMU need to know this?
-> > 
-> > Or is it okay that the driver will then fail in the guest if there
-> > are not the right number of queues?
+> > Looks like standalone implies some 5-6 messages to be supported.
+> > So just test the 6 bits are all ones.
 > 
-> I don't understand why min_vqs is needed either. It's not the
-> front-end's job to ensure that the device will be used properly. A
-> spec-compliant driver will work with a spec-compliant device, so it's
-> not clear why the front-end needs this information.
+> It's not clear to me that the individual bits together mean this is
+> really a standalone device, but let's go with individual commands and
+> see if a front-end can distinguish standalone devices or not. If not,
+> then we can still add "standalone" feature bit before merging the code.
 > 
 > Stefan
 
 
-
-I think this really demonstrates why we should keep separate
-messages and not the "standalone" thing which seems to
-mean "bundle a bunch of mostly unrelated stuff in one message":
-this way each field is carefully documented.
-
+I think it just shows that what a "standalone" device is just isn't
+that well defined ;).
 
 -- 
 MST
