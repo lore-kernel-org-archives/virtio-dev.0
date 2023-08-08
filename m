@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13498-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13499-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0D753C04A94
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 05:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8955DC001DE
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:06:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 339B5F3F52
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 05:21:41 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id E3C7929FCD
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:06:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0F1F2986492
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 05:21:41 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D6A919864D1
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:06:38 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id EB24D98403A; Tue,  8 Aug 2023 05:21:40 +0000 (UTC)
+	id C787D98403A; Tue,  8 Aug 2023 06:06:38 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,119 +24,80 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D7555986460
-	for <virtio-dev@lists.oasis-open.org>; Tue,  8 Aug 2023 05:21:40 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B2CB2986460;
+	Tue,  8 Aug 2023 06:06:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: PiYTn-XlPA6b86JwzSJohw-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691472095; x=1692076895;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CDlBZ9v996jxvoduL6RY8clBcmx3SfiXnJlQ2jjhb9s=;
-        b=X+thb0haTyDrz0Rk4RSQU0RU56AQxSbk5V+ASJ0UthD8s3Mx7Ve/agLEBYPx9Hlc1G
-         +qXRFw+cB0Cr7KtgGgFvXRYdDOvRB9YNxYiAUdRebzmaS5AoCZj8Pfrf5j2pgWhl52yK
-         ypi006FgJE0YEQQ9yivYyIWtp7NaIZqM4ME8Lo3KJWipkAvawYkWzYtbFWhruZxfUmiM
-         RE8NnhJLA65I8rek3df8FL4l8WMZD4gK4y8kZZ3P3UXpNkDeSX73eEH5bRU1PDG6WqIB
-         bndcyxXacAk+2/4P9LWrcFkpzNPFGDF1RM1EygZwqczhqwCqB1rcOe/iU44FQMZHOcj2
-         qt8w==
-X-Gm-Message-State: AOJu0YyY6UxWb8vKggrTQhtDCZoo2+hZ3ctJaCZ+LkcZipf5MF4CbhOp
-	1BJXJHynY8zh42UyZl+lyHWEOGrO6YKNeNhAJZ89Vq2ULC+VfSWD0wcUuGwD1/HsWamFfZkctlg
-	ZIP+pwT5vXA/y/enEtILs8+Jpt+EKhJU6WczqiT/3/p0l
-X-Received: by 2002:a2e:90c2:0:b0:2b5:81bc:43a8 with SMTP id o2-20020a2e90c2000000b002b581bc43a8mr7704870ljg.0.1691472095797;
-        Mon, 07 Aug 2023 22:21:35 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IH3ZKSJhtTz5T8pKlyzYUIb126Pd32OJkgLQRfGOwHcPHcYRE9zNF/SfTNKbF5Xzom1Qz0y9rJ0BbDPw1ZiHQg=
-X-Received: by 2002:a2e:90c2:0:b0:2b5:81bc:43a8 with SMTP id
- o2-20020a2e90c2000000b002b581bc43a8mr7704859ljg.0.1691472095497; Mon, 07 Aug
- 2023 22:21:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230803083150.46745-1-xuanzhuo@linux.alibaba.com>
- <20230803054333-mutt-send-email-mst@kernel.org> <1691059929.235804-1-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB5481B5B3C5366CCACB221083DC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691060652.3764465-2-xuanzhuo@linux.alibaba.com> <PH0PR12MB548191AE225B08BACFC0C350DC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691061508.9066079-5-xuanzhuo@linux.alibaba.com> <PH0PR12MB5481CB7BE555F4672394A6ECDC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691062204.2378864-7-xuanzhuo@linux.alibaba.com> <PH0PR12MB5481E104793F9E68E1DC95CADC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691062877.0013635-8-xuanzhuo@linux.alibaba.com> <PH0PR12MB5481C3CE21016385BF7D6FF0DC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691129914.3255427-1-xuanzhuo@linux.alibaba.com> <PH0PR12MB5481F521F146049E5E483B7DDC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691132049.7182267-2-xuanzhuo@linux.alibaba.com> <PH0PR12MB5481BE16AC810CD3A6D64832DC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691135097.4908528-3-xuanzhuo@linux.alibaba.com> <20230804053958-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548152A5677F0508A62587AFDC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691388171.3192031-1-xuanzhuo@linux.alibaba.com> <CACGkMEtKcmvBqSJac4aNQMtvE+fYnOeLxeeXz1vtP5d2PM69bQ@mail.gmail.com>
- <1691462188.324996-1-xuanzhuo@linux.alibaba.com> <CACGkMEszg7nUNH2bW+EQLVxnPvUzT66D8=V8x7JKw+DL=RzsiQ@mail.gmail.com>
- <PH0PR12MB5481D3BDFB943D7856D846A9DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvzU4SE8wBoTE6A56S9bGM_rtv=nU113WhEUL2EBEBaug@mail.gmail.com>
- <PH0PR12MB5481C7090E20AF17A9B2C437DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvRJ3wn_oeue9nDGL-itq=zY=m3_GgsoC_WSU+PYO_s0w@mail.gmail.com> <PH0PR12MB54810FEA361DFB7C759F2AADDC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB54810FEA361DFB7C759F2AADDC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 8 Aug 2023 13:21:23 +0800
-Message-ID: <CACGkMEuRHK8=eJOUvj_GtC58Fxyk0SwubAM1=gY-S5SBkg9_3g@mail.gmail.com>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VpJvyzs_1691474789;
+Message-ID: <1691474535.0577738-7-xuanzhuo@linux.alibaba.com>
+Date: Tue, 8 Aug 2023 14:02:15 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To: Parav Pandit <parav@nvidia.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, 
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, "Michael S. Tsirkin" <mst@redhat.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: RE: RE: RE: RE: [virtio-comment] RE: RE: RE: RE: [RFC]
- virtio-net: support access and control the member devices
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>
+References: <20230803083150.46745-1-xuanzhuo@linux.alibaba.com>
+ <20230803054333-mutt-send-email-mst@kernel.org>
+ <1691059929.235804-1-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481B5B3C5366CCACB221083DC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691060652.3764465-2-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB548191AE225B08BACFC0C350DC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691061508.9066079-5-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481CB7BE555F4672394A6ECDC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691062204.2378864-7-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481E104793F9E68E1DC95CADC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691062877.0013635-8-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481C3CE21016385BF7D6FF0DC08A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691129914.3255427-1-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481F521F146049E5E483B7DDC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691132049.7182267-2-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481BE16AC810CD3A6D64832DC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691135097.4908528-3-xuanzhuo@linux.alibaba.com>
+ <20230804053958-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548152A5677F0508A62587AFDC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691388171.3192031-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEtKcmvBqSJac4aNQMtvE+fYnOeLxeeXz1vtP5d2PM69bQ@mail.gmail.com>
+ <1691462188.324996-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEszg7nUNH2bW+EQLVxnPvUzT66D8=V8x7JKw+DL=RzsiQ@mail.gmail.com>
+ <PH0PR12MB5481D3BDFB943D7856D846A9DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691467247.671468-4-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB54813D793F8BAA9D6614FA78DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1691468213.0926805-6-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB548149C76AE6EA7EC7C93AE8DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB548149C76AE6EA7EC7C93AE8DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: [virtio-dev] Re: RE: RE: RE: RE: RE: RE: RE: [virtio-comment] RE: RE: RE: RE: [RFC] virtio-net: support access and control the member devices
 
-On Tue, Aug 8, 2023 at 12:38=E2=80=AFPM Parav Pandit <parav@nvidia.com> wro=
-te:
+On Tue, 8 Aug 2023 04:34:18 +0000, Parav Pandit <parav@nvidia.com> wrote:
 >
+> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Sent: Tuesday, August 8, 2023 9:47 AM
 >
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Tuesday, August 8, 2023 10:03 AM
->
-> > > This option because it is in use by very big and mature eco system of=
- multiple
-> > sw stacks, kernel subsystem, drivers, and nics for several years now.
-> > >
-> > > > A drawback of using switch is that it introduces dependencies.
-> > > >
-> > > Feature is not a dependency. :)
+> > I don't care whether swtich is introduced or not. Because we have no
+> > dependencies on it.
 > >
-> > Well, I meant you need a switch in order to let the IP filter work then=
-.
+> > My requirement is to implement ip restriction which is very important for cloud
+> > scenarios.
 > >
-> Ok.
->
-> > >
-> > > > > A virtio switch object can be part of a existing virtio device or
-> > > > > a new virtio
-> > > > device type in itself.
-> > > >
-> > > > That's fine.
-> > > >
-> > > > >
-> > > > > Xuan,
-> > > > > As we discussed, since the owner device packets also needs to be
-> > > > > filtered, potentially outside of the owner device itself,
-> > > >
-> > > > This seems the admin request out of the scope of virtio.
-> > > >
-> > > Not really, it could be virto switch device that manage PF also.
-> > > At that point, there may be two functions, PF and switching PF, switc=
-hing PF
-> > filters the traffic of the PF.
-> >
-> > That's fine. But such filtering needs to be done in a switch specific w=
-ay not via
-> > the admin command/virtqueue.
->
-> A switch object needs a generic flow filter vq(s) to meet the high rate n=
-eeded.
-> Several of us have worked through the flow filter vq for few several week=
-s on bi-weekly basis and over public mailing lists.
->
-> We can differ the design discussion once we have clarity on requirements.=
- :)
+> These restrictions are needed for PF and VFs both, so can this be implemented outside of the PF and VF in your environment?
 
-It can be done via flow filter or not for sure. We need more inputs on
-the requirement. Maybe a new thread is more suitable.
 
-Thanks
+I see.
+
+The point is that we want to config by the virtio admin queue (or cvq).
+So we want introduce this feature to the virtio.
+We will expose this function to the users.
+We want the user uses a standard way to config the ip restrictions.
+
+Thanks.
+
+>
+> > I think the gap is, I don't care how it's implemented. Because for me, it can be
+> > supported by switch rx, tx filter or virtio-net device. I'd love to hear everyone's
+> > opinions.
+> >
+> One proven model is to have virtio-net device to have switch object that exposes flow filters capability, if at all this is needed in your env.
+>
+
 
 
 ---------------------------------------------------------------------
