@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13483-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13484-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9CAC6EB64DD
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 02:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4521BC001DB
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 02:42:17 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1537E66DCA
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 02:30:43 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9AB927C6AF
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 02:42:16 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0C88E986553
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 02:30:43 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 947CB98651F
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 02:42:16 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id F2EAC986460; Tue,  8 Aug 2023 02:30:42 +0000 (UTC)
+	id 87FA1986467; Tue,  8 Aug 2023 02:42:16 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,73 +24,210 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DE14C986471
-	for <virtio-dev@lists.oasis-open.org>; Tue,  8 Aug 2023 02:30:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 72CFD986460;
+	Tue,  8 Aug 2023 02:42:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: M-FMOZ6sOWOpKzXvSvwihA-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691461837; x=1692066637;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xaNspgpLdRo8ZigJihjxrI5TLAylk17gtHYl0h+dC3c=;
-        b=iZ8T7TBqKs7vWvJ483aosbcqCAWOeOi8Arn5Go4SO96IE6CHsMBDgk25jx0Rt0b4ug
-         LL8kiK+gd6nkTjF6OXMVhbSSqlIw8ta4YoBvwzsS9ElFQT01MqTL2hpMaiWQpaQubBV/
-         HFdcgFZWqmm4SbvSgo2Cws+NZDMWIMBzL+vfLWnVjj3riJKv4om4tYpJ6Ba1OyxbOUMX
-         A02Pr9VUSJn3OC15kmHCgXfLUwDC92xxcCFvTT0rabcqu2zoNM8d2HZxFS9XyfP3LwSl
-         qcogP36+oqCHpj7aeneevEnRvS0PdP1RKTi9wJTxvpzHEMfQlsVc4opdg1NTNQ4jC9Gl
-         NyoQ==
-X-Gm-Message-State: AOJu0Yw30dQmFLqUSBzRbGpwobjkH66KYhF0WgHkLT0IubXoip6i4uyW
-	oao5j2OV37aZsDlBI5I2zoZHJJcGHnUsIIFztLyzAeAqkK/YaJhxbNQ+b8qA1xHtZmOOtOpf4P+
-	HuIAse30hKMihvp+uzU7Xj0IDjRqII7ubx9F//ddO7iIN
-X-Received: by 2002:a2e:7004:0:b0:2b9:d19c:2ad9 with SMTP id l4-20020a2e7004000000b002b9d19c2ad9mr7147127ljc.35.1691461837414;
-        Mon, 07 Aug 2023 19:30:37 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFyqEOgZp2TPDZ48OmwkeoI8HMoAGbxtWMkP5nMCwuCvmmJnWl+aFyhm4bAbz+DGleWMg14PSbXHEv0T6Uxjfk=
-X-Received: by 2002:a2e:7004:0:b0:2b9:d19c:2ad9 with SMTP id
- l4-20020a2e7004000000b002b9d19c2ad9mr7147119ljc.35.1691461837133; Mon, 07 Aug
- 2023 19:30:37 -0700 (PDT)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VpJ8MNN_1691462527;
+Date: Tue, 8 Aug 2023 10:42:07 +0800
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
+	jasowang@redhat.com, parav@nvidia.com, xuanzhuo@linux.alibaba.com
+Message-ID: <20230808024207.GC11361@h68b04307.sqa.eu95>
+References: <20230728084635.19916-1-hengqi@linux.alibaba.com>
+ <20230807104317-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-References: <20230803083150.46745-1-xuanzhuo@linux.alibaba.com>
- <20230803054333-mutt-send-email-mst@kernel.org> <CACGkMEsdM+bi_scj6kgo7FrRDNGwF-=37bT8tOC6DXg9fTuNRw@mail.gmail.com>
- <PH0PR12MB5481EBFEB23938CDC765DA54DC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481EBFEB23938CDC765DA54DC09A@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 8 Aug 2023 10:30:26 +0800
-Message-ID: <CACGkMEvKoZ21tJEDn-hgEzjDcixbxiyejtm_=RD7zebaCnuxxQ@mail.gmail.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, 
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [RFC] virtio-net: support access and control the member devices
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230807104317-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH] virtio-net: support the outer
+ source port hash for UDP-encapsulated packets
 
-On Fri, Aug 4, 2023 at 12:05=E2=80=AFPM Parav Pandit <parav@nvidia.com> wro=
-te:
->
->
->
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Friday, August 4, 2023 9:02 AM
->
-> > I think we probably need some split here.
+On Mon, Aug 07, 2023 at 10:56:41AM -0400, Michael S. Tsirkin wrote:
+> On Fri, Jul 28, 2023 at 04:46:35PM +0800, Heng Qi wrote:
+> > UDP tunneling protocols usually identify a flow using the outer source UDP
+> > port, which is useful for processing UDP-encapsulated packets, such as
+> > increasing entropy for RSS queue selection or hashing the same flow to the
+> > same receive queue. Therefore, we extend it as a new RSS configuration.
 > >
-> > E.g the fields belonging to configuration space might go with a more ge=
-neral
-> > interface like admin command/queue.
-> >
-> > The net specific ones need to go through a net specific interface.
-> > (cvq of PF or reps)
->
-> I don=E2=80=99t see the need of such split.
-> Why do you think that?
+> 
+> that's not a real motivation is it? it's already included for
+> increasing entropy.
+> 
+> the real motivation is ignoring source and destination ip
+> because they can change if tunneling gateway changes, right?
 
-It's simply because part of the fields belong to config space.
+Yes, I will rewrite the commit log with your comments.
 
-Thanks
+> 
+>  
+> > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> > Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  device-types/net/description.tex        | 49 ++++++++++++++++++++++++-
+> >  device-types/net/device-conformance.tex |  1 +
+> >  2 files changed, 48 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+> > index 76585b0..366775a 100644
+> > --- a/device-types/net/description.tex
+> > +++ b/device-types/net/description.tex
+> > @@ -88,6 +88,9 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+> >  \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+> >      channel.
+> >  
+> > +\item[VIRTIO_NET_F_HASH_UDP_TUNNEL_SRCPORT(50)] Device supports outer source port hash
+> > +    for UDP-encapsulated packets.
+> > +
+> >  \item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for encapsulated packets.
+> >  
+> >  \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
+> > @@ -150,6 +153,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+> >  \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+> >  \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+> >  \item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+> > +\item[VIRTIO_NET_F_HASH_UDP_TUNNEL_SRCPORT] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+> >  \end{description}
+> >  
+> >  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+> > @@ -927,11 +931,29 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+> >  #define VIRTIO_NET_HASH_TYPE_UDP_EX            (1 << 8)
+> >  \end{lstlisting}
+> >  
+> > +A UDP-encapsulated packet uses UDP as the transport protocol in the outer header
+> > +\ref{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / Encapsulated packet}.
+> > +UDP tunneling protocols usually use the outer source UDP port to identify a specific flow.
+> > +The hash calculated over the outer source UDP port
+> > can thus be used by the device to queue these different flows
+> 
+> what does this "can be used" mean here is unclear.
 
+For example, "can be used" when the same flow traverses different
+tunnels and has different outer source IPs.
+
+> 
+> > +on different receive queues or queue the same specific flow on the same receive queue.
+> 
+> different from what? same as what?
+
+different flows -> different queues, not different from something.
+
+I'll rewrite this paragraph for more clarity.
+
+> 
+> 
+> > +
+> > +If additionally the feature VIRTIO_NET_F_HASH_UDP_TUNNEL_SRCPORT was negotiated,
+> > +the following hash types are applicable for UDP-encapsulated packets:
+> > +\begin{lstlisting}
+> > +#define VIRTIO_NET_HASH_TYPE_UDPv4_TUNNEL_SRCPORT (1 << 9)
+> > +#define VIRTIO_NET_HASH_TYPE_UDPv6_TUNNEL_SRCPORT (1 << 10)
+> > +\end{lstlisting}
+> > +
+> >  \subparagraph{IPv4 packets}
+> >  \label{sec:Device Types / Network Device / Device Operation / Processing of Incoming Packets / Hash calculation for incoming packets / IPv4 packets}
+> >  The device calculates the hash on IPv4 packets according to 'Enabled hash types' bitmask as follows:
+> >  \begin{itemize}
+> > -\item If VIRTIO_NET_HASH_TYPE_TCPv4 is set and the packet has
+> > +\item If additionally VIRTIO_NET_HASH_TYPE_UDPv4_TUNNEL_SRCPORT is set and a received encapsulated
+> 
+> what makes the packet "encapsulated" here is unclear.
+
+UDP tunneling protocols makes the packet "encapsulated".
+
+Will modify in the next version.
+
+Thanks!
+
+> 
+> > +packet has an outer UDPv4 header, the hash is calculated over the following fields:
+> > +\begin{itemize}
+> > +\item Outer source UDP port
+> > +\end{itemize}
+> > +\item Else if VIRTIO_NET_HASH_TYPE_TCPv4 is set and the packet has
+> >  a TCP header, the hash is calculated over the following fields:
+> >  \begin{itemize}
+> >  \item Source IP address
+> > @@ -961,7 +983,12 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+> >  The device calculates the hash on IPv6 packets without extension
+> >  headers according to 'Enabled hash types' bitmask as follows:
+> >  \begin{itemize}
+> > -\item If VIRTIO_NET_HASH_TYPE_TCPv6 is set and the packet has
+> > +\item If additionally VIRTIO_NET_HASH_TYPE_UDPv6_TUNNEL_SRCPORT is set and a received encapsulated
+> > +packet has an outer UDPv6 header, the hash is calculated over the following fields:
+> > +\begin{itemize}
+> > +\item Outer source UDP port
+> > +\end{itemize}
+> > +\item Else if VIRTIO_NET_HASH_TYPE_TCPv6 is set and the packet has
+> >  a TCPv6 header, the hash is calculated over the following fields:
+> >  \begin{itemize}
+> >  \item Source IPv6 address
+> > @@ -991,6 +1018,11 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+> >  The device calculates the hash on IPv6 packets with extension
+> >  headers according to 'Enabled hash types' bitmask as follows:
+> >  \begin{itemize}
+> > +\item If additionally VIRTIO_NET_HASH_TYPE_UDPv6_TUNNEL_SRCPORT is set and a received encapsulated
+> > +packet has an outer UDPv6 header, the hash is calculated over the following fields:
+> > +\begin{itemize}
+> > +\item Outer source UDP port
+> > +\end{itemize}
+> >  \item If VIRTIO_NET_HASH_TYPE_TCP_EX is set and the packet
+> >  has a TCPv6 header, the hash is calculated over the following fields:
+> >  \begin{itemize}
+> > @@ -1139,8 +1171,21 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+> >  #define VIRTIO_NET_HASH_REPORT_IPv6_EX         7
+> >  #define VIRTIO_NET_HASH_REPORT_TCPv6_EX        8
+> >  #define VIRTIO_NET_HASH_REPORT_UDPv6_EX        9
+> > +#define VIRTIO_NET_HASH_REPORT_UDPv4_TUNNEL_SRCPORT 10 /* Only if additionally VIRTIO_NET_F_HASH_UDP_TUNNEL_SRCPORT was negotiated */
+> > +#define VIRTIO_NET_HASH_REPORT_UDPv6_TUNNEL_SRCPORT 11 /* Only if additionally VIRTIO_NET_F_HASH_UDP_TUNNEL_SRCPORT was negotiated */
+> >  \end{lstlisting}
+> >  
+> > +\devicenormative{\subparagraph}{Outer Source UDP Port}{Device Types / Network Device / Device Operation / Outer Source UDP Port}
+> > +
+> > +When all the following cases occur:
+> > +\begin{itemize}
+> > +\item Both VIRTIO_NET_F_HASH_UDP_TUNNEL_SRCPORT and VIRTIO_NET_F_HASH_TUNNEL are negotiated.
+> > +\item A received UDP-encapsulated packet's outer header matches one of the encapsulation types enabled in \field{enabled_tunnel_types}.
+> > +\item VIRTIO_NET_HASH_TYPE_UDPv4_TUNNEL_SRCPORT is set in \field{hash_types} and a received encapsulated packet has an outer UDPv4 header or
+> > +      VIRTIO_NET_HASH_TYPE_UDPv6_TUNNEL_SRCPORT is set in \field{hash_types} and a received encapsulated packet has an outer UDPv6 header.
+> > +\end{itemize}
+> > +the device MUST calculate the hash over the inner header rather than the outer source UDP port.
+> > +
+> >  \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue}
+> >  
+> >  The driver uses the control virtqueue (if VIRTIO_NET_F_CTRL_VQ is
+> > diff --git a/device-types/net/device-conformance.tex b/device-types/net/device-conformance.tex
+> > index f88f48b..4fd036b 100644
+> > --- a/device-types/net/device-conformance.tex
+> > +++ b/device-types/net/device-conformance.tex
+> > @@ -7,6 +7,7 @@
+> >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Packet Transmission}
+> >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Setting Up Receive Buffers}
+> >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Processing of Incoming Packets}
+> > +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Outer Source UDP Port}
+> >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Packet Receive Filtering}
+> >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Setting MAC Address Filtering}
+> >  \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / VLAN Filtering}
+> > -- 
+> > 2.19.1.6.gb485710b
+> 
+> 
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+> 
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+> 
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
