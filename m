@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13499-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13500-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8955DC001DE
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 46451C001DB
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:17:17 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id E3C7929FCD
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:06:38 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A4AAF42C29
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:17:16 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id D6A919864D1
-	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:06:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 9D02F9864D1
+	for <virtio-dev@archiver.kernel.org>; Tue,  8 Aug 2023 06:17:16 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C787D98403A; Tue,  8 Aug 2023 06:06:38 +0000 (UTC)
+	id 91C6198403A; Tue,  8 Aug 2023 06:17:16 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,18 +24,18 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B2CB2986460;
-	Tue,  8 Aug 2023 06:06:35 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7A8DF986460;
+	Tue,  8 Aug 2023 06:17:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VpJvyzs_1691474789;
-Message-ID: <1691474535.0577738-7-xuanzhuo@linux.alibaba.com>
-Date: Tue, 8 Aug 2023 14:02:15 +0800
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VpK24NY_1691475426;
+Message-ID: <1691475379.321958-8-xuanzhuo@linux.alibaba.com>
+Date: Tue, 8 Aug 2023 14:16:19 +0800
 From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To: Parav Pandit <parav@nvidia.com>
+To: Jason Wang <jasowang@redhat.com>
 Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
  "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
  "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>
+ Parav Pandit <parav@nvidia.com>
 References: <20230803083150.46745-1-xuanzhuo@linux.alibaba.com>
  <20230803054333-mutt-send-email-mst@kernel.org>
  <1691059929.235804-1-xuanzhuo@linux.alibaba.com>
@@ -60,45 +60,82 @@ References: <20230803083150.46745-1-xuanzhuo@linux.alibaba.com>
  <1691462188.324996-1-xuanzhuo@linux.alibaba.com>
  <CACGkMEszg7nUNH2bW+EQLVxnPvUzT66D8=V8x7JKw+DL=RzsiQ@mail.gmail.com>
  <PH0PR12MB5481D3BDFB943D7856D846A9DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691467247.671468-4-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB54813D793F8BAA9D6614FA78DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1691468213.0926805-6-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB548149C76AE6EA7EC7C93AE8DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB548149C76AE6EA7EC7C93AE8DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
-Subject: [virtio-dev] Re: RE: RE: RE: RE: RE: RE: RE: [virtio-comment] RE: RE: RE: RE: [RFC] virtio-net: support access and control the member devices
+ <CACGkMEvzU4SE8wBoTE6A56S9bGM_rtv=nU113WhEUL2EBEBaug@mail.gmail.com>
+ <PH0PR12MB5481C7090E20AF17A9B2C437DC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEvRJ3wn_oeue9nDGL-itq=zY=m3_GgsoC_WSU+PYO_s0w@mail.gmail.com>
+ <PH0PR12MB54810FEA361DFB7C759F2AADDC0DA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEuRHK8=eJOUvj_GtC58Fxyk0SwubAM1=gY-S5SBkg9_3g@mail.gmail.com>
+In-Reply-To: <CACGkMEuRHK8=eJOUvj_GtC58Fxyk0SwubAM1=gY-S5SBkg9_3g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: RE: RE: RE: RE: [virtio-comment] RE: RE: RE: RE: [RFC] virtio-net: support access and control the member devices
 
-On Tue, 8 Aug 2023 04:34:18 +0000, Parav Pandit <parav@nvidia.com> wrote:
->
-> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Sent: Tuesday, August 8, 2023 9:47 AM
->
-> > I don't care whether swtich is introduced or not. Because we have no
-> > dependencies on it.
+On Tue, 8 Aug 2023 13:21:23 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Tue, Aug 8, 2023 at 12:38=E2=80=AFPM Parav Pandit <parav@nvidia.com> w=
+rote:
 > >
-> > My requirement is to implement ip restriction which is very important for cloud
-> > scenarios.
 > >
-> These restrictions are needed for PF and VFs both, so can this be implemented outside of the PF and VF in your environment?
+> > > From: Jason Wang <jasowang@redhat.com>
+> > > Sent: Tuesday, August 8, 2023 10:03 AM
+> >
+> > > > This option because it is in use by very big and mature eco system =
+of multiple
+> > > sw stacks, kernel subsystem, drivers, and nics for several years now.
+> > > >
+> > > > > A drawback of using switch is that it introduces dependencies.
+> > > > >
+> > > > Feature is not a dependency. :)
+> > >
+> > > Well, I meant you need a switch in order to let the IP filter work th=
+en.
+> > >
+> > Ok.
+> >
+> > > >
+> > > > > > A virtio switch object can be part of a existing virtio device =
+or
+> > > > > > a new virtio
+> > > > > device type in itself.
+> > > > >
+> > > > > That's fine.
+> > > > >
+> > > > > >
+> > > > > > Xuan,
+> > > > > > As we discussed, since the owner device packets also needs to be
+> > > > > > filtered, potentially outside of the owner device itself,
+> > > > >
+> > > > > This seems the admin request out of the scope of virtio.
+> > > > >
+> > > > Not really, it could be virto switch device that manage PF also.
+> > > > At that point, there may be two functions, PF and switching PF, swi=
+tching PF
+> > > filters the traffic of the PF.
+> > >
+> > > That's fine. But such filtering needs to be done in a switch specific=
+ way not via
+> > > the admin command/virtqueue.
+> >
+> > A switch object needs a generic flow filter vq(s) to meet the high rate=
+ needed.
+> > Several of us have worked through the flow filter vq for few several we=
+eks on bi-weekly basis and over public mailing lists.
+> >
+> > We can differ the design discussion once we have clarity on requirement=
+s. :)
+>
+> It can be done via flow filter or not for sure. We need more inputs on
+> the requirement. Maybe a new thread is more suitable.
 
+YES.
 
-I see.
-
-The point is that we want to config by the virtio admin queue (or cvq).
-So we want introduce this feature to the virtio.
-We will expose this function to the users.
-We want the user uses a standard way to config the ip restrictions.
+I will post a summary to a new thread.
 
 Thanks.
 
->
-> > I think the gap is, I don't care how it's implemented. Because for me, it can be
-> > supported by switch rx, tx filter or virtio-net device. I'd love to hear everyone's
-> > opinions.
-> >
-> One proven model is to have virtio-net device to have switch object that exposes flow filters capability, if at all this is needed in your env.
->
 
-
+>
+> Thanks
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
