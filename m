@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13552-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13553-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 014A2C001B0
-	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 12:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83D87C001DB
+	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 13:35:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 628DA61276
-	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 12:33:48 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CF2691922E8
+	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 13:35:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 599C89863EF
-	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 12:33:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C4C019863D8
+	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 13:35:40 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4EEA298633F; Tue, 15 Aug 2023 12:33:48 +0000 (UTC)
+	id B714C986371; Tue, 15 Aug 2023 13:35:40 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,178 +24,312 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3F10598638E
-	for <virtio-dev@lists.oasis-open.org>; Tue, 15 Aug 2023 12:33:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 28E5598636E
+	for <virtio-dev@lists.oasis-open.org>; Tue, 15 Aug 2023 13:35:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: S60ZaernP_eT3bev4b4OPQ-1
-Date: Tue, 15 Aug 2023 08:33:40 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc: jasowang@redhat.com, mst@redhat.com, eperezma@redhat.com,
-	cohuck@redhat.com, virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org
-Message-ID: <20230815123340.GB3235352@fedora>
-References: <20230814192904.30062-1-lingshan.zhu@intel.com>
- <20230814192904.30062-4-lingshan.zhu@intel.com>
- <20230814150046.GF3146793@fedora>
- <9c6b11ce-33aa-ebff-62c4-cd316fab0689@intel.com>
+X-MC-Unique: mlFCyb3mMU6UDVqhTLPXgg-1
+From: Cornelia Huck <cohuck@redhat.com>
+To: virtio@lists.oasis-open.org
+Cc: virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org,
+	Cornelia Huck <cohuck@redhat.com>
+Date: Tue, 15 Aug 2023 15:34:49 +0200
+Message-ID: <20230815133451.62224-1-cohuck@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="CGw1XiDUxbkCdl7G"
-Content-Disposition: inline
-In-Reply-To: <9c6b11ce-33aa-ebff-62c4-cd316fab0689@intel.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH 3/5] virtio: The actions by the
- device upon SUSPEND
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH virtio-1.3] update acknowledgements for 1.3
 
---CGw1XiDUxbkCdl7G
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Move some names to the section for previous versions, add names of new
+contributors, etc.
 
-On Tue, Aug 15, 2023 at 07:07:42PM +0800, Zhu, Lingshan wrote:
->=20
->=20
-> On 8/14/2023 11:00 PM, Stefan Hajnoczi wrote:
-> > On Tue, Aug 15, 2023 at 03:29:02AM +0800, Zhu Lingshan wrote:
-> > > This commit specifies the actions to be taken by the device upon
-> > > SUSPEND.
-> > >=20
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > Signed-off-by: Eugenio P=C3rez <eperezma@redhat.com>
-> > > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> > > ---
-> > >   content.tex | 9 +++++++++
-> > >   1 file changed, 9 insertions(+)
-> > >=20
-> > > diff --git a/content.tex b/content.tex
-> > > index 074f43e..43bd5de 100644
-> > > --- a/content.tex
-> > > +++ b/content.tex
-> > > @@ -96,6 +96,15 @@ \section{\field{Device Status} Field}\label{sec:Ba=
-sic Facilities of a Virtio Dev
-> > >   If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device MU=
-ST clear SUSPEND
-> > >   and resumes operation upon DRIVER_OK.
-> > > +If VIRTIO_F_SUSPEND is negotiated, when SUSPEND is set, the device M=
-UST perform the following operations:
-> > "when SUSPEND is set" is ambigious. It could mean when the driver writes
-> > the Device Status Field, when the device transitions to SUSPEND, or
-> > something else. Maybe "before the device reports the SUSPEND bit set in
-> > the Device Status Field"?
-> Nice catch! will fix: when the driver sets SUSPEND, before the device
-> reports the
-> SUSPEND bit set in the \field{device status}, the device MUST perform the
-> following actions.
-> >=20
-> > > +\begin{itemize}
-> > > +\item Stop comsuming any descriptors
-> > "consuming"
-> yes
-> >=20
-> > It may be more consistent to talk about virtqueue buffers (i.e.
-> > requests) rather than descriptors here.
-> yes
-> >=20
-> > > +\item Mark all finished descriptors as used and send used buffer not=
-ification to the driver
-> > The device has to complete everything that is in flight, just completing
-> > "finished" stuff is not enough. Does "finished descriptors" really mean
-> > "in-flight virtqueue buffers"?
-> A patch of tracking in-flight descriptors is planned. Here I expect
-> "finished" mean "done" buffers, transmitted and received ACK.
+Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+---
+ acknowledgements.tex | 124 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 75 insertions(+), 49 deletions(-)
 
-Yes, I don't mean tracking in-flight virtqueue buffers, I mean waiting
-until they are marked as used. I think "finished" is unclear and the
-text should explain that the device waits for in-flight virtqueue
-buffers (in the future this could be relaxed with in-flight tracking
-functionality).
+diff --git a/acknowledgements.tex b/acknowledgements.tex
+index 1c0a155143bf..39e80d4391d7 100644
+--- a/acknowledgements.tex
++++ b/acknowledgements.tex
+@@ -6,82 +6,65 @@ \chapter{Acknowledgements}\label{chap:Acknowledgements}
+ The following individuals have participated in the creation of this specification and are gratefully acknowledged:
+ 
+ \subsection*{Participants}
+-Alexander Duyck, Intel \newline
+-Alex Bennée, Linaro \newline
++Alvaro Karsz, SolidRun \newline
+ Anton Yakovlev, OpenSynergy \newline
+-Arseny Krasnov, Kaspersky Lab \newline
+ Cornelia Huck, Red Hat \newline
++David Edmondson, Oracle \newline
+ David Hildenbrand, Red Hat \newline
+-David Stevens, Chromium \newline
+-Dr. David Alan Gilbert, Red Hat \newline
++Dmitry Fomichev, Western Digital \newline
++Dust Li, Alibaba \newline
+ Enrico Granata, Google \newline
+-Eugenio Pérez, Red Hat \newline
+-Felipe Franciosi, Nutanix \newline
+-Gaetan Harter, OpenSynergy \newline
+-Gerd Hoffmann, Red Hat \newline
+-Gurchetan Singh, Chromium \newline
++Haixu Cui, Quic Inc \newline
+ Halil Pasic, IBM \newline
+-Hao Chen, Google \newline
+-Huang Yang, Intel \newline
++Heng Qi, Alibaba \newline
++Hrishivarya Bhageeradhan, OpenSynergy \newline
+ Jan Kiszka, Siemens \newline
+-Jean-Philippe Brucker, Linaro \newline
+-Jiang Wang, Bytedance \newline
+-Jie Deng, Intel \newline
+-Joel Nider, Individual \newline
+-Johannes Berg, Intel \newline
+-Junji Wei, Bytedance \newline
+-Keiichi Watanabe, Chromium \newline
+-Marcel Holtmann, Individual \newline
+-Max Gurtovoy, Nvidia \newline
++Jiri Pirko, Nvidia \newline
++Laura Loghin, Amazon \newline
++Lei He, Bytedance \newline
++Lingshan Zhu, Intel \newline
++Matti Moell, OpenSynergy \newline
+ Michael S. Tsirkin, Red Hat \newline
+-Nikos Dragazis, Arrikto \newline
+-Pankaj Gupta, Red Hat \newline
+-Paolo Bonzini, Red Hat \newline
++Mihai Carabas, Oracle \newline
+ Parav Pandit, Nvidia \newline
+-Peter Hilber, OpenSynergy \newline
+-Petre Eftime, Amazon \newline
+-Philipp Hahn, Univention \newline
+-Rob Bradford, Intel \newline
+-Stefan Fritsch, Individual \newline
++Ran Koren, Nvidia \newline
++Satananda Burla, Marvell \newline
++Shahaf Shuler, Nvidia \newline
++Si-Wei Liu, Oracle \newline
+ Stefan Hajnoczi, Red Hat \newline
+ Stefano Garzarella, Red Hat \newline
+-Taylor Stark, Microsoft \newline
+-Tiwei Bie, Intel \newline
+-Viresh Kumar, Linaro \newline
+-Vitaly Mireyno, Marvell \newline
+ Xuan Zhuo, Alibaba \newline
+-Yadong Qi, Intel \newline
+-Yoni Bettan, Red Hat \newline
+ Yuri Benditovich, Red Hat / Daynix \newline
++Zhenwei Pi, Bytedance \newline
+ 
+ The following non-members have provided valuable feedback on this
+ specification and are gratefully acknowledged:
+ 
+ \subsection*{Reviewers}
+-Christophe de Dinechin, Red Hat \newline
+-Gil Savir, Intel \newline
+-Ruchika Gupta, Linaro \newline
+-Arnd Bergmann, Individual \newline
+-Bing Zhu, Intel \newline
+-Eduardo Habkost, Red Hat \newline
+-Eric Auger, Red Hat \newline
+-Jason Wang, Red Hat \newline
+-Jens Freimann, Red Hat \newline
+-Kevin Tian, Intel \newline
+-Linus Walleij, Linaro \newline
+-Matti Möll, OpenSynergy \newline
+-Tomas Winkler, Intel \newline
+-Yang Huang, Intel \newline
++Damien Le Moal, Western Digital \newline
++Hans Holmberg, Western Digital \newline
++Hans Zhang, Alibaba \newline
++He Rongguang, Alibaba \newline
++Helin Guo, Alibaba \newline
++Jiang Liu, Alibaba \newline
++Matias Bjørling, Western Digital \newline
++Max Gurtovoy, Nvidia \newline
++Niklas Cassel, Western Digital \newline
++Tony Lu, Alibaba \newline
+ 
+ 
+ The following individuals have participated in the creation of
+ previous versions of this specification and are gratefully acknowledged:
+ 
+ \subsection*{Participants}
++Alexander Duyck, Intel \newline
++Alex Bennée, Linaro \newline
+ Allen Chia, Oracle	\newline
+ Amit Shah,	Red Hat	\newline
+ Amos Kong,	Red Hat	\newline
+ Anthony Liguori,	IBM	\newline
++Anton Yakovlev, OpenSynergy \newline
++Arseny Krasnov, Kaspersky Lab \newline
+ Bruce Rogers, SUSE	\newline
+ Bryan Venteicher,	NetApp	\newline
+ Chandra Thyamagondlu, Xilinx	\newline
+@@ -90,46 +73,78 @@ \subsection*{Participants}
+ Cunming, Liang, Intel	\newline
+ Damjan, Marion, Cisco	\newline
+ Daniel Kiper,	Oracle	\newline
++David Hildenbrand, Red Hat \newline
++David Stevens, Chromium \newline
++Dr. David Alan Gilbert, Red Hat \newline
++Enrico Granata, Google \newline
++Eugenio Pérez, Red Hat \newline
+ Fang Chen, Huawei	\newline
+ Fang You, Huawei	\newline
++Felipe Franciosi, Nutanix \newline
++Gaetan Harter, OpenSynergy \newline
+ Geoff Brown,	M2Mi	\newline
+ Gerd Hoffmann, Red Hat	\newline
+ Gershon Janssen,	Individual Member	\newline
+ Grant Likely, ARM	\newline
++Gurchetan Singh, Chromium \newline
+ Haggai Eran,	Mellanox	\newline
+ Halil Pasic,	IBM	\newline
++Hao Chen, Google \newline
++Huang Yang, Intel \newline
+ James Bottomley,	Parallels IP Holdings GmbH	\newline
+ Jani Kokkonen, Huawei	\newline
+ Jan Kiszka,	Siemens AG	\newline
++Jean-Philippe Brucker, Linaro \newline
+ Jens Freimann, Red Hat	\newline
+ Jian Zhou,	Huawei	\newline
++Jiang Wang, Bytedance \newline
++Jie Deng, Intel \newline
++Joel Nider, Individual \newline
++Johannes Berg, Intel \newline
++Junji Wei, Bytedance \newline
+ Karen Xie, Xilinx	\newline
++Keiichi Watanabe, Chromium \newline
+ Kumar Sanghvi, Xilinx	\newline
+ Lei Gong,	Huawei	\newline
+ Lior Narkis,	Mellanox	\newline
+ Luiz Capitulino,	Red Hat	\newline
+ Marc-André Lureau, Red Hat	\newline
++Marcel Holtmann, Individual \newline
+ Mark Gray, Intel	\newline
+ Michael S. Tsirkin,	Red Hat	\newline
+ Mihai Carabas,	Oracle	\newline
++Nikos Dragazis, Arrikto \newline
+ Nishank Trivedi, NetApp	\newline
++Pankaj Gupta, Red Hat \newline
+ Paolo Bonzini,	Red Hat	\newline
+ Paul Mundt, Huawei	\newline
+ Pawel Moll,	ARM	\newline
+ Peng Long,	Huawei	\newline
++Peter Hilber, OpenSynergy \newline
++Petre Eftime, Amazon \newline
++Philipp Hahn, Univention \newline
+ Piotr Uminski, Intel	\newline
+ Qian Xum, Intel	\newline
+ Richard Sohn,	Alcatel-Lucent	\newline
++Rob Bradford, Intel \newline
+ Rusty Russell,	IBM	\newline
+ Sasha Levin,	Oracle	\newline
+ Sergey Tverdyshev,	Thales e-Security	\newline
++Stefan Fritsch, Individual \newline
+ Stefan Hajnoczi,	Red Hat	\newline
+ Sundar Mohan, Xilinx	\newline
++Taylor Stark, Microsoft \newline
++Tiwei Bie, Intel \newline
+ Tom Lyon,	Samya Systems, Inc.	\newline
+ Victor Kaplansky, Red Hat	\newline
+ Vijay Balakrishna,	Oracle	\newline
++Viresh Kumar, Linaro \newline
++Vitaly Mireyno, Marvell \newline
+ Wei Wang, Intel	\newline
+ Xin Zeng, Intel	\newline
++Yadong Qi, Intel \newline
++Yoni Bettan, Red Hat \newline
++Yuri Benditovich, Red Hat / Daynix \newline
+ 
+ The following non-members have provided valuable feedback on
+ previous versions of this
+@@ -141,15 +156,18 @@ \subsection*{Reviewers}
+ Alexander Duyck,	Intel	\newline
+ Andreas Pape,	ADITG/ESB	\newline
+ Andrew Thornton,  Google \newline
++Arnd Bergmann, Individual \newline
+ Arun Subbarao,	LynuxWorks	\newline
+ Baptiste Reynal,	Virtual Open Systems	\newline
+ Bharat Bhushan,	NXP Semiconductors	\newline
++Bing Zhu, Intel \newline
+ Brian Foley,  ARM \newline
+ Chandra Thyamagondlu,	Xilinx	\newline
+ Changpeng Liu,	Intel	\newline
+ Christian Pinto,	Virtual Open Systems	\newline
+ Christoffer Dall,	ARM	\newline
+ Christoph Hellwig,	Individual \newline
++Christophe de Dinechin, Red Hat \newline
+ Christian Borntraeger,	IBM	\newline
+ Daniel Marcovitch,	Mellanox	\newline
+ David Alan Gilbert, Red Hat \newline
+@@ -158,6 +176,7 @@ \subsection*{Reviewers}
+ Denis V. Lunev,	OpenVZ	\newline
+ Dmitry Fleytman,	Red Hat	\newline
+ Don Wallwork,	Broadcom	\newline
++Eduardo Habkost, Red Hat \newline
+ Emily Drea,	ARM	\newline
+ Eric Auger,	Red Hat	\newline
+ Fam Zheng, Red Hat	\newline
+@@ -175,6 +194,7 @@ \subsection*{Reviewers}
+ Jason Baron,	Akamai	\newline
+ Jason Wang, Red Hat \newline
+ Jean-Philippe Brucker,	ARM	\newline
++Jens Freimann, Red Hat \newline
+ Jianfeng Tan,	intel	\newline
+ Jonathan Helman,	Oracle	\newline
+ Karandeep Chahal,	DDN	\newline
+@@ -184,13 +204,16 @@ \subsection*{Reviewers}
+ Laura Novich, Red Hat	\newline
+ Ladi Prosek,	Red Hat	\newline
+ Lars Ganrot,	Napatech	\newline
++Linus Walleij, Linaro \newline
+ Longpeng (Mike),	Huawei	\newline
+ Mario Torrecillas Rodriguez,	ARM	\newline
+ Mark Rustad,	Intel	\newline
++Matti Möll, OpenSynergy \newline
+ Maxime Coquelin,	Red Hat	\newline
+ Namhyung Kim,	LG	\newline
+ Ola Liljedahl,	ARM	\newline
+ Pankaj Gupta,	Red Hat	\newline
++Paolo Bonzini, Red Hat \newline
+ Patrick Durusau,	OASIS	\newline
+ Pierre Pfister,	Cisco	\newline
+ Pranavkumar Sawargaonkar,	Linaro	\newline
+@@ -199,6 +222,7 @@ \subsection*{Reviewers}
+ Roman Kiryanov,	Google	\newline
+ Robin Cover,	OASIS	\newline
+ Roger S Chien,	Intel	\newline
++Ruchika Gupta, Linaro \newline
+ Sameeh Jubran,	Red Hat / Daynix	\newline
+ Si-Wei Liu,	Oracle	\newline
+ Sridhar Samudrala,	Intel	\newline
+@@ -208,6 +232,7 @@ \subsection*{Reviewers}
+ Thomas Huth,	Red Hat	\newline
+ Tiwei Bie,	Intel	\newline
+ Tomáš Golembiovský,	Red Hat	\newline
++Tomas Winkler, Intel \newline
+ Venu Busireddy,	Oracle	\newline
+ Victor Kaplansky,	Red Hat	\newline
+ Vijayabhaskar Balakrishna,	Oracle	\newline
+@@ -216,6 +241,7 @@ \subsection*{Reviewers}
+ Wei Xu,	Red Hat	\newline
+ Will Deacon,	ARM	\newline
+ Willem de Bruijn,	Google	\newline
++Yang Huang, Intel \newline
+ Yuanhan Liu,	Intel	\newline
+ Yuri Benditovich,	Red Hat / Daynix	\newline
+ Zhi Yong Wu,	IBM	\newline
+-- 
+2.41.0
 
-> >=20
-> > "send a used buffer notification" or "send used buffer notifications"
-> Yes will fix
-> >=20
-> > > +\item Record Virtqueue State of each enabled virtqueue, see section =
-\ref{sec:Virtqueues / Virtqueue State}
-> > Does "Record" mean that Virtqueue State fields can only be accessed by
-> > the driver while device is paused (they may be outdated or invalid while
-> > the device is unpaused)?
-> Yes, to avoid race with the device and make device implementation easier,
-> this is also mentioned in Patch 4.
-> >=20
-> > > +\item Pause its operation and preserve all configurations in its Dev=
-ice Configuration Space, see \ref{sec:Basic Facilities of a Virtio Device /=
- Device Configuration Space}
-> > What does "preserve" mean? Does it mean the Device Configuration Space
-> > is not allowed to change during SUSPEND?
-> Yes, once the device presents SUSPEND in its device status, it should not
-> change any
-> fields in its Device Configuration Space.
->=20
-> Thanks for your review
-> >=20
-> > > +\item Present SUSPEND in \field{device status}
-> > > +\end{itemize}
-> > > +
-> > >   \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Devic=
-e / Feature Bits}
-> > >   Each virtio device offers all the features it understands.  During
-> > > --=20
-> > > 2.35.3
-> > >=20
-> > >=20
-> > > This publicly archived list offers a means to provide input to the
-> > > OASIS Virtual I/O Device (VIRTIO) TC.
-> > >=20
-> > > In order to verify user consent to the Feedback License terms and
-> > > to minimize spam in the list archive, subscription is required
-> > > before posting.
-> > >=20
-> > > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > > List help: virtio-comment-help@lists.oasis-open.org
-> > > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license=
-=2Epdf
-> > > List Guidelines: https://www.oasis-open.org/policies-guidelines/maili=
-ng-lists
-> > > Committee: https://www.oasis-open.org/committees/virtio/
-> > > Join OASIS: https://www.oasis-open.org/join/
-> > >=20
->=20
->=20
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
->=20
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
->=20
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-l=
-ists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
->=20
 
---CGw1XiDUxbkCdl7G
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmTbcKQACgkQnKSrs4Gr
-c8jqsQf6A7KISmG5fG73+bhPARNPYsnv07sx98gd+W+CBXOQdL9IUhNp+jP1zd/Z
-PgaGz59yutEawvn/DASY9g3T4smskVyoiC/x8yGIiWN4J9uOqqMRYWoLF9R/tIhA
-OewNyGU5GCSMdcnUG3PpYOnLKYcpvXGiiJQn5ohQDyxo4yCHDby+CDfU/EijegJT
-Stb4Na/Wh6ZK04PmD/yLrqITDdrj84j6Nhbrkomk3NYIEM6lM9JiPFMKLLWDQJSv
-tgloJ7md3r6fiOdKCRqLMCEI+hnwPq33JUOHujuTw8omP3BV02caDBi2b4Dc7wiX
-u75eDl4iabYnh+CrxQoCIL9SQ1oUuw==
-=aUZ5
------END PGP SIGNATURE-----
-
---CGw1XiDUxbkCdl7G--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
