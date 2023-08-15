@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13531-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13532-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D4BA2C001E0
-	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 01:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5B8E7C001DB
+	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 03:37:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0899B23D52
-	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 01:38:48 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id ADC3EC6117
+	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 03:37:30 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E8CDA986371
-	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 01:38:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A40C69863EE
+	for <virtio-dev@archiver.kernel.org>; Tue, 15 Aug 2023 03:37:30 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D12E8983C28; Tue, 15 Aug 2023 01:38:47 +0000 (UTC)
+	id 9803A98634B; Tue, 15 Aug 2023 03:37:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,147 +24,152 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BF27498634B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 15 Aug 2023 01:38:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8642098633F;
+	Tue, 15 Aug 2023 03:37:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 6jXEL9s8Oh6AHHTmETOJDA-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692063524; x=1692668324;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6X6Zb92sijM7MGNlcqcppHV0YDc+NdT7XbBIZdFKrqQ=;
-        b=MXwHap/RON9Nb/Bzlm5L4+DgxamkHXlsobMFXnKg2PXMN+LkTdNVKo7LOir6aoGeY+
-         AysNs5c+4yEhjVezHZur1xWs6W3+a+F8WP+R18CVBzAx+rfZJO6hgBxF71StJSbDglKb
-         PHYH21kGdMbQ0PKF+45qtjtvyx3ya6AG+DcKRJBInCiRZix+36Qg7bp3QiRnIGIoAub1
-         f1/BVYdRPkHxVZRTKK//ZbdMZBTqa4XdpZaUdFnqUkeEkp9hh8JmJvCmSe/z6nWuiiRp
-         fVmy53hA+IdHXV+tKljBmspnViUORP9+Zyhh0ZOoZXC6SzhIGd+XLUZAxlr+ohbIo14v
-         u0QA==
-X-Gm-Message-State: AOJu0Yx6J083SIXaGN+9n6kJqKUFYWRa8D6CC40FOTT6FNUWe/SXMdbz
-	INmyEWlMkjWLtiy2LlmL5VcSOVEBO6y4E4YMs/HBVI4Xs4MgQedYDAFbRT+petXSLoOBLITG5Vs
-	SRdONsYw0ZSuYAQfoxEVbB+5drUaGxv7G3FuOdZGRsNL3
-X-Received: by 2002:a2e:9c18:0:b0:2af:25cf:92ae with SMTP id s24-20020a2e9c18000000b002af25cf92aemr8181297lji.22.1692063524210;
-        Mon, 14 Aug 2023 18:38:44 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEnrEiI0kOpdi1vmSd9tC2iZh4+bpL7RxJ0R0irfM4cpR4+w/BMlDgIMf3fPJWmIAh5r/+JjZW4ac3D8PbFvCg=
-X-Received: by 2002:a2e:9c18:0:b0:2af:25cf:92ae with SMTP id
- s24-20020a2e9c18000000b002af25cf92aemr8181286lji.22.1692063523890; Mon, 14
- Aug 2023 18:38:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230814192904.30062-1-lingshan.zhu@intel.com> <20230814154717.GI3146793@fedora>
-In-Reply-To: <20230814154717.GI3146793@fedora>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 15 Aug 2023 09:38:33 +0800
-Message-ID: <CACGkMEs=bM_M42q1wThxg8LV_+kYiO_-EC3Os7oUp5uJa9jFcw@mail.gmail.com>
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com, eperezma@redhat.com, 
-	cohuck@redhat.com, virtio-comment@lists.oasis-open.org, 
-	virtio-dev@lists.oasis-open.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH 0/5] virtio: introduce SUSPEND bit
- and vq state
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0Vpq6OlA_1692070641;
+Message-ID: <1692069010.1946628-2-xuanzhuo@linux.alibaba.com>
+Date: Tue, 15 Aug 2023 11:10:10 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: Satananda Burla <sburla@marvell.com>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>
+References: <1691481880.8297818-1-xuanzhuo@linux.alibaba.com>
+ <PH0PR12MB5481425BD4582648FDD1B127DC17A@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481425BD4582648FDD1B127DC17A@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: [virtio-dev] Re: RE: virtio-net ip restriction.
 
-On Tue, Aug 15, 2023 at 12:28=E2=80=AFAM Stefan Hajnoczi <stefanha@redhat.c=
-om> wrote:
+On Mon, 14 Aug 2023 13:03:53 +0000, Parav Pandit <parav@nvidia.com> wrote:
 >
-> On Tue, Aug 15, 2023 at 03:28:59AM +0800, Zhu Lingshan wrote:
-> > This seires introduces
-> > 1)a new SUSPEND bit in the device status
-> > Which is used to suspend the device, so that the device states
-> > and virtqueue states are stablized.
+> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Sent: Tuesday, August 8, 2023 1:35 PM
 > >
-> > 2)virtqueue state and accessors, to get and set last_avail_idx
-> > and last_used_idx of virtqueues.
+> > ## Background
 > >
-> > The main usecase of these new facilities is Live Migration.
+> > For cloud, the ip restriction is important. Because the user of the vm is
+> > untrustworthy. One user may use the ip of another to config the netdevice to
+> > receive and send packets. So we need to restrict the ip traffic of the device(or
+> > port).
 > >
-> > Furture work: dirty page tracking and in-flight descriptors.
+> A VM can do the same with the mac address too.
+> Why is mac ignored?
+
+On the cloud, the mac is not important, the DPU forwards the packets by the ip.
+But you are right, we can introduce the support for mac.
+
+>
+> > ## Implement
+> > Now we have these choice:
 > >
-> > This is RFC, this series carries on Jason and Eugenio's pervious work.
+> > 1. introduce the switch(as the part of pf or as a separate device under all PF
+> >    and VFs ), the switch support rx/tx filter 2. the virtio-net device support the ip
+> > restriction
 > >
-> > Any comments are welcome.
+> #1 is the right approach, it is not either or.
+> Virtio switch object can be part of the virtio-net device or it can be indepdent device in itself.
+> So the definition we do should be generic enough so that it can be done as part of indepdent device in future without replicating all.
 >
-> In order to support stateful devices like virtiofs, virtio-gpu, or
-> virtio-crypto it would be necessary to add device state save/load
-> functionality too.
+> The concept of switch port etc is needed.
 
-+1 and before save/load, we need to define those states first.
+For the switch part, I am ok.
 
-E.g there are patches that try to fix the GPU suspend/hibernation
-which probably requires those facilities as well.
+But I would to know can we have two?
 
->
-> Even virtio-net needs device state save/load functionality if the VMM is
-> not intercepting the stateful controlq.
 
-Yes, this could be done via trap and emulation.
 
 >
-> In-flight descriptors can be included in the device state.
+> >
+> > Parav wrote:
+> > > I understood that you for some reason do not need restrictions for the PF.
+> > > I do not know why you don't need it. :) Most cloud setups that I came
+> > > across so far, needs it, but ok...
+> >
+> > PF is used by the administrator, so the ip restriction for the PF is not important.
+> > But we can have this feature.
+> >
+> In some cloud a PF is also owned by the tenant.
+> Hence its administration to be done outside of the PF.
+> Therefore the virtio switch object definition to be built for long term and apply to a narrow case for now as PF->VF.
+
+YES.
+
+But I think that the #2 is ok.
+
+Your plan of the switching PF is the universal design to implement the ip
+restriction.
+
+But the ip restriction is the common requirement in virtio case.
+We can support it in a virtio specific way.
+
 >
+>
+> > > The design for the switch object needs to cover the PF as well, even though it
+> > may not be done initially.
+> > > (hint: an abstraction of switch port to be done, instead of doing things directly
+> > on the group member id).
+> > >
+> > > We are seeing use cases reducing of having switch located on the PF for its
+> > VFs.
+> >
+> > So for you, we should introduce a switching PF?
+> >
+> Yes.
 
-Probably.
+You said that the use cases for switching PF are dwindling. But you prefer to
+implement ip restriction with switching PF. Am I right?
 
-> In fact, the only reason why I think VIRTIO_F_QUEUE_STATE makes sense is
-> for easy integration into existing vhost software stacks. Otherwise we
-> should just define a device state save/load interface along with
-> standard device state serialization for devices where migration
-> interoperability is possible. VIRTIO_F_QUEUE_STATE is a small subset of
-> device state save/load.
+We know that the switch under all(PF, VF) is more complex.
+So we all not plan to implement it.
 
-For simple devices like virtio-net, queue state should be sufficient
-for hardware.
+Then how about we do not implement the switching PF for now.
+We support ip restriction by the #2.
+
+Then we can have an independent switch under all in the future.
 
 >
-> I think the convenience of integrating into existing vhost software
-> stacks is worth the duplication, but I wanted to mention that this
-> interface will not be enough to live migrate all device types and we'll
-> need something more in the future.
+> > > So please reconsider.
+> > > I remember you mentioned in past in other thread, that mac etc is controlled
+> > from the infrastructure side.
+> >
+> > YES.
+> >
+> Hence the administrative PF doing switching and VF configuration is desired.
 
-Yes, the patch is a start for simple stateless devices.
+I do not got fully.
+
+>
+> > > So, I repeatedly ask if you _really_ need to have the switch object as part of
+> > the owner PF or not.
+> >
+> > For me, that are all ok.
+> > Could you explain the difference between these?
+> > So I would to know which one is better and which one is simper?
+> >
+> > > Which sort of contradicts with locating the administrative switch on the
+> > owner PF.
+> >
+> > Why?
+> >
+> > For us, all is on the DPU.
+> >
+> If all is on the DPU, can the ip restriction be applied on the DPU for the VFs (where there may not be any virtio net device).
+> If so, why do we need to introduce things now?
+
+In the past, we provided virtual machines. All virtual machines belong to
+different tenants. DPU has ip restriction function by default(without virtio).
+But more and more complex forms of services began to appear, they work on the
+HOST. But they create virtual machines or Dockers to provide to their tenants.
+For performance, each virtual machine or Docker uses a separate NIC provided by
+the DPU. So they need to configure IP restrictions for these NICs.
+
+So the form of the cloud is changing, more and more configurations are need by
+the users from the host.
+
 
 Thanks
-
->
-> Stefan
->
-> >
-> > Zhu Lingshan (5):
-> >   virtio: introduce SUSPEND bit in device status
-> >   virtio: introduce vq state as basic facility
-> >   virtio: The actions by the device upon SUSPEND
-> >   virtqueue: constraints for virtqueue state
-> >   virtio-pci: implement VIRTIO_F_QUEUE_STATE
-> >
-> >  content.tex       | 120 ++++++++++++++++++++++++++++++++++++++++++++++
-> >  transport-pci.tex |  15 ++++++
-> >  2 files changed, 135 insertions(+)
-> >
-> > --
-> > 2.35.3
-> >
-> >
-> > This publicly archived list offers a means to provide input to the
-> > OASIS Virtual I/O Device (VIRTIO) TC.
-> >
-> > In order to verify user consent to the Feedback License terms and
-> > to minimize spam in the list archive, subscription is required
-> > before posting.
-> >
-> > Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> > Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> > List help: virtio-comment-help@lists.oasis-open.org
-> > List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> > Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.p=
-df
-> > List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing=
--lists
-> > Committee: https://www.oasis-open.org/committees/virtio/
-> > Join OASIS: https://www.oasis-open.org/join/
-> >
-
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
