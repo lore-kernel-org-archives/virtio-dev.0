@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13568-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13569-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3EE9DC3DA4F
-	for <virtio-dev@archiver.kernel.org>; Thu, 17 Aug 2023 16:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 13BEAC678DC
+	for <virtio-dev@archiver.kernel.org>; Fri, 18 Aug 2023 01:20:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B6C5942A6D
-	for <virtio-dev@archiver.kernel.org>; Thu, 17 Aug 2023 16:05:42 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5F9D479090
+	for <virtio-dev@archiver.kernel.org>; Fri, 18 Aug 2023 01:20:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 482FE9867B1
-	for <virtio-dev@archiver.kernel.org>; Thu, 17 Aug 2023 16:05:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2B0C4986514
+	for <virtio-dev@archiver.kernel.org>; Fri, 18 Aug 2023 01:20:33 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id BA6A8986400; Thu, 17 Aug 2023 16:05:41 +0000 (UTC)
+	id 0330398643F; Fri, 18 Aug 2023 01:20:33 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,241 +24,185 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 67FCF9863FE
-	for <virtio-dev@lists.oasis-open.org>; Thu, 17 Aug 2023 16:04:48 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DFB75986449
+	for <virtio-dev@lists.oasis-open.org>; Fri, 18 Aug 2023 01:20:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: VIXwq6k0Pz2ExQVq1dhC7Q-1
-Date: Thu, 17 Aug 2023 12:04:40 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Eugenio Perez Martin <eperezma@redhat.com>
-Cc: "Zhu, Lingshan" <lingshan.zhu@intel.com>, jasowang@redhat.com,
-	mst@redhat.com, cohuck@redhat.com,
-	virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org
-Message-ID: <20230817160440.GA3605166@fedora>
-References: <20230814192904.30062-1-lingshan.zhu@intel.com>
- <20230814192904.30062-2-lingshan.zhu@intel.com>
- <20230814143039.GD3146793@fedora>
- <56c6411d-2ee9-f2c2-4da7-8d708f7729a2@intel.com>
- <20230815122916.GA3235352@fedora>
- <CAJaqyWd4a94FHMxAEKrQ+wpWiFECBLrWRhp24f5uYf=6TDwL+Q@mail.gmail.com>
+X-TM-MAIL-RECEIVED-TIME: 1692321630.482000
+X-TM-MAIL-UUID: 8ce9f07e-2a60-479d-b66e-f9789796d75d
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TaG8Wgfqheufo0+2kOMEKuEJxA7tsbFocsCST/1XUgtvp1EUT2mAbfFFFbhZNBD8tfg/MLFY/AerOcqxjycLR3m0fFkB9ZjgC51V+lRgszLKqFx+dAEivGTRVwIQQH6C0SdWKzrPdjLWsP/uI0VGHM3EhPDGzRx23xYpxeEOsAI16sTsYBjCpr+rNLFJnxblGQADGNIAnwAL467ZDgIEHTFmsbMhzTIBbVjCohj+Mqdf6Gw10aBWFBwZl7hdyycLAWx//Ti4WBkaZ9cE8CBOW3K1lVpvwqvo1ggtczLjjVi00ZMZhWvp4qhyrFlCd8Mh7vTXg2KwGZTm25Gz/tncyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wRne8kbkNKVt6kbFg+jUd0MiRWYGUPi2gLv6PHBaxsY=;
+ b=DkmH8KEeWch8MBm6fl7KR7SFAxpwrUJ5182NpjMcCP2em08JK2qlFfkNhhZ7bj89LU8B/rpWuDMTZGb8yOrqnXKgWYnnvnURUSjYb9nn3tblRmqG3+IRnLXpZg9sX5JlpfkNOA/B2CniCaIRqJfVQHn7L/c8YX70lp6wrVkSEVMaRkm5ZSX1rNL5eO5LZD+Dqpgfr2nA34p3aRW0l4Yfa5/ZUETnCMLu1qjjCSvUuDwYeeSMcQup0eRSlpXEAWsBMisbqBoczlovH89btmzy1czkf01TFiaIyQnhvmbixTmRr5P0zeT3+tKJiHghWYPAzQXDJYwOU9IdjZjUoPkkzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 217.66.60.4) smtp.rcpttodomain=arm.com smtp.mailfrom=opensynergy.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=opensynergy.com; dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=opensynergy.com;
+Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
+ designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
+From: Peter Hilber <peter.hilber@opensynergy.com>
+To: linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	virtio-dev@lists.oasis-open.org,
+	linux-arm-kernel@lists.infradead.org
+Cc: Peter Hilber <peter.hilber@opensynergy.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 18 Aug 2023 03:20:12 +0200
+Message-Id: <20230818012014.212155-7-peter.hilber@opensynergy.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230818012014.212155-1-peter.hilber@opensynergy.com>
+References: <20230818012014.212155-1-peter.hilber@opensynergy.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="eSWOzs4Xl15E3xJO"
-Content-Disposition: inline
-In-Reply-To: <CAJaqyWd4a94FHMxAEKrQ+wpWiFECBLrWRhp24f5uYf=6TDwL+Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH 1/5] virtio: introduce SUSPEND bit
- in device status
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1EUR05FT036:EE_|BE1P281MB1633:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: f657f974-fa40-46fa-d2ae-08db9f894efb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	yHPJPMUaG9820kU0+SvG3x5fCuzDVtMDS3pxepBvPBeAlVYydCncuE3/dZgKeCoObKV63mgsiLbfvwlA+9/8SlJcvLTwoeuE7H5DEzapeAIsmgK9aIfyq8Dn57pFWZgCQJGthQazmUbqpwf6fqczqLqwGukNdXaqMwJJsLyI4lKNEb/RaHC6Ns4tBDzMFT6rVJ2gkGm7I4piKPB8U1/GRu8EVYqHMbyDmtf2iSs9PfUTdeswPmgIYlbwlTcCYrm0y17lwqBiWozoVm6y+yaYs8CnjLf1xRe1NsWMCxBNfuiRK11lJ5jw3VnXhwfUpQ9GMxITUc7bSAuK/tXoR7vzY0/8GSoHlFI0L0E2nj/4u1Hkjf4Ogn5Eqfp0jX+34gYDoOE9EQ8gNOnplbCZRxRTULdaemPEhgaKQENVxhUkpaDOuCFXDv6LR6NuYBBwkCAXAIdCAFUVkWLBz8E64tsQY4Hyq7K1B4S2bo9CGvgzRr+TkHjzfoZUFjwgkwYQxlOiui7CMfzzKcZROC/6DEqAzkH2jlE9jv/adLGP6MbC+xS+Qbmg40TldQZn2HbXQ4hkHUgCsdhgOj0LV8Z5fNZNdMm9MVPJAAyCoS8LdxA/Ol6A4NIIRJwQpzTMDlmuD+r2Ih8b/WRgJ8GLWqIuB0YrYDsfMg/C1QeMSsM5bGgLBjK+7T86G+5vllnVHnLX7g1wQEJEIviw8+MaRedwLd3JKwKO/F8IlsbyRGN+RTfx2jEGM/ZueKqvX7z4Ejjq5xSlnbRrF3yGEkJUdtuC0/nYuy+JQsHBvglH7gwXq3+MN8BKzcqR7/pozSFaIpvVM39ZY6ZP+rvgZCmY75n/klBOeQ==
+X-Forefront-Antispam-Report:
+	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(136003)(396003)(376002)(346002)(39850400004)(1800799009)(82310400011)(186009)(451199024)(46966006)(36840700001)(40480700001)(36756003)(86362001)(81166007)(12101799020)(70206006)(42186006)(54906003)(316002)(478600001)(70586007)(41300700001)(82740400003)(26005)(47076005)(1076003)(336012)(2616005)(8676002)(8936002)(5660300002)(4326008)(7416002)(2906002)(44832011)(36860700001)(83380400001)(41533002)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 01:20:28.6425
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f657f974-fa40-46fa-d2ae-08db9f894efb
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	VI1EUR05FT036.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB1633
+X-TM-AS-ERS: 104.47.11.176-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1011-27820.003
+X-TMASE-Result: 10--18.516800-4.000000
+X-TMASE-MatchedRID: ZAkTtSyZ7B7c1YtpVABxhScOunEIf0eXRyG5SSR7mMFHwPpoS7xiTQ3u
+	hqemVNab4tr/y+kNIhx+41laLbgwdzURLmZdK2fK9K6xgLnDQNjrlkvw0pZ13MhGESF2QtYSsgk
+	fnaHAFPzm9Tc/GgfFJwFtWueZlMH0Hw0ziwm/5yd81fikUYgyLUMxQVRV15qN9zxz+98nLbrqqp
+	KNT13hEpMgmvUQU/w2ftTV5S2xLn0yxlgWcGNdNffKbx7F+zg4FkXEytHxBjkweIyZbRlQ2yzec
+	Bj190z12HlzhM3zNtns9WQVYycKfw3lGTiQlxzIv9rSd36EgUI+Mqg+CyrtwA==
+X-TMASE-XGENCLOUD: 6732af28-3a27-4945-a6cc-85283e71368a-0-0-200-0
+X-TM-Deliver-Signature: 73D683A371F90B08169AE946A9213147
+X-TM-Addin-Auth: OcQ9Z0y6ljBysb/AZ7MXi5bwj0+XjALf+IL7xbmWb/5E6gEWl6Mu5v/EbRW
+	6M3hwtnwvq5QPEEMkFq5RAOjPzJuGlXNa+uvPVtiENiK+mIzzjjxI2SnRt4WoIsLcUv+EIFnFvM
+	cPkpT0TK+agSaHVyljgDJDgNfjpMvyikvZdTwjt1KZi/38ND4xKig8Dym3yjf0Uw+4qC9QI5Alu
+	bsPSyebREq6H55xS2wL6W4Iw1rtPr7nfANdKniV2dzoSdtUA58LCke5oz72QFiQM+ITck53A6lV
+	m2U+W0lQ8l+IYRM=.OxyiOyDLdq/fNFKkan2VNxG5E6L8m2MZzckGU6JXS/t4n5M7Wsu+vhKY8B
+	nwonNzBoiB+hcv23U31U/KJiB6DyictX3Q1/DMpCuSnqpun/m0fXVHwlVwpRf/ykIoPaO9PxgGJ
+	v0AXSvXUA4+U3t2MTIMzFWsC4Eshm2TM43use1hZwbrzE/khW1XEJGxEpCvkRg4zcyptHgLFBpl
+	QKC6hCQeG+j2IzTTmNtgsKR9npg0eIfQ8wsss7SL0NWfRrHqzaasBSZckoGnVpjYCSFuFeqyx+m
+	MOIsnJaEJhUI8bwQQ/JsZ2rEpKkUJXX55J6m334Ubx7mrUGZ2iPdrySiW4w==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] [RFC PATCH v2 6/6] virtio_rtc: Add Arm Generic Timer cross-timestamping
 
---eSWOzs4Xl15E3xJO
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add PTP_SYS_OFFSET_PRECISE2 support on platforms using the Arm Generic
+Timer.
 
-On Thu, Aug 17, 2023 at 05:15:16PM +0200, Eugenio Perez Martin wrote:
-> On Tue, Aug 15, 2023 at 2:29=E2=80=AFPM Stefan Hajnoczi <stefanha@redhat.=
-com> wrote:
-> >
-> > On Tue, Aug 15, 2023 at 06:31:23PM +0800, Zhu, Lingshan wrote:
-> > >
-> > >
-> > > On 8/14/2023 10:30 PM, Stefan Hajnoczi wrote:
-> > > > On Tue, Aug 15, 2023 at 03:29:00AM +0800, Zhu Lingshan wrote:
-> > > > > This patch introudces a new status bit in the device status: SUSP=
-END.
-> > > > >
-> > > > > This SUSPEND bit can be used by the driver to suspend a device,
-> > > > > in order to stablize the device states and virtqueue states.
-> > > > >
-> > > > > Its main use case is live migration.
-> > > > >
-> > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > Signed-off-by: Eugenio P=C3=83rez <eperezma@redhat.com>
-> > > > There is an character encoding issue in Eugenio's surname.
-> > > Oh, I copied his SOB form his email, I will copy from git log to fix =
-this,
-> > > thanks for point out it.
-> > > >
-> > > > > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> > > > > ---
-> > > > >   content.tex | 18 ++++++++++++++++++
-> > > > >   1 file changed, 18 insertions(+)
-> > > > This patch hints at the asynchronous nature of the SUSPEND bit (the
-> > > > driver must re-read the Device Status Field) but doesn't explain the
-> > > > rationale or any limits.
-> > > >
-> > > > For example, is there a timeout or should the driver re-read the De=
-vice
-> > > > Status Field forever?
-> > > It depends on the driver, normally we expect this operation can be do=
-ne
-> > > successfully
-> > > like how the driver/device handles FEATURES_OK.
-> > >
-> > > Once failed due to:
-> > > 1) driver timeout, the driver can reset the device
-> > > 2) device failure, the device can set NEEDS_RESET.
-> >
-> > I mention this because SUSPEND involves quiescing the device so that no
-> > requests are in flight and that can take an unbounded amount of time on
-> > a virtio-blk, virtio-scsi, or virtiofs device. If the driver is busy
-> > waiting for the device to report the SUSPEND bit, then that could take a
-> > long time/forever.
-> >
-> > Imagine a virtiofs PCI device implemented in hardware that forwards I/O
-> > to a distributed storage system. If the distributed storage system has a
-> > request in flight then SUSPEND needs to wait for it to complete. The
-> > device has no control over how long that will take, but if it does not
-> > then corruption could occur later on.
-> >
-> > There are two issues with long SUSPEND times:
-> > 1. Busy wait CPU consumption. Since there is no interrupt that signals
-> >    when the bit is set, the best a driver can do is to back off
-> >    gradually and use timers to avoid hogging the CPU.
-> > 2. Synchronous blocking. If the call stack that led the driver to set
-> >    SUSPEND is blocked until the device reports the SUSPEND bit, then
-> >    other parts of the system could experience blocking. For example, the
-> >    VMM might be blocked in a vhost ioctl() call, which makes the guest
-> >    unresponsive.
-> >
->=20
-> I think all of this already happens with ring reset or even a plain
-> device reset, doesn't it?
+Always report the CP15 virtual counter as the HW counter in use by
+arm_arch_timer, since the Linux kernel's usage of the Arm Generic Timer
+should always be compatible with this.
 
-Yes, but keep in mind that the driver has typically already drained
-requests when it invokes reset. If SUSPEND is used transparently during
-live migration then there really will be requests in flight because the
-guest driver is unaware.
+Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
+---
 
->=20
-> In my opinion the best thing the device can do here is to fail the
-> request after a certain time, the same way it would fail if the
-> backend distributed storage system gets disconnected or latency gets
-> out of bounds.
+Notes:
+    v2:
+    
+    - Depend on prerequisite patch series "treewide: Use clocksource id for
+      get_device_system_crosststamp()".
+    
+    - Return clocksource id instead of calling dropped arm_arch_timer helpers.
+    
+    - Always report the CP15 virtual counter to be in use by arm_arch_timer,
+      since distinction of Arm physical and virtual counter appears unneeded
+      after discussion with Marc Zyngier.
 
-In order to prevent corruption there needs to be a fence in addition to
-a timeout. In other words, the storage backend needs to guarantee that
-any requests sent before the fence will be ignored if they are still
-encountered.
+ drivers/virtio/Kconfig          | 13 +++++++++++++
+ drivers/virtio/Makefile         |  1 +
+ drivers/virtio/virtio_rtc_arm.c | 22 ++++++++++++++++++++++
+ 3 files changed, 36 insertions(+)
+ create mode 100644 drivers/virtio/virtio_rtc_arm.c
 
-> > Making SUSPEND asynchronous is more complicated but would allow long
-> > SUSPEND times to be handled gracefully.
-> >
->=20
-> Maybe that should be the direction of the transport vq, so transport
-> commands are asynchronous and we get rid of all the similar problems
-> in one shot?
+diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+index 7369ecd7dd01..ed3f541032a0 100644
+--- a/drivers/virtio/Kconfig
++++ b/drivers/virtio/Kconfig
+@@ -203,4 +203,17 @@ config VIRTIO_RTC_PTP
+ 
+ 	 If unsure, say Y.
+ 
++config VIRTIO_RTC_ARM
++	bool "Virtio RTC cross-timestamping using Arm Generic Timer"
++	default y
++	depends on VIRTIO_RTC_PTP && ARM_ARCH_TIMER
++	help
++	 This enables Virtio RTC cross-timestamping using the Arm Generic Timer.
++	 It only has an effect if the Virtio RTC device also supports this. The
++	 cross-timestamp is available through the PTP clock driver precise
++	 cross-timestamp ioctl (PTP_SYS_OFFSET_PRECISE2 or
++	 PTP_SYS_OFFSET_PRECISE).
++
++	 If unsure, say Y.
++
+ endif # VIRTIO_MENU
+diff --git a/drivers/virtio/Makefile b/drivers/virtio/Makefile
+index 4d48cbcae6bb..781dff9f8822 100644
+--- a/drivers/virtio/Makefile
++++ b/drivers/virtio/Makefile
+@@ -15,3 +15,4 @@ obj-$(CONFIG_VIRTIO_DMA_SHARED_BUFFER) += virtio_dma_buf.o
+ obj-$(CONFIG_VIRTIO_RTC) += virtio_rtc.o
+ virtio_rtc-y := virtio_rtc_driver.o
+ virtio_rtc-$(CONFIG_VIRTIO_RTC_PTP) += virtio_rtc_ptp.o
++virtio_rtc-$(CONFIG_VIRTIO_RTC_ARM) += virtio_rtc_arm.o
+diff --git a/drivers/virtio/virtio_rtc_arm.c b/drivers/virtio/virtio_rtc_arm.c
+new file mode 100644
+index 000000000000..5185b130b3f1
+--- /dev/null
++++ b/drivers/virtio/virtio_rtc_arm.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Provides cross-timestamp params for Arm.
++ *
++ * Copyright (C) 2022-2023 OpenSynergy GmbH
++ */
++
++#include <linux/clocksource_ids.h>
++
++#include <uapi/linux/virtio_rtc.h>
++
++#include "virtio_rtc_internal.h"
++
++/* see header for doc */
++
++int viortc_hw_xtstamp_params(u16 *hw_counter, enum clocksource_ids *cs_id)
++{
++	*hw_counter = VIRTIO_RTC_COUNTER_ARM_VIRT;
++	*cs_id = CSID_ARM_ARCH_COUNTER;
++
++	return 0;
++}
+-- 
+2.39.2
 
-Yes, a transport virtqueue would make this operation asynchronous.
 
-Stefan
-
->=20
-> Thanks!
->=20
-> > > >
-> > > > Does the driver need to re-read the Device Status Field after clear=
-ing
-> > > > the SUSPEND bit?
-> > > I think the driver should re-read, I will add this in the next versio=
-n.
-> > > >
-> > > > > diff --git a/content.tex b/content.tex
-> > > > > index 0a62dce..1bb4401 100644
-> > > > > --- a/content.tex
-> > > > > +++ b/content.tex
-> > > > > @@ -47,6 +47,9 @@ \section{\field{Device Status} Field}\label{sec=
-:Basic Facilities of a Virtio Dev
-> > > > >   \item[DRIVER_OK (4)] Indicates that the driver is set up and re=
-ady to
-> > > > >     drive the device.
-> > > > > +\item[SUSPEND (16)] When VIRTIO_F_SUSPEND is negotiated, indicat=
-es that the
-> > > > > +  device has been suspended by the driver.
-> > > > > +
-> > > > >   \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has ex=
-perienced
-> > > > >     an error from which it can't recover.
-> > > > >   \end{description}
-> > > > > @@ -73,6 +76,10 @@ \section{\field{Device Status} Field}\label{se=
-c:Basic Facilities of a Virtio Dev
-> > > > >   recover by issuing a reset.
-> > > > >   \end{note}
-> > > > > +The driver MUST NOT set SUSPEND if FEATURES_OK is not set.
-> > > > > +
-> > > > > +When set SUSPEND, the driver MUST re-read \field{device status} =
-to ensure the SUSPEND bit is set.
-> > > > "When setting SUSPEND, ..." would be grammatically correct. Another
-> > > > option is "After setting the SUSPEND bit, ...".
-> > > Will fix in the next version.
-> > > >
-> > > > > +
-> > > > >   \devicenormative{\subsection}{Device Status Field}{Basic Facili=
-ties of a Virtio Device / Device Status Field}
-> > > > >   The device MUST NOT consume buffers or send any used buffer
-> > > > > @@ -82,6 +89,13 @@ \section{\field{Device Status} Field}\label{se=
-c:Basic Facilities of a Virtio Dev
-> > > > >   that a reset is needed.  If DRIVER_OK is set, after it sets DEV=
-ICE_NEEDS_RESET, the device
-> > > > >   MUST send a device configuration change notification to the dri=
-ver.
-> > > > > +The device MUST ignore SUSPEND if FEATURES_OK is not set.
-> > > > > +
-> > > > > +The deivce MUST ignore SUSPEND if VIRTIO_F_SUSPEND is not negoti=
-ated.
-> >
-> > I noticed a typo:
-> > "device MUST"
-> >
-> > > > > +
-> > > > > +If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device=
- MUST clear SUSPEND
-> > > > > +and resumes operation upon DRIVER_OK.
-> > > > I can't parse this sentence. If the driver writes SUSPEND | DRIVER_=
-OK |
-> > > > ... to the Device Status Field, then the device accepts DRIVER_OK a=
-nd
-> > > > clears SUSPEND?
-> > > >
-> > > > Why?
-> > > I expect DRIVER_OK can clear SUSPEND, so that the device can resume r=
-unning
-> > > in case of a failed live migration.
-> > >
-> > > Maybe I should say: DRIVER_OK clears SUSPEND, and if DRIVER_OK is set=
- to
-> > > a suspended device, the device should resume operation
-> >
-> > It's confusing because there are other Device Status Field bits aside
-> > from DRIVER_OK. I wasn't sure what you meant.
-> >
-> > I think this is really saying that devices must support the SUSPEND ->
-> > !SUSPEND transition. It's not really about DRIVER_OK because that bit
-> > will be set the entire time (!SUSPEND -> SUSPEND -> !SUSPEND).
-> >
-> > Can you rephrase it? For example:
-> >
-> >   If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device MUST
-> >   resume operation when the driver clears the SUSPEND bit.
-> >
-> > Stefan
->=20
-
---eSWOzs4Xl15E3xJO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmTeRRgACgkQnKSrs4Gr
-c8gFQAgAsCTLvPMIBo4y0SyUXsdkgzoUUVcH5j6t0Q29Y1RWijleYoxhn4PrUW2E
-2VosiX577iDfaTokP/kTrxZCsT3JuMap04Kh3SQ5Cnte4+5aTAQ8uX4WPliiedbR
-T53pJdyLhpTkseCvS5F+Iz5oI8t21z/QVnlP8fwkp8uhIk5qwBWr+ioXTe+JpbGd
-bBTax5bfinpASKzm1MHUjLWiCJYRS20CuoOLw6oKVfRPZNL0J+7l7Adnt6hpd0B6
-inn+NTs7hvsjPnfxRNT0NCEdQ/GQ4h5nAQa8dei0Azrt0CHgpRPuRJk7wk7YkB93
-nl6bUS0y2H56S0lJDVaXOfFimb3PrA==
-=T/GY
------END PGP SIGNATURE-----
-
---eSWOzs4Xl15E3xJO--
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
