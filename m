@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13578-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13579-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D427EE49AA
-	for <virtio-dev@archiver.kernel.org>; Mon, 21 Aug 2023 10:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 78774EE49A6
+	for <virtio-dev@archiver.kernel.org>; Mon, 21 Aug 2023 13:46:06 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6738D2AD6B
-	for <virtio-dev@archiver.kernel.org>; Mon, 21 Aug 2023 10:32:33 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4AC0AEEA39
+	for <virtio-dev@archiver.kernel.org>; Mon, 21 Aug 2023 13:46:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 53F1E986265
-	for <virtio-dev@archiver.kernel.org>; Mon, 21 Aug 2023 10:32:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 34DE0986283
+	for <virtio-dev@archiver.kernel.org>; Mon, 21 Aug 2023 13:46:05 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4433D983FE9; Mon, 21 Aug 2023 10:32:33 +0000 (UTC)
+	id 175F4983FE9; Mon, 21 Aug 2023 13:46:05 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,190 +24,172 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3169898622C;
-	Mon, 21 Aug 2023 10:32:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 065D2986265
+	for <virtio-dev@lists.oasis-open.org>; Mon, 21 Aug 2023 13:46:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="363714798"
-X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="363714798"
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="765319082"
-X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="765319082"
-Message-ID: <b93edb87-1d5d-ec4d-6827-e85daa87ceb7@intel.com>
-Date: Mon, 21 Aug 2023 18:32:19 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.14.0
-Content-Language: en-US
-To: Eugenio Perez Martin <eperezma@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, mst@redhat.com, cohuck@redhat.com,
- virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
- Si-Wei Liu <si-wei.liu@oracle.com>, Dragos Tatulea <dtatulea@nvidia.com>
+X-MC-Unique: X73-HKHFOO2ZJDvB0gFEhg-1
+Date: Mon, 21 Aug 2023 09:45:57 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+To: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc: Eugenio Perez Martin <eperezma@redhat.com>, jasowang@redhat.com,
+	mst@redhat.com, cohuck@redhat.com,
+	virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org
+Message-ID: <20230821134557.GA45012@fedora>
 References: <20230814192904.30062-1-lingshan.zhu@intel.com>
- <20230814192904.30062-5-lingshan.zhu@intel.com>
- <CACGkMEtkdXrTZ_=NkuPsmhUooCgKPiCiVo-nJMaDnJ5fufzGwQ@mail.gmail.com>
- <8ce92e00-39f9-3e99-96e2-5599588869e3@intel.com>
- <CAJaqyWd=hCvknO5MQ0Nu4iwxPMfjHGHNJHiwzxAaRLcgZ1HKxg@mail.gmail.com>
- <23b9082d-050a-6f82-754e-d309c48972d5@intel.com>
- <CAJaqyWeye4fOTB5pPtwpzusgZRL6d36EzDD61zoD8Uf+0v4FQw@mail.gmail.com>
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <CAJaqyWeye4fOTB5pPtwpzusgZRL6d36EzDD61zoD8Uf+0v4FQw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [RFC PATCH 4/5] virtqueue: constraints for
- virtqueue state
+ <20230814192904.30062-2-lingshan.zhu@intel.com>
+ <20230814143039.GD3146793@fedora>
+ <56c6411d-2ee9-f2c2-4da7-8d708f7729a2@intel.com>
+ <20230815122916.GA3235352@fedora>
+ <CAJaqyWd4a94FHMxAEKrQ+wpWiFECBLrWRhp24f5uYf=6TDwL+Q@mail.gmail.com>
+ <20230817160440.GA3605166@fedora>
+ <cc054fd2-7262-32ef-8512-0b801fbc2334@intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="vMt8fGVWkDD3/G37"
+Content-Disposition: inline
+In-Reply-To: <cc054fd2-7262-32ef-8512-0b801fbc2334@intel.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH 1/5] virtio: introduce SUSPEND bit
+ in device status
 
+--vMt8fGVWkDD3/G37
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Aug 18, 2023 at 05:55:42PM +0800, Zhu, Lingshan wrote:
+>=20
+>=20
+> On 8/18/2023 12:04 AM, Stefan Hajnoczi wrote:
+> > On Thu, Aug 17, 2023 at 05:15:16PM +0200, Eugenio Perez Martin wrote:
+> > > On Tue, Aug 15, 2023 at 2:29=E2=80=AFPM Stefan Hajnoczi <stefanha@red=
+hat.com> wrote:
+> > > > On Tue, Aug 15, 2023 at 06:31:23PM +0800, Zhu, Lingshan wrote:
+> > > > >=20
+> > > > > On 8/14/2023 10:30 PM, Stefan Hajnoczi wrote:
+> > > > > > On Tue, Aug 15, 2023 at 03:29:00AM +0800, Zhu Lingshan wrote:
+> > > > > > > This patch introudces a new status bit in the device status: =
+SUSPEND.
+> > > > > > >=20
+> > > > > > > This SUSPEND bit can be used by the driver to suspend a devic=
+e,
+> > > > > > > in order to stablize the device states and virtqueue states.
+> > > > > > >=20
+> > > > > > > Its main use case is live migration.
+> > > > > > >=20
+> > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > > > Signed-off-by: Eugenio P=C3=83rez <eperezma@redhat.com>
+> > > > > > There is an character encoding issue in Eugenio's surname.
+> > > > > Oh, I copied his SOB form his email, I will copy from git log to =
+fix this,
+> > > > > thanks for point out it.
+> > > > > > > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> > > > > > > ---
+> > > > > > >    content.tex | 18 ++++++++++++++++++
+> > > > > > >    1 file changed, 18 insertions(+)
+> > > > > > This patch hints at the asynchronous nature of the SUSPEND bit =
+(the
+> > > > > > driver must re-read the Device Status Field) but doesn't explai=
+n the
+> > > > > > rationale or any limits.
+> > > > > >=20
+> > > > > > For example, is there a timeout or should the driver re-read th=
+e Device
+> > > > > > Status Field forever?
+> > > > > It depends on the driver, normally we expect this operation can b=
+e done
+> > > > > successfully
+> > > > > like how the driver/device handles FEATURES_OK.
+> > > > >=20
+> > > > > Once failed due to:
+> > > > > 1) driver timeout, the driver can reset the device
+> > > > > 2) device failure, the device can set NEEDS_RESET.
+> > > > I mention this because SUSPEND involves quiescing the device so tha=
+t no
+> > > > requests are in flight and that can take an unbounded amount of tim=
+e on
+> > > > a virtio-blk, virtio-scsi, or virtiofs device. If the driver is busy
+> > > > waiting for the device to report the SUSPEND bit, then that could t=
+ake a
+> > > > long time/forever.
+> > > >=20
+> > > > Imagine a virtiofs PCI device implemented in hardware that forwards=
+ I/O
+> > > > to a distributed storage system. If the distributed storage system =
+has a
+> > > > request in flight then SUSPEND needs to wait for it to complete. The
+> > > > device has no control over how long that will take, but if it does =
+not
+> > > > then corruption could occur later on.
+> > > >=20
+> > > > There are two issues with long SUSPEND times:
+> > > > 1. Busy wait CPU consumption. Since there is no interrupt that sign=
+als
+> > > >     when the bit is set, the best a driver can do is to back off
+> > > >     gradually and use timers to avoid hogging the CPU.
+> > > > 2. Synchronous blocking. If the call stack that led the driver to s=
+et
+> > > >     SUSPEND is blocked until the device reports the SUSPEND bit, th=
+en
+> > > >     other parts of the system could experience blocking. For exampl=
+e, the
+> > > >     VMM might be blocked in a vhost ioctl() call, which makes the g=
+uest
+> > > >     unresponsive.
+> > > >=20
+> > > I think all of this already happens with ring reset or even a plain
+> > > device reset, doesn't it?
+> > Yes, but keep in mind that the driver has typically already drained
+> > requests when it invokes reset. If SUSPEND is used transparently during
+> > live migration then there really will be requests in flight because the
+> > guest driver is unaware.
+> I agree, and as discussed before, I think in this series we should say:
+> the device MUST wait untilall descriptors that being processed to finish =
+and
+> mark them as used.
 
-On 8/21/2023 5:26 PM, Eugenio Perez Martin wrote:
-> On Fri, Aug 18, 2023 at 11:44 AM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->>
->>
->> On 8/17/2023 11:19 PM, Eugenio Perez Martin wrote:
->>> On Tue, Aug 15, 2023 at 1:30 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->>>>
->>>> On 8/15/2023 8:34 AM, Jason Wang wrote:
->>>>> On Mon, Aug 14, 2023 at 7:29 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
->>>>>> This commit specifies the constraints of the virtqueue state,
->>>>>> and the actions should be taken by the device when SUSPEND
->>>>>> and DRIVER_OK is set
->>>>>>
->>>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
->>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>> ---
->>>>>>     content.tex | 31 +++++++++++++++++++++++++++++++
->>>>>>     1 file changed, 31 insertions(+)
->>>>>>
->>>>>> diff --git a/content.tex b/content.tex
->>>>>> index 43bd5de..f6ac581 100644
->>>>>> --- a/content.tex
->>>>>> +++ b/content.tex
->>>>>> @@ -587,6 +587,37 @@ \subsection{\field{Used State} Field}
->>>>>>
->>>>>>     See also \ref{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}.
->>>>>>
->>>>>> +\drivernormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated, the driver MUST set SUSPEND in \field{device status}
->>>>>> +first before getting or setting Virtqueue State of any virtqueues.
->>>>> I don't get why this is a must. It could be useful for debugging.
->>>> To avoid race conditions with the device and make the device
->>>> implementation easier
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiaged but VIRTIO_RING_F_PACKED not been negotiated,
->>>>> typo
->>>> yes
->>>>>> +the driver MUST NOT access \field{Used State} of any virtqueues, it should use the
->>>>>> +used index in the used ring.
->>>>>> +
->>>>>> +\devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but SUSPEND is not set in \field{device status},
->>>>>> +the device MUST ignore any accesses against Virtqueue State of any virtqueues.
->>>>> Btw, do we need to clarify the behavior of ring reset after suspending?
->>>> I think once suspended, the device should ignore resetting a queue
->>> Actually shadow virtqueue could benefit from the ability to change vq
->>> properties (addresses) while the device is suspended, and then just
->>> resume it. I've been told that ring reset is overkill for that.
->> If ring reset is overkill, is SUSPEND even more overkill?
-> It depends on the cost of recreating the vq in the device I think. But
-> it has more to do with *what* is changed in the vq, as it seems some
-> parameters (vq size) has more impact than others like vq address. The
-> way to stop the device does not affect, but ring reset offers the
-> possibility of change all of the parameters already.
->
-> Adding Si-Wei and Dragos here, as they pointed it out in the
-> virtio-networking upstream meeting.
->
->>> But probably it is better to address it on top, with another feature flag.
->> I think if we want to changing the vq properties, there must be a
->> mechanism to
->> stop the queue then resume the queue.
->>
->> How about allow setting queue_enable = 0 to stop it and =1 to resume and
->> force it reinitialize?
->>
-> Yes, I think that is better suited. But maybe this is better to be
-> added on top, so we maintain this series small.
-OK, I can work out a patch in this series implementing it.
-And as discussed in another thread with Jason in this series, it
-is better to forbid resetting a vq after SUSPEND.
+Sounds good.
 
-Thanks
->
-> Thanks!
->
->> Thanks
->> Zhu Lingshan
->>>>>> +
->>>>>> +When VIRTIO_F_QUEUE_STATE has been negotiated but VIRTIO_RING_F_PACKED is not,
->>>>>> +the device MUST ignore any accesses against \field{Used State}.
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiaged, the device MUST reset
->>>>>> +the Virtqueue State of every virtqueue upon a reset.
->>>>> Need to define the meaning of "reset" this is important for packed virtqueue.
->>>> I will remove this as Stefan suggested.
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE and VIRTIO_RING_F_PACKED have been negotiaged, when SUSPEND is set,
->>>>>> +the device MUST record the Virtqueue State of every enabled virtqueue
->>>>>> +in \field{Available State} and \field{Used State} respectively,
->>>>>> +and correspondingly restore the Virtqueue State of every enabled virtqueue
->>>>>> +from \field{Avaiable State} and \field{Used State} when DRIVER_OK is set.
->>>>> We can just let the device report those states in any case then we
->>>>> don't need to care about those details, or did you see any blockers?
->>>> Agree, I will add the definition of used_state of splitted vq in the
->>>> next version
->>>>
->>>> Thanks
->>>>> Thanks
->>>>>
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but VIRTIO_RING_F_PACKED has been not, when SUSPEND is set,
->>>>>> +the device MUST record the available state of every enabled virtqueue in \field{Available State},
->>>>>> +and restore the available state of every enabled virtqueue from \field{Avaiable State}
->>>>>> +when DRIVER_OK is set.
->>>>>> +
->>>>>>     \input{admin.tex}
->>>>>>
->>>>>>     \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
->>>>>> --
->>>>>> 2.35.3
->>>>>>
->
-> This publicly archived list offers a means to provide input to the
->
-> OASIS Virtual I/O Device (VIRTIO) TC.
->
->
->
-> In order to verify user consent to the Feedback License terms and
->
-> to minimize spam in the list archive, subscription is required
->
-> before posting.
->
->
->
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
->
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
->
-> List help: virtio-comment-help@lists.oasis-open.org
->
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
->
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
->
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
->
-> Committee: https://www.oasis-open.org/committees/virtio/
->
-> Join OASIS: https://www.oasis-open.org/join/
->
+> Then in the following series, we should implement in-flight IO tracker.
+> >=20
+> > > In my opinion the best thing the device can do here is to fail the
+> > > request after a certain time, the same way it would fail if the
+> > > backend distributed storage system gets disconnected or latency gets
+> > > out of bounds.
+> > In order to prevent corruption there needs to be a fence in addition to
+> > a timeout. In other words, the storage backend needs to guarantee that
+> > any requests sent before the fence will be ignored if they are still
+> > encountered.
+> Please correct me if I misunderstand anything.
+>=20
+> I am not sure a remote target is aware of SUSPEND, but the device can
+> fail SUSPEND by setting NEEDS_RESET for sure. IN this series,
+> maybe it is best to flush and wait for the IO requests.
 
+Yes, it is necessary to wait for pending I/O.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+I was pointing out that timeouts implemented inside the storage
+initiator (client) are unsafe. The storage target (server) needs to
+participate in stopping in-flight I/O one way or another (timeout,
+cancellation, fence, etc).
+
+Stefan
+
+--vMt8fGVWkDD3/G37
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmTjapQACgkQnKSrs4Gr
+c8h2Wwf/eXtwWgGqVBZAbtFhvjS+MnXJlcRAiJ4bbhgqxCDTIHAcJMboolLPXh+B
+f2ZVPdji+ct/6Z5w29cwkmB1tzu9cjgiiK1PkXdNJE7VWkKag2GVLACmCn3Yk3Aj
+E2XkC0F+NlCZR5yrwgL9gSy+dg0B8wpA21sQdltdDuIdqJGpyYz6pW719NKOaBSO
+FSxefuFac1Ma1WJ8qA4aSwsLS4fN7f7ie/XpEi/xd99HlMolb2HFvd9b+9Ruml4D
+sBYNPvlRGdDixmvMUjPxPB95hUCJRtj5jc3IpJ3GSXzD64cvbtnvWvz+uD5GYyiT
+q1PTon84hVrCZtcs9SXSvlBWV3GgXw==
+=TAf7
+-----END PGP SIGNATURE-----
+
+--vMt8fGVWkDD3/G37--
 
