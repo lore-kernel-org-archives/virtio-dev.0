@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13590-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13591-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17CD5C83F2F
-	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 08:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5B48DC83F10
+	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 10:16:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 51926780E6
-	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 08:30:47 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 935E27E90E
+	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 10:16:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2E19998655D
-	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 08:30:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6F747986572
+	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 10:16:42 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1623E98408C; Thu, 31 Aug 2023 08:30:47 +0000 (UTC)
+	id 51C9F986546; Thu, 31 Aug 2023 10:16:42 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,90 +24,190 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F3E19986546
-	for <virtio-dev@lists.oasis-open.org>; Thu, 31 Aug 2023 08:30:41 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3E778986542;
+	Thu, 31 Aug 2023 10:16:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693470640; x=1694075440;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hbe+7E0ZUpGb8+DmjEOUMRwyxF3swPKGVxGWg0XWsi0=;
-        b=VpSZRXgOdTWHegYw/0fHY7wyFJx3eHi36XlOAkDdjurjnw8ewWdXyWMOhi/PEL5YSD
-         MmnPtz3B3CBx2dxPJ4kdPFUwcT+Muf43SWcXaXnleiC7xVvayiIGWcTTHUM8oZbB09yP
-         p7v9ao6Ih6RqRS5QzFCdG+JNPtVG2DkCEtTWEAE+/y/TxRgSpDw4SWUH1EqceVSq29r4
-         FrxpDt0b8arvt0O0xL87zBbFeykcg9fRCOZJw8wt2OxbLyHS8RgOLzR+moMpUTSfxZe8
-         FM6OfBNBubSmUfKD874L06rVx/b0eX0v2Rc9GauP9vd2m+4J8c+/KJ9IKCqGTdO+NxjF
-         VGJQ==
-X-Gm-Message-State: AOJu0Yx8ZNP9d48s50lLqBxXUxB7cjHYNKfqKA18aKmpBXZFAo9UTEsT
-	xrHMcviTc0n7GKgpq+vkAAqQ2A==
-X-Google-Smtp-Source: AGHT+IH0u1KaJnZOl4WEHEupdFXPoTkdI8acXe/NRuoBzZY04AP+7xd1ZonMqgOIMFkZJIQue+1Ktg==
-X-Received: by 2002:a9d:6181:0:b0:6bc:dbbf:47be with SMTP id g1-20020a9d6181000000b006bcdbbf47bemr4813821otk.26.1693470640481;
-        Thu, 31 Aug 2023 01:30:40 -0700 (PDT)
-Message-ID: <747ba9a2-07f1-451b-b052-b51b95da1b2b@daynix.com>
-Date: Thu, 31 Aug 2023 17:30:37 +0900
+X-IronPort-AV: E=Sophos;i="6.02,216,1688428800"; 
+   d="scan'208";a="302455000"
+Message-ID: <0abb7518-16e0-4227-bfe1-a29bd27124e8@amazon.es>
+Date: Thu, 31 Aug 2023 12:16:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: virtio-comment@lists.oasis-open.org, eric.auger@redhat.com,
- virtio-dev@lists.oasis-open.org,
- Zide Chen <zide.chen@intel.corp-partner.google.com>, crosvm-dev@chromium.org
-References: <20230803153238.541803-1-jean-philippe@linaro.org>
- <20230803153238.541803-5-jean-philippe@linaro.org>
- <ca33f633-26ea-b254-a75d-3bbf86d15d24@daynix.com>
- <20230810151036.GA1901900@myrica>
- <96d8b628-3f21-40de-ab2e-20e6043dc937@daynix.com>
- <20230811142039.GA2189828@myrica>
- <b7b62822-4371-4a47-bc28-25a0b0ef92c5@daynix.com>
- <20230814112502.GA37241@myrica>
+To: "Michael S. Tsirkin" <mst@redhat.com>,
+	<virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
+	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
+	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>
+References: <20221121162756.350032-1-mst@redhat.com>
+ <20221121162756.350032-4-mst@redhat.com>
 Content-Language: en-US
-From: Akihiko Odaki <akihiko.odaki@daynix.com>
-In-Reply-To: <20230814112502.GA37241@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Babis Chalios <bchalios@amazon.es>
+Autocrypt: addr=bchalios@amazon.es; keydata=
+ xsFNBGIonY4BEACl1/Qf/fYoDawcFfvjckR5H2yDxlBvKoFT4m5KYiRUivcf5nwCijrM3Fij
+ d38MBpMb9kvwN7lAXOXPCBZMhaNH3J3NuFpUCIZ+UZtf5JgDGiKd/Obli/c0m+7du8wEysCD
+ Z1ldpDeW3c9aENw/uUChQkTEEh0Cmj83uVYEz+BMJKmeA/1Qz0kzGp/MkW8mZYVY5ts4PcBq
+ UmH8Qm5x9NqspTMqIj/yUyxFgxRcKzBOPCF7KiabuCNGCWJAL3EN4SQIQ4MsLBJOSyk5RazC
+ 5x4Vdt9+oCq+jD6H5S19FBSiXKDZCFitIQYd9Xj3Stw6jgrObWrn4ll3aT/XCMYF0Ja8x9+S
+ /UfYEGEPOJkrelKqAu1721LcBwG1rPp12uzyTmtwWBIeDp15/ZnxZ5IG1HuNSsoZzjjnhiLY
+ ECfIymLMya2ofSk4ENCbAdmCAmuI5Fe5ZcUR5zjKHIN5aTgPYEf0H17iZMZlhJ7tAFFKnaGR
+ gMzPiJaff1B8fJjaRd6S73f+4hK0elXAAphoeg8nM2EQQAEzIqSocAZgiktsTbfDSuvCFjrc
+ NP3/R5gWdJDbhlMGP+bhs6HclywzkahskxEQtHo4C1tjP5XFxmUhYlJWJHncDJa4jlouo3zo
+ 1h1NE3OPbT1HDj8O69GXcNZop10hMbnlrIYb3HfJEpTIudYPGwARAQABzSJCYWJpcyBDaGFs
+ aW9zIDxiY2hhbGlvc0BhbWF6b24uZXM+wsGSBBMBCAA8FiEEDnV+NQfr1LBsLB/GjBB7GAqe
+ ZsQFAmIonY4CGwMFCwkIBwIDIgIBBhUKCQgLAgQWAgMBAh4HAheAAAoJEIwQexgKnmbEK2AP
+ /3E4c+xwberE/Sczr5YtO2NZDOnJ0ksumNBJYwJxVNvZEKG1tzJ03oxAE7v0xNylCXSV+tEk
+ WUxuwcyeisQwfwlhhG3upW0ErvpLqhhWXZQYV2ogI3ZJ54oBuFqCkHQ5MOlIApUI5jR6rzY4
+ 0i8c+1DWL3VI4Jmj8+QRfLxPbade81Rj7j/jc7qTsyzfs4SVRQQo2AF6VBIqNh9MFwJzeX4a
+ 8INhNwchKpt8xUfRSSR5Q/FhrS4drUaG4Hi+dL1aPLWpo9zvFCJQpOeDQysrIyQ7m8VZO0cn
+ Iqh6vnfJrcx4vxQB19XJHM6sufmHLfEy/gZAXplq1YPpuzy6m0Kj5oUABRsAQDPulSndV2qL
+ d8cgAgVei/SEhl6qDmNQqtTK3GeqgdyUHvIYD+MyzTsDplSiA2wvLVdbeltPdi+KmA7kyE7B
+ qthH1H7AMr8IOqBNUS6oVNGD72Bg5qEenhiUgMI287UyGPz3TxAPdwc3TFCxHaJeNhLpi1Db
+ F2tdIxBlwtbwHI9ah24lpmDyO+nttbXv6wJWgg4oV2Dw7lgYh2t9YBnQvI3xO+c2AbDwBEOe
+ 9daTNJYVnjboCPjF/HiJAJh2aurno5Da72gyRsEf3cl/R5rIIx2ZfZVwk88MTZSe4dwsu2NV
+ l6yT6DyyLWdZcSjmkLuuW92THzlkZlpQ0EDqzsFNBGIonY4BEADCxlifRJR46flvWYp6xRjp
+ pppGljP69wCJQSGdOSQj2KwIZbqwI36NCW8zCXAYUrpMqNhsp2pc1IUnv7P9HBitx4t8XCMV
+ Cj+ZRXOZs3fGvYxOH433+UuDt4bC7Nazq6fFJkdUgZoivXOqzJpLmjSTtxJBnbv/CFmo7tgM
+ PG+gHZUzlwATc4iYqc23OKHyaVA1OecU4CJoVKLP0vwO/xaSEs7jL0MYHqSYTBN/63A9Xqt3
+ JBLUuwGs1a936xXq1/MMLWRAP1N5XGL0S7oOF9TM2trq2GISaBVenjpWhT11X+q67y3cFxbb
+ oETa14ggq9QKorgXVgYWUa7Jq5hBlRiJQeR+gAa8jUTIU0c7psgz24CEwC1TDx9TpDz1BMIn
+ /zEF8g7j8nZlqiph5qyqbSc9iayhtf2FG0aYNBEzgybKoR50qEIM82pHCeJSYZxpPILdCVWn
+ tntD+h22IJFHgXihCYPYkHa//Nyb2+Alh2hBsRulQWNRyubG+HZvW/Mre7kyVbJi+ajEkx6K
+ /pbxWbJlDp2ozgnDRTf+7/xCKVP9jO2Y6JjrRx8WAlqYSjK16ML9w1hxZepekeOXhNxGxhEH
+ Z5lzVEVdbHQUN69ZFOcjZnf87vMZBcPxzebcydzRs96CFYsEkT34C9SnElejzuNmN5fMfrJ9
+ 713Mj0/MdpcjPwARAQABwsF2BBgBCAAgFiEEDnV+NQfr1LBsLB/GjBB7GAqeZsQFAmIonY4C
+ GwwACgkQjBB7GAqeZsR2Lg/8CIRvePonn3me+500Zdyv3Z3yaIkHv9mArCLPOzh0mhwrWQWh
+ e5oLnTx51ynU5kUow0i3Owj6xu972naqpV/c0olGdNrwrYboKM3DMHrdZr/pqGhWckU+8S2T
+ uCVB3c/b8YRxqXww5GhwV1WwFC4sndc86tl1yKpxpDdQ858uZYs33Ur+WmxJJQ5BD6sQ48OD
+ 5hEseFrcbikSKk/eVD1FrT3lzbaVqqvQ71soCYYuo2VKxmShuQxUeeFp8hnDw3TR5SO1KJft
+ CT6sQ4dS3vUDeKzVu8E2ofGyOQZ9j6KlFz9daBiRHowFON1vZKS/k8A7ZCZ5Co3Skx538GW8
+ jDNZJgnSbaam8FVDT1z2H6irmEHz1/vb3hZns0bAmqgwWONTW/gO5jcPbzbTqPfIlmCEtBDf
+ qGaQH7uIyC5kPMTQCNvEMKKn/R2hV3al2/gLvRYFI1GGFE/QdLXiYXmtkDBaz/niHxUUGqO4
+ LbSF+KYpZYewC8Wx5gTr4Glj+9+RcDWzdkGBd+Kthh0VIOdalbjbnv2jmt5gvLoeLDNpIZRQ
+ AQ+HulTHw5frK1j8+AHIKQYXIE8xXzVkssNuX0Hc7ecC5jm/XlGr5IuQkJpFyVtiXfjkd6tq
+ 9CfKbXmQEUz/yWPkXerBltQSv7ePqJHPFMwJrFAqFftGK6t9nvzGjQB91RM=
+In-Reply-To: <20221121162756.350032-4-mst@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [virtio-dev] Re: [PATCH 4/4] virtio-iommu: Clarify hot-unplug behavior
+X-Originating-IP: [10.1.212.24]
+X-ClientProxiedBy: EX19D043UWA002.ant.amazon.com (10.13.139.53) To
+ EX19D037EUB003.ant.amazon.com (10.252.61.119)
+Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
 
-On 2023/08/14 20:25, Jean-Philippe Brucker wrote:
-> On Sat, Aug 12, 2023 at 03:25:10PM +0900, Akihiko Odaki wrote:
->>>> By the way, crosvm's logic to detach endpoint on removal looks incorrect for
->>>> me. A domain may have several endpoints attached, but the code looks like
->>>> it's always destroying a domain whether there are other endpoints attached
->>>> to the domain. I'm adding Zide Chen, who wrote the code according to git
->>>> blame, and crosvm-dev@chromium.org to CC.
->>>
->>> Link to this thread for more context:
->>> https://lore.kernel.org/virtio-dev/20230803153238.541803-5-jean-philippe@linaro.org/
->>>
->>> I thought crosvm rejected attaching multiple endpoints to one domain but I
->>> think I misread. Rejecting multiple attach would be a straightforward fix
->>> (it's allowed by the spec), though it would prevent assigning endpoints
->>> that cannot be isolated from each others by the hardware (the driver won't
->>> attach those to different domains, if it's made aware that they should be
->>> in the same IOMMU group, for example if they are on a conventional PCI
->>> bus).
->>
->> Now we figured out an endpoint should not be detached from a domain without
->> a request from the driver anyway so the code to detach an endpoint can be
->> simply removed.
-> 
-> Yes, but I think the other detach path, when handling ATTACH or DETACH
-> requests, doesn't support domains with multiple endpoints attached either:
-> 
->      // Currently, we only support detaching an endpoint if it is the only endpoint attached
->      // to its domain.
-> 
-> But the ATTACH handler seems to accept attaching multiple endpoints to the
-> same domain?
-> 
-> Thanks,
-> Jean
+Hi Michael,
 
-We saw no response from crosvm people for a few weeks so I opened an 
-issue on their bug tracker for heads-up:
-https://issuetracker.google.com/u/1/issues/298297288
+On 21/11/22 17:30, Michael S. Tsirkin wrote:
+> Add virtqueues to support reporting entropy leaks (similar to virtio based vmgenid).
+>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>   virtio-rng.tex | 61 +++++++++++++++++++++++++++++++++++++++++++++++++-
+>   1 file changed, 60 insertions(+), 1 deletion(-)
+>
+> diff --git a/virtio-rng.tex b/virtio-rng.tex
+> index 1ec7164..4760dfa 100644
+> --- a/virtio-rng.tex
+> +++ b/virtio-rng.tex
+> @@ -9,10 +9,14 @@ \subsection{Device ID}\label{sec:Device Types / Entropy Device / Device ID}
+>   \subsection{Virtqueues}\label{sec:Device Types / Entropy Device / Virtqueues}
+>   \begin{description}
+>   \item[0] requestq
+> +\item[1] leakq1 (only if VIRTIO_RNG_F_LEAK is offered)
+> +\item[2] leakq2 (only if VIRTIO_RNG_F_LEAK is offered)
+>   \end{description}
+>   
+>   \subsection{Feature bits}\label{sec:Device Types / Entropy Device / Feature bits}
+> -  None currently defined
+> +\begin{description}
+> +\item[VIRTIO_RNG_F_LEAK (0)] Device can report and handle information leaks.
+> +\end{description}
+>   
+>   \subsection{Device configuration layout}\label{sec:Device Types / Entropy Device / Device configuration layout}
+>     None currently defined.
+> @@ -21,6 +25,7 @@ \subsection{Device Initialization}\label{sec:Device Types / Entropy Device / Dev
+>   
+>   \begin{enumerate}
+>   \item The \field{requestq} virtqueue is initialized
+> +\item If VIRTIO_RNG_F_LEAK has been negotiated, \field{leakq1} and \field{leakq2} are initialized
+>   \end{enumerate}
+>   
+>   \subsection{Device Operation}\label{sec:Device Types / Entropy Device / Device Operation}
+> @@ -41,3 +46,57 @@ \subsection{Device Operation}\label{sec:Device Types / Entropy Device / Device O
+>   The device MUST place one or more random bytes into the buffer
+>   made available to it through \field{requestq}, but it
+>   MAY use less than the entire buffer length.
+> +
+> +\subsubsection{Reporting Information Leaks}{Device Types / Entropy Device / Device Operation / Reporting Information Leaks}
+> +
+> +The device might, after the fact, detect that some of the entropy
+> +it supplied to the driver has after the fact degraded in quality
+> +or leaked to the outside world.  One example is when the device
+> +is part of the virtual machine undergoing a restore from snapshot
+> +operation. Another example is when the information leaks from the
+> +host system through a side-channel.
+> +
+> +The driver would typically react by causing regeneration of any
+> +information that might have leaked and that has to be secret or
+> +unique.  It is understood that when an information leak has been
+> +detected it is likely not limited to the entropy received through
+> +the specific device. In particular, this is the case for
+> +snapshoting It is thus suggested that the system fully
+> +regenerate any unique/secret information in this scenario.
+> +
+> +If VIRTIO_RNG_F_LEAK has been negotiated the device can report
+> +such leaks to the driver through a set of dedicated leak
+> +queues: \field{leakq1} and \field{leakq2}.
+> +
+> +Buffers added to the leak queues can have one of two forms:
+> +\begin{enumerate}
+> +\item A write-only buffer. It will be completely filled by random data by the device.
+> +\item A buffer consisting of read-only section followed by a
+> +write-only section, both of identical size. The
+> +device will copy data from the read-only section to the write-only
+> +section.
+> +\end{enumerate}
+> +
+> +The steps for operating the virtqueue are:
+> +
+> +\begin{enumerate}
+> +\item At each time, only one of \field{leakq1}, \field{leakq2} is active
+> +      (has buffers added/used).
+> +\item After initialization, \field{leakq1} is active.
+> +\item Driver adds multiple buffers to the active leak queue.
+> +\item The buffers are not used until an information leak is
+> +      detected, as long as that is the case driver can
+> +      add more buffers to the active queue.
+> +\item Upon detecting an information leak, device starts
+> +      using buffers in the active leak queue.
+> +\item Upon detecting that buffers have been used, driver
+> +      switches to another leak queue making it active
+> +      (e.g. from \field{leakq1} to \field{leakq2} or vice versa).
+> +      It then starts adding buffers to the new leak queue.\
 
-Regards,
-Akihiko Odaki
+I have been discussing with Alex and we think there's a potential race 
+here, between the time the driver
+sees the used buffers in the active leak queue until the time it adds 
+new buffers to the next leak queue.
+If a new entropy leak event arrives the VMM won't find any buffers in 
+the queue.
+
+In the last RFC implementing this in Linux we sent to LKML [1] we avoid 
+the issue by pre-populating both
+queues, but that does not solve the problem if a third entropy leak 
+event arrives. The probability of this
+happening is indeed small, but we thought of a potential solution to this.
+
+What if we modify the spec here to instruct the VMM to deny taking a 
+snapshot if there are not any buffers
+in the active leak queue? If we did this, we could even simplify the 
+spec to just introduce a single entropy
+leak queue, so we could avoid the complexity of switching between active 
+leak queues in the driver and
+the device. WDYT?
+
+Cheers,
+Babis
+
+[1] 
+https://lore.kernel.org/lkml/20230823090107.65749-3-bchalios@amazon.es/T/
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
