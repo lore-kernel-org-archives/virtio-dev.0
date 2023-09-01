@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13591-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13592-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5B48DC83F10
-	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 10:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1F8A4CA0FE3
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 03:30:09 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 935E27E90E
-	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 10:16:42 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 795AF2CAE9
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 03:30:08 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6F747986572
-	for <virtio-dev@archiver.kernel.org>; Thu, 31 Aug 2023 10:16:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5D7289865BA
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 03:30:08 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 51C9F986546; Thu, 31 Aug 2023 10:16:42 +0000 (UTC)
+	id 4BE8B98658C; Fri,  1 Sep 2023 03:30:08 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,190 +24,278 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3E778986542;
-	Thu, 31 Aug 2023 10:16:41 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 29664986585;
+	Fri,  1 Sep 2023 03:30:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=Sophos;i="6.02,216,1688428800"; 
-   d="scan'208";a="302455000"
-Message-ID: <0abb7518-16e0-4227-bfe1-a29bd27124e8@amazon.es>
-Date: Thu, 31 Aug 2023 12:16:22 +0200
+From: Haixu Cui <quic_haixcui@quicinc.com>
+To: <virtio-dev@lists.oasis-open.org>, <virtio-comment@lists.oasis-open.org>,
+        <cohuck@redhat.com>, <harald.mommer@opensynergy.com>
+CC: <quic_ztu@quicinc.com>, <jrreinhart@google.com>,
+        Haixu Cui
+	<quic_haixcui@quicinc.com>
+Date: Fri, 1 Sep 2023 11:29:33 +0800
+Message-ID: <20230901032933.32434-1-quic_haixcui@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: "Michael S. Tsirkin" <mst@redhat.com>,
-	<virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
-	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
-	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>
-References: <20221121162756.350032-1-mst@redhat.com>
- <20221121162756.350032-4-mst@redhat.com>
-Content-Language: en-US
-From: Babis Chalios <bchalios@amazon.es>
-Autocrypt: addr=bchalios@amazon.es; keydata=
- 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
-In-Reply-To: <20221121162756.350032-4-mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.1.212.24]
-X-ClientProxiedBy: EX19D043UWA002.ant.amazon.com (10.13.139.53) To
- EX19D037EUB003.ant.amazon.com (10.252.61.119)
-Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 51Fks71tH3jW1L7Nmzme_oI4fIH3Odk8
+X-Proofpoint-ORIG-GUID: 51Fks71tH3jW1L7Nmzme_oI4fIH3Odk8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-09-01_01,2023-08-31_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1011 malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999
+ suspectscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2308100000 definitions=main-2309010030
+Subject: [virtio-dev] [PATCH v3] virtio-spi: add the device specification
 
-Hi Michael,
+virtio-spi is a virtual SPI master and it allows a guset to operate and
+use the physical SPI master controlled by the host.
 
-On 21/11/22 17:30, Michael S. Tsirkin wrote:
-> Add virtqueues to support reporting entropy leaks (similar to virtio based vmgenid).
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->   virtio-rng.tex | 61 +++++++++++++++++++++++++++++++++++++++++++++++++-
->   1 file changed, 60 insertions(+), 1 deletion(-)
->
-> diff --git a/virtio-rng.tex b/virtio-rng.tex
-> index 1ec7164..4760dfa 100644
-> --- a/virtio-rng.tex
-> +++ b/virtio-rng.tex
-> @@ -9,10 +9,14 @@ \subsection{Device ID}\label{sec:Device Types / Entropy Device / Device ID}
->   \subsection{Virtqueues}\label{sec:Device Types / Entropy Device / Virtqueues}
->   \begin{description}
->   \item[0] requestq
-> +\item[1] leakq1 (only if VIRTIO_RNG_F_LEAK is offered)
-> +\item[2] leakq2 (only if VIRTIO_RNG_F_LEAK is offered)
->   \end{description}
->   
->   \subsection{Feature bits}\label{sec:Device Types / Entropy Device / Feature bits}
-> -  None currently defined
-> +\begin{description}
-> +\item[VIRTIO_RNG_F_LEAK (0)] Device can report and handle information leaks.
-> +\end{description}
->   
->   \subsection{Device configuration layout}\label{sec:Device Types / Entropy Device / Device configuration layout}
->     None currently defined.
-> @@ -21,6 +25,7 @@ \subsection{Device Initialization}\label{sec:Device Types / Entropy Device / Dev
->   
->   \begin{enumerate}
->   \item The \field{requestq} virtqueue is initialized
-> +\item If VIRTIO_RNG_F_LEAK has been negotiated, \field{leakq1} and \field{leakq2} are initialized
->   \end{enumerate}
->   
->   \subsection{Device Operation}\label{sec:Device Types / Entropy Device / Device Operation}
-> @@ -41,3 +46,57 @@ \subsection{Device Operation}\label{sec:Device Types / Entropy Device / Device O
->   The device MUST place one or more random bytes into the buffer
->   made available to it through \field{requestq}, but it
->   MAY use less than the entire buffer length.
-> +
-> +\subsubsection{Reporting Information Leaks}{Device Types / Entropy Device / Device Operation / Reporting Information Leaks}
-> +
-> +The device might, after the fact, detect that some of the entropy
-> +it supplied to the driver has after the fact degraded in quality
-> +or leaked to the outside world.  One example is when the device
-> +is part of the virtual machine undergoing a restore from snapshot
-> +operation. Another example is when the information leaks from the
-> +host system through a side-channel.
-> +
-> +The driver would typically react by causing regeneration of any
-> +information that might have leaked and that has to be secret or
-> +unique.  It is understood that when an information leak has been
-> +detected it is likely not limited to the entropy received through
-> +the specific device. In particular, this is the case for
-> +snapshoting It is thus suggested that the system fully
-> +regenerate any unique/secret information in this scenario.
-> +
-> +If VIRTIO_RNG_F_LEAK has been negotiated the device can report
-> +such leaks to the driver through a set of dedicated leak
-> +queues: \field{leakq1} and \field{leakq2}.
-> +
-> +Buffers added to the leak queues can have one of two forms:
-> +\begin{enumerate}
-> +\item A write-only buffer. It will be completely filled by random data by the device.
-> +\item A buffer consisting of read-only section followed by a
-> +write-only section, both of identical size. The
-> +device will copy data from the read-only section to the write-only
-> +section.
-> +\end{enumerate}
-> +
-> +The steps for operating the virtqueue are:
-> +
-> +\begin{enumerate}
-> +\item At each time, only one of \field{leakq1}, \field{leakq2} is active
-> +      (has buffers added/used).
-> +\item After initialization, \field{leakq1} is active.
-> +\item Driver adds multiple buffers to the active leak queue.
-> +\item The buffers are not used until an information leak is
-> +      detected, as long as that is the case driver can
-> +      add more buffers to the active queue.
-> +\item Upon detecting an information leak, device starts
-> +      using buffers in the active leak queue.
-> +\item Upon detecting that buffers have been used, driver
-> +      switches to another leak queue making it active
-> +      (e.g. from \field{leakq1} to \field{leakq2} or vice versa).
-> +      It then starts adding buffers to the new leak queue.\
+This patch adds the specification for virtio-spi.
 
-I have been discussing with Alex and we think there's a potential race 
-here, between the time the driver
-sees the used buffers in the active leak queue until the time it adds 
-new buffers to the next leak queue.
-If a new entropy leak event arrives the VMM won't find any buffers in 
-the queue.
+Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
+---
+ device-types/spi/description.tex        | 191 ++++++++++++++++++++++++
+ device-types/spi/device-conformance.tex |   7 +
+ device-types/spi/driver-conformance.tex |   7 +
+ 3 files changed, 205 insertions(+)
+ create mode 100644 device-types/spi/description.tex
+ create mode 100644 device-types/spi/device-conformance.tex
+ create mode 100644 device-types/spi/driver-conformance.tex
 
-In the last RFC implementing this in Linux we sent to LKML [1] we avoid 
-the issue by pre-populating both
-queues, but that does not solve the problem if a third entropy leak 
-event arrives. The probability of this
-happening is indeed small, but we thought of a potential solution to this.
+diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
+new file mode 100644
+index 0000000..c35826b
+--- /dev/null
++++ b/device-types/spi/description.tex
+@@ -0,0 +1,191 @@
++\section{SPI Master Device}\label{sec:Device Types / SPI Master Device}
++
++virtio-spi is a virtual SPI (Serial Peripheral Interface) master and it allows
++a guest to operate and use the physical SPI master controlled by the host.
++
++virtio-spi has a single virtqueue. SPI transfer requests are placed into
++the virtqueue, and serviced by the physical SPI master.
++
++In a typical host and guest architecture with virtio-spi, Virtio SPI driver is
++the front-end existing in the guest kernel, and Virtio SPI device acts as the
++back-end in the host platform.
++
++\subsection{Device ID}\label{sec:Device Types / SPI Master Device / Device ID}
++45
++
++\subsection{Virtqueues}\label{sec:Device Types / SPI Master Device / Virtqueues}
++
++\begin{description}
++\item[0] requestq
++\end{description}
++
++\subsection{Feature bits}\label{sec:Device Types / SPI Master Device / Feature bits}
++
++None
++
++\subsection{Device configuration layout}\label{sec:Device Types / SPI Master Device / Device configuration layout}
++
++All fields of this configuration are always available and read-only for Virtio SPI driver.
++
++\begin{lstlisting}
++struct virtio_spi_config {
++	le32 bus_num;
++	le32 chip_select_max_number;
++};
++\end{lstlisting}
++
++The \field{bus_num} indicates the physical SPI master assigned to guset, and this is SOC-specific.
++
++The \field{chip_select_max_number} is the maximum number of chipselect the physical SPI master supports.
++
++\subsection{Device Initialization}\label{sec:Device Types / SPI Master Device / Device Initialization}
++
++\begin{enumerate}
++\item The Virtio SPI driver configures and initializes the virtqueue.
++\end{enumerate}
++
++\subsection{Device Operation}\label{sec:Device Types / SPI Master Device / Device Operation}
++
++\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / SPI Master Device / Device Operation: Request Queue}
++
++Virtio SPI driver enqueues requests to the virtqueue, and they are used by
++Virtio SPI device. Each request represents one SPI tranfer and is of the form: 
++
++\begin{lstlisting}
++struct virtio_spi_transfer_head {
++        u8 slave_id;
++        u8 bits_per_word;
++        u8 cs_change;
++        u8 tx_nbits;
++        u8 rx_nbits;
++        le32 mode;
++        le32 freq;
++        le32 word_delay_ns;
++        le32 cs_setup_ns;
++        le32 cs_delay_hold_ns;
++        le32 cs_change_delay_inactive_ns;
++};
++\end{lstlisting}
++
++\begin{lstlisting}
++struct virtio_spi_transfer_result {
++        u8 result;
++};
++\end{lstlisting}
++
++\begin{lstlisting}
++struct virtio_spi_transfer_req {
++        struct virtio_spi_transfer_head head;
++        u8 tx_buf[];
++        u8 rx_buf[];
++        struct virtio_spi_transfer_result result;
++};
++\end{lstlisting}
++
++The \field{slave_id} indicates the chipselect index the SPI transfer used.
++
++The \field{bits_per_word} indicates the number of bits in each SPI transfer word.
++
++The \field{cs_change} indicates whether to deselect device before starting the
++next SPI transfer, 0 means chipselect keep asserted and 1 means chipselect deasserted
++then asserted again.
++
++The \field{tx_nbits} indicates bus width for write transfer:
++        0,1: bus width is 1, also known as SINGLE;
++	2  : bus width is 2, also known as DUAL;
++	4  : bus width is 4, also known as QUAD;
++	8  : bus width is 8, also known as OCTAL;
++	other values are invalid.
++
++The \field{rx_nbits} indicates bus width for read transfer:
++        0,1: bus width is 1, also known as SINGLE;
++	2  : bus width is 2, also known as DUAL;
++	4  : bus width is 4, also known as QUAD;
++	8  : bus width is 8, also known as OCTAL;
++	other values are invalid.
++
++The \field{mode} indicates how data is clocked out and in. Bit definitions as follows:
++        bit 0: CPHA, determines the timing (i.e. phase) of the data bits
++	       relative to the clock pulses.
++        bit 1: CPOL, determines the polarity of the clock.
++        bit 2: CS_HIGH, if 1, chipselect active high, else active low.
++	bit 3: LSB_FIRST, determines per-word bits-on-wire, if 0, MSB
++	       first, else LSB first.
++	bit 4: LOOP, if 1, device is in loopback mode, else normal mode.
++
++The \field{freq} indicates the SPI transfer speed in Hz.
++
++The \field{word_delay_ns} indicates delay to be inserted between consecutive
++words of a transfer, in ns unit.
++
++The \field{cs_setup_ns} indicates delay to be introduced after chipselect
++is asserted, in ns unit.
++
++The \field{cs_delay_hold_ns} indicates delay to be introduced before chipselect
++is deasserted, in ns unit.
++
++The \field{cs_change_delay_inactive_ns} indicates delay to be introduced after
++chipselect is deasserted and before next asserted, in ns unit.
++
++The \field{tx_buf} is the buffer for data sent to the device.
++
++The \field{rx_buf} is the buffer for data received to the device.
++
++The final \field{result} is the transfer result, either VIRTIO_SPI_TRANS_OK for success
++or VIRTIO_SPI_TRANS_ERR for error.
++
++\begin{lstlisting}
++#define VIRTIO_SPI_TRANS_OK     0
++#define VIRTIO_SPI_TRANS_ERR    1
++\end{lstlisting}
++
++\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / SPI Master Device / Device Operation: Operation Status}
++
++Fields in structure \field{virtio_spi_transfer_head} are written by Virtio SPI driver, while
++\field{result} in structure \field{virtio_spi_transfer_result} is written by Virtio SPI device.
++
++virtio-spi supports three transfer types:
++        1) half-duplex read;
++        2) half-duplex write;
++        3) full-duplex read and write. 
++
++For half-duplex read transfer, \field{rx_buf} is filled by Virtio SPI device and consumed
++by Virtio SPI driver. For half-duplex write transfer, \field{tx_buf} is filled by Virtio 
++SPI driver and consumed by Virtio SPI device. And for full-duplex read and write transfer,
++both \field{tx_buf} and \field{rx_buf} are used.
++
++\drivernormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
++
++The Virtio SPI driver MUST send transfer requests on the requestq virtqueue.
++
++Fields in structure \field{virtio_spi_transfer_head} MUST be filled by Virtio SPI driver
++and MUST be readable for Virtio SPI device.
++
++Structure \field{virtio_spi_transfer_result} MUST be filled by Virtio SPI device
++and MUST be writable for Virtio SPI device.
++
++For half-duplex read, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
++\field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
++
++For half-duplex write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
++\field{tx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
++
++For full-duplex read and write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head}, 
++\field{tx_buf}, \field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
++
++For half-duplex write or full-duplex read and write transfer, Virtio SPI driver MUST not use \field{rx_buf}
++if the \field{result} returned from Virtio SPI device is VIRTIO_SPI_TRANS_ERR.
++
++\devicenormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
++
++Virtio SPI device MUST set all the fields of the structure \field{virtio_spi_config} before
++they are read by Virtio SPI driver.
++
++Virtio SPI device MUST set the structure \field{virtio_spi_transfer_result} before sending
++it back to Virtio SPI driver.
++
++Virtio SPI device MUST be able to identify the transfer type according to the received
++virtqueue descriptors.
++
++Virtio SPI device MUST NOT change the data in \field{tx_buf} if transfer type is half-duplex write
++or full-duplex read and write.
+diff --git a/device-types/spi/device-conformance.tex b/device-types/spi/device-conformance.tex
+new file mode 100644
+index 0000000..3e771bc
+--- /dev/null
++++ b/device-types/spi/device-conformance.tex
+@@ -0,0 +1,7 @@
++\conformance{\subsection}{SPI Master Device Conformance}\label{sec:Conformance / Device Conformance / SPI Master Device Conformance}
++
++An SPI Master device MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{devicenormative:Device Types / SPI Master Device / Device Operation}
++\end{itemize}
+diff --git a/device-types/spi/driver-conformance.tex b/device-types/spi/driver-conformance.tex
+new file mode 100644
+index 0000000..3c965ef
+--- /dev/null
++++ b/device-types/spi/driver-conformance.tex
+@@ -0,0 +1,7 @@
++\conformance{\subsection}{SPI Master Driver Conformance}\label{sec:Conformance / Driver Conformance / SPI Master Driver Conformance}
++
++An SPI Master driver MUST conform to the following normative statements:
++
++\begin{itemize}
++\item \ref{drivernormative:Device Types / SPI Master Device / Device Operation}
++\end{itemize}
+-- 
+2.17.1
 
-What if we modify the spec here to instruct the VMM to deny taking a 
-snapshot if there are not any buffers
-in the active leak queue? If we did this, we could even simplify the 
-spec to just introduce a single entropy
-leak queue, so we could avoid the complexity of switching between active 
-leak queues in the driver and
-the device. WDYT?
-
-Cheers,
-Babis
-
-[1] 
-https://lore.kernel.org/lkml/20230823090107.65749-3-bchalios@amazon.es/T/
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
