@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13592-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13593-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1F8A4CA0FE3
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 03:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 383B4CA0FE1
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 09:35:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 795AF2CAE9
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 03:30:08 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5D5707A1D0
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 09:35:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5D7289865BA
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 03:30:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C822D9865D0
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 09:35:30 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4BE8B98658C; Fri,  1 Sep 2023 03:30:08 +0000 (UTC)
+	id 42B9398658A; Fri,  1 Sep 2023 09:35:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,277 +24,210 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 29664986585;
-	Fri,  1 Sep 2023 03:30:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4A935986586;
+	Fri,  1 Sep 2023 09:34:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-From: Haixu Cui <quic_haixcui@quicinc.com>
-To: <virtio-dev@lists.oasis-open.org>, <virtio-comment@lists.oasis-open.org>,
-        <cohuck@redhat.com>, <harald.mommer@opensynergy.com>
-CC: <quic_ztu@quicinc.com>, <jrreinhart@google.com>,
-        Haixu Cui
-	<quic_haixcui@quicinc.com>
-Date: Fri, 1 Sep 2023 11:29:33 +0800
-Message-ID: <20230901032933.32434-1-quic_haixcui@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vr4ePM9_1693560884;
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Yuri Benditovich <yuri.benditovich@daynix.com>
+Date: Fri,  1 Sep 2023 17:34:44 +0800
+Message-Id: <20230901093444.115447-1-hengqi@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 51Fks71tH3jW1L7Nmzme_oI4fIH3Odk8
-X-Proofpoint-ORIG-GUID: 51Fks71tH3jW1L7Nmzme_oI4fIH3Odk8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-09-01_01,2023-08-31_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1011 malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999
- suspectscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2309010030
-Subject: [virtio-dev] [PATCH v3] virtio-spi: add the device specification
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v2] virtio-net: support the RSS context
 
-virtio-spi is a virtual SPI master and it allows a guset to operate and
-use the physical SPI master controlled by the host.
+Commit 84a1d9c48200 ("net: ethtool: extend RXNFC API to support RSS spreading of
+filter matches") adds support for RSS context as a destination for receive flow filters
+(see WIP work: https://lists.oasis-open.org/archives/virtio-comment/202308/msg00194.html).
 
-This patch adds the specification for virtio-spi.
+An RSS context consists of configurable parameters specified by receive-side scaling.
 
-Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
+Use case:
+When users want some data flows to be steered to specific multiple rxqs, they can set
+receive flow filter rules for these data flows to an RSS context with desired rxqs.
+
+How to set/configure an RSS context:
+Assuming no RSS context has been created before.
+1. ethtool -X eth0 context new start 5 equal 8
+
+This command creates an RSS context with an id=1 for eth0, and fills in the indirection
+table with rxq indexes 5-8 circularly. The hash key and hash types reuse the default
+RSS configuration.
+
+Then, we can use 'ethtool -x eth0 context 1' to query the above configuration.
+
+2. ethtool -X eth0 context new start 6 equal 7 \
+   hkey 8f:bf:dd:11:23:58:d2:8a:00:31:d0:32:a3:b5:1f:\
+   1f:e4:d1:fe:47:7f:64:42:fd:d0:61:16:b8:b0:f9:71:e8:2d:36:7f:18:dd:4d:c8:f3
+
+This command creates an RSS context with an id=2 for eth0, and fills in the indirection
+table with rxq indexes 6-7 circularly. The hash key is 8f:bf:dd:11:23:58:d2:8a:00:31:d0\
+:32:a3:b5:1f:1f:e4:d1:fe:47:7f:64:42:fd:d0:61:16:b8:b0:f9:71:e8:2d:36:7f:18:dd:4d:c8:f3.
+Hash types reuse the default RSS configuration.
+
+3. ethtool -N eth0 rx-flow-hash tcp4 sdfn context 1
+
+This command specifies the hash types for the RSS context whose id=1 on eth0.
+Now this RSS context only has the hash key to reuse the default RSS configuration.
+
+4. ethtool -N eth0 flow-type udp4 src-ip 1.1.1.1 context 1
+
+This command configures a receive flow filter rule for eth0, and the data flow matching
+this rule will continue to select the final rxq according to the RSS context configuration
+with id=1.
+
+Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
- device-types/spi/description.tex        | 191 ++++++++++++++++++++++++
- device-types/spi/device-conformance.tex |   7 +
- device-types/spi/driver-conformance.tex |   7 +
- 3 files changed, 205 insertions(+)
- create mode 100644 device-types/spi/description.tex
- create mode 100644 device-types/spi/device-conformance.tex
- create mode 100644 device-types/spi/driver-conformance.tex
+v1->v2:
+    1. u8 to le16 for field rss_ctx_id.
+    2. Add normativation when device resetting. @Yuri Benditovich
+    3. Use ctrlq cmd to query rss context capability instead of reading config space. @Parav Pandit
 
-diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
-new file mode 100644
-index 0000000..c35826b
---- /dev/null
-+++ b/device-types/spi/description.tex
-@@ -0,0 +1,191 @@
-+\section{SPI Master Device}\label{sec:Device Types / SPI Master Device}
+ device-types/net/description.tex        | 85 +++++++++++++++++++++++++
+ device-types/net/device-conformance.tex |  1 +
+ device-types/net/driver-conformance.tex |  1 +
+ 3 files changed, 87 insertions(+)
+
+diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+index 76585b0..55cd86d 100644
+--- a/device-types/net/description.tex
++++ b/device-types/net/description.tex
+@@ -88,6 +88,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+ \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+     channel.
+ 
++\item[VIRTIO_NET_F_RSS_CONTEXT(50)] Device supports multiple RSS contexts.
 +
-+virtio-spi is a virtual SPI (Serial Peripheral Interface) master and it allows
-+a guest to operate and use the physical SPI master controlled by the host.
+ \item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for encapsulated packets.
+ 
+ \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
+@@ -150,6 +152,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+ \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+ \item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
++\item[VIRTIO_NET_F_RSS_CONTEXT] Requires VIRTIO_NET_F_CTRL_VQ and VIRTIO_NET_F_RSS.
+ \end{description}
+ 
+ \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+@@ -1606,6 +1609,88 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+ \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
+ \end{itemize}
+ 
++\paragraph{RSS Context}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
 +
-+virtio-spi has a single virtqueue. SPI transfer requests are placed into
-+the virtqueue, and serviced by the physical SPI master.
++An RSS context consists of configurable parameters specified by \ref{sec:Device Types / Network Device
++/ Device Operation / Control Virtqueue / Receive-side scaling (RSS)}.
 +
-+In a typical host and guest architecture with virtio-spi, Virtio SPI driver is
-+the front-end existing in the guest kernel, and Virtio SPI device acts as the
-+back-end in the host platform.
++The RSS configuration supported by VIRTIO_NET_F_RSS is considered the default RSS configuration.
 +
-+\subsection{Device ID}\label{sec:Device Types / SPI Master Device / Device ID}
-+45
++The device offers the feature VIRTIO_NET_F_RSS_CONTEXT if it supports one or multiple RSS contexts
++(excluding the default RSS configuration) and configurable parameters.
 +
-+\subsection{Virtqueues}\label{sec:Device Types / SPI Master Device / Virtqueues}
-+
-+\begin{description}
-+\item[0] requestq
-+\end{description}
-+
-+\subsection{Feature bits}\label{sec:Device Types / SPI Master Device / Feature bits}
-+
-+None
-+
-+\subsection{Device configuration layout}\label{sec:Device Types / SPI Master Device / Device configuration layout}
-+
-+All fields of this configuration are always available and read-only for Virtio SPI driver.
++\subparagraph{Querying RSS Context Capability}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Querying RSS Context Capability}
 +
 +\begin{lstlisting}
-+struct virtio_spi_config {
-+	le32 bus_num;
-+	le32 chip_select_max_number;
++#define VIRTNET_RSS_CTX_CTRL 8
++ #define VIRTNET_RSS_CTX_CTRL_CAP_GET  0
++ #define VIRTNET_RSS_CTX_CTRL_ADD      1
++ #define VIRTNET_RSS_CTX_CTRL_MOD      2
++ #define VIRTNET_RSS_CTX_CTRL_DEL      3
++
++struct virtnet_rss_ctx_cap {
++    le16 max_rss_contexts;
++}
++\end{lstlisting}
++
++Field \field{max_rss_contexts} specifies the maximum number of RSS contexts \ref{sec:Device Types / Network Device /
++Device Operation / Control Virtqueue / RSS Context} supported by the device.
++
++The driver queries the RSS context capability of the device by sending the command VIRTNET_RSS_CTX_CTRL_CAP_GET
++with the structure virtnet_rss_ctx_cap.
++
++For the command VIRTNET_RSS_CTX_CTRL_CAP_GET, the structure virtnet_rss_ctx_cap is write-only for the device.
++
++\subparagraph{Setting RSS Context Parameters}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Setting RSS Context Parameters}
++
++\begin{lstlisting}
++struct virtnet_rss_ctx_add_modify {
++    le16 rss_ctx_id;
++    le16 padding;
++    struct virtio_net_rss_config rss;
++};
++
++struct virtnet_rss_ctx_del {
++    le16 rss_ctx_id;
 +};
 +\end{lstlisting}
 +
-+The \field{bus_num} indicates the physical SPI master assigned to guset, and this is SOC-specific.
++RSS context parameters:
++\begin{itemize}
++\item  \field{rss_ctx_id}: ID of the specific RSS context.
++\item  \field{rss}: RSS context parameters of the specific RSS context whose id is \field{rss_ctx_id}.
++\end{itemize}
 +
-+The \field{chip_select_max_number} is the maximum number of chipselect the physical SPI master supports.
++\field{padding} is reserved and it is ignored by the device.
 +
-+\subsection{Device Initialization}\label{sec:Device Types / SPI Master Device / Device Initialization}
-+
++If the feature VIRTIO_NET_F_RSS_CONTEXT has been negotiated, the driver can send the following
++VIRTNET_RSS_CTX_CTRL class commands:
 +\begin{enumerate}
-+\item The Virtio SPI driver configures and initializes the virtqueue.
++\item VIRTNET_RSS_CTX_CTRL_ADD: use the structure virtnet_rss_ctx_add_modify to
++       add an RSS context configured as \field{rss} and id as \field{rss_ctx_id} for the device.
++\item VIRTNET_RSS_CTX_CTRL_MOD: use the structure virtnet_rss_ctx_add_modify to
++       configure parameters of the RSS context whose id is \field{rss_ctx_id} as \field{rss} for the device.
++\item VIRTNET_RSS_CTX_CTRL_DEL: use the structure virtnet_rss_ctx_del to delete
++       the RSS context whose id is \field{rss_ctx_id} for the device.
 +\end{enumerate}
 +
-+\subsection{Device Operation}\label{sec:Device Types / SPI Master Device / Device Operation}
++For commands VIRTNET_RSS_CTX_CTRL_ADD and VIRTNET_RSS_CTX_CTRL_MOD, the structure virtnet_rss_ctx_add_modify is read-only for the device.
++For the command VIRTNET_RSS_CTX_CTRL_DEL, the structure virtnet_rss_ctx_del is read-only for the device.
 +
-+\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / SPI Master Device / Device Operation: Request Queue}
++\devicenormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
 +
-+Virtio SPI driver enqueues requests to the virtqueue, and they are used by
-+Virtio SPI device. Each request represents one SPI tranfer and is of the form: 
++The device MUST set \field{max_rss_contexts} to at least 1 if it offers VIRTIO_NET_F_RSS_CONTEXT.
 +
-+\begin{lstlisting}
-+struct virtio_spi_transfer_head {
-+        u8 slave_id;
-+        u8 bits_per_word;
-+        u8 cs_change;
-+        u8 tx_nbits;
-+        u8 rx_nbits;
-+        le32 mode;
-+        le32 freq;
-+        le32 word_delay_ns;
-+        le32 cs_setup_ns;
-+        le32 cs_delay_hold_ns;
-+        le32 cs_change_delay_inactive_ns;
-+};
-+\end{lstlisting}
++Upon reset, the device MUST clear all previously configured RSS contexts.
 +
-+\begin{lstlisting}
-+struct virtio_spi_transfer_result {
-+        u8 result;
-+};
-+\end{lstlisting}
++\drivernormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
 +
-+\begin{lstlisting}
-+struct virtio_spi_transfer_req {
-+        struct virtio_spi_transfer_head head;
-+        u8 tx_buf[];
-+        u8 rx_buf[];
-+        struct virtio_spi_transfer_result result;
-+};
-+\end{lstlisting}
++The driver MUST have negotiated the VIRTIO_NET_F_RSS_CONTEXT feature when issuing the VIRTNET_RSS_CTX_CTRL class commands.
 +
-+The \field{slave_id} indicates the chipselect index the SPI transfer used.
++The driver MUST set \field{rss_ctx_id} to between 1 and \field{max_rss_contexts} inclusive.
 +
-+The \field{bits_per_word} indicates the number of bits in each SPI transfer word.
++The driver MUST NOT send the command VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET when the device has successfully configured at least one RSS context.
 +
-+The \field{cs_change} indicates whether to deselect device before starting the
-+next SPI transfer, 0 means chipselect keep asserted and 1 means chipselect deasserted
-+then asserted again.
-+
-+The \field{tx_nbits} indicates bus width for write transfer:
-+        0,1: bus width is 1, also known as SINGLE;
-+	2  : bus width is 2, also known as DUAL;
-+	4  : bus width is 4, also known as QUAD;
-+	8  : bus width is 8, also known as OCTAL;
-+	other values are invalid.
-+
-+The \field{rx_nbits} indicates bus width for read transfer:
-+        0,1: bus width is 1, also known as SINGLE;
-+	2  : bus width is 2, also known as DUAL;
-+	4  : bus width is 4, also known as QUAD;
-+	8  : bus width is 8, also known as OCTAL;
-+	other values are invalid.
-+
-+The \field{mode} indicates how data is clocked out and in. Bit definitions as follows:
-+        bit 0: CPHA, determines the timing (i.e. phase) of the data bits
-+	       relative to the clock pulses.
-+        bit 1: CPOL, determines the polarity of the clock.
-+        bit 2: CS_HIGH, if 1, chipselect active high, else active low.
-+	bit 3: LSB_FIRST, determines per-word bits-on-wire, if 0, MSB
-+	       first, else LSB first.
-+	bit 4: LOOP, if 1, device is in loopback mode, else normal mode.
-+
-+The \field{freq} indicates the SPI transfer speed in Hz.
-+
-+The \field{word_delay_ns} indicates delay to be inserted between consecutive
-+words of a transfer, in ns unit.
-+
-+The \field{cs_setup_ns} indicates delay to be introduced after chipselect
-+is asserted, in ns unit.
-+
-+The \field{cs_delay_hold_ns} indicates delay to be introduced before chipselect
-+is deasserted, in ns unit.
-+
-+The \field{cs_change_delay_inactive_ns} indicates delay to be introduced after
-+chipselect is deasserted and before next asserted, in ns unit.
-+
-+The \field{tx_buf} is the buffer for data sent to the device.
-+
-+The \field{rx_buf} is the buffer for data received to the device.
-+
-+The final \field{result} is the transfer result, either VIRTIO_SPI_TRANS_OK for success
-+or VIRTIO_SPI_TRANS_ERR for error.
-+
-+\begin{lstlisting}
-+#define VIRTIO_SPI_TRANS_OK     0
-+#define VIRTIO_SPI_TRANS_ERR    1
-+\end{lstlisting}
-+
-+\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / SPI Master Device / Device Operation: Operation Status}
-+
-+Fields in structure \field{virtio_spi_transfer_head} are written by Virtio SPI driver, while
-+\field{result} in structure \field{virtio_spi_transfer_result} is written by Virtio SPI device.
-+
-+virtio-spi supports three transfer types:
-+        1) half-duplex read;
-+        2) half-duplex write;
-+        3) full-duplex read and write. 
-+
-+For half-duplex read transfer, \field{rx_buf} is filled by Virtio SPI device and consumed
-+by Virtio SPI driver. For half-duplex write transfer, \field{tx_buf} is filled by Virtio 
-+SPI driver and consumed by Virtio SPI device. And for full-duplex read and write transfer,
-+both \field{tx_buf} and \field{rx_buf} are used.
-+
-+\drivernormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
-+
-+The Virtio SPI driver MUST send transfer requests on the requestq virtqueue.
-+
-+Fields in structure \field{virtio_spi_transfer_head} MUST be filled by Virtio SPI driver
-+and MUST be readable for Virtio SPI device.
-+
-+Structure \field{virtio_spi_transfer_result} MUST be filled by Virtio SPI device
-+and MUST be writable for Virtio SPI device.
-+
-+For half-duplex read, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
-+\field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
-+
-+For half-duplex write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
-+\field{tx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
-+
-+For full-duplex read and write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head}, 
-+\field{tx_buf}, \field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
-+
-+For half-duplex write or full-duplex read and write transfer, Virtio SPI driver MUST not use \field{rx_buf}
-+if the \field{result} returned from Virtio SPI device is VIRTIO_SPI_TRANS_ERR.
-+
-+\devicenormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
-+
-+Virtio SPI device MUST set all the fields of the structure \field{virtio_spi_config} before
-+they are read by Virtio SPI driver.
-+
-+Virtio SPI device MUST set the structure \field{virtio_spi_transfer_result} before sending
-+it back to Virtio SPI driver.
-+
-+Virtio SPI device MUST be able to identify the transfer type according to the received
-+virtqueue descriptors.
-+
-+Virtio SPI device MUST NOT change the data in \field{tx_buf} if transfer type is half-duplex write
-+or full-duplex read and write.
-diff --git a/device-types/spi/device-conformance.tex b/device-types/spi/device-conformance.tex
-new file mode 100644
-index 0000000..3e771bc
---- /dev/null
-+++ b/device-types/spi/device-conformance.tex
-@@ -0,0 +1,7 @@
-+\conformance{\subsection}{SPI Master Device Conformance}\label{sec:Conformance / Device Conformance / SPI Master Device Conformance}
-+
-+An SPI Master device MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{devicenormative:Device Types / SPI Master Device / Device Operation}
-+\end{itemize}
-diff --git a/device-types/spi/driver-conformance.tex b/device-types/spi/driver-conformance.tex
-new file mode 100644
-index 0000000..3c965ef
---- /dev/null
-+++ b/device-types/spi/driver-conformance.tex
-@@ -0,0 +1,7 @@
-+\conformance{\subsection}{SPI Master Driver Conformance}\label{sec:Conformance / Driver Conformance / SPI Master Driver Conformance}
-+
-+An SPI Master driver MUST conform to the following normative statements:
-+
-+\begin{itemize}
-+\item \ref{drivernormative:Device Types / SPI Master Device / Device Operation}
-+\end{itemize}
+ \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
+ 
+ If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
+diff --git a/device-types/net/device-conformance.tex b/device-types/net/device-conformance.tex
+index f88f48b..f517b00 100644
+--- a/device-types/net/device-conformance.tex
++++ b/device-types/net/device-conformance.tex
+@@ -15,4 +15,5 @@
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+ \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
++\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+ \end{itemize}
+diff --git a/device-types/net/driver-conformance.tex b/device-types/net/driver-conformance.tex
+index 9d853d9..22ff5c3 100644
+--- a/device-types/net/driver-conformance.tex
++++ b/device-types/net/driver-conformance.tex
+@@ -15,4 +15,5 @@
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+ \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
++\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+ \end{itemize}
 -- 
-2.17.1
+2.19.1.6.gb485710b
 
 
 ---------------------------------------------------------------------
