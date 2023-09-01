@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13593-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13594-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 383B4CA0FE1
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 09:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68CB1CA0FE1
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 11:00:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5D5707A1D0
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 09:35:31 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 93343C6111
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 11:00:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C822D9865D0
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 09:35:30 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 69BF69865A3
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Sep 2023 11:00:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 42B9398658A; Fri,  1 Sep 2023 09:35:30 +0000 (UTC)
+	id 4D0EA986589; Fri,  1 Sep 2023 11:00:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,210 +24,249 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4A935986586;
-	Fri,  1 Sep 2023 09:34:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3C44698658C
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Sep 2023 11:00:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vr4ePM9_1693560884;
-From: Heng Qi <hengqi@linux.alibaba.com>
-To: virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org
-Cc: "Michael S . Tsirkin" <mst@redhat.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Yuri Benditovich <yuri.benditovich@daynix.com>
-Date: Fri,  1 Sep 2023 17:34:44 +0800
-Message-Id: <20230901093444.115447-1-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693566037; x=1694170837;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wz9n8fqsI7jiFNwYpSgDyJmxy3p7QY81tAlou+VirwE=;
+        b=e9QXdE0SwwrGz79BHjIELhYMYJjpDVVptoU3v3XOjH7l4s4UuZ2shQWhbZiuJipzIb
+         o7e/j8AygMA84nBbwoO83PYx7wAHVbR6ELh2056OE8W58e3vsiA9E5/Xccy3klp2+Olm
+         PCibe2g29GQU4q2Ww+NZvXES9y1uyPo/H1zHzk2X8FllJxf1+5xNTA7z7diQCT4Q/l1P
+         6KxBrzT5InMhWAyhGfFfhVhb6Cf385Mx5eS9yMmiRbykhTdu93KnXZ7KOXs9FLCiGeaX
+         v+hVVZmKpixEwtDZx4zvuVEopO+P3gzTyI1Rs3Q3X9NXbETaTXO+OVbHw4QvXGCVqHxp
+         vnxg==
+X-Gm-Message-State: AOJu0YyjWcxkjvSc92EMEqyMvPNIPMQWokuhM9jgTNOy1YP0nADB8Q58
+	4V12UX+IZnhFW1KNTPpnZrLcEw==
+X-Google-Smtp-Source: AGHT+IGh/sgWTZUny+y2lH4VfX+G4sFgF/tDfU4lH4e7mn2APqbe4Lk7xUbBwsDPnCU+ed1gsBJDIg==
+X-Received: by 2002:a5d:4410:0:b0:317:5ece:e169 with SMTP id z16-20020a5d4410000000b003175ecee169mr1573956wrq.68.1693566037191;
+        Fri, 01 Sep 2023 04:00:37 -0700 (PDT)
+From: =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: slp@redhat.com,
+	mst@redhat.com,
+	marcandre.lureau@redhat.com,
+	stefanha@redhat.com,
+	viresh.kumar@linaro.org,
+	sgarzare@redhat.com,
+	takahiro.akashi@linaro.org,
+	erik.schilling@linaro.org,
+	manos.pitsidianakis@linaro.org,
+	mathieu.poirier@linaro.org
+Cc: qemu-devel@nongnu.org,
+	virtio-dev@lists.oasis-open.org,
+	virtio-comment@lists.oasis-open.org,
+	=?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
+Date: Fri,  1 Sep 2023 12:00:18 +0100
+Message-Id: <20230901110018.3704459-1-alex.bennee@linaro.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v2] virtio-net: support the RSS context
+Subject: [virtio-dev] [RFC PATCH v2] docs/interop: define PROBE feature for vhost-user VirtIO devices
 
-Commit 84a1d9c48200 ("net: ethtool: extend RXNFC API to support RSS spreading of
-filter matches") adds support for RSS context as a destination for receive flow filters
-(see WIP work: https://lists.oasis-open.org/archives/virtio-comment/202308/msg00194.html).
+Currently QEMU has to know some details about the VirtIO device
+supported by a vhost-user daemon to be able to setup the guest. This
+makes it hard for QEMU to add support for additional vhost-user
+daemons without adding specific stubs for each additional VirtIO
+device.
 
-An RSS context consists of configurable parameters specified by receive-side scaling.
+This patch suggests a new feature flag (VHOST_USER_PROTOCOL_F_PROBE)
+which the back-end can advertise which allows a probe message to be
+sent to get all the details QEMU needs to know in one message.
 
-Use case:
-When users want some data flows to be steered to specific multiple rxqs, they can set
-receive flow filter rules for these data flows to an RSS context with desired rxqs.
+Together with the existing features VHOST_USER_PROTOCOL_F_STATUS and
+VHOST_USER_PROTOCOL_F_CONFIG we can create "standalone" vhost-user
+daemons which are capable of handling all aspects of the VirtIO
+transactions with only a generic stub on the QEMU side. These daemons
+can also be used without QEMU in situations where there isn't a full
+VMM managing their setup.
 
-How to set/configure an RSS context:
-Assuming no RSS context has been created before.
-1. ethtool -X eth0 context new start 5 equal 8
+Signed-off-by: Alex Bennée <alex.bennee@linaro.org>
 
-This command creates an RSS context with an id=1 for eth0, and fills in the indirection
-table with rxq indexes 5-8 circularly. The hash key and hash types reuse the default
-RSS configuration.
-
-Then, we can use 'ethtool -x eth0 context 1' to query the above configuration.
-
-2. ethtool -X eth0 context new start 6 equal 7 \
-   hkey 8f:bf:dd:11:23:58:d2:8a:00:31:d0:32:a3:b5:1f:\
-   1f:e4:d1:fe:47:7f:64:42:fd:d0:61:16:b8:b0:f9:71:e8:2d:36:7f:18:dd:4d:c8:f3
-
-This command creates an RSS context with an id=2 for eth0, and fills in the indirection
-table with rxq indexes 6-7 circularly. The hash key is 8f:bf:dd:11:23:58:d2:8a:00:31:d0\
-:32:a3:b5:1f:1f:e4:d1:fe:47:7f:64:42:fd:d0:61:16:b8:b0:f9:71:e8:2d:36:7f:18:dd:4d:c8:f3.
-Hash types reuse the default RSS configuration.
-
-3. ethtool -N eth0 rx-flow-hash tcp4 sdfn context 1
-
-This command specifies the hash types for the RSS context whose id=1 on eth0.
-Now this RSS context only has the hash key to reuse the default RSS configuration.
-
-4. ethtool -N eth0 flow-type udp4 src-ip 1.1.1.1 context 1
-
-This command configures a receive flow filter rule for eth0, and the data flow matching
-this rule will continue to select the final rxq according to the RSS context configuration
-with id=1.
-
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
-v1->v2:
-    1. u8 to le16 for field rss_ctx_id.
-    2. Add normativation when device resetting. @Yuri Benditovich
-    3. Use ctrlq cmd to query rss context capability instead of reading config space. @Parav Pandit
+v2
+  - dropped F_STANDALONE in favour of F_PROBE
+  - split probe details across several messages
+  - probe messages don't automatically imply a standalone daemon
+  - add wording where probe details interact (F_MQ/F_CONFIG)
+  - define VMM and make clear QEMU is only one of many potential VMMs
+  - reword commit message
+---
+ docs/interop/vhost-user.rst | 90 ++++++++++++++++++++++++++++++++-----
+ hw/virtio/vhost-user.c      |  8 ++++
+ 2 files changed, 88 insertions(+), 10 deletions(-)
 
- device-types/net/description.tex        | 85 +++++++++++++++++++++++++
- device-types/net/device-conformance.tex |  1 +
- device-types/net/driver-conformance.tex |  1 +
- 3 files changed, 87 insertions(+)
-
-diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-index 76585b0..55cd86d 100644
---- a/device-types/net/description.tex
-+++ b/device-types/net/description.tex
-@@ -88,6 +88,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
- \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
-     channel.
+diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user.rst
+index 5a070adbc1..ba3b5e07b7 100644
+--- a/docs/interop/vhost-user.rst
++++ b/docs/interop/vhost-user.rst
+@@ -7,6 +7,7 @@ Vhost-user Protocol
+ ..
+   Copyright 2014 Virtual Open Systems Sarl.
+   Copyright 2019 Intel Corporation
++  Copyright 2023 Linaro Ltd
+   Licence: This work is licensed under the terms of the GNU GPL,
+            version 2 or later. See the COPYING file in the top-level
+            directory.
+@@ -27,17 +28,31 @@ The protocol defines 2 sides of the communication, *front-end* and
+ *back-end*. The *front-end* is the application that shares its virtqueues, in
+ our case QEMU. The *back-end* is the consumer of the virtqueues.
  
-+\item[VIRTIO_NET_F_RSS_CONTEXT(50)] Device supports multiple RSS contexts.
-+
- \item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for encapsulated packets.
+-In the current implementation QEMU is the *front-end*, and the *back-end*
+-is the external process consuming the virtio queues, for example a
+-software Ethernet switch running in user space, such as Snabbswitch,
+-or a block device back-end processing read & write to a virtual
+-disk. In order to facilitate interoperability between various back-end
+-implementations, it is recommended to follow the :ref:`Backend program
+-conventions <backend_conventions>`.
++In the current implementation a Virtual Machine Manager (VMM) such as
++QEMU is the *front-end*, and the *back-end* is the external process
++consuming the virtio queues, for example a software Ethernet switch
++running in user space, such as Snabbswitch, or a block device back-end
++processing read & write to a virtual disk. In order to facilitate
++interoperability between various back-end implementations, it is
++recommended to follow the :ref:`Backend program conventions
++<backend_conventions>`.
  
- \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
-@@ -150,6 +152,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
- \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
- \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
- \item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
-+\item[VIRTIO_NET_F_RSS_CONTEXT] Requires VIRTIO_NET_F_CTRL_VQ and VIRTIO_NET_F_RSS.
- \end{description}
+ The *front-end* and *back-end* can be either a client (i.e. connecting) or
+ server (listening) in the socket communication.
  
- \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
-@@ -1606,6 +1609,88 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
- \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
- \end{itemize}
++Probing device details
++----------------------
++
++Traditionally the vhost-user daemon *back-end* shares configuration
++responsibilities with the VMM *front-end* which needs to know certain
++key bits of information about the device. This means the VMM needs to
++define at least a minimal stub for each VirtIO device it wants to
++support. If the daemon supports the right set of protocol features the
++VMM can probe the daemon for the information it needs to setup the
++device. See :ref:`Probing features for standalone daemons
++<probing_features>` for more details.
++
++
+ Support for platforms other than Linux
+ --------------------------------------
  
-+\paragraph{RSS Context}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
-+
-+An RSS context consists of configurable parameters specified by \ref{sec:Device Types / Network Device
-+/ Device Operation / Control Virtqueue / Receive-side scaling (RSS)}.
-+
-+The RSS configuration supported by VIRTIO_NET_F_RSS is considered the default RSS configuration.
-+
-+The device offers the feature VIRTIO_NET_F_RSS_CONTEXT if it supports one or multiple RSS contexts
-+(excluding the default RSS configuration) and configurable parameters.
-+
-+\subparagraph{Querying RSS Context Capability}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Querying RSS Context Capability}
-+
-+\begin{lstlisting}
-+#define VIRTNET_RSS_CTX_CTRL 8
-+ #define VIRTNET_RSS_CTX_CTRL_CAP_GET  0
-+ #define VIRTNET_RSS_CTX_CTRL_ADD      1
-+ #define VIRTNET_RSS_CTX_CTRL_MOD      2
-+ #define VIRTNET_RSS_CTX_CTRL_DEL      3
-+
-+struct virtnet_rss_ctx_cap {
-+    le16 max_rss_contexts;
-+}
-+\end{lstlisting}
-+
-+Field \field{max_rss_contexts} specifies the maximum number of RSS contexts \ref{sec:Device Types / Network Device /
-+Device Operation / Control Virtqueue / RSS Context} supported by the device.
-+
-+The driver queries the RSS context capability of the device by sending the command VIRTNET_RSS_CTX_CTRL_CAP_GET
-+with the structure virtnet_rss_ctx_cap.
-+
-+For the command VIRTNET_RSS_CTX_CTRL_CAP_GET, the structure virtnet_rss_ctx_cap is write-only for the device.
-+
-+\subparagraph{Setting RSS Context Parameters}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Setting RSS Context Parameters}
-+
-+\begin{lstlisting}
-+struct virtnet_rss_ctx_add_modify {
-+    le16 rss_ctx_id;
-+    le16 padding;
-+    struct virtio_net_rss_config rss;
-+};
-+
-+struct virtnet_rss_ctx_del {
-+    le16 rss_ctx_id;
-+};
-+\end{lstlisting}
-+
-+RSS context parameters:
-+\begin{itemize}
-+\item  \field{rss_ctx_id}: ID of the specific RSS context.
-+\item  \field{rss}: RSS context parameters of the specific RSS context whose id is \field{rss_ctx_id}.
-+\end{itemize}
-+
-+\field{padding} is reserved and it is ignored by the device.
-+
-+If the feature VIRTIO_NET_F_RSS_CONTEXT has been negotiated, the driver can send the following
-+VIRTNET_RSS_CTX_CTRL class commands:
-+\begin{enumerate}
-+\item VIRTNET_RSS_CTX_CTRL_ADD: use the structure virtnet_rss_ctx_add_modify to
-+       add an RSS context configured as \field{rss} and id as \field{rss_ctx_id} for the device.
-+\item VIRTNET_RSS_CTX_CTRL_MOD: use the structure virtnet_rss_ctx_add_modify to
-+       configure parameters of the RSS context whose id is \field{rss_ctx_id} as \field{rss} for the device.
-+\item VIRTNET_RSS_CTX_CTRL_DEL: use the structure virtnet_rss_ctx_del to delete
-+       the RSS context whose id is \field{rss_ctx_id} for the device.
-+\end{enumerate}
-+
-+For commands VIRTNET_RSS_CTX_CTRL_ADD and VIRTNET_RSS_CTX_CTRL_MOD, the structure virtnet_rss_ctx_add_modify is read-only for the device.
-+For the command VIRTNET_RSS_CTX_CTRL_DEL, the structure virtnet_rss_ctx_del is read-only for the device.
-+
-+\devicenormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
-+
-+The device MUST set \field{max_rss_contexts} to at least 1 if it offers VIRTIO_NET_F_RSS_CONTEXT.
-+
-+Upon reset, the device MUST clear all previously configured RSS contexts.
-+
-+\drivernormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
-+
-+The driver MUST have negotiated the VIRTIO_NET_F_RSS_CONTEXT feature when issuing the VIRTNET_RSS_CTX_CTRL class commands.
-+
-+The driver MUST set \field{rss_ctx_id} to between 1 and \field{max_rss_contexts} inclusive.
-+
-+The driver MUST NOT send the command VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET when the device has successfully configured at least one RSS context.
-+
- \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
+@@ -316,6 +331,7 @@ replies. Here is a list of the ones that do:
+ * ``VHOST_USER_GET_VRING_BASE``
+ * ``VHOST_USER_SET_LOG_BASE`` (if ``VHOST_USER_PROTOCOL_F_LOG_SHMFD``)
+ * ``VHOST_USER_GET_INFLIGHT_FD`` (if ``VHOST_USER_PROTOCOL_F_INFLIGHT_SHMFD``)
++* ``VHOST_USER_GET_BACKEND_SPECS`` (if ``VHOST_USER_PROTOCOL_F_STANDALONE``)
  
- If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
-diff --git a/device-types/net/device-conformance.tex b/device-types/net/device-conformance.tex
-index f88f48b..f517b00 100644
---- a/device-types/net/device-conformance.tex
-+++ b/device-types/net/device-conformance.tex
-@@ -15,4 +15,5 @@
- \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
- \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
-+\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
- \end{itemize}
-diff --git a/device-types/net/driver-conformance.tex b/device-types/net/driver-conformance.tex
-index 9d853d9..22ff5c3 100644
---- a/device-types/net/driver-conformance.tex
-+++ b/device-types/net/driver-conformance.tex
-@@ -15,4 +15,5 @@
- \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
- \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
- \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
-+\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
- \end{itemize}
+ .. seealso::
+ 
+@@ -396,9 +412,10 @@ must support changing some configuration aspects on the fly.
+ Multiple queue support
+ ----------------------
+ 
+-Many devices have a fixed number of virtqueues.  In this case the front-end
+-already knows the number of available virtqueues without communicating with the
+-back-end.
++Many devices have a fixed number of virtqueues. In this case the
++*front-end* usually already knows the number of available virtqueues
++without communicating with the back-end. For standalone daemons this
++number can be can be probed with the ``VHOST_USER_GET_MIN_VQ`` message.
+ 
+ Some devices do not have a fixed number of virtqueues.  Instead the maximum
+ number of virtqueues is chosen by the back-end.  The number can depend on host
+@@ -885,6 +902,23 @@ Protocol features
+   #define VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS  15
+   #define VHOST_USER_PROTOCOL_F_STATUS               16
+   #define VHOST_USER_PROTOCOL_F_XEN_MMAP             17
++  #define VHOST_USER_PROTOCOL_F_PROBE                18
++
++.. _probing_features:
++
++Probing features for standalone daemons
++---------------------------------------
++
++The protocol feature ``VHOST_USER_PROTOCOL_F_PROBE`` enables a number
++of additional messages which allow the *front-end* to probe details
++about the VirtIO device from the *back-end*. However for a *back-end*
++to be described as standalone it must also support:
++
++  * ``VHOST_USER_PROTOCOL_F_STATUS``
++  * ``VHOST_USER_PROTOCOL_F_CONFIG`` (if there is a config space)
++
++which are required to ensure the *back-end* daemon can operate
++without the *front-end* managing some aspects of its configuration.
+ 
+ Front-end message types
+ -----------------------
+@@ -1440,6 +1474,42 @@ Front-end message types
+   query the back-end for its device status as defined in the Virtio
+   specification.
+ 
++``VHOST_USER_GET_DEVICE_ID``
++  :id: 41
++  :request payload: N/A
++  :reply payload: ``u32``
++
++  When the ``VHOST_USER_PROTOCOL_F_PROBE`` protocol feature has been
++  successfully negotiated, this message is submitted by the front-end
++  to query what VirtIO device the back-end support. This is intended
++  to remove the need for the front-end to know ahead of time what the
++  VirtIO device the backend emulates is.
++
++``VHOST_USER_GET_CONFIG_SIZE``
++  :id: 42
++  :request payload: N/A
++  :reply payload: ``u32``
++
++  When the ``VHOST_USER_PROTOCOL_F_PROBE`` protocol feature has been
++  successfully negotiated, this message is submitted by the front-end
++  to query the size of the VirtIO device's config space. This is
++  intended to remove the need for the front-end to know ahead of time
++  what the size is. Replying with 0 when
++  ``VHOST_USER_PROTOCOL_F_CONFIG`` has been negotiated would indicate
++  an bug.
++
++``VHOST_USER_GET_MIN_VQ``
++  :id: 43
++  :request payload: N/A
++  :reply payload: ``u32``
++
++  When the ``VHOST_USER_PROTOCOL_F_PROBE`` protocol feature has been
++  successfully negotiated, this message is submitted by the front-end to
++  query minimum number of VQ's required to support the device. A
++  device may support more than this number of VQ's if it advertises
++  the ``VHOST_USER_PROTOCOL_F_MQ`` protocol feature. Reporting a
++  number greater than the result of ``VHOST_USER_GET_QUEUE_NUM`` would
++  indicate a bug.
+ 
+ Back-end message types
+ ----------------------
+diff --git a/hw/virtio/vhost-user.c b/hw/virtio/vhost-user.c
+index 8dcf049d42..4d433cdf2b 100644
+--- a/hw/virtio/vhost-user.c
++++ b/hw/virtio/vhost-user.c
+@@ -202,6 +202,13 @@ typedef struct VhostUserInflight {
+     uint16_t queue_size;
+ } VhostUserInflight;
+ 
++typedef struct VhostUserBackendSpecs {
++    uint32_t device_id;
++    uint32_t config_size;
++    uint32_t min_vqs;
++    uint32_t max_vqs;
++} VhostUserBackendSpecs;
++
+ typedef struct {
+     VhostUserRequest request;
+ 
+@@ -226,6 +233,7 @@ typedef union {
+         VhostUserCryptoSession session;
+         VhostUserVringArea area;
+         VhostUserInflight inflight;
++        VhostUserBackendSpecs specs;
+ } VhostUserPayload;
+ 
+ typedef struct VhostUserMsg {
 -- 
-2.19.1.6.gb485710b
+2.39.2
 
 
 ---------------------------------------------------------------------
