@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13619-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13620-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A24BBC83F3E
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 06:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1124CA0FF3
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 09:08:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id EE5AB66DCC
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 06:52:04 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 55928C6396
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 09:08:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E0A019865D8
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 06:52:04 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 42F589864B0
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 09:08:40 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D3B07986596; Tue,  5 Sep 2023 06:52:04 +0000 (UTC)
+	id 32A5D983E51; Tue,  5 Sep 2023 09:08:40 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,176 +24,205 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C2560986410;
-	Tue,  5 Sep 2023 06:52:01 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 20829986410;
+	Tue,  5 Sep 2023 09:08:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E9FWLoOw2OyINgozjGopa0CUHVHuPBeCd9Vixq41jGoGMcvdSxMYT1WRXPdLOwd388dHdOc+2CD94A5eZdxoYCSE4hk1KFC4r/yXCIPJtxpP1c9S2tyKLL8WGSAoSHbh4pTq0ZHQxwECLIHBXu4/R5En3shA5cNtR5yl8L3T+7N12eP6HnD1ZiqS+9rYVkgAVuu366o72PdNMorg4kfivRT6mODwSgek+M+b8fQYHXftQ1rAPVqdpLHujqheO5KlA0JbNfCUcaKdrYRvje5S4XJTld565/b1o6WjPZMIvWucZ5Qq8QcXTe3AyBIhsKSZaIno06mT2rnkCFybhMrZxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fA/DkcK5ZSOjPDdpBiItazaZcI6STTRO8tnhHk6AkfU=;
- b=IwLN9+LE1zo+JM1BL7uDBvaAnFAuXt30FDkIvwHdX2xTJJMsVgEZ1nwsDE2FB70Fkn4Fv8KJOZTIfLTNX3ecu1hqwRQzks9o9+VIb9MFxXYAFTckB6VWp1NDFLQ4DCOECmUsn1eUDpwBL++Eudk3Qn/exbny4j/L/Ujt0IQR7PqR4r9plsGZidASqaC06mJeZG3ib6DKJkpmsERaSeLwkK59RzORB1wS94m9mwD0XkTRgy16/k5gVzrunv8HMtzDhd8bnfjAIic6OiUFUK5O8vBC9dlFd+9keYjJP3cAvsyKYZu/PVt+6vpThSkUVUvMo6aS1cT6QlKqIyYZ2VIEoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-CC: "jasowang@redhat.com" <jasowang@redhat.com>, "Michael S. Tsirkin"
-	<mst@redhat.com>, David Edmondson <david.edmondson@oracle.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Heng Qi
-	<hengqi@linux.alibaba.com>
-Thread-Topic: RE: RE: [virtio-dev] RE: RE: RE: RE: [PATCH v16] virtio-net:
- support device stats
-Thread-Index:
- AQHZ2wYzX/zNUNI4wUOZcBP1oGnfKbAF9gaAgARYMQCAAASwYIAAA0cAgAABWeCAAAy/gIAAGFyQgAAOWYCAABFEUIAA9qeAgAAI84CAADZYgIAAAkQA
-Date: Tue, 5 Sep 2023 06:51:59 +0000
-Message-ID:
- <PH0PR12MB5481AD3E8B95ED755FD8FA73DCE8A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20230830055239.10680-1-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB54819EB466305284A8C9F649DCE4A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1693812824.959417-1-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB5481859AEB22FDDFCDA9D57FDCE9A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1693814534.4663684-3-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB548167EDE78C3B7C00014D2CDCE9A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1693817561.0941262-4-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB54812E119F4F042F78B95150DCE9A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <526c4582-3521-45ad-afae-8d7e281b5f38@linux.alibaba.com>
- <PH0PR12MB54813CB40389462B1667184ADCE9A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1693882549.2640717-1-xuanzhuo@linux.alibaba.com>
- <PH0PR12MB548108B8FB8E60E9A9502C5BDCE8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1693896141.8898118-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1693896141.8898118-1-xuanzhuo@linux.alibaba.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|PH0PR12MB5465:EE_
-x-ms-office365-filtering-correlation-id: 03c5a1d4-a2dd-4322-06e9-08dbaddc9a13
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- u775nPIrx87H7tu7q9LUF4UAcxf4t4cVu7CwAjXdTZVoehl70WXZzQm6tKXsB+WbRi7dddUI2V5Rbnln16ptT6chQyVslZf9wEZwWGl656oZn2dYXh6mSOI9TBspv5dw/3zuxAiOe4nSCNKhwX4b0ra48NHP3rZjP15kWZj5uhJAh/ttQ2LoLKPglP47KvzHyRb6cPNakdROGDdnoMawoq2YOffxoWgB91UDpqOxtaveq8rlGa+XszKEPmZ3UyqgO4PFenvHn17ZHq+Ih50ZqigPn5ReQ7nwqB8kwVIyLZQqTBs9GeutVvtTG2Pny50MXF6lMJ73MRR506nFZ1ryal1Oh4/Yog3uvWlnxe5Pza1hibfrQgvOtbGL6ZRXyu6jQO92sL0OtqMAMIIfm8sv8J1cGHIhmH9VITqF9VQlMbSeG6etNjF7vj+NpsS9k8iKprO0soH23mSa1LVtActY40Mu7bCwrS9Dor6MiY+KXww4lo+GuwQR9/HGxrU4wgBtEW3rv6Judz3jjkZUKOyPqFooNYIUT2zGE944i6FlhZM4AwlI+6ODnMQ01mJ5KHZN4vrxdKSoPkVbEhryZfc9hzffkjQ5gP+vwLHhpNGPWSbwWx5m6ilJ2+JYY6SWAjk6
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(396003)(366004)(346002)(376002)(451199024)(1800799009)(186009)(7696005)(9686003)(6506007)(478600001)(83380400001)(26005)(71200400001)(2906002)(316002)(6916009)(66556008)(76116006)(66446008)(66476007)(54906003)(64756008)(66946007)(4326008)(8676002)(41300700001)(8936002)(5660300002)(52536014)(86362001)(33656002)(122000001)(38100700002)(38070700005)(55016003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?VyDTrJdPBZ4TPIHgcCV7MKbpfZO2epXgR3isJjBZL5oxIWjlD5jxGB/f1LE8?=
- =?us-ascii?Q?HjYWeJ+CDLPvt3TPBzkiuv6QJ2F1MMACffPd+73Xv1TcqNiCQwugCKNEPvHb?=
- =?us-ascii?Q?wBO2J4HtxSJxLA4yKx6VZv53Pzj4wCWQAGhvgY/X3J/NRqMutRv72wj8jr9u?=
- =?us-ascii?Q?9StU/dmejs/c7WUtI3TYBI+tfJGI9x8Be6Tp35gP9kQcOKLEzOlnKud2/pNe?=
- =?us-ascii?Q?yACjYjq2oB5HZMfEbwhXC8r0lUL12LdcVrm9mQD/pXvnmJWNl4mLppsSrJGK?=
- =?us-ascii?Q?EoaiXod0VFfFLNfwXIMwD2ab4UYcvacEOfRWRvI5yodFif4IKTSGFil/QSyd?=
- =?us-ascii?Q?1ymAG1QMjPaHr5NE5Yq0RUG8uh2aDAy9U/ZOSaja3bgnDyPMYgO9/yw76RRs?=
- =?us-ascii?Q?KC+huDO7kUldgVIV2gMTwU/3bd4in7OwWWDE9zwg3mtEC1h3aBcmkL/stbXg?=
- =?us-ascii?Q?KQEjA5swOY6rGNJxzjGj8bSIkwxXIA2hcGpO95VNvpmq6NSBkPY4pPTMmqv3?=
- =?us-ascii?Q?i58x79Bx7skPKYIZqBE0es0Syhm1H7LwJBxkqLYpNqUcFHiXoaNOmNaSR2we?=
- =?us-ascii?Q?A5PnSSxbYc/UzTTuTM4GjvEL42bSKPtqb8o7emxkWaxC17jcTnyGNik82w0M?=
- =?us-ascii?Q?Q3jH1EvoQzD1LpSqXGSttq/pAjFxq2gX5pQjzegA3/H+hw3/bR+4D+sxbgyx?=
- =?us-ascii?Q?2jD8UbFNOBCaz5pnLtI4YXbtGmQ4RZVYbLBrD5QuVtD+AoH+nvqHvjuYxWdD?=
- =?us-ascii?Q?gMdKALAqWYZdnoF+EK8lfhkxtg5eJ65Q9RnHRNhXIIFp347IMvY8Dl4cXvPn?=
- =?us-ascii?Q?ghuVFp1Fl2OI8py0IMGYM608B29kUNlfMn5i5IoCNdrq0Rjs7q6e0bJoXYtb?=
- =?us-ascii?Q?/SGI8MsIxHA0RnqP98Z0Ehtn70gX56C9txwDibOUv3Q+SdfZruVpS47zk87a?=
- =?us-ascii?Q?hkysSMXarch5NO9ckOXIq0rQpfvmXrDkZxrRokdmLaM+OzaNp4Cx41pnaoey?=
- =?us-ascii?Q?Jnrtj2dfmTRlM9CTywK6vt4jeoX+sZ9DzbVsFImheoS+PPxbKcBRiicXsN58?=
- =?us-ascii?Q?0o4gQ3/cewvGx8GsOyWUX7N7wWAkzFUttRtS92Y0ZRrqUnQxbqoJ+fJBsb6n?=
- =?us-ascii?Q?+ffmqxGxlDpyOAg7asimEQ12wkZr+YuD4r5zNDkEnqJTYdvh3tKKRgNmxERn?=
- =?us-ascii?Q?pK6PAIMmjQiLkqdIbBVDBsdrdrVDWoTJ9xdnx6enyFgwI7nUIsagIFEmpxqv?=
- =?us-ascii?Q?CNeU3u7m2xXJ/FGb8WwwIIqCWxMRx33ZnziR2pelyOoeMjR29Dc2aQF6ow/A?=
- =?us-ascii?Q?fkDIM/OXglWJTq9tRSBJD3QMQC4CIoDAyRSnOu4tJQwAYTgFKNylkGUh5UXB?=
- =?us-ascii?Q?qQKKAJGqO+dmXYHPkp9kyYk+FEx5Er/FpKyob+B2e+/7JP9+pkz9jncqqKmP?=
- =?us-ascii?Q?Uu8RKTB4yaF1Y5IGizesa/Zhk3VHLap+T9TNm0ehkF2FgJwF5eUMK2f4v3TJ?=
- =?us-ascii?Q?P1bmi95WTF9ntwOA7ZdwQDiEjWVipZaeH8CyZYYTvCXP3u/ODfGa4FGC+P1S?=
- =?us-ascii?Q?BG/HvONtSbCs0f/gh1Y=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="374135959"
+X-IronPort-AV: E=Sophos;i="6.02,229,1688454000"; 
+   d="scan'208";a="374135959"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="1071900141"
+X-IronPort-AV: E=Sophos;i="6.02,229,1688454000"; 
+   d="scan'208";a="1071900141"
+Message-ID: <4f88bf69-7436-4f26-6be8-76347355d59c@intel.com>
+Date: Tue, 5 Sep 2023 17:08:30 +0800
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 03c5a1d4-a2dd-4322-06e9-08dbaddc9a13
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2023 06:51:59.2098
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: BJUf+p2lUMeer+cFHIygW3IUI6u79N7w2mCFZu49wV3DSiggqdAJSAtZDsdxYGu8dq3ODMtTg1BBfNTQ+T83XQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5465
-Subject: RE: RE: RE: [virtio-dev] RE: RE: RE: RE: [PATCH v16] virtio-net:
- support device stats
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.14.0
+To: Eugenio Perez Martin <eperezma@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, mst@redhat.com, cohuck@redhat.com,
+ virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ Si-Wei Liu <si-wei.liu@oracle.com>, Dragos Tatulea <dtatulea@nvidia.com>
+References: <20230814192904.30062-1-lingshan.zhu@intel.com>
+ <20230814192904.30062-5-lingshan.zhu@intel.com>
+ <CACGkMEtkdXrTZ_=NkuPsmhUooCgKPiCiVo-nJMaDnJ5fufzGwQ@mail.gmail.com>
+ <8ce92e00-39f9-3e99-96e2-5599588869e3@intel.com>
+ <CAJaqyWd=hCvknO5MQ0Nu4iwxPMfjHGHNJHiwzxAaRLcgZ1HKxg@mail.gmail.com>
+ <23b9082d-050a-6f82-754e-d309c48972d5@intel.com>
+ <CAJaqyWeye4fOTB5pPtwpzusgZRL6d36EzDD61zoD8Uf+0v4FQw@mail.gmail.com>
+Content-Language: en-US
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CAJaqyWeye4fOTB5pPtwpzusgZRL6d36EzDD61zoD8Uf+0v4FQw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [RFC PATCH 4/5] virtqueue: constraints for
+ virtqueue state
 
 
 
-> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Sent: Tuesday, September 5, 2023 12:12 PM
->=20
-> On Tue, 5 Sep 2023 03:31:41 +0000, Parav Pandit <parav@nvidia.com> wrote:
-> >
-> >
-> > > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > Sent: Tuesday, September 5, 2023 8:26 AM
-> >
-> > > > Sure, it can avoid segmentation, but not at the cost of skipping mt=
-u check.
-> > > > For example, sender sends skb with gso with each segment of 9K,
-> > > > and receiver
-> > > has mtu of 1500, same skb without segmentation is not good.
-> > > > Because gso_size should be same as 1500 to match the mtu.
-> > >
-> > > First, for me, I think the size of the each buffer specified by the
-> > > desc is irrelated to the gso_size.
-> > >
-> > > And the receiver can set the gso_size to match the MTU.
-> > >
-> > > So the sender can send a gso packet with any segments, any gso_size.
-> > > For the receiver, it receives a big packet, it copys to the driver
-> > > with multple buffers, and sets the right gso_size.
-> > >
-> > > Is that right?
-> >
-> > Right.
-> > By definition of GSO it is segmented.
-> > Soi counters should be for the segmented.
-> > And for special case of "Note", there should be separate counter to ind=
-icate
-> GSO was requested_but_not_done.
->=20
->=20
-> I agree. So the new version should be:
->=20
-> +\begin{description}
-> +    \item [tx_gso_packets]
-> +        The number of the GSO packets sent by the device.
-> +
-> +    \item [tx_gso_bytes]
-> +        The bytes of the GSO packets sent by the device.
-> +
-> +    \item [tx_gso_segments]
-> +        The number of segments cutted from GSO packets.
-> +
-> +    \item [tx_gso_segments_bytes]
-> +        The bytes of segments cutted from GSO packets.
->=20
-> +    \item [tx_gso_packets_nocut]
-> +        The number of the GSO packets which are not cut into segments.
-> +
-> +    \item [tx_gso_bytes_nocut]
-> +        The bytes of the GSO packets which are not cut into segments.
-> +
-> +\end{description}
->=20
+On 8/21/2023 5:26 PM, Eugenio Perez Martin wrote:
+> On Fri, Aug 18, 2023 at 11:44 AM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>>
+>>
+>> On 8/17/2023 11:19 PM, Eugenio Perez Martin wrote:
+>>> On Tue, Aug 15, 2023 at 1:30 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>>>>
+>>>> On 8/15/2023 8:34 AM, Jason Wang wrote:
+>>>>> On Mon, Aug 14, 2023 at 7:29 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>>>>>> This commit specifies the constraints of the virtqueue state,
+>>>>>> and the actions should be taken by the device when SUSPEND
+>>>>>> and DRIVER_OK is set
+>>>>>>
+>>>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> ---
+>>>>>>     content.tex | 31 +++++++++++++++++++++++++++++++
+>>>>>>     1 file changed, 31 insertions(+)
+>>>>>>
+>>>>>> diff --git a/content.tex b/content.tex
+>>>>>> index 43bd5de..f6ac581 100644
+>>>>>> --- a/content.tex
+>>>>>> +++ b/content.tex
+>>>>>> @@ -587,6 +587,37 @@ \subsection{\field{Used State} Field}
+>>>>>>
+>>>>>>     See also \ref{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}.
+>>>>>>
+>>>>>> +\drivernormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
+>>>>>> +
+>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated, the driver MUST set SUSPEND in \field{device status}
+>>>>>> +first before getting or setting Virtqueue State of any virtqueues.
+>>>>> I don't get why this is a must. It could be useful for debugging.
+>>>> To avoid race conditions with the device and make the device
+>>>> implementation easier
+>>>>>> +
+>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiaged but VIRTIO_RING_F_PACKED not been negotiated,
+>>>>> typo
+>>>> yes
+>>>>>> +the driver MUST NOT access \field{Used State} of any virtqueues, it should use the
+>>>>>> +used index in the used ring.
+>>>>>> +
+>>>>>> +\devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
+>>>>>> +
+>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but SUSPEND is not set in \field{device status},
+>>>>>> +the device MUST ignore any accesses against Virtqueue State of any virtqueues.
+>>>>> Btw, do we need to clarify the behavior of ring reset after suspending?
+>>>> I think once suspended, the device should ignore resetting a queue
+>>> Actually shadow virtqueue could benefit from the ability to change vq
+>>> properties (addresses) while the device is suspended, and then just
+>>> resume it. I've been told that ring reset is overkill for that.
+>> If ring reset is overkill, is SUSPEND even more overkill?
+> It depends on the cost of recreating the vq in the device I think. But
+> it has more to do with *what* is changed in the vq, as it seems some
+> parameters (vq size) has more impact than others like vq address. The
+> way to stop the device does not affect, but ring reset offers the
+> possibility of change all of the parameters already.
+>
+> Adding Si-Wei and Dragos here, as they pointed it out in the
+> virtio-networking upstream meeting.
+>
+>>> But probably it is better to address it on top, with another feature flag.
+>> I think if we want to changing the vq properties, there must be a
+>> mechanism to
+>> stop the queue then resume the queue.
+>>
+>> How about allow setting queue_enable = 0 to stop it and =1 to resume and
+>> force it reinitialize?
+>>
+> Yes, I think that is better suited. But maybe this is better to be
+> added on top, so we maintain this series small.
+Hi Eugenio,
 
-Looks good. A text can be bit better than "cut, no cut".
-May be something like,
+I have a second thought while implementing above queue_enable = 0,
+it doesn't provide more advantages over queue_reset:
 
-The number of the GSO packets transmitted without segmentation...
+1) queue_reset can help to stop a queue and the vq properties can be
+reconfigured during queue_reset --> queue_enable.
 
-s/nocut/noseg/
+2) once the driver sees SUSPEND presented by the device, it assume the
+device states and vq states are stable, at that point the driver can
+read reliable device configurations. So vq reset should be ignored
+once SUSPEND is present and if we implement queue stop, it should be
+ignored too when SUSPEND.
+
+3) the device should only accept resetting a queue when !SUSPEND and
+the driver can flush the queue buffers before resetting it to avoid 
+losing buffers,
+and we will have tracker for in-flight descriptors later.
+
+Any thoughts?
+
+Thanks
+>
+> Thanks!
+>
+>> Thanks
+>> Zhu Lingshan
+>>>>>> +
+>>>>>> +When VIRTIO_F_QUEUE_STATE has been negotiated but VIRTIO_RING_F_PACKED is not,
+>>>>>> +the device MUST ignore any accesses against \field{Used State}.
+>>>>>> +
+>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiaged, the device MUST reset
+>>>>>> +the Virtqueue State of every virtqueue upon a reset.
+>>>>> Need to define the meaning of "reset" this is important for packed virtqueue.
+>>>> I will remove this as Stefan suggested.
+>>>>>> +
+>>>>>> +If VIRTIO_F_QUEUE_STATE and VIRTIO_RING_F_PACKED have been negotiaged, when SUSPEND is set,
+>>>>>> +the device MUST record the Virtqueue State of every enabled virtqueue
+>>>>>> +in \field{Available State} and \field{Used State} respectively,
+>>>>>> +and correspondingly restore the Virtqueue State of every enabled virtqueue
+>>>>>> +from \field{Avaiable State} and \field{Used State} when DRIVER_OK is set.
+>>>>> We can just let the device report those states in any case then we
+>>>>> don't need to care about those details, or did you see any blockers?
+>>>> Agree, I will add the definition of used_state of splitted vq in the
+>>>> next version
+>>>>
+>>>> Thanks
+>>>>> Thanks
+>>>>>
+>>>>>> +
+>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but VIRTIO_RING_F_PACKED has been not, when SUSPEND is set,
+>>>>>> +the device MUST record the available state of every enabled virtqueue in \field{Available State},
+>>>>>> +and restore the available state of every enabled virtqueue from \field{Avaiable State}
+>>>>>> +when DRIVER_OK is set.
+>>>>>> +
+>>>>>>     \input{admin.tex}
+>>>>>>
+>>>>>>     \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+>>>>>> --
+>>>>>> 2.35.3
+>>>>>>
+>
+> This publicly archived list offers a means to provide input to the
+>
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+>
+>
+> In order to verify user consent to the Feedback License terms and
+>
+> to minimize spam in the list archive, subscription is required
+>
+> before posting.
+>
+>
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>
+> List help: virtio-comment-help@lists.oasis-open.org
+>
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>
+> Committee: https://www.oasis-open.org/committees/virtio/
+>
+> Join OASIS: https://www.oasis-open.org/join/
+>
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
