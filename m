@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13628-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13629-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7270EEB8FAD
-	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 08:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 87FB2EB8FA5
+	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 08:17:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7E25C159D2D
-	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 08:17:03 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4D6BC2AC57
+	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 08:17:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 73B8D9865EE
-	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 08:17:03 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 46DB1986610
+	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 08:17:07 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 6895B9865C9; Wed,  6 Sep 2023 08:17:03 +0000 (UTC)
+	id 3B5539865CD; Wed,  6 Sep 2023 08:17:07 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4F7969865F0;
-	Wed,  6 Sep 2023 08:16:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2B6419865C9;
+	Wed,  6 Sep 2023 08:17:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="374397925"
+X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="374397932"
 X-IronPort-AV: E=Sophos;i="6.02,231,1688454000"; 
-   d="scan'208";a="374397925"
+   d="scan'208";a="374397932"
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="741439908"
+X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="741439920"
 X-IronPort-AV: E=Sophos;i="6.02,231,1688454000"; 
-   d="scan'208";a="741439908"
+   d="scan'208";a="741439920"
 From: Zhu Lingshan <lingshan.zhu@intel.com>
 To: jasowang@redhat.com,
 	mst@redhat.com,
@@ -43,93 +43,57 @@ To: jasowang@redhat.com,
 Cc: virtio-comment@lists.oasis-open.org,
 	virtio-dev@lists.oasis-open.org,
 	Zhu Lingshan <lingshan.zhu@intel.com>
-Date: Wed,  6 Sep 2023 16:16:34 +0800
-Message-Id: <20230906081637.32185-3-lingshan.zhu@intel.com>
+Date: Wed,  6 Sep 2023 16:16:35 +0800
+Message-Id: <20230906081637.32185-4-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230906081637.32185-1-lingshan.zhu@intel.com>
 References: <20230906081637.32185-1-lingshan.zhu@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH 2/5] virtio: introduce SUSPEND bit in device status
+Subject: [virtio-dev] [PATCH 3/5] virtqueue: constraints for virtqueue state
 
-This patch introduces a new status bit in the device status: SUSPEND.
-
-This SUSPEND bit can be used by the driver to suspend a device,
-in order to stabilize the device states and virtqueue states.
-
-Its main use case is live migration.
+This commit specifies the constraints of the virtqueue state,
+and the actions should be taken by the device when SUSPEND
+and DRIVER_OK is set
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
- content.tex | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ content.tex | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
 diff --git a/content.tex b/content.tex
-index 0e492cd..0fab537 100644
+index 0fab537..9d727ce 100644
 --- a/content.tex
 +++ b/content.tex
-@@ -47,6 +47,9 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
- \item[DRIVER_OK (4)] Indicates that the driver is set up and ready to
-   drive the device.
+@@ -594,6 +594,25 @@ \subsection{\field{Used State} Field}
+ When VIRTIO_RING_F_PACKED is not negotiated, the 16-bit value of \field{used_idx}
+ is always 0
  
-+\item[SUSPEND (16)] When VIRTIO_F_SUSPEND is negotiated, indicates that the
-+  device has been suspended by the driver.
++\drivernormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
 +
- \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
-   an error from which it can't recover.
- \end{description}
-@@ -73,6 +76,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
- recover by issuing a reset.
- \end{note}
++If VIRTIO_F_QUEUE_STATE has been negotiated but VIRTIO_RING_F_PACKED not been negotiated,
++the driver SHOULD NOT access \field{Used State} of any virtqueues, it SHOULD use the
++used index in the used ring.
++
++\devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
++
++If VIRTIO_F_QUEUE_STATE has been negotiated, the device SHOULD only accept setting
++Virtqueue State of any virtqueues when DRIVER_OK is not set in \field{device status},
++or both of DRIVER_OK and SUSPEND are set in \field{device status}.
++Otherwise the device MUST ignore any writes to Virtqueue State of any virtqueues.
++
++If VIRTIO_F_QUEUE_STATE have been negotiated, when SUSPEND is set,
++the device MUST record the Virtqueue State of every enabled virtqueue
++in \field{Available State} and \field{Used State} respectively,
++and correspondingly restore the Virtqueue State of every enabled virtqueue
++from \field{Available State} and \field{Used State} when DRIVER_OK is set.
++
+ \input{admin.tex}
  
-+The driver SHOULD NOT set SUSPEND if FEATURES_OK is not set.
-+
-+When setting SUSPEND, the driver MUST re-read \field{device status} to ensure the SUSPEND bit is set.
-+
- \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
- 
- The device MUST NOT consume buffers or send any used buffer
-@@ -82,6 +89,26 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
- that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
- MUST send a device configuration change notification to the driver.
- 
-+The device MUST ignore SUSPEND if FEATURES_OK is not set.
-+
-+The device MUST ignore SUSPEND if VIRTIO_F_SUSPEND is not negotiated.
-+
-+The device SHOULD allow settings to \field{device status} even when SUSPEND is set.
-+
-+If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device SHOULD clear SUSPEND
-+and resumes operation upon DRIVER_OK.
-+
-+If VIRTIO_F_SUSPEND is negotiated, when the driver sets SUSPEND,
-+the device SHOULD perform the following actions before presenting SUSPEND bit in the \field{device status}:
-+
-+\begin{itemize}
-+\item Stop consuming buffers of any virtqueues and mark all finished descritors as used.
-+\item Wait until all descriptors that being processed to finish and mark them as used.
-+\item Flush all used buffer and send used buffer notifications to the driver.
-+\item Record Virtqueue State of each enabled virtqueue, see section \ref{sec:Virtqueues / Virtqueue State}
-+\item Pause its operation except \field{device status} and preserve configurations in its Device Configuration Space, see \ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
-+\end{itemize}
-+
- \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
- 
- Each virtio device offers all the features it understands.  During
-@@ -937,6 +964,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
- 	\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
- 	handling features reserved for future use.
- 
-+  \item[VIRTIO_F_SUSPEND(42)] This feature indicates that the driver can
-+   SUSPEND the device.
-+   See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}.
-+
- \end{description}
- 
- \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
 -- 
 2.35.3
 
