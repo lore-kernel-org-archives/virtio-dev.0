@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13624-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13625-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82E3CC83F3E
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 22:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4BBEDEE49B2
+	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 02:05:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id BBA8C79505
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 22:02:12 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6736942A6D
+	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 02:05:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A1E579864B0
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Sep 2023 22:02:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 456EC98654C
+	for <virtio-dev@archiver.kernel.org>; Wed,  6 Sep 2023 02:05:32 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 89CF69864AD; Tue,  5 Sep 2023 22:02:12 +0000 (UTC)
+	id 23DC19864B0; Wed,  6 Sep 2023 02:05:32 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,246 +24,215 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 763B49864AB;
-	Tue,  5 Sep 2023 22:02:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2D7869864B2;
+	Wed,  6 Sep 2023 02:04:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693951328; x=1694556128;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=waJKVGAKhkkpJyQhvMQhedUiXSi/AdbAaN0iJ4r8UQc=;
-        b=XzJCxXxyHU7wjOeUpfrHBfPTnD515eZvM3aXv/PoO2bQ573Zx58HrUx03XPOMrbwVp
-         Zhjc5yWDl1soo5RsfEA3tS80n7Ff0yBiGUsVRmXrYtP8zTGZ732ThOJLE8qvsfb8F5Ku
-         VwOr5GXk1rOBGjooERooQH2pL+jqD3p+7nXCYo5498Vl2yV4Y0R01h4QR56f2YO4y0NL
-         SoLJ7yP+DQcVlixDqOO7sxrWjfN2A6/ZTfAyAiamO2znHjG8uWHicXO8UD809CrzuQZP
-         PqZFfoetKPtZ+YwDMDewiIyeBMMAKjrR7nUM5z5eDEzb5e3K3K6hm/Q1QaUUOuTdpOAw
-         FRQQ==
-X-Gm-Message-State: AOJu0Yw08IuutnS85GMyelaGEzzX5voTB7dcSFggUzvz2QfNKOAlvx7n
-	CJNrh0iPOvK961pqdhvft9c=
-X-Google-Smtp-Source: AGHT+IFmlnV1fbC23YtcrS0WzLpG/hzINfPz3H+Vv/ac9rEjM1bGBYpg28Q4MKIzV630UQzsPeaZ7A==
-X-Received: by 2002:a17:902:7044:b0:1bd:ca21:c83 with SMTP id h4-20020a170902704400b001bdca210c83mr9912717plt.68.1693951328196;
-        Tue, 05 Sep 2023 15:02:08 -0700 (PDT)
-Date: Sat, 2 Sep 2023 11:25:59 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, cong.wang@bytedance.com,
-	Bobby Eshleman <bobby.eshleman@bytedance.com>,
-	jiang.wang@bytedance.com, cohuck@redhat.com,
-	virtualization@lists.linux-foundation.org, stefanha@redhat.com,
-	virtio-comment@lists.oasis-open.org, arseny.krasnov@kaspersky.com
-Message-ID: <ZPMbx2ZBqgybK32e@bullseye>
-References: <20230829212945.3420727-1-bobby.eshleman@bytedance.com>
- <h6wtvcglyw55enk6shdogbfnw3m6zbmb4lv65uhznpwzqjw5sc@vc7clkjbxfep>
- <ZPLAip/TWqvWZ0hv@bullseye>
- <20230902043334-mutt-send-email-mst@kernel.org>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R591e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VrRdbPn_1693965867;
+Message-ID: <bb6078ab-cba8-467c-85f4-ef7a4d2f3371@linux.alibaba.com>
+Date: Wed, 6 Sep 2023 10:04:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230902043334-mutt-send-email-mst@kernel.org>
-Subject: [virtio-dev] Re: [PATCH] virtio-vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
+User-Agent: Mozilla Thunderbird
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Parav Pandit <parav@nvidia.com>,
+ Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>
+References: <20230901093444.115447-1-hengqi@linux.alibaba.com>
+In-Reply-To: <20230901093444.115447-1-hengqi@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v2] virtio-net: support the RSS context
 
-On Sat, Sep 02, 2023 at 04:35:25AM -0400, Michael S. Tsirkin wrote:
-> On Sat, Sep 02, 2023 at 04:56:42AM +0000, Bobby Eshleman wrote:
-> > On Fri, Sep 01, 2023 at 02:45:14PM +0200, Stefano Garzarella wrote:
-> > > On Tue, Aug 29, 2023 at 09:29:45PM +0000, Bobby Eshleman wrote:
-> > > > This adds support for datagrams to the virtio-vsock device.
-> > > > 
-> > > > virtio-vsock already supports stream and seqpacket types. The existing
-> > > > message types and header fields are extended to support datagrams.
-> > > > Semantic differences between the flow types are stated, as well as any
-> > > > additional requirements for devices and drivers implementing this
-> > > > feature.
-> > > > 
-> > > > Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> > > > ---
-> > > > device-types/vsock/description.tex | 95 +++++++++++++++++++++++++++---
-> > > > 1 file changed, 88 insertions(+), 7 deletions(-)
-> > > > 
-> > > > diff --git a/device-types/vsock/description.tex b/device-types/vsock/description.tex
-> > > > index 7d91d159872f..638dca8e5da1 100644
-> > > > --- a/device-types/vsock/description.tex
-> > > > +++ b/device-types/vsock/description.tex
-> > > > @@ -20,6 +20,7 @@ \subsection{Feature bits}\label{sec:Device Types / Socket Device / Feature bits}
-> > > > \item[VIRTIO_VSOCK_F_STREAM (0)] stream socket type is supported.
-> > > > \item[VIRTIO_VSOCK_F_SEQPACKET (1)] seqpacket socket type is supported.
-> > > > \item[VIRTIO_VSOCK_F_NO_IMPLIED_STREAM (2)] stream socket type is not implied.
-> > > > +\item[VIRTIO_VSOCK_F_DGRAM (3)] datagram socket type is supported.
-> > > > \end{description}
-> > > > 
-> > > > \drivernormative{\subsubsection}{Feature bits}{Device Types / Socket Device / Feature bits}
-> > > > @@ -167,17 +168,22 @@ \subsubsection{Addressing}\label{sec:Device Types / Socket Device / Device Opera
-> > > > consists of a (cid, port number) tuple. The header fields used for this are
-> > > > \field{src_cid}, \field{src_port}, \field{dst_cid}, and \field{dst_port}.
-> > > > 
-> > > > -Currently stream and seqpacket sockets are supported. \field{type} is 1 (VIRTIO_VSOCK_TYPE_STREAM)
-> > > > -for stream socket types, and 2 (VIRTIO_VSOCK_TYPE_SEQPACKET) for seqpacket socket types.
-> > > > +
-> > > > +Currently stream, seqpacket, and datagram sockets are supported. \field{type} is
-> > > > +1 (VIRTIO_VSOCK_TYPE_STREAM) for stream socket types, 2 (VIRTIO_VSOCK_TYPE_SEQPACKET) for
-> > > > +seqpacket socket types, and 3 (VIRTIO_VSOCK_TYPE_DGRAM) for datagram socket types.
-> > > > 
-> > > > \begin{lstlisting}
-> > > > #define VIRTIO_VSOCK_TYPE_STREAM    1
-> > > > #define VIRTIO_VSOCK_TYPE_SEQPACKET 2
-> > > > +#define VIRTIO_VSOCK_TYPE_DGRAM     3
-> > > > \end{lstlisting}
-> > > > 
-> > > > Stream sockets provide in-order, guaranteed, connection-oriented delivery
-> > > > without message boundaries. Seqpacket sockets provide in-order, guaranteed,
-> > > > -connection-oriented delivery with message and record boundaries.
-> > > > +connection-oriented delivery with message and record boundaries. Datagram
-> > > > +sockets provide connection-less, best-effort delivery of messages, with no
-> > > > +order or reliability guarantees.
-> > > > 
-> > > > \subsubsection{Buffer Space Management}\label{sec:Device Types / Socket Device / Device Operation / Buffer Space Management}
-> > > > \field{buf_alloc} and \field{fwd_cnt} are used for buffer space management of
-> > > > @@ -203,16 +209,19 @@ \subsubsection{Buffer Space Management}\label{sec:Device Types / Socket Device /
-> > > > previously receiving a VIRTIO_VSOCK_OP_CREDIT_REQUEST packet. This allows
-> > > > communicating updates any time a change in buffer space occurs.
-> > > > 
-> > > > +\field{buf_alloc} and \field{fwd_cnt} are reserved for future use by datagram
-> > > > +sockets. These fields are not used for datagram buffer space management.
-> > > > +
-> > > > \drivernormative{\paragraph}{Device Operation: Buffer Space Management}{Device Types / Socket Device / Device Operation / Buffer Space Management}
-> > > > -VIRTIO_VSOCK_OP_RW data packets MUST only be transmitted when the peer has
-> > > > -sufficient free buffer space for the payload.
-> > > > +For stream and seqpacket flows, VIRTIO_VSOCK_OP_RW data packets MUST only be
-> > > > +transmitted when the peer has sufficient free buffer space for the payload.
-> > > > 
-> > > > All packets associated with a stream flow MUST contain valid information in
-> > > > \field{buf_alloc} and \field{fwd_cnt} fields.
-> > > > 
-> > > > \devicenormative{\paragraph}{Device Operation: Buffer Space
-> > > > Management}{Device Types / Socket Device / Device Operation / Buffer
-> > > > Space Management}
-> > > > -VIRTIO_VSOCK_OP_RW data packets MUST only be transmitted when the peer has
-> > > > -sufficient free buffer space for the payload.
-> > > > +For stream and seqpacket flows, VIRTIO_VSOCK_OP_RW data packets MUST only be
-> > > > +transmitted when the peer has sufficient free buffer space for the payload.
-> > > > 
-> > > > All packets associated with a stream flow MUST contain valid information in
-> > > > \field{buf_alloc} and \field{fwd_cnt} fields.
-> > > > @@ -299,6 +308,78 @@ \subsubsection{Seqpacket Sockets}\label{sec:Device Types / Socket Device / Devic
-> > > > #define VIRTIO_VSOCK_SEQ_EOR (1 << 1)
-> > > > \end{lstlisting}
-> > > > 
-> > > > +\subsubsection{Datagram Sockets}\label{sec:Device Types / Socket Device / Device Operation / Datagram Sockets}
-> > > > +
-> > > > +\drivernormative{\paragraph}{Device Operation: Packet Fragmentation}{Device Types / Socket Device / Datagram Sockets / Fragmentation}
-> > > > +
-> > > > +Drivers MAY disassemble packets into smaller fragments. If drivers fragment a
-> > > > +packet, they MUST follow the fragmentation rules described in section
-> > > > +\ref{sec:Device Types / Socket Device / Device Operation / Datagram Sockets / Fragmentation}.
-> > > > +
-> > > > +Drivers MUST support assembly of received packet fragments according to the
-> > > > +fragmentation rules described in section
-> > > > +\ref{sec:Device Types / Socket Device / Device Operation / Datagram
-> > > > Sockets / Fragmentation}.
-> > > > +
-> > > > +\devicenormative{\paragraph}{Device Operation: Packet Fragmentation}{Device Types / Socket Device / Datagram Sockets / Fragmentation}
-> > > > +
-> > > > +Devices MAY disassemble packets into smaller fragments. If devices fragment a
-> > > > +packet, they MUST follow the fragmentation rules described in section
-> > > > +\ref{sec:Device Types / Socket Device / Device Operation / Datagram Sockets / Fragmentation}.
-> > > > +
-> > > > +Devices MUST support assembly of received packet fragments according to the
-> > > > +fragmentation rules described in section
-> > > > +\ref{sec:Device Types / Socket Device / Device Operation / Datagram Sockets / Fragmentation}.
-> > > > +
-> > > > +\drivernormative{\paragraph}{Device Operation: Packet Dropping}{Device Types / Socket Device / Datagram Sockets / Dropping}
-> > > > +
-> > > > +The driver MAY drop received packets with no notification to the device. This
-> > > > +can happen if, for example, there are insufficient resources or no socket
-> > > > +exists for the destination address.
-> > > > +
-> > > > +\devicenormative{\paragraph}{Device Operation: Packet Dropping}{Device Types / Socket Device / Datagram Sockets / Dropping}
-> > > > +
-> > > > +The device MAY drop received packets with no notification to the driver. This
-> > > > +can happen if, for example, there are insufficient resources or no socket
-> > > > +exists for the destination address.
-> > > 
-> > > Should we provide some notification if the socket does not exist at the
-> > > destination?
-> > > 
-> > 
-> > Yes, I think so. I believe a start/stop congestion notification scheme
-> > actually manages this issue well.
-> > 
-> > For example, the source begins sending packets to a destination.
-> > 
-> > The destination finds that there exists no socket for that destination
-> > address. The destination sends a "stop" notification to the source that
-> > contains the address in question. Meanwhile, packets are still coming in
-> > but they are being dropped.
-> > 
-> > The source receives the "stop" notification with the address and adds it
-> > to the "stopped destinations" list. Any new packet destination address
-> > will be compared to that list. Any matches will be dropped before
-> > sending (and ideally, before wasting time allocating the packet).
-> > 
-> > Only when a socket is bound to an address that matches a "stopped"
-> > address does the destination send a "start" notification to any source
-> > it has previusly sent a "stop" notification to.
-> > 
-> > Once "start" is received, flow may resume as normal.
-> 
-> Again, dropping as control flow tactic has a bunch of problems.
-> Blocking senders sounds more reasonable.
-> 
+Hi all!
 
-Sure, I think we are on the same page. When I refer to "before wasting
-time allocating the packet", I mean blocking the sender after sendto()
-but before allocating the packet and enqueuing it. For the non-blocking
-case, the request has to be dropped and -EAGAIN returned. For the
-blocking case, just waiting.
+Do you have any comments on this?
 
-> 
-> > > > +
-> > > > +\paragraph{Datagram Fragmentation}\label{sec:Device Types / Socket Device / Device Operation / Datagram Sockets / Fragmentation}
-> > > > +
-> > > > +\field{flags} may have the following bit set:
-> > > > +
-> > > > +\begin{lstlisting}
-> > > > +#define VIRTIO_VSOCK_DGRAM_EOM (1 << 0)
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +When the header \field{flags} field bit VIRTIO_VSOCK_DGRAM_EOM (bit 0) is set,
-> > > > +it indicates that the current payload is the end of a datagram fragment
-> > > > OR that
-> > > > +the current payload is an entire datagram packet.
-> > > 
-> > > In the destination, if we discard some fragments, then could we
-> > > reconstruct a different datagram from the one sent?
-> > > 
-> > > Is that anything acceptable?
-> > > 
-> > 
-> > Dropping fragments should be explicitly disallowed. The sender is
-> > explicitly disallowed from NOT placing fragments on the virtqueue, but I
-> > see that I am missing the piece that states that they may not be dropped
-> > on the receive side.
-> > 
-> > I think it is worth mentioning that implicit in this spec is that
-> > socket-to-socket dgram communication is unreliable, but device-to-driver
-> > (and vice versa) is still reliable. That is, we can rely at least on the
-> > virtqueues to work... and if they fail then the device/driver can simply
-> > requeue (think send_pkt_queue in Linux)... so there is some reliability
-> > at the lowest layer.
-> 
-> Well you have this weird timeout thing for some reason.
-> 
+Thanks!
 
-The "weird" timeout thing exists to deal with system failure, not
-protocol reliability... so that the host is not left with a bunch of
-fragments waiting for a completion that never comes from a guest that
-has crashed/hung for reasons outside of the vsock protocol's control.
-I'll drop it in the next version and we can just let the fragments hang
-around until the guest is shutdown... given its limited size it is an
-okay trade-off for simplicity.
-
-Thanks,
-Bobby
+在 2023/9/1 下午5:34, Heng Qi 写道:
+> Commit 84a1d9c48200 ("net: ethtool: extend RXNFC API to support RSS spreading of
+> filter matches") adds support for RSS context as a destination for receive flow filters
+> (see WIP work: https://lists.oasis-open.org/archives/virtio-comment/202308/msg00194.html).
+>
+> An RSS context consists of configurable parameters specified by receive-side scaling.
+>
+> Use case:
+> When users want some data flows to be steered to specific multiple rxqs, they can set
+> receive flow filter rules for these data flows to an RSS context with desired rxqs.
+>
+> How to set/configure an RSS context:
+> Assuming no RSS context has been created before.
+> 1. ethtool -X eth0 context new start 5 equal 8
+>
+> This command creates an RSS context with an id=1 for eth0, and fills in the indirection
+> table with rxq indexes 5-8 circularly. The hash key and hash types reuse the default
+> RSS configuration.
+>
+> Then, we can use 'ethtool -x eth0 context 1' to query the above configuration.
+>
+> 2. ethtool -X eth0 context new start 6 equal 7 \
+>     hkey 8f:bf:dd:11:23:58:d2:8a:00:31:d0:32:a3:b5:1f:\
+>     1f:e4:d1:fe:47:7f:64:42:fd:d0:61:16:b8:b0:f9:71:e8:2d:36:7f:18:dd:4d:c8:f3
+>
+> This command creates an RSS context with an id=2 for eth0, and fills in the indirection
+> table with rxq indexes 6-7 circularly. The hash key is 8f:bf:dd:11:23:58:d2:8a:00:31:d0\
+> :32:a3:b5:1f:1f:e4:d1:fe:47:7f:64:42:fd:d0:61:16:b8:b0:f9:71:e8:2d:36:7f:18:dd:4d:c8:f3.
+> Hash types reuse the default RSS configuration.
+>
+> 3. ethtool -N eth0 rx-flow-hash tcp4 sdfn context 1
+>
+> This command specifies the hash types for the RSS context whose id=1 on eth0.
+> Now this RSS context only has the hash key to reuse the default RSS configuration.
+>
+> 4. ethtool -N eth0 flow-type udp4 src-ip 1.1.1.1 context 1
+>
+> This command configures a receive flow filter rule for eth0, and the data flow matching
+> this rule will continue to select the final rxq according to the RSS context configuration
+> with id=1.
+>
+> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> ---
+> v1->v2:
+>      1. u8 to le16 for field rss_ctx_id.
+>      2. Add normativation when device resetting. @Yuri Benditovich
+>      3. Use ctrlq cmd to query rss context capability instead of reading config space. @Parav Pandit
+>
+>   device-types/net/description.tex        | 85 +++++++++++++++++++++++++
+>   device-types/net/device-conformance.tex |  1 +
+>   device-types/net/driver-conformance.tex |  1 +
+>   3 files changed, 87 insertions(+)
+>
+> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+> index 76585b0..55cd86d 100644
+> --- a/device-types/net/description.tex
+> +++ b/device-types/net/description.tex
+> @@ -88,6 +88,8 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
+>   \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
+>       channel.
+>   
+> +\item[VIRTIO_NET_F_RSS_CONTEXT(50)] Device supports multiple RSS contexts.
+> +
+>   \item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for encapsulated packets.
+>   
+>   \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
+> @@ -150,6 +152,7 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
+>   \item[VIRTIO_NET_F_RSS] Requires VIRTIO_NET_F_CTRL_VQ.
+>   \item[VIRTIO_NET_F_VQ_NOTF_COAL] Requires VIRTIO_NET_F_CTRL_VQ.
+>   \item[VIRTIO_NET_F_HASH_TUNNEL] Requires VIRTIO_NET_F_CTRL_VQ along with VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+> +\item[VIRTIO_NET_F_RSS_CONTEXT] Requires VIRTIO_NET_F_CTRL_VQ and VIRTIO_NET_F_RSS.
+>   \end{description}
+>   
+>   \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Network Device / Feature bits / Legacy Interface: Feature bits}
+> @@ -1606,6 +1609,88 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
+>   \item If the destination receive queue is being reset (See \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / Virtqueue Reset}), the device MUST drop the packet.
+>   \end{itemize}
+>   
+> +\paragraph{RSS Context}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+> +
+> +An RSS context consists of configurable parameters specified by \ref{sec:Device Types / Network Device
+> +/ Device Operation / Control Virtqueue / Receive-side scaling (RSS)}.
+> +
+> +The RSS configuration supported by VIRTIO_NET_F_RSS is considered the default RSS configuration.
+> +
+> +The device offers the feature VIRTIO_NET_F_RSS_CONTEXT if it supports one or multiple RSS contexts
+> +(excluding the default RSS configuration) and configurable parameters.
+> +
+> +\subparagraph{Querying RSS Context Capability}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Querying RSS Context Capability}
+> +
+> +\begin{lstlisting}
+> +#define VIRTNET_RSS_CTX_CTRL 8
+> + #define VIRTNET_RSS_CTX_CTRL_CAP_GET  0
+> + #define VIRTNET_RSS_CTX_CTRL_ADD      1
+> + #define VIRTNET_RSS_CTX_CTRL_MOD      2
+> + #define VIRTNET_RSS_CTX_CTRL_DEL      3
+> +
+> +struct virtnet_rss_ctx_cap {
+> +    le16 max_rss_contexts;
+> +}
+> +\end{lstlisting}
+> +
+> +Field \field{max_rss_contexts} specifies the maximum number of RSS contexts \ref{sec:Device Types / Network Device /
+> +Device Operation / Control Virtqueue / RSS Context} supported by the device.
+> +
+> +The driver queries the RSS context capability of the device by sending the command VIRTNET_RSS_CTX_CTRL_CAP_GET
+> +with the structure virtnet_rss_ctx_cap.
+> +
+> +For the command VIRTNET_RSS_CTX_CTRL_CAP_GET, the structure virtnet_rss_ctx_cap is write-only for the device.
+> +
+> +\subparagraph{Setting RSS Context Parameters}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context / Setting RSS Context Parameters}
+> +
+> +\begin{lstlisting}
+> +struct virtnet_rss_ctx_add_modify {
+> +    le16 rss_ctx_id;
+> +    le16 padding;
+> +    struct virtio_net_rss_config rss;
+> +};
+> +
+> +struct virtnet_rss_ctx_del {
+> +    le16 rss_ctx_id;
+> +};
+> +\end{lstlisting}
+> +
+> +RSS context parameters:
+> +\begin{itemize}
+> +\item  \field{rss_ctx_id}: ID of the specific RSS context.
+> +\item  \field{rss}: RSS context parameters of the specific RSS context whose id is \field{rss_ctx_id}.
+> +\end{itemize}
+> +
+> +\field{padding} is reserved and it is ignored by the device.
+> +
+> +If the feature VIRTIO_NET_F_RSS_CONTEXT has been negotiated, the driver can send the following
+> +VIRTNET_RSS_CTX_CTRL class commands:
+> +\begin{enumerate}
+> +\item VIRTNET_RSS_CTX_CTRL_ADD: use the structure virtnet_rss_ctx_add_modify to
+> +       add an RSS context configured as \field{rss} and id as \field{rss_ctx_id} for the device.
+> +\item VIRTNET_RSS_CTX_CTRL_MOD: use the structure virtnet_rss_ctx_add_modify to
+> +       configure parameters of the RSS context whose id is \field{rss_ctx_id} as \field{rss} for the device.
+> +\item VIRTNET_RSS_CTX_CTRL_DEL: use the structure virtnet_rss_ctx_del to delete
+> +       the RSS context whose id is \field{rss_ctx_id} for the device.
+> +\end{enumerate}
+> +
+> +For commands VIRTNET_RSS_CTX_CTRL_ADD and VIRTNET_RSS_CTX_CTRL_MOD, the structure virtnet_rss_ctx_add_modify is read-only for the device.
+> +For the command VIRTNET_RSS_CTX_CTRL_DEL, the structure virtnet_rss_ctx_del is read-only for the device.
+> +
+> +\devicenormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+> +
+> +The device MUST set \field{max_rss_contexts} to at least 1 if it offers VIRTIO_NET_F_RSS_CONTEXT.
+> +
+> +Upon reset, the device MUST clear all previously configured RSS contexts.
+> +
+> +\drivernormative{\subparagraph}{RSS Context}{Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+> +
+> +The driver MUST have negotiated the VIRTIO_NET_F_RSS_CONTEXT feature when issuing the VIRTNET_RSS_CTX_CTRL class commands.
+> +
+> +The driver MUST set \field{rss_ctx_id} to between 1 and \field{max_rss_contexts} inclusive.
+> +
+> +The driver MUST NOT send the command VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET when the device has successfully configured at least one RSS context.
+> +
+>   \paragraph{Offloads State Configuration}\label{sec:Device Types / Network Device / Device Operation / Control Virtqueue / Offloads State Configuration}
+>   
+>   If the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is negotiated, the driver can
+> diff --git a/device-types/net/device-conformance.tex b/device-types/net/device-conformance.tex
+> index f88f48b..f517b00 100644
+> --- a/device-types/net/device-conformance.tex
+> +++ b/device-types/net/device-conformance.tex
+> @@ -15,4 +15,5 @@
+>   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) / RSS processing}
+>   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+>   \item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
+> +\item \ref{devicenormative:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+>   \end{itemize}
+> diff --git a/device-types/net/driver-conformance.tex b/device-types/net/driver-conformance.tex
+> index 9d853d9..22ff5c3 100644
+> --- a/device-types/net/driver-conformance.tex
+> +++ b/device-types/net/driver-conformance.tex
+> @@ -15,4 +15,5 @@
+>   \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Receive-side scaling (RSS) }
+>   \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Notifications Coalescing}
+>   \item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / Inner Header Hash}
+> +\item \ref{drivernormative:Device Types / Network Device / Device Operation / Control Virtqueue / RSS Context}
+>   \end{itemize}
 
 
 ---------------------------------------------------------------------
