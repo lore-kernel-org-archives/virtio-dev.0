@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13655-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13656-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ED4CFEE57E5
-	for <virtio-dev@archiver.kernel.org>; Fri,  8 Sep 2023 08:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E4A07EE14D8
+	for <virtio-dev@archiver.kernel.org>; Fri,  8 Sep 2023 12:03:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0A14C12D354
-	for <virtio-dev@archiver.kernel.org>; Fri,  8 Sep 2023 08:41:19 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id ED4E1335BD
+	for <virtio-dev@archiver.kernel.org>; Fri,  8 Sep 2023 12:03:06 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EADD1986608
-	for <virtio-dev@archiver.kernel.org>; Fri,  8 Sep 2023 08:41:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DA72798662A
+	for <virtio-dev@archiver.kernel.org>; Fri,  8 Sep 2023 12:03:06 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id DBD3298413A; Fri,  8 Sep 2023 08:41:18 +0000 (UTC)
+	id CB99098646D; Fri,  8 Sep 2023 12:03:06 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,348 +24,331 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C980998643A;
-	Fri,  8 Sep 2023 08:41:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BB0CE98644C
+	for <virtio-dev@lists.oasis-open.org>; Fri,  8 Sep 2023 12:03:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10826"; a="408588184"
-X-IronPort-AV: E=Sophos;i="6.02,236,1688454000"; 
-   d="scan'208";a="408588184"
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10826"; a="885587428"
-X-IronPort-AV: E=Sophos;i="6.02,236,1688454000"; 
-   d="scan'208";a="885587428"
-Message-ID: <6fa57d42-5a42-ffa4-d4a6-1aacb063002d@intel.com>
-Date: Fri, 8 Sep 2023 16:41:08 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694174582; x=1694779382;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=usGbO52px+d14iZwGFx0u9Kcrr0MplJaiZE9VDoQlxE=;
+        b=TM80PxGgZ5jkfGmfmy5AhxDIfqImCwj60mm6u4f0SCDUGhBk0S9eQ3qpNxE/Q4vKZe
+         wr6ftxpXZ0AMP6toaIvzwDGx7BlYj2CchpW1HGApjpL9FIaKaJyHkwYzqvseXHTkeaE4
+         73g0mCCFJCat/MkKNLFOSrNyeKz1KFGR7AFw7VKvQZ66g812Ks32tdN8bURJxo1u4x2l
+         4z2hzDkhYJkdeAueaitT95DxO8L7y72cJewsbTh4/un4GP+xfwfeqnilpXNxOYkO4ZB6
+         xr34yrpT8wtDLE3K4sixsGxX+a2rc8ObIDOadSR/l5kEJj/i2dm/anLwFKalPxu3gmFG
+         NSIQ==
+X-Gm-Message-State: AOJu0YytB6NLwZ9YVsMf0a/XEIAekJvpWCm0Du8FQQ9ru/7u4RZMkUoo
+	64c7V5V0xlCOxsOPNa3FF+aU5Q==
+X-Google-Smtp-Source: AGHT+IH8Fv8U/Yc7OdSqJBfJbSzcLVE2OE5vi3qQ+KnSLMI4qLmMpBGYPIxFXkvojWjnliwMGGtLgA==
+X-Received: by 2002:a05:6000:180b:b0:319:6caa:ada2 with SMTP id m11-20020a056000180b00b003196caaada2mr1672993wrh.47.1694174582462;
+        Fri, 08 Sep 2023 05:03:02 -0700 (PDT)
+References: <20230901110018.3704459-1-alex.bennee@linaro.org>
+ <CADSE00LiE6c8UhZ-KXTRuTc-yJQ==c=3teTcs8Wyx2k1CmUGQg@mail.gmail.com>
+ <87y1hlgdl4.fsf@linaro.org> <20230907192913.GD1560640@fedora>
+ <87h6o517yh.fsf@linaro.org>
+ <CAJSP0QW_ZFweKH5KTEyr61Scn7VL91+-PiTUfxkMwx8+ZmiU2w@mail.gmail.com>
+User-agent: mu4e 1.11.17; emacs 29.1.50
+From: Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: Stefan Hajnoczi <stefanha@gmail.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>, Albert Esteve
+ <aesteve@redhat.com>, slp@redhat.com, mst@redhat.com,
+ marcandre.lureau@redhat.com, viresh.kumar@linaro.org, sgarzare@redhat.com,
+ takahiro.akashi@linaro.org, erik.schilling@linaro.org,
+ manos.pitsidianakis@linaro.org, mathieu.poirier@linaro.org,
+ qemu-devel@nongnu.org, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org
+Date: Fri, 08 Sep 2023 12:59:49 +0100
+In-reply-to: <CAJSP0QW_ZFweKH5KTEyr61Scn7VL91+-PiTUfxkMwx8+ZmiU2w@mail.gmail.com>
+Message-ID: <87zg1wzxca.fsf@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.15.0
-Content-Language: en-US
-To: Si-Wei Liu <si-wei.liu@oracle.com>,
- Eugenio Perez Martin <eperezma@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, mst@redhat.com, cohuck@redhat.com,
- virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
- Dragos Tatulea <dtatulea@nvidia.com>
-References: <20230814192904.30062-1-lingshan.zhu@intel.com>
- <20230814192904.30062-5-lingshan.zhu@intel.com>
- <CACGkMEtkdXrTZ_=NkuPsmhUooCgKPiCiVo-nJMaDnJ5fufzGwQ@mail.gmail.com>
- <8ce92e00-39f9-3e99-96e2-5599588869e3@intel.com>
- <CAJaqyWd=hCvknO5MQ0Nu4iwxPMfjHGHNJHiwzxAaRLcgZ1HKxg@mail.gmail.com>
- <23b9082d-050a-6f82-754e-d309c48972d5@intel.com>
- <CAJaqyWeye4fOTB5pPtwpzusgZRL6d36EzDD61zoD8Uf+0v4FQw@mail.gmail.com>
- <4f88bf69-7436-4f26-6be8-76347355d59c@intel.com>
- <CAJaqyWeLeyBJSn2EH9-vfbyVCAcCKDuhp-1G+3QZGpVMf7KTDw@mail.gmail.com>
- <20ccafc0-f896-07df-f688-6f5d250a0b05@intel.com>
- <cba0b7f2-e40d-80b6-adb8-a2b4a4eb1bd8@oracle.com>
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <cba0b7f2-e40d-80b6-adb8-a2b4a4eb1bd8@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [RFC PATCH 4/5] virtqueue: constraints for
- virtqueue state
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] [RFC PATCH v2] docs/interop: define PROBE feature
+ for vhost-user VirtIO devices
 
 
+Stefan Hajnoczi <stefanha@gmail.com> writes:
 
-On 9/8/2023 2:23 PM, Si-Wei Liu wrote:
->
->
-> On 9/7/2023 2:34 AM, Zhu, Lingshan wrote:
+> On Fri, 8 Sept 2023 at 02:43, Alex Benn=C3=A9e <alex.bennee@linaro.org> w=
+rote:
 >>
 >>
->> On 9/7/2023 4:09 PM, Eugenio Perez Martin wrote:
->>> On Tue, Sep 5, 2023 at 11:08 AM Zhu, Lingshan 
->>> <lingshan.zhu@intel.com> wrote:
->>>>
->>>>
->>>> On 8/21/2023 5:26 PM, Eugenio Perez Martin wrote:
->>>>> On Fri, Aug 18, 2023 at 11:44 AM Zhu, Lingshan 
->>>>> <lingshan.zhu@intel.com> wrote:
->>>>>>
->>>>>> On 8/17/2023 11:19 PM, Eugenio Perez Martin wrote:
->>>>>>> On Tue, Aug 15, 2023 at 1:30 PM Zhu, Lingshan 
->>>>>>> <lingshan.zhu@intel.com> wrote:
->>>>>>>> On 8/15/2023 8:34 AM, Jason Wang wrote:
->>>>>>>>> On Mon, Aug 14, 2023 at 7:29 PM Zhu Lingshan 
->>>>>>>>> <lingshan.zhu@intel.com> wrote:
->>>>>>>>>> This commit specifies the constraints of the virtqueue state,
->>>>>>>>>> and the actions should be taken by the device when SUSPEND
->>>>>>>>>> and DRIVER_OK is set
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
->>>>>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>>>>>> ---
->>>>>>>>>>      content.tex | 31 +++++++++++++++++++++++++++++++
->>>>>>>>>>      1 file changed, 31 insertions(+)
->>>>>>>>>>
->>>>>>>>>> diff --git a/content.tex b/content.tex
->>>>>>>>>> index 43bd5de..f6ac581 100644
->>>>>>>>>> --- a/content.tex
->>>>>>>>>> +++ b/content.tex
->>>>>>>>>> @@ -587,6 +587,37 @@ \subsection{\field{Used State} Field}
->>>>>>>>>>
->>>>>>>>>>      See also \ref{sec:Packed Virtqueues / Driver and Device 
->>>>>>>>>> Ring Wrap Counters}.
->>>>>>>>>>
->>>>>>>>>> +\drivernormative{\subsection}{Virtqueue State}{Basic 
->>>>>>>>>> Facilities of a Virtio Device / Virtqueue State}
->>>>>>>>>> +
->>>>>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated, the driver MUST 
->>>>>>>>>> set SUSPEND in \field{device status}
->>>>>>>>>> +first before getting or setting Virtqueue State of any 
->>>>>>>>>> virtqueues.
->>>>>>>>> I don't get why this is a must. It could be useful for debugging.
->>>>>>>> To avoid race conditions with the device and make the device
->>>>>>>> implementation easier
->>>>>>>>>> +
->>>>>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiaged but 
->>>>>>>>>> VIRTIO_RING_F_PACKED not been negotiated,
->>>>>>>>> typo
->>>>>>>> yes
->>>>>>>>>> +the driver MUST NOT access \field{Used State} of any 
->>>>>>>>>> virtqueues, it should use the
->>>>>>>>>> +used index in the used ring.
->>>>>>>>>> +
->>>>>>>>>> +\devicenormative{\subsection}{Virtqueue State}{Basic 
->>>>>>>>>> Facilities of a Virtio Device / Virtqueue State}
->>>>>>>>>> +
->>>>>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but SUSPEND is 
->>>>>>>>>> not set in \field{device status},
->>>>>>>>>> +the device MUST ignore any accesses against Virtqueue State 
->>>>>>>>>> of any virtqueues.
->>>>>>>>> Btw, do we need to clarify the behavior of ring reset after 
->>>>>>>>> suspending?
->>>>>>>> I think once suspended, the device should ignore resetting a queue
->>>>>>> Actually shadow virtqueue could benefit from the ability to 
->>>>>>> change vq
->>>>>>> properties (addresses) while the device is suspended, and then just
->>>>>>> resume it. I've been told that ring reset is overkill for that.
->>>>>> If ring reset is overkill, is SUSPEND even more overkill?
->>>>> It depends on the cost of recreating the vq in the device I think. 
->>>>> But
->>>>> it has more to do with *what* is changed in the vq, as it seems some
->>>>> parameters (vq size) has more impact than others like vq address. The
->>>>> way to stop the device does not affect, but ring reset offers the
->>>>> possibility of change all of the parameters already.
->>>>>
->>>>> Adding Si-Wei and Dragos here, as they pointed it out in the
->>>>> virtio-networking upstream meeting.
->>>>>
->>>>>>> But probably it is better to address it on top, with another 
->>>>>>> feature flag.
->>>>>> I think if we want to changing the vq properties, there must be a
->>>>>> mechanism to
->>>>>> stop the queue then resume the queue.
->>>>>>
->>>>>> How about allow setting queue_enable = 0 to stop it and =1 to 
->>>>>> resume and
->>>>>> force it reinitialize?
->>>>>>
->>>>> Yes, I think that is better suited. But maybe this is better to be
->>>>> added on top, so we maintain this series small.
->>>> Hi Eugenio,
->>>>
->>>> I have a second thought while implementing above queue_enable = 0,
->>>> it doesn't provide more advantages over queue_reset:
->>>>
->>>> 1) queue_reset can help to stop a queue and the vq properties can be
->>>> reconfigured during queue_reset --> queue_enable.
->>>>
->>>> 2) once the driver sees SUSPEND presented by the device, it assume the
->>>> device states and vq states are stable, at that point the driver can
->>>> read reliable device configurations. So vq reset should be ignored
->>>> once SUSPEND is present and if we implement queue stop, it should be
->>>> ignored too when SUSPEND.
->>>>
->>> The relation between SUSPEND and ring_reset needs to be described in
->>> this series, yes. This is a good start, but I'm not sure if this one
->>> meets all the requirements for SW assisted live migration.
->>>
->>> We can always add new feature flags to define a different interaction
->>> in the future, like for devices that can support the change of vq
->>> attributes in the suspend. To not steal the merit, this idea was
->>> proposed by Si-Wei in a recent virtio-networking meeting.
->> If so, we even don't need a new feature bit. We can just allow
->> resetting vqs after the device presenting SUSPEND.
-> For the single bit of feature interaction with queue_reset this looks 
-> fine, but queue_reset is perhaps not the only feature that needs to 
-> interact with SUSPEND. While on the other hand I suspect it's probably 
-> not easy to converge on everything all at once for the moment. Just to 
-> avoid the lure of hijacking this thread for other things, it'd be 
-> easier I feel to define a pristine SUSPEND method starting with the 
-> most restrictive mandates, describing every possible means to 
-> prohibiting *any* change to the config space for device in suspension. 
-> This not just keeps the (backward) compatibility on the table which is 
-> consistent with the assumption of various SUSPEND implementations 
-> available today, but would make it possible to customize different 
-> flavors of interactions guarded by different feature flag in the 
-> future. For instance, today queue_reset may mostly work the best on 
-> software device implementation where one can introduce a specific 
-> SUSPEND_RING_RESET_ALLOWED feature flag to unlock/override part of the 
-> restriction from the pristine SUSPEND feature when both are negotiated 
-> and used together. In future, if there's any need to revisit this part 
-> for e.g. hardware device implementation of queue_reset might not be 
-> able to meet certain desired performance (downtime) goal, then a new 
-> feature might have to be introduced to define another hardware-biased 
-> means of interaction with suspended device.
-Hi Siwei
+>> Stefan Hajnoczi <stefanha@redhat.com> writes:
+>>
+>> > On Tue, Sep 05, 2023 at 10:34:11AM +0100, Alex Benn=C3=A9e wrote:
+>> >>
+>> >> Albert Esteve <aesteve@redhat.com> writes:
+>> >>
+>> >> > This looks great! Thanks for this proposal.
+>> >> >
+>> >> > On Fri, Sep 1, 2023 at 1:00=E2=80=AFPM Alex Benn=C3=A9e <alex.benne=
+e@linaro.org> wrote:
+>> >> >
+>> >> >  Currently QEMU has to know some details about the VirtIO device
+>> >> >  supported by a vhost-user daemon to be able to setup the guest. Th=
+is
+>> >> >  makes it hard for QEMU to add support for additional vhost-user
+>> >> >  daemons without adding specific stubs for each additional VirtIO
+>> >> >  device.
+>> >> >
+>> >> >  This patch suggests a new feature flag (VHOST_USER_PROTOCOL_F_PROB=
+E)
+>> >> >  which the back-end can advertise which allows a probe message to be
+>> >> >  sent to get all the details QEMU needs to know in one message.
+>> >> >
+>> >> >  Together with the existing features VHOST_USER_PROTOCOL_F_STATUS a=
+nd
+>> >> >  VHOST_USER_PROTOCOL_F_CONFIG we can create "standalone" vhost-user
+>> >> >  daemons which are capable of handling all aspects of the VirtIO
+>> >> >  transactions with only a generic stub on the QEMU side. These daem=
+ons
+>> >> >  can also be used without QEMU in situations where there isn't a fu=
+ll
+>> >> >  VMM managing their setup.
+>> >> >
+>> >> >  Signed-off-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
+>> >> >
+>> >> >  ---
+>> >> >  v2
+>> >> >    - dropped F_STANDALONE in favour of F_PROBE
+>> >> >    - split probe details across several messages
+>> >> >    - probe messages don't automatically imply a standalone daemon
+>> >> >    - add wording where probe details interact (F_MQ/F_CONFIG)
+>> >> >    - define VMM and make clear QEMU is only one of many potential V=
+MMs
+>> >> >    - reword commit message
+>> >> >  ---
+>> >> >   docs/interop/vhost-user.rst | 90 ++++++++++++++++++++++++++++++++=
+-----
+>> >> >   hw/virtio/vhost-user.c      |  8 ++++
+>> >> >   2 files changed, 88 insertions(+), 10 deletions(-)
+>> >> >
+>> >> >  diff --git a/docs/interop/vhost-user.rst b/docs/interop/vhost-user=
+.rst
+>> >> >  index 5a070adbc1..ba3b5e07b7 100644
+>> >> >  --- a/docs/interop/vhost-user.rst
+>> >> >  +++ b/docs/interop/vhost-user.rst
+>> >> >  @@ -7,6 +7,7 @@ Vhost-user Protocol
+>> >> >   ..
+>> >> >     Copyright 2014 Virtual Open Systems Sarl.
+>> >> >     Copyright 2019 Intel Corporation
+>> >> >  +  Copyright 2023 Linaro Ltd
+>> >> >     Licence: This work is licensed under the terms of the GNU GPL,
+>> >> >              version 2 or later. See the COPYING file in the top-le=
+vel
+>> >> >              directory.
+>> >> >  @@ -27,17 +28,31 @@ The protocol defines 2 sides of the communicat=
+ion, *front-end* and
+>> >> >   *back-end*. The *front-end* is the application that shares its vi=
+rtqueues, in
+>> >> >   our case QEMU. The *back-end* is the consumer of the virtqueues.
+>> >> >
+>> >> >  -In the current implementation QEMU is the *front-end*, and the *b=
+ack-end*
+>> >> >  -is the external process consuming the virtio queues, for example a
+>> >> >  -software Ethernet switch running in user space, such as Snabbswit=
+ch,
+>> >> >  -or a block device back-end processing read & write to a virtual
+>> >> >  -disk. In order to facilitate interoperability between various bac=
+k-end
+>> >> >  -implementations, it is recommended to follow the :ref:`Backend pr=
+ogram
+>> >> >  -conventions <backend_conventions>`.
+>> >> >  +In the current implementation a Virtual Machine Manager (VMM) suc=
+h as
+>> >> >  +QEMU is the *front-end*, and the *back-end* is the external proce=
+ss
+>> >> >  +consuming the virtio queues, for example a software Ethernet swit=
+ch
+>> >> >  +running in user space, such as Snabbswitch, or a block device bac=
+k-end
+>> >> >  +processing read & write to a virtual disk. In order to facilitate
+>> >> >  +interoperability between various back-end implementations, it is
+>> >> >  +recommended to follow the :ref:`Backend program conventions
+>> >> >  +<backend_conventions>`.
+>> >> >
+>> >> >   The *front-end* and *back-end* can be either a client (i.e. conne=
+cting) or
+>> >> >   server (listening) in the socket communication.
+>> >> >
+>> >> >  +Probing device details
+>> >> >  +----------------------
+>> >> >  +
+>> >> >  +Traditionally the vhost-user daemon *back-end* shares configurati=
+on
+>> >> >  +responsibilities with the VMM *front-end* which needs to know cer=
+tain
+>> >> >  +key bits of information about the device. This means the VMM need=
+s to
+>> >> >  +define at least a minimal stub for each VirtIO device it wants to
+>> >> >  +support. If the daemon supports the right set of protocol feature=
+s the
+>> >> >  +VMM can probe the daemon for the information it needs to setup the
+>> >> >  +device. See :ref:`Probing features for standalone daemons
+>> >> >  +<probing_features>` for more details.
+>> >> >  +
+>> >> >  +
+>> >> >   Support for platforms other than Linux
+>> >> >   --------------------------------------
+>> >> >
+>> >> >  @@ -316,6 +331,7 @@ replies. Here is a list of the ones that do:
+>> >> >   * ``VHOST_USER_GET_VRING_BASE``
+>> >> >   * ``VHOST_USER_SET_LOG_BASE`` (if ``VHOST_USER_PROTOCOL_F_LOG_SHM=
+FD``)
+>> >> >   * ``VHOST_USER_GET_INFLIGHT_FD`` (if ``VHOST_USER_PROTOCOL_F_INFL=
+IGHT_SHMFD``)
+>> >> >  +* ``VHOST_USER_GET_BACKEND_SPECS`` (if ``VHOST_USER_PROTOCOL_F_ST=
+ANDALONE``)
+>> >> >
+>> >> >   .. seealso::
+>> >> >
+>> >> >  @@ -396,9 +412,10 @@ must support changing some configuration aspe=
+cts on the fly.
+>> >> >   Multiple queue support
+>> >> >   ----------------------
+>> >> >
+>> >> >  -Many devices have a fixed number of virtqueues.  In this case the=
+ front-end
+>> >> >  -already knows the number of available virtqueues without communic=
+ating with the
+>> >> >  -back-end.
+>> >> >  +Many devices have a fixed number of virtqueues. In this case the
+>> >> >  +*front-end* usually already knows the number of available virtque=
+ues
+>> >> >  +without communicating with the back-end. For standalone daemons t=
+his
+>> >> >  +number can be can be probed with the ``VHOST_USER_GET_MIN_VQ`` me=
+ssage.
+>> >> >
+>> >> >   Some devices do not have a fixed number of virtqueues.  Instead t=
+he maximum
+>> >> >   number of virtqueues is chosen by the back-end.  The number can d=
+epend on host
+>> >> >  @@ -885,6 +902,23 @@ Protocol features
+>> >> >     #define VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS  15
+>> >> >     #define VHOST_USER_PROTOCOL_F_STATUS               16
+>> >> >     #define VHOST_USER_PROTOCOL_F_XEN_MMAP             17
+>> >> >  +  #define VHOST_USER_PROTOCOL_F_PROBE                18
+>> >> >  +
+>> >> >  +.. _probing_features:
+>> >> >  +
+>> >> >  +Probing features for standalone daemons
+>> >> >  +---------------------------------------
+>> >> >  +
+>> >> >  +The protocol feature ``VHOST_USER_PROTOCOL_F_PROBE`` enables a nu=
+mber
+>> >> >  +of additional messages which allow the *front-end* to probe detai=
+ls
+>> >> >  +about the VirtIO device from the *back-end*. However for a *back-=
+end*
+>> >> >  +to be described as standalone it must also support:
+>> >> >  +
+>> >> >  +  * ``VHOST_USER_PROTOCOL_F_STATUS``
+>> >> >  +  * ``VHOST_USER_PROTOCOL_F_CONFIG`` (if there is a config space)
+>> >> >  +
+>> >> >  +which are required to ensure the *back-end* daemon can operate
+>> >> >  +without the *front-end* managing some aspects of its configuratio=
+n.
+>> >> >
+>> >> >   Front-end message types
+>> >> >   -----------------------
+>> >> >  @@ -1440,6 +1474,42 @@ Front-end message types
+>> >> >     query the back-end for its device status as defined in the Virt=
+io
+>> >> >     specification.
+>> >> >
+>> >> >  +``VHOST_USER_GET_DEVICE_ID``
+>> >> >  +  :id: 41
+>> >> >  +  :request payload: N/A
+>> >> >  +  :reply payload: ``u32``
+>> >> >  +
+>> >> >  +  When the ``VHOST_USER_PROTOCOL_F_PROBE`` protocol feature has b=
+een
+>> >> >  +  successfully negotiated, this message is submitted by the front=
+-end
+>> >> >  +  to query what VirtIO device the back-end support. This is inten=
+ded
+>> >> >  +  to remove the need for the front-end to know ahead of time what=
+ the
+>> >> >  +  VirtIO device the backend emulates is.
+>> >> >  +
+>> >> >  +``VHOST_USER_GET_CONFIG_SIZE``
+>> >> >  +  :id: 42
+>> >> >  +  :request payload: N/A
+>> >> >  +  :reply payload: ``u32``
+>> >> >  +
+>> >> >  +  When the ``VHOST_USER_PROTOCOL_F_PROBE`` protocol feature has b=
+een
+>> >> >  +  successfully negotiated, this message is submitted by the front=
+-end
+>> >> >  +  to query the size of the VirtIO device's config space. This is
+>> >> >  +  intended to remove the need for the front-end to know ahead of =
+time
+>> >> >  +  what the size is. Replying with 0 when
+>> >> >  +  ``VHOST_USER_PROTOCOL_F_CONFIG`` has been negotiated would indi=
+cate
+>> >> >  +  an bug.
+>> >> >  +
+>> >> >  +``VHOST_USER_GET_MIN_VQ``
+>> >> >  +  :id: 43
+>> >> >  +  :request payload: N/A
+>> >> >  +  :reply payload: ``u32``
+>> >> >  +
+>> >> >  +  When the ``VHOST_USER_PROTOCOL_F_PROBE`` protocol feature has b=
+een
+>> >> >  +  successfully negotiated, this message is submitted by the front=
+-end to
+>> >> >  +  query minimum number of VQ's required to support the device. A
+>> >> >  +  device may support more than this number of VQ's if it advertis=
+es
+>> >> >  +  the ``VHOST_USER_PROTOCOL_F_MQ`` protocol feature. Reporting a
+>> >> >  +  number greater than the result of ``VHOST_USER_GET_QUEUE_NUM`` =
+would
+>> >> >  +  indicate a bug.
+>> >> >
+>> >> > Maybe I lack some background, but not sure what min_vq is here?
+>> >>
+>> >> There will be a minimum number of queues you need to support the devi=
+ce.
+>> >> For example the virtio-sound spec specifies you need four queues:
+>> >> control, event, tx, rx
+>> >
+>> > I don't understand why the front-end needs to know that? The backend
+>> > already reports the number of queues and not all of them need to be
+>> > initialized by the driver.
+>>
+>> But how many don't need to be initialised? We can't just skip:
+>>
+>>     /* Allocate queues */
+>>     vub->vqs =3D g_ptr_array_sized_new(vub->num_vqs);
+>>     for (int i =3D 0; i < vub->num_vqs; i++) {
+>>         g_ptr_array_add(vub->vqs,
+>>                         virtio_add_queue(vdev, vub->vq_size, vub_handle_=
+output));
+>>     }
+>>
+>> Or are you saying just require probe-able backends to support
+>> VHOST_USER_PROTOCOL_F_MQ and have it always report the minimmum number
+>> of queues if it is not a MQ capable device?
+>
+> The front-end should prepare to allow the maximum number of virtqueues
+> returned by VHOST_USER_GET_QUEUE_NUM (VHOST_USER_PROTOCOL_F_MQ).
+>
+> VIRTIO Transports have a way to query the maximum number of queues but
+> not a way to query the minimum number of queues. Why is the minimum
+> necessary?
 
-OK, I got it, there can be a new feature bit for resetting a queue after 
-SUSPEND, and other interactions can follow the same way, more flexible.
->
->>
->> The device presenting SUSPEND indicates that the device config space
->> is stabilized at that moment, ready for the driver to fetch fields 
->> data there.
->>
->> Then the driver is allowed to reset, re-config and re-enable the vqs.
-> Maybe not for this case, but for completeness I found a very relevant 
-> question is, as your patch defines SUSPEND in the context of live 
-> migration, how do you envision to resume/restart the device 
-> immediately in place on the source host (say migration is cancelled 
-> after all devices are suspended, or migration failed at the last 
-> minute for some reason)? Reset the device and start to recover 
-> everything from scratch? Or do queue_reset then queue_enable on every 
-> virtqueue while keeping the other device states (those already 
-> populated through ctrl vq) around? Or suppose right now we have a 
-> symmetric RESUME feature that keeps every device state including the 
-> queue state in place. Which option a hardware vendor would like to 
-> pick if user/customer would like to have the best/least downtime? Does 
-> the hardware's choice matter much for software device implementation?
->
-> As can be seen amongst these options, there's perhaps no single best 
-> solution between software and hardware devices, or even between 
-> different hardware vendors. So instead of ruling out possibility for 
-> future extension to flavor other implementations, be it hardware or 
-> software, I feel it's probably not the best thing for now to get 
-> SUSPEND hard wired to queue_reset or RESUME. Device reset is the base 
-> case that every device has to implement, that I feel might be the only 
-> failsafe method to get the device out of the suspension state with 
-> pristine SUSPEND.
-In case of failed or cancelled Live Migration, the driver can reset the 
-re-config the device to resume it for sure.
+It seems excessive to automatically create the maximum number of VQs. I
+guess for backends that don't support the MQ feature (i.e. a variable
+number of VQs) we could just say VHOST_USER_GET_QUEUE_NUM =3D=3D min. But
+now we are overloading a different message originally added for
+something else.
 
-In this series, we also say:
-If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device SHOULD 
-clear SUSPEND and resumes operation upon DRIVER_OK.
-
->
->>
->> The only requirement is: The driver is responsible for maintain
->> the integrity and validity of the config space fields, because
->> the device is ready-only to the config space at that moment(SUSPEND-ed)
->> and the driver should be responsible for its actions, perform proper
->> synchronizations, e.g., re-read.
-> It looks fine, though as stated above, please leave it to a different 
-> feature flag with another patch to define the queue_reset interaction 
-> with SUSPEND.
-Sure, we will introduce a new feature bit for resetting vq.
-
-Thanks for your advice
-Zhu Lingshan
->
-> Thanks,
-> -Siwei
->
->>
->> Does this work for you?
->>
->> Thanks
->>>
->>>> 3) the device should only accept resetting a queue when !SUSPEND and
->>>> the driver can flush the queue buffers before resetting it to avoid
->>>> losing buffers,
->>>> and we will have tracker for in-flight descriptors later.
->>>>
->>>> Any thoughts?
->>>>
->>>> Thanks
->>>>> Thanks!
->>>>>
->>>>>> Thanks
->>>>>> Zhu Lingshan
->>>>>>>>>> +
->>>>>>>>>> +When VIRTIO_F_QUEUE_STATE has been negotiated but 
->>>>>>>>>> VIRTIO_RING_F_PACKED is not,
->>>>>>>>>> +the device MUST ignore any accesses against \field{Used State}.
->>>>>>>>>> +
->>>>>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiaged, the device MUST 
->>>>>>>>>> reset
->>>>>>>>>> +the Virtqueue State of every virtqueue upon a reset.
->>>>>>>>> Need to define the meaning of "reset" this is important for 
->>>>>>>>> packed virtqueue.
->>>>>>>> I will remove this as Stefan suggested.
->>>>>>>>>> +
->>>>>>>>>> +If VIRTIO_F_QUEUE_STATE and VIRTIO_RING_F_PACKED have been 
->>>>>>>>>> negotiaged, when SUSPEND is set,
->>>>>>>>>> +the device MUST record the Virtqueue State of every enabled 
->>>>>>>>>> virtqueue
->>>>>>>>>> +in \field{Available State} and \field{Used State} respectively,
->>>>>>>>>> +and correspondingly restore the Virtqueue State of every 
->>>>>>>>>> enabled virtqueue
->>>>>>>>>> +from \field{Avaiable State} and \field{Used State} when 
->>>>>>>>>> DRIVER_OK is set.
->>>>>>>>> We can just let the device report those states in any case 
->>>>>>>>> then we
->>>>>>>>> don't need to care about those details, or did you see any 
->>>>>>>>> blockers?
->>>>>>>> Agree, I will add the definition of used_state of splitted vq 
->>>>>>>> in the
->>>>>>>> next version
->>>>>>>>
->>>>>>>> Thanks
->>>>>>>>> Thanks
->>>>>>>>>
->>>>>>>>>> +
->>>>>>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but 
->>>>>>>>>> VIRTIO_RING_F_PACKED has been not, when SUSPEND is set,
->>>>>>>>>> +the device MUST record the available state of every enabled 
->>>>>>>>>> virtqueue in \field{Available State},
->>>>>>>>>> +and restore the available state of every enabled virtqueue 
->>>>>>>>>> from \field{Avaiable State}
->>>>>>>>>> +when DRIVER_OK is set.
->>>>>>>>>> +
->>>>>>>>>>      \input{admin.tex}
->>>>>>>>>>
->>>>>>>>>>      \chapter{General Initialization And Device 
->>>>>>>>>> Operation}\label{sec:General Initialization And Device 
->>>>>>>>>> Operation}
->>>>>>>>>> -- 
->>>>>>>>>> 2.35.3
->>>>>>>>>>
->>>>> This publicly archived list offers a means to provide input to the
->>>>>
->>>>> OASIS Virtual I/O Device (VIRTIO) TC.
->>>>>
->>>>>
->>>>>
->>>>> In order to verify user consent to the Feedback License terms and
->>>>>
->>>>> to minimize spam in the list archive, subscription is required
->>>>>
->>>>> before posting.
->>>>>
->>>>>
->>>>>
->>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
->>>>>
->>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
->>>>>
->>>>> List help: virtio-comment-help@lists.oasis-open.org
->>>>>
->>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
->>>>>
->>>>> Feedback License: 
->>>>> https://www.oasis-open.org/who/ipr/feedback_license.pdf
->>>>>
->>>>> List Guidelines: 
->>>>> https://www.oasis-open.org/policies-guidelines/mailing-lists
->>>>>
->>>>> Committee: https://www.oasis-open.org/committees/virtio/
->>>>>
->>>>> Join OASIS: https://www.oasis-open.org/join/
->>>>>
->>
->
-
+--=20
+Alex Benn=C3=A9e
+Virtualisation Tech Lead @ Linaro
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
