@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13673-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13674-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07B3DEE57DF
-	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 840B2EE57DF
+	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:46 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3957F613D9
-	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:37 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A1FF879515
+	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3159C9864A4
-	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 657D29864A5
+	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:41 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 2180F98635C; Mon, 11 Sep 2023 10:05:37 +0000 (UTC)
+	id 56EDA98635C; Mon, 11 Sep 2023 10:05:41 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,16 +24,16 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 018829863B6;
-	Mon, 11 Sep 2023 10:05:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3E285986408;
+	Mon, 11 Sep 2023 10:05:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PpABdvO8agxJrIaRtc43eXhzLg6kWWy92yJJP65m4x4NEhaAglBXlZR6a0kpwesvNaws3V/lzTmsRpJelSBcZhCXqdp4DG3YJDCMXBlrrF2MvBh+b4jvG2fvAM87Np0VBbVLTGxGVYLuZLyiZ8UxtzH8FB1/5OZLfKRmCdtW1W2xWNhc7nelyf07vDMsvBZ6Gg/nUc7h/Cce5Jz56p4jooDAhUFL2zyRkAcF2ZetQ7a+YtxY49wa7SRhncPDPOnK1fuPqZHWJC2SBCyxK9lHZchd3YHrxxwdPMwgO8LWd2A7dah6oFMY1EzQceR19pQv9ApJmimBSJU4F4dZIqE72A==
+ b=TXW0lS/4L7NDmIAuOQeIiK49c2spV9NPWO7A9puxvWKldp8O/XS5eBJAqdabL2dTVgNsopXFQJkgosKiTMkvjAM+wo23k5JK7S6fR36darckSpIFvXAwTQTgtTZCWGYlxhEckZuSlIiGi7OgBc2mv2/IVaMjAtqwrIvUbdlM61fVkes6p5qcwaZ+GGjciy7jVjCcrHH4E2YkN1po2Qc4e6rbpDFmRXG0759ENKohQ6wwO1YF0N8ZAf3CSyS4QyxJKfuODFJ4+QcWHrdOpJh+phgG20Wu0oV7jBnrvpIaIYWtYXpB9sRTJwTTYgoSHak4l1EqT+LqwB3WvCTdxPqR2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TdHpyzHH33H4Mlc6VS95k1EcgfV/b4jb7137aHaRxDE=;
- b=ZG7PsWC6FjyefHT2wserml0BJqyYmTWMnF/oCIoQqZ8R7Ibnj31F++s0sJbgRSIZ6/EKmcY6iUt+Li5uybR10hMpkrHx6jPuWrIRtFMQ4csYgaET8HvqDxNZ/M1SFBiTFt+1lsznyiRqmPHx4S4LyzvDCEhymr/7YRL2znQIPXV2vaaPtui++7kTIACDtRAlca4xDLCO/dc0Osy9AI/VRiLjzsjEAzOr8nEMLYbDv57oNJ9q+FkTawDROdjShedZRSiScRIM5ZVWmGIV5zlGpP20ySBrRWqSl1cCiciZdt85oYNsc+vFX1yDWE+LSnpMnkbAQ1TZvnu9GA8YyN0ajw==
+ bh=mRtNism9eieq55WiXAgXLdUcKsXmXh8icFK+EOB15YY=;
+ b=TG4arZIclyHDMFCNYu3orSkn/wlnrC+vZ66k9y7emnnLvayKDD92fiA81r1ZFYbUWm+TMIi4UdjSfG4rKNum+O4aFmJ/KqJKEVYT0eTa52FxPZmsXb08VRENjzDpxMkLJwN57ltifGNnjFYPR8N3rhMAjT94AyofGv0h8Y3VeC8xW1Hzax4eXI5w9av5JczANI+kFgPvZJreYkFGbXILYUZ4VcWh+yPdPbg+PhFm6CodPf491UeZ05AKttvYuui79nIXWAv7oZ8C0K7nFQYc3wuQ9ygwi2XaxkHUoFDCFeFhjG5oWmsBPAuYu8ctZYO+FLt159VSR5E0eGELj5OpZg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
@@ -55,108 +55,127 @@ CC: <qemu-devel@nongnu.org>, <linux-kernel@vger.kernel.org>, "Stefano
 	<Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>,
 	Honglei Huang <Honglei1.Huang@amd.com>, Julia Zhang <Julia.Zhang@amd.com>,
 	Huang Rui <Ray.Huang@amd.com>, Jiqian Chen <Jiqian.Chen@amd.com>
-Date: Mon, 11 Sep 2023 18:04:29 +0800
-Message-ID: <20230911100430.1408168-1-Jiqian.Chen@amd.com>
+Date: Mon, 11 Sep 2023 18:04:30 +0800
+Message-ID: <20230911100430.1408168-2-Jiqian.Chen@amd.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230911100430.1408168-1-Jiqian.Chen@amd.com>
+References: <20230911100430.1408168-1-Jiqian.Chen@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.180.168.240]
 X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DC:EE_|PH7PR12MB6857:EE_
-X-MS-Office365-Filtering-Correlation-Id: 505cd8ad-5fd8-4917-e41e-08dbb2ae9711
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D9:EE_|DM4PR12MB6447:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4d3d4206-778a-432c-50a8-08dbb2ae9986
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	zmcXSaFgUdMCvTQh57wrabvN18jb1lZrEAT6L5UFdftnhCP9wcEacYyROSGaC/ZhalgRTggT+ibip2Vh+AExziqT3LG5yxy07HmX0kQgcIayFbtNzg1UmO1cPJqOqIcw07PQT+TXz9oW7eeudJYD539umf98Z68yb66sKQCli6NdbAxMMM7lXFzsf8bavD63Y0KpvVbEojjacXKw6Q40neAhqg6jXNACaRYWH48S/ysOWdkmClCTP4qQyfD/rq9zHMiG8xH/It6Ku4gt4vIK6ILSMCxTkwgURn1YX6rapxJKoC+/hch+qKRz6GzrRnQbvR5h6vVnwSIpeqvg91xq3+VS/JTrp/YIM++dzYMadbFhszEYy1ruG7+poDcGD6DbhHZEt3XMSvf//s39rtwcwMlSicMlj0HTo5BiTWFicpkf6uFVlwwIexWUnjfH/VJw4V2b+YdvWJpkifo9AnHFSZwiQoSNv50+Ta/xn+lQSdqaH4Ho/lTEF0gwHcZyXesDt7QyY9hAIU/66MA/RSuCcg3q8oRr6svYUcjdtjUSMAYpAxUqa0pA7xl1ody6qq6pnaMLduXhkEZ3Lc5QDXzyO17uo2wBXdktArHzAeadYNYXjXmzYwo2/Ad9wC2ycyPaFe9eC2Ck5qQCbRwZ1PwT/ih0okKSqPqpVSug3jjVrsps35h4Y95cQlGzJG4jEaEi4OlVKBiVoL2tRO6CPcxe2ivcNzAdKF8vl7D8IBrmHhvvgKvHOsznRKSXWM6hxUkO2k/nqy/rE/EV3j1JMn994xH+d8PXhMY40ZDhG4IPpII=
+	a5dsaDV8AYpfBAvoP/plHZZTCQqGHUb1NlXcMvkOGuxw+kzLuaM2qzO5B5Qw6fjB17q44sTh8vPWjEPds89g6WS8I1IpCwTd8LjZ8OP6BmpA0Azc8EhVjBg1sJBcfTL54PPzfJTuk2/pDVsV/LZhmgELj14V9MdID+L/Q26NtvjA6rvPzvJcE0nfJ1JtvtlLONZ7UnmMDf8abwqijSRwjM4NsjnvbcPFqYBNJEpWkwtIO5dgGKsCg4xM/XCwQsb6U3cJ5ah4ZZSyIOoZaK4t+wi1Ivpo3hEEDRxxV9JKOeXKUxzRjQG8b4VaC6PnxAFnSP1gOcDzxUxpPXH2OLg2415K0vqqz2t1fIwqNTl/7fafpWeufEmbYvNcMAwjt9FTupquYGVeSFZkR6TdqXUbWEzzzIhi/z9kPNcyxnfAW1A8fDfJ4OI+JXV1PDPqS7hOWkcN0JdK84Z3i+A17zTk3phk6Fx6Uvt5eiY8P+ZwKQe2+KxJYegJPcGWkovXH2uhA8pRphI3xcX5xEJst2j13PhQ8ENXGtsVqhSXHfAIOWShaAPD78IoyDXPNzKA47BrJfre3P+ScE5h9dRuNX+mo463IgmRbedtJBZEng3wlgDk613KwBnp3XCsDTvdKe/lHQOv8gU6SX5zvkCJs3qYyZPKkRZgZz5HeGpWHj2tec0SkmBEeY0Tzck40zyX55IEAzD1/hEOVBfawqGH98tdNEzyFnYwZ0x10jYi5SJzWfdmUvBsfQ6axlBdb3hLOECqqz41sqYCZvbTktLP+WLdWg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(396003)(136003)(39860400002)(186009)(451199024)(1800799009)(82310400011)(46966006)(36840700001)(40470700004)(8676002)(2906002)(40460700003)(7416002)(36756003)(86362001)(82740400003)(5660300002)(356005)(81166007)(40480700001)(36860700001)(47076005)(8936002)(4326008)(83380400001)(426003)(336012)(26005)(16526019)(41300700001)(1076003)(2616005)(7696005)(110136005)(6666004)(478600001)(316002)(966005)(54906003)(70586007)(70206006)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(396003)(376002)(136003)(346002)(39860400002)(186009)(82310400011)(1800799009)(451199024)(46966006)(40470700004)(36840700001)(41300700001)(40480700001)(36756003)(4326008)(8676002)(8936002)(40460700003)(5660300002)(26005)(16526019)(1076003)(70586007)(70206006)(110136005)(54906003)(316002)(86362001)(356005)(82740400003)(81166007)(36860700001)(47076005)(2906002)(426003)(336012)(478600001)(2616005)(83380400001)(7696005)(6666004)(7416002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2023 10:05:13.0549
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2023 10:05:17.1733
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 505cd8ad-5fd8-4917-e41e-08dbb2ae9711
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d3d4206-778a-432c-50a8-08dbb2ae9986
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9DC.namprd05.prod.outlook.com
+	CY4PEPF0000E9D9.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6857
-Subject: [virtio-dev] [RESEND VIRTIO GPU PATCH v3 0/1] Add new feature flag VIRTIO_GPU_F_FREEZE_S3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6447
+Subject: [virtio-dev] [RESEND VIRTIO GPU PATCH v3 1/1] virtio-gpu: Add new feature flag VIRTIO_GPU_F_FREEZE_S3
 
-Hi all,
-I hope you’ll forgive me if this disturb you. Since it has been almost two
-months since the latest patch was sent out, I didn't receive any reply, so I
-rebase the latest master branch and sent it again. I am looking forward to
-getting your response.
+When we suspend/resume guest on Xen, the display can't come back.
+This is because when guest suspended, it called into Qemu. Then
+Qemu destroyed all resources which is used for display. So that
+guest's display can't come back to the time when it was suspended.
 
-Best regards,
-Jiqian Chen
+To solve above problem, I added a new mechanism that when guest is
+suspending, it will notify Qemu, and then Qemu will not destroy
+resourcesi which are created by using commands
+VIRTIO_GPU_CMD_RESOURCE_CREATE_*.
 
-v3:
-Hi all,
-Thanks for Gerd Hoffmann's advice. V3 makes below changes:
-* Use enum for freeze mode, so this can be extended with more
-  modes in the future.
-* Rename functions and paratemers with "_S3" postfix.
-* Explain in more detail
+Due to that mechanism needs cooperation between guest and host,
+I need to add a new feature flag, so that guest and host can
+negotiate whenever freeze_S3 is supported or not.
 
-And latest version on QEMU and Linux kernel side:
-	QEMU: https://lore.kernel.org/qemu-devel/20230720120816.8751-1-Jiqian.Chen@amd.com
-	Kernel: https://lore.kernel.org/lkml/20230720115805.8206-1-Jiqian.Chen@amd.com/T/#t
-
-
-v2:
-Hi all,
-Thanks to Gerd Hoffmann for his suggestions. V2 makes below changes:
-* Elaborate on the types of resources.
-* Add some descriptions for S3 and S4.
-
-Link:
-https://lists.oasis-open.org/archives/virtio-comment/202307/msg00160.html
-V2 of Qemu patch:
-https://lore.kernel.org/qemu-devel/20230630070016.841459-1-Jiqian.Chen@amd.com/T/#t
-V2 of Kernel patch:
-https://lore.kernel.org/lkml/20230630073448.842767-1-Jiqian.Chen@amd.com/T/#t
-
-
-v1:
-Hi all,
-I am working to implement virtgpu S3 function on Xen.
-
-Currently on Xen, if we start a guest through Qemu with enabling virtgpu, and then suspend
-and s3resume guest. We can find that the guest kernel comes back, but the display doesn't.
-It just shown a black screen.
-
-That is because when guest was during suspending, it called into Qemu and Qemu destroyed
-all resources and reset renderer. This made the display gone after guest resumed.
-
-So, I add a mechanism that when guest is suspending, it will notify Qemu, and then Qemu will
-not destroy resources. That can help guest's display come back.
-
-As discussed and suggested by Robert Beckett and Gerd Hoffmann on v1 qemu's mailing list.
-Due to that mechanism needs cooperation between guest and host. What's more, as virtio drivers
-by design paravirt drivers, it is reasonable for guest to accept some cooperation with host to
-manage suspend/resume. So I request to add a new feature flag, so that guest and host can
-negotiate whenever freezing is supported or not.
-
-Link:
-https://lists.oasis-open.org/archives/virtio-comment/202306/msg00595.html
-V1 of Qemu patch:
-https://lore.kernel.org/qemu-devel/20230608025655.1674357-2-Jiqian.Chen@amd.com/
-V1 of Kernel patch:
-https://lore.kernel.org/lkml/20230608063857.1677973-1-Jiqian.Chen@amd.com/
-
-Jiqian Chen (1):
-  virtio-gpu: Add new feature flag VIRTIO_GPU_F_FREEZE_S3
-
+Signed-off-by: Jiqian Chen <Jiqian.Chen@amd.com>
+---
  device-types/gpu/description.tex | 42 ++++++++++++++++++++++++++++++++
  1 file changed, 42 insertions(+)
 
+diff --git a/device-types/gpu/description.tex b/device-types/gpu/description.tex
+index 4435248..1a137e7 100644
+--- a/device-types/gpu/description.tex
++++ b/device-types/gpu/description.tex
+@@ -37,6 +37,8 @@ \subsection{Feature bits}\label{sec:Device Types / GPU Device / Feature bits}
+   resources is supported.
+ \item[VIRTIO_GPU_F_CONTEXT_INIT (4)] multiple context types and
+   synchronization timelines supported.  Requires VIRTIO_GPU_F_VIRGL.
++\item[VIRTIO_GPU_F_FREEZE_S3 (5)] freezing virtio-gpu and keeping resources
++  alive is supported.
+ \end{description}
+ 
+ \subsection{Device configuration layout}\label{sec:Device Types / GPU Device / Device configuration layout}
+@@ -228,6 +230,9 @@ \subsubsection{Device Operation: Request header}\label{sec:Device Types / GPU De
+         VIRTIO_GPU_CMD_UPDATE_CURSOR = 0x0300,
+         VIRTIO_GPU_CMD_MOVE_CURSOR,
+ 
++        /* freeze mode */
++        VIRTIO_GPU_CMD_SET_FREEZE_MODE = 0x0400,
++
+         /* success responses */
+         VIRTIO_GPU_RESP_OK_NODATA = 0x1100,
+         VIRTIO_GPU_RESP_OK_DISPLAY_INFO,
+@@ -838,6 +843,43 @@ \subsubsection{Device Operation: cursorq}\label{sec:Device Types / GPU Device /
+ 
+ \end{description}
+ 
++\subsubsection{Device Operation: freeze_mode}\label{sec:Device Types / GPU Device / Device Operation / Device Operation: freeze_mode}
++
++\begin{lstlisting}
++typedef enum {
++  VIRTIO_GPU_FREEZE_MODE_UNFREEZE = 0,
++  VIRTIO_GPU_FREEZE_MODE_FREEZE_S3 = 3,
++} virtio_gpu_freeze_mode_t;
++
++struct virtio_gpu_set_freeze_mode {
++  struct virtio_gpu_ctrl_hdr hdr;
++  virtio_gpu_freeze_mode_t freeze_mode;
++};
++\end{lstlisting}
++
++\begin{description}
++
++\item[VIRTIO_GPU_CMD_SET_FREEZE_MODE]
++Notify freeze mode through controlq.
++Request data is \field{struct virtio_gpu_set_freeze_mode}.
++Response type is VIRTIO_GPU_RESP_OK_NODATA.
++
++This is added for S3 function in guest with virtio-gpu. When guest does
++S3, let it notify QEMU that virtio-gpu is in what freeze mode in
++\field{freeze_mode}. VIRTIO_GPU_FREEZE_MODE_FREEZE_S3 means guest is
++doing S3 and virtio-gpu will be freezed, VIRTIO_GPU_FREEZE_MODE_UNFREEZE
++means virtio-gpu can be used as usual. When virtio-gpu is freezed, QEMU
++will not destroy resources which are created by using commands
++VIRTIO_GPU_CMD_RESOURCE_CREATE_*, so that guest can use those resources
++to resume display.
++
++Note: this change is not enough to solve the problems of S4 function.
++QEMU may lose resources after hibernation. It needs more research and
++development. If S4 is supported in the future, it may need another
++feature flag here.
++
++\end{description}
++
+ \subsection{VGA Compatibility}\label{sec:Device Types / GPU Device / VGA Compatibility}
+ 
+ Applies to Virtio Over PCI only.  The GPU device can come with and
 -- 
 2.34.1
 
