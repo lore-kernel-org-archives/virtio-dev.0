@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13672-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13673-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 13251EE7FF4
-	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 09:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07B3DEE57DF
+	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 23AFE29FD8
-	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 09:32:59 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3957F613D9
+	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0E1ED98648C
-	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 09:32:59 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3159C9864A4
+	for <virtio-dev@archiver.kernel.org>; Mon, 11 Sep 2023 10:05:37 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id F0D2098635C; Mon, 11 Sep 2023 09:32:58 +0000 (UTC)
+	id 2180F98635C; Mon, 11 Sep 2023 10:05:37 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,259 +24,141 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E01149863B6;
-	Mon, 11 Sep 2023 09:32:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 018829863B6;
+	Mon, 11 Sep 2023 10:05:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10829"; a="381838780"
-X-IronPort-AV: E=Sophos;i="6.02,243,1688454000"; 
-   d="scan'208";a="381838780"
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10829"; a="736715221"
-X-IronPort-AV: E=Sophos;i="6.02,243,1688454000"; 
-   d="scan'208";a="736715221"
-Message-ID: <2b3e8da1-5cbb-f990-0c1d-c0e894a73486@intel.com>
-Date: Mon, 11 Sep 2023 17:32:49 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PpABdvO8agxJrIaRtc43eXhzLg6kWWy92yJJP65m4x4NEhaAglBXlZR6a0kpwesvNaws3V/lzTmsRpJelSBcZhCXqdp4DG3YJDCMXBlrrF2MvBh+b4jvG2fvAM87Np0VBbVLTGxGVYLuZLyiZ8UxtzH8FB1/5OZLfKRmCdtW1W2xWNhc7nelyf07vDMsvBZ6Gg/nUc7h/Cce5Jz56p4jooDAhUFL2zyRkAcF2ZetQ7a+YtxY49wa7SRhncPDPOnK1fuPqZHWJC2SBCyxK9lHZchd3YHrxxwdPMwgO8LWd2A7dah6oFMY1EzQceR19pQv9ApJmimBSJU4F4dZIqE72A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TdHpyzHH33H4Mlc6VS95k1EcgfV/b4jb7137aHaRxDE=;
+ b=ZG7PsWC6FjyefHT2wserml0BJqyYmTWMnF/oCIoQqZ8R7Ibnj31F++s0sJbgRSIZ6/EKmcY6iUt+Li5uybR10hMpkrHx6jPuWrIRtFMQ4csYgaET8HvqDxNZ/M1SFBiTFt+1lsznyiRqmPHx4S4LyzvDCEhymr/7YRL2znQIPXV2vaaPtui++7kTIACDtRAlca4xDLCO/dc0Osy9AI/VRiLjzsjEAzOr8nEMLYbDv57oNJ9q+FkTawDROdjShedZRSiScRIM5ZVWmGIV5zlGpP20ySBrRWqSl1cCiciZdt85oYNsc+vFX1yDWE+LSnpMnkbAQ1TZvnu9GA8YyN0ajw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+From: Jiqian Chen <Jiqian.Chen@amd.com>
+To: Gerd Hoffmann <kraxel@redhat.com>, =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?=
+	<marcandre.lureau@gmail.com>, Robert Beckett <bob.beckett@collabora.com>,
+	<virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>
+CC: <qemu-devel@nongnu.org>, <linux-kernel@vger.kernel.org>, "Stefano
+ Stabellini" <sstabellini@kernel.org>, =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?=
+	<roger.pau@citrix.com>, Alex Deucher <Alexander.Deucher@amd.com>, "Christian
+ Koenig" <Christian.Koenig@amd.com>, Stewart Hildebrand
+	<Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>,
+	Honglei Huang <Honglei1.Huang@amd.com>, Julia Zhang <Julia.Zhang@amd.com>,
+	Huang Rui <Ray.Huang@amd.com>, Jiqian Chen <Jiqian.Chen@amd.com>
+Date: Mon, 11 Sep 2023 18:04:29 +0800
+Message-ID: <20230911100430.1408168-1-Jiqian.Chen@amd.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.15.0
-Content-Language: en-US
-To: Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>,
- "eperezma@redhat.com" <eperezma@redhat.com>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "stefanha@redhat.com" <stefanha@redhat.com>,
- "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
- "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-References: <20230906081637.32185-1-lingshan.zhu@intel.com>
- <20230906081637.32185-6-lingshan.zhu@intel.com>
- <20230906043016-mutt-send-email-mst@kernel.org>
- <CACGkMEu4R_nUFmpoNesmjJ-PtoE5brpWh8NLruWhEWycm2K4yg@mail.gmail.com>
- <PH0PR12MB5481A50B1B13CE1756B98D0DDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtMmwWGJDYe5BLvLCcetThv-yfPR2QbphNuuh+bp-+ikg@mail.gmail.com>
- <PH0PR12MB5481ED8DC23DC6D42665FB8EDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <eb6c350e-1198-7d83-a553-99c9c8c21edc@intel.com>
- <PH0PR12MB5481760E00AD18DB8BF91636DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <ad1dd3a6-7c11-5c6b-b50f-d608ec027dcd@intel.com>
- <PH0PR12MB54819C4A4220712DCD57AD56DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <fff7720f-6019-bd87-b14b-c0bf996f3959@intel.com>
- <PH0PR12MB5481D11A7DF45292103D9290DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <88b8b14c-88d8-1f76-0e6e-7b5f334171f1@intel.com>
- <PH0PR12MB5481CBE0CDFF4ACD712F371CDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB5481CBE0CDFF4ACD712F371CDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH 5/5] virtio-pci: implement
- VIRTIO_F_QUEUE_STATE
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DC:EE_|PH7PR12MB6857:EE_
+X-MS-Office365-Filtering-Correlation-Id: 505cd8ad-5fd8-4917-e41e-08dbb2ae9711
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	zmcXSaFgUdMCvTQh57wrabvN18jb1lZrEAT6L5UFdftnhCP9wcEacYyROSGaC/ZhalgRTggT+ibip2Vh+AExziqT3LG5yxy07HmX0kQgcIayFbtNzg1UmO1cPJqOqIcw07PQT+TXz9oW7eeudJYD539umf98Z68yb66sKQCli6NdbAxMMM7lXFzsf8bavD63Y0KpvVbEojjacXKw6Q40neAhqg6jXNACaRYWH48S/ysOWdkmClCTP4qQyfD/rq9zHMiG8xH/It6Ku4gt4vIK6ILSMCxTkwgURn1YX6rapxJKoC+/hch+qKRz6GzrRnQbvR5h6vVnwSIpeqvg91xq3+VS/JTrp/YIM++dzYMadbFhszEYy1ruG7+poDcGD6DbhHZEt3XMSvf//s39rtwcwMlSicMlj0HTo5BiTWFicpkf6uFVlwwIexWUnjfH/VJw4V2b+YdvWJpkifo9AnHFSZwiQoSNv50+Ta/xn+lQSdqaH4Ho/lTEF0gwHcZyXesDt7QyY9hAIU/66MA/RSuCcg3q8oRr6svYUcjdtjUSMAYpAxUqa0pA7xl1ody6qq6pnaMLduXhkEZ3Lc5QDXzyO17uo2wBXdktArHzAeadYNYXjXmzYwo2/Ad9wC2ycyPaFe9eC2Ck5qQCbRwZ1PwT/ih0okKSqPqpVSug3jjVrsps35h4Y95cQlGzJG4jEaEi4OlVKBiVoL2tRO6CPcxe2ivcNzAdKF8vl7D8IBrmHhvvgKvHOsznRKSXWM6hxUkO2k/nqy/rE/EV3j1JMn994xH+d8PXhMY40ZDhG4IPpII=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(396003)(136003)(39860400002)(186009)(451199024)(1800799009)(82310400011)(46966006)(36840700001)(40470700004)(8676002)(2906002)(40460700003)(7416002)(36756003)(86362001)(82740400003)(5660300002)(356005)(81166007)(40480700001)(36860700001)(47076005)(8936002)(4326008)(83380400001)(426003)(336012)(26005)(16526019)(41300700001)(1076003)(2616005)(7696005)(110136005)(6666004)(478600001)(316002)(966005)(54906003)(70586007)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2023 10:05:13.0549
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 505cd8ad-5fd8-4917-e41e-08dbb2ae9711
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9DC.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6857
+Subject: [virtio-dev] [RESEND VIRTIO GPU PATCH v3 0/1] Add new feature flag VIRTIO_GPU_F_FREEZE_S3
+
+Hi all,
+I hope you’ll forgive me if this disturb you. Since it has been almost two
+months since the latest patch was sent out, I didn't receive any reply, so I
+rebase the latest master branch and sent it again. I am looking forward to
+getting your response.
+
+Best regards,
+Jiqian Chen
+
+v3:
+Hi all,
+Thanks for Gerd Hoffmann's advice. V3 makes below changes:
+* Use enum for freeze mode, so this can be extended with more
+  modes in the future.
+* Rename functions and paratemers with "_S3" postfix.
+* Explain in more detail
+
+And latest version on QEMU and Linux kernel side:
+	QEMU: https://lore.kernel.org/qemu-devel/20230720120816.8751-1-Jiqian.Chen@amd.com
+	Kernel: https://lore.kernel.org/lkml/20230720115805.8206-1-Jiqian.Chen@amd.com/T/#t
 
 
+v2:
+Hi all,
+Thanks to Gerd Hoffmann for his suggestions. V2 makes below changes:
+* Elaborate on the types of resources.
+* Add some descriptions for S3 and S4.
 
-On 9/11/2023 5:05 PM, Parav Pandit wrote:
->> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->> Sent: Monday, September 11, 2023 2:17 PM
-> [..]
->>> Hypervisor needs to do right setup anyway for using PCI spec define access
->> control and other semantics which is outside the scope of [1].
->>> It is outside primarily because proposal [1] is not migrating the whole "PCI
->> device".
->>> It is migrating the virtio device, so that we can migrate from PCI VF member
->> to some software based device too.
->>> And vis-versa.
->> Since you talked about P2P, IOMMU is basically for address space isolation. For
->> security reasons, it is usually suggest to passthrough all devices in one IOMMU
->> group to a single guest.
->>
-> IOMMU group is OS concept and no need to mix it here.
->
->> That means, if you want the VF to perform P2P with the PF there the AQ
->> resides, you have to place them in the same IOMMU group and passthrough
->> them all to a guest. So how this AQ serve other purposes?
-> A PF resides on the hypervisor. One or more VFs are passthrough to the VM.
-> When one wants to do nesting, may be one of the VF can do the role of admin for its peer VF.
-> Such extension is only needed for nesting.
->
-> For non-nesting being the known common case to us, such extension is not needed.
-So implement AQ on the "admin" VF? This require the HW reserve dedicated 
-resource for every VF?
-So expensive, Overkill?
+Link:
+https://lists.oasis-open.org/archives/virtio-comment/202307/msg00160.html
+V2 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230630070016.841459-1-Jiqian.Chen@amd.com/T/#t
+V2 of Kernel patch:
+https://lore.kernel.org/lkml/20230630073448.842767-1-Jiqian.Chen@amd.com/T/#t
 
-And a VF may be managed by the PF and its admin "vf"?
->
->>>>> QOS is such a broad term that is hard to debate unless you get to a
->>>>> specific
->>>> point.
->>>> E.g., there can be hundreds or thousands of VMs, how many admin vq
->>>> are required to serve them when LM? To converge, no timeout.
->>> How many RSS queues are required to reach 800Gbs NIC performance at what
->> q depth at what interrupt moderation level?
->>> Such details are outside the scope of virtio specification.
->>> Those are implementation details of the device.
->>>
->>> Similarly here for AQ too.
->>> The inherent nature of AQ to queue commands and execute them out of order
->> in the device is the fundamental reason, AQ is introduced.
->>> And one can have more AQs to do unrelated work, mainly from the hypervisor
->> owner device who wants to enqueue unrelated commands in parallel.
->> As pointed above insufficient RSS capabilities may cause performance
->> overhead, not not a failure, the device still stay functional.
-> If UDP packets are dropped, even application can fail who do no retry.
-UDP is not reliable, and performance overhead does not mean fail.
->
->> But too few AQ to serve too high volume of VMs may be a problem.
-> It is left for the device to implement the needed scale requirement.
-Yes, so how many HW resource should the HW implementation reserved
-to serve the worst case? Half of the board resource?
->
->> Yes the number of AQs are negotiable, but how many exactly should the HW
->> provide?
-> Again, it is outside the scope. It is left to the device implementation like many other performance aspects.
-I agree we can skip this issue, but the point is clear. and this is not 
-only a performance issue,
-this can lead to failed LM.
->
->> Naming a number or an algorithm for the ratio of devices / num_of_AQs is
->> beyond this topic, but I made my point clear.
-> Sure. It is beyond.
-> And it is not a concern either.
-It is, the user expect the LM process success than fail.
->
->>>>>> E.g., do you need 100 admin vqs for 1000 VMs? How do you decide the
->>>>>> number in HW implementation and how does the driver get informed?
->>>>> Usually just one AQ is enough as proposal [1] is built around
->>>>> inherent
->>>> downtime reduction.
->>>>> You can ask similar question for RSS, how does hw device how many
->>>>> RSS queues are needed. 😊
->>>>> Device exposes number of supported AQs that driver is free to use.
->>>> RSS is not a must for the transition through maybe performance overhead.
->>>> But if the host can not finish Live Migration in the due time, then
->>>> it is a failed LM.
->>> It can aborts the LM and restore it back by resuming the device.
->> aborts means fail
->>>>> Most sane sys admins do not migrate 1000 VMs at same time for
->>>>> obvious
->>>> reasons.
->>>>> But when such requirements arise, a device may support it.
->>>>> Just like how a net device can support from 1 to 32K txqueues at spec level.
->>>> The orchestration layer may do that for host upgrade or power-saving.
->>>> And the VMs may be required to migrate together, for example:
->>>> a cluster of VMs in the same subnet.
->>>>
->>> Sure. AQ of depth 1K can support 1K outstanding commands at a time for
->> 1000 member devices.
->> PCI transition is FIFO,
-> I do not understand what is "PCI transition".
-PCI data flow.
->
->> can depth = 1K introduce significant latency?
-> AQ command execution is not done serially. There is enough text on the AQ chapter as I recall.
-Then require more HW resource, I don't see difference.
->
->> And 1K depths is
->> almost identical to 2 X 500 queue depths, so still the same problem, how many
->> resource does the HW need to reserve to serve the worst case?
->>
-> You didn’t describe the problem.
-> Virtqueue is generic infrastructure to execute commands, be it admin command, control command, flow filter command, scsi command.
-> How many to execute in parallel, how many queues to have are device implementation specific.
-So the question is how many to serve the worst case? Does the HW vendor 
-need to reserve half of the board resource?
->
->> Let's forget the numbers, the point is clear.
-> Ok. I agree with you.
-> Number of AQs and its depth matter for this discussion, and its performance characterization is outside the spec.
-> Design wise, key thing to have the queuing interface between driver and device for device migration commands.
-> This enables both entities to execute things in parallel.
->
-> This is fully covered in [1].
-> So let's improve [1].
->
-> [1] https://lists.oasis-open.org/archives/virtio-comment/202309/msg00061.html
-I am not sure, why [1] is a must? There are certain issues discussed in 
-this thread for [1] stay unsolved.
 
-By the way, do you see anything we need to improve in this series?
->
->>>> Lets do not introduce new frangibility
->>> I don’t see any frangibility added by [1].
->>> If you see one, please let me know.
->> The resource and latency explained above.
->>>>>>>> Remember CSP migrates all VMs on a host for powersaving or upgrade.
->>>>>>> I am not sure why the migration reason has any influence on the design.
->>>>>> Because this design is for live migration.
->>>>>>> The CSPs that we had discussed, care for performance more and
->>>>>>> hence
->>>>>> prefers passthrough instead or mediation and don’t seem to be doing
->>>>>> any nesting.
->>>>>>> CPU doesnt have support for 3 level of page table nesting either.
->>>>>>> I agree that there could be other users who care for nested functionality.
->>>>>>>
->>>>>>> Any ways, nesting and non-nesting are two different requirements.
->>>>>> The LM facility should server both,
->>>>> I don’t see how PCI spec let you do it.
->>>>> PCI community already handed over this to SR-PCIM interface outside
->>>>> of the
->>>> PCI spec domain.
->>>>> Hence, its done over admin queue for passthrough devices.
->>>>>
->>>>> If you can explain, how your proposal addresses passthrough support
->>>>> without
->>>> mediation and also does DMA, I am very interested to learn that.
->>>> Do you mean nested?
->>> Before nesting, just like to see basic single level passthrough to see functional
->> and performant like [1].
->> I think we have discussed about this, the nested guest is not aware of the admin
->> vq and can not access it, because the admin vq is a host facility.
-> A nested guest VM is not aware and should not.
-> The VM hosting the nested VM, is aware on how to execute administrative commands using the owner device.
-The VM does not talk to admin vq either, the admin vq is a host 
-facility, host owns it.
->
-> At present for PCI transport, owner device is PF.
->
-> In future for nesting, may be another peer VF can be delegated such task and it can perform administration command.
-Then it may run into the problems explained above.
->
-> For bare metal may be some other admin device like DPU can do that role.
-So [1] is not ready
->
->>>> Why this series can not support nested?
->>> I don’t see all the aspects that I covered in series [1] ranging from flr, device
->> context migration, virtio level reset, dirty page tracking, p2p support, etc.
->> covered in some device, vq suspend resume piece.
->>> [1]
->>> https://lists.oasis-open.org/archives/virtio-comment/202309/msg00061.h
->>> tml
->> We have discussed many other issues in this thread.
->>>>>> And it does not serve bare-metal live migration either.
->>>>> A bare-metal migration seems a distance theory as one need side cpu,
->>>> memory accessor apart from device accessor.
->>>>> But somehow if that exists, there will be similar admin device to
->>>>> migrate it
->>>> may be TDDISP will own this whole piece one day.
->>>> Bare metal live migration require other components like firmware OS
->>>> and partitioning, that's why the device live migration should not be a
->> blocker.
->>> Device migration is not blocker.
->>> In-fact it facilitates for this future in case if that happens where side cpu like
->> DPU or similar sideband virtio admin device can migrate over its admin vq.
->>> Long ago when admin commands were discussed, this was discussed too
->> where a admin device may not be an owner device.
->> The admin vq can not migrate it self therefore baremetal can not be migrated
->> by admin vq
-> May be I was not clear. The admin commands are executed by some other device than the PF.
- From SW perspective, it should be the admin vq and the device it resides.
-> In above I call it admin device, which can be a DPU may be some other dedicated admin device or something else.
-> Large part of non virtio infrastructure at platform, BIOS, cpu, memory level needs to evolve before virtio can utilize it.
-virito device should be self-contained. Not depend on other components.
->
-> We don’t need to cook all now, as long as we have administration commands its good.
-> The real credit owner for detaching the administration command from the admin vq is Michael. :)
-> We like to utilize this in future for DPU case where admin device is not the PCI PF.
-> Eswitch, PF migration etc may utilize it in future when needed.
-Again, the design should not rely on other host components.
+v1:
+Hi all,
+I am working to implement virtgpu S3 function on Xen.
 
-And it is not about the credit, this is reliable work outcome
+Currently on Xen, if we start a guest through Qemu with enabling virtgpu, and then suspend
+and s3resume guest. We can find that the guest kernel comes back, but the display doesn't.
+It just shown a black screen.
+
+That is because when guest was during suspending, it called into Qemu and Qemu destroyed
+all resources and reset renderer. This made the display gone after guest resumed.
+
+So, I add a mechanism that when guest is suspending, it will notify Qemu, and then Qemu will
+not destroy resources. That can help guest's display come back.
+
+As discussed and suggested by Robert Beckett and Gerd Hoffmann on v1 qemu's mailing list.
+Due to that mechanism needs cooperation between guest and host. What's more, as virtio drivers
+by design paravirt drivers, it is reasonable for guest to accept some cooperation with host to
+manage suspend/resume. So I request to add a new feature flag, so that guest and host can
+negotiate whenever freezing is supported or not.
+
+Link:
+https://lists.oasis-open.org/archives/virtio-comment/202306/msg00595.html
+V1 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230608025655.1674357-2-Jiqian.Chen@amd.com/
+V1 of Kernel patch:
+https://lore.kernel.org/lkml/20230608063857.1677973-1-Jiqian.Chen@amd.com/
+
+Jiqian Chen (1):
+  virtio-gpu: Add new feature flag VIRTIO_GPU_F_FREEZE_S3
+
+ device-types/gpu/description.tex | 42 ++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+-- 
+2.34.1
 
 
 ---------------------------------------------------------------------
