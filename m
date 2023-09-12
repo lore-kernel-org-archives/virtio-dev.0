@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13685-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13686-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A4489CA0ED5
-	for <virtio-dev@archiver.kernel.org>; Tue, 12 Sep 2023 04:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D87BCCA0EC9
+	for <virtio-dev@archiver.kernel.org>; Tue, 12 Sep 2023 05:50:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0E92642A6D
-	for <virtio-dev@archiver.kernel.org>; Tue, 12 Sep 2023 04:18:39 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AAC9D79528
+	for <virtio-dev@archiver.kernel.org>; Tue, 12 Sep 2023 05:50:30 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E62E79864A5
-	for <virtio-dev@archiver.kernel.org>; Tue, 12 Sep 2023 04:18:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 95A559865B7
+	for <virtio-dev@archiver.kernel.org>; Tue, 12 Sep 2023 05:50:30 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C3EF4986485; Tue, 12 Sep 2023 04:18:38 +0000 (UTC)
+	id 84C2F983E27; Tue, 12 Sep 2023 05:50:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,145 +24,154 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B2A9D98648C
-	for <virtio-dev@lists.oasis-open.org>; Tue, 12 Sep 2023 04:18:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 698CF986485;
+	Tue, 12 Sep 2023 05:50:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: V8Tfu5WZMUCRftJ7D08DQQ-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694492315; x=1695097115;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SuvK1EMvT6qeTKE901d8UUQo7Wj7N1+c63nvel2kBMo=;
-        b=p2VMxUn/Ic4g0oJruUfPc9xY86UDH/kYjAJ9PT714NlNRqWZoSehwPE9lE7oHJMVQb
-         0YWJ6RaWs0nf08M1JF+L+4YR3kcQMUPRBjZfXHMdlxK1+tPj2zfPgng6xZcNG+yaXFM5
-         sU7H5WXbTb93YlzvGoEi3ddTeK9Ok+2ed+YVlNLB5SNRaPq0aTMjX5lCKVx7pXqwd41k
-         F7WLaGmdcDoMCPbKOJz55CNxATqkCDHTWdr8ONfYkUTyKCfat+4OqPgUTH+OVBBAoDar
-         HgjJ+x6Zn1k6KhpDuS2DGpn8gjOJ2taGbfLodd+SomcWolRuPdmG/KYO930x7AwLO4LK
-         V9Jg==
-X-Gm-Message-State: AOJu0YxOhb2ES5QFqTaqskhaiikcNezeHhrZipJaFNoaOoMaFP0miHMV
-	+psj7/+LYoRO1Vy5UUvzlz5A43u9d85MX4ln4EPfm5p+HmayCE4M6oIY1CaMHxudlnYOS3aYzu2
-	hdW7ucNTO30FuEq2gbEV53K0IrH9TBorv6zyQ/3wFZfWi
-X-Received: by 2002:a05:6512:488a:b0:501:b97a:9f50 with SMTP id eq10-20020a056512488a00b00501b97a9f50mr8576990lfb.65.1694492315072;
-        Mon, 11 Sep 2023 21:18:35 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IH1wh+5G9lxhX+H7/TzNIG885+g3NS4ja5cXlPJ3LCAIVjTXfjU++nh24LvhOBO7E3Z4XVa5QL5zuMzEnxJp64=
-X-Received: by 2002:a05:6512:488a:b0:501:b97a:9f50 with SMTP id
- eq10-20020a056512488a00b00501b97a9f50mr8576967lfb.65.1694492314662; Mon, 11
- Sep 2023 21:18:34 -0700 (PDT)
-MIME-Version: 1.0
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dP8zfe/XrIUC35i0RIY21kmFwLHqGnLJURYseRB+/s6FYZlbSqb3OD5sQ2eZx5+UyPxl803Krfe+XIm3FEBQNxN/xP5Brg6fn4PzXTeYmq6RTGPUCGqVogenhBifJMaA948V22zpMidDQWkk+qAdz9cjkqX2VKtOcuVHlb4JiImzPF6+RouRecsVtCD+dEAieYIRWufWofTfOz/lRiBEaxtY1ayczr+0s0Yms4JU61gFdGbqyudEUm38OJFHYoX0OeKIiAVG1QT3NDAwM51oIbHkcinPV57WxS6m+BoO+R7U1GmLGdngHqDWSNi8o+nTNB1mBcAx7yBXiKrtpLU6cQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0TiD0pVCCyiYgvPC+IxCZEVEJEILjoWoAeiK7KeZXDk=;
+ b=l7wZjAbCB/HLGTn2CV1ozwtJ2RHF1DFUCEzlls9qoYkznlWp7YSpwRSWNIGdo2JifVcappVz5AHumByXsjPoKuflxOraPeJuF4rgJNM4dCjzqrqrMR5qL1wFbpQR+PCRvIjqw6NTABiMM1K071y7Tf08BSgPOjl521W74EsCfMY34Xf1bwxsFWG6FwxOgHAUeMk9aQuyvg/FLLJGhcHCfe3sb+CP5X9iiV0VwA19568REfv+cmSR/TtKsvoMPVxOF2AAaPPXmLMhNPEBIbXmg5iNN30QrXhnBee5jXfOEgCuvyOTs5KnX6fZ3Hw/ec4mw2nyjfBzL5pTQUTLZWFgyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: Jason Wang <jasowang@redhat.com>
+CC: "Zhu, Lingshan" <lingshan.zhu@intel.com>, "Michael S. Tsirkin"
+	<mst@redhat.com>, "eperezma@redhat.com" <eperezma@redhat.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>, "stefanha@redhat.com"
+	<stefanha@redhat.com>, "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>
+Thread-Topic: [virtio-comment] [PATCH 5/5] virtio-pci: implement
+ VIRTIO_F_QUEUE_STATE
+Thread-Index:
+ AQHZ4JzDvq0yIsiJnUeYIlWmAxqqv7AU9yyAgAASRHCAAChCgIAAAkbQgAAFdACAAACHUIAABQ0AgAAAWWCAAArYgIAAAHNwgAANI4CAAABkAIAADHeAgAAlTICAAQuGgIAAIkIQ
+Date: Tue, 12 Sep 2023 05:50:05 +0000
+Message-ID:
+ <PH0PR12MB5481B44B636DA997885AABBEDCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20230906081637.32185-1-lingshan.zhu@intel.com>
- <20230906081637.32185-6-lingshan.zhu@intel.com> <20230906043016-mutt-send-email-mst@kernel.org>
+ <20230906081637.32185-6-lingshan.zhu@intel.com>
+ <20230906043016-mutt-send-email-mst@kernel.org>
  <CACGkMEu4R_nUFmpoNesmjJ-PtoE5brpWh8NLruWhEWycm2K4yg@mail.gmail.com>
  <PH0PR12MB5481A50B1B13CE1756B98D0DDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtMmwWGJDYe5BLvLCcetThv-yfPR2QbphNuuh+bp-+ikg@mail.gmail.com> <PH0PR12MB5481ED8DC23DC6D42665FB8EDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481ED8DC23DC6D42665FB8EDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 12 Sep 2023 12:18:23 +0800
-Message-ID: <CACGkMEt9ATuU_OwtE_9rF1XHKCd9GavWCHx6_dFXCZibMKzJjA@mail.gmail.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Zhu Lingshan <lingshan.zhu@intel.com>, 
-	"eperezma@redhat.com" <eperezma@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>, 
-	"stefanha@redhat.com" <stefanha@redhat.com>, 
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, 
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH 5/5] virtio-pci: implement VIRTIO_F_QUEUE_STATE
+ <CACGkMEtMmwWGJDYe5BLvLCcetThv-yfPR2QbphNuuh+bp-+ikg@mail.gmail.com>
+ <PH0PR12MB5481ED8DC23DC6D42665FB8EDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <eb6c350e-1198-7d83-a553-99c9c8c21edc@intel.com>
+ <PH0PR12MB5481760E00AD18DB8BF91636DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <ad1dd3a6-7c11-5c6b-b50f-d608ec027dcd@intel.com>
+ <PH0PR12MB54819C4A4220712DCD57AD56DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <fff7720f-6019-bd87-b14b-c0bf996f3959@intel.com>
+ <PH0PR12MB5481D11A7DF45292103D9290DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <88b8b14c-88d8-1f76-0e6e-7b5f334171f1@intel.com>
+ <PH0PR12MB5481CBE0CDFF4ACD712F371CDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <2b3e8da1-5cbb-f990-0c1d-c0e894a73486@intel.com>
+ <PH0PR12MB5481E8114A659954251F17DCDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEtAe3j+A=gNEOJiZF8rcJnT-zw7Xg67LLM92FZCm0XqyQ@mail.gmail.com>
+In-Reply-To:
+ <CACGkMEtAe3j+A=gNEOJiZF8rcJnT-zw7Xg67LLM92FZCm0XqyQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|SN7PR12MB7370:EE_
+x-ms-office365-filtering-correlation-id: ba275988-73b8-4589-b5e6-08dbb3541d51
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ lG5xAYWjGmarNt4BtJB1RhkRGOcyFv8B/9DYQdNTKYTT00sLvUgYQBi4Xt59FFhwhWHHsN6hf27yHqOZmEAjQJQjlxmly1Hq4EvFCv6O+O3NjR4+BmfqEIk2LKou9WifFWdAJkEUROlSy0kkg9AplKDmH4afWIovW2i9aQhohuZDbLwWaTgyqEmmzM2rmXzORUWgESKI7nUYQ6nH0jnK2mA6NGKTmEjZyVIICzQvJpKlAUJnoghGEsmypow7cjl+YsK474PYRcwPlSp6h4/VYHpPZYAvEdns77Bd0eyV9MSAa/ei1VowK9n7Cz4GK+Vt/GXVOPh6dHcR4iAnprgNjVAMsAZkIkIMBjEj5MDM8mO14MriMj9mQxs9/+glAzYZONZ/wEum5mb38fyzOPvad//DwRTY0dE3x7HJL1ZKQSAZLJTZSfH6Rwdmvf/HTF4pl86OJjcryYmbT12k+BzhBiKo0+tVzvyXKrsmiZog/it5NdAmWaAg4Kd5r4oRiiv6Zzp567ZVsieiA33e8pZudTOGjZhq/DDnHCCKcR9V3zJQTy0KKCF8NYBPocEvaMXy+ymcMcGo3UJOwxYquc/Vy5xEHMNQq0NSUiUAc8j984y1bxcRMGYi/0iX/sItXdb3
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(346002)(376002)(136003)(39860400002)(451199024)(1800799009)(186009)(55016003)(52536014)(8676002)(54906003)(4326008)(6916009)(66446008)(66556008)(66946007)(8936002)(41300700001)(2906002)(316002)(5660300002)(76116006)(64756008)(66476007)(53546011)(7696005)(9686003)(71200400001)(38100700002)(6506007)(38070700005)(122000001)(26005)(83380400001)(86362001)(33656002)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?L3ZudkQxanVtdy9DZ25JN3IyR0xjZURWNXprS3dQRk91UzF3VzJIaGlLemtD?=
+ =?utf-8?B?bmFYSFpLcGV0U3hPUzN5UTJPbmdaK1JIUC82WENtOHVHYmpJb3U1a3E4UEpZ?=
+ =?utf-8?B?c0JUMG5MeDB6ajJ1VVZRQWVLYXpuMVUyOVNtQ0JTdXNLckR3V2pNdzlTall6?=
+ =?utf-8?B?NEMweTBKdlVOQnRXMTBUSnRFYUg3NHB1dVRaQ3Q3Z0pWNlA0bU5teUxyMTBW?=
+ =?utf-8?B?L2ZoZlptb0M3eUNBcTZjMDFXSW5za24wVFkrbjlHOEs2cWVMcTdNSEFhUit5?=
+ =?utf-8?B?ZUV5TVV5VGtNbVF1V3A0UEFhVGl2UGpUTVVZb2Vhd1B1dDEyVXpNajVVMG5m?=
+ =?utf-8?B?Y3grRG5UbVlFelQ0eHFpeTJqRWhWRFFVcWo0N0YxNDhUTEo3UmxCazJ6Mzl2?=
+ =?utf-8?B?YmlCVUtoQnErbEY5M0xPb2Vud1NoczMxbG5TT0hNV1BxMVZEZHA2R1Bzaktk?=
+ =?utf-8?B?V1U2OUhFSEV6SERxdEJ2Zk85eHd1R0puUk5FODdsM240dE44cmdCbTV5Wllx?=
+ =?utf-8?B?aVNHdFVOamtkUkNpdmVVR0pJS0UyTVhxVlEyTU0rRVl6ZllaZ0NmanpQWlZQ?=
+ =?utf-8?B?RkhlaFFVTURoOURXUkhzT0xnSVN6bXRGSmtiQlB0aFoxOFgrMDIyKzFIZjNr?=
+ =?utf-8?B?MERVQXVUOVdJc1JjeTVNUVYvVGo4c0tVOXhTbVFQa3lTM0FQWlg0QzZnL1hZ?=
+ =?utf-8?B?MVhRTVVUTTFVeUNjdkYyZ2Y3S3orVk9nRC96eWZnVFYvZkxLRVVFQkxuVjht?=
+ =?utf-8?B?czVVdnViS3E4NVU5VkV4clgwUnI3bUxUaDJQYmF0a1Z1czZ6K1VibEFmK1E5?=
+ =?utf-8?B?VkNxS09RQW5EbXI2M21YcVEyNjhWTFBmMUZuNENPa1JsWTBOSXRKZSt1bHZk?=
+ =?utf-8?B?UUhSU1lZWkhwMzlKTGhabTVJRWhiVWFjdzZTVEEvbjIvc1lTUjlDSFZiZUZP?=
+ =?utf-8?B?UU1SaTJJVU9sTHVaWGVQZUxUM2phRTF0Um1iUld1cXIvUHlUb1IweEV6QnNj?=
+ =?utf-8?B?TWM2bVdzSE1VdHc1SElZVEtYWkVvTS84cEdvMk1sY3RQMFR1a1h5QThKMHRv?=
+ =?utf-8?B?OVdDUEVoR3AxUU91RU1MVGdlc0d1NFJVeHE2TnczVnlqZHNxRVNFbGNnMWly?=
+ =?utf-8?B?bVFpVFRVczk4SVlGbU9LRE51Q3Y5NE53RW15QlhrQVJlakN5TzVkL1ZZNy9V?=
+ =?utf-8?B?OEg4WnVVL3FIcmZSQWlmYVFzbU1BTzRSYmk5TmJGeFpJSm1GZGt4Mkg2Z01a?=
+ =?utf-8?B?eUs5b1Q3cXpacmo5emZpREF6cGtSWkQ5dmRvdklqajlSMlYvUmNFTmwyVFRw?=
+ =?utf-8?B?YThrZFBzNmhRMFN6RnREcGpscG5ld3MwbUNEVDdUK01zcTRiSHlnTEpNbVVN?=
+ =?utf-8?B?bmtXdlQrckZwOHAxU1BjOENXVjZHd3lxMGMzazI5UUlqQWh2YmRJZTZUTXlz?=
+ =?utf-8?B?NzZlbkxKeXBZcWJ1QjRFS1EyUUZ2QjBGbGZGeEJVQlU2K0xxQXlRUEhrakNt?=
+ =?utf-8?B?SUR3RElIaHNFcnVPM0tIMWtoK0tnZHdhcmhGeGZmenlSUmFtalA0NVVRQUVw?=
+ =?utf-8?B?WnZRSDlFMUw4akVSc0Yyb0FUOTVxZnBJQUZIZEFxNHpwRk5qU0huc1dsS3d1?=
+ =?utf-8?B?V3FwMFIxZ1RzbFNxMjU4WWRhSFlnUzNFeGhYMUZVVWRXOHBJZXJndEJGTzNZ?=
+ =?utf-8?B?Njk0Q1V3MEpBdGNZWExNcFdaMkNRQWlhaXZxeGhkOGI4b00xYXZTK2NJZGx4?=
+ =?utf-8?B?WTVQYlJsZXFNN1FGZXBLUm9LU0kzSTQ3R1pYYUc2RU9sa0R4ODErUmdmY3FR?=
+ =?utf-8?B?RUlYMTVsaFJLMGh5bFlqQTkrcEhJNHJDbmh2R0hoUzNLelNqZVRTQVBLVHF6?=
+ =?utf-8?B?TlZ2MXBZZk9vWG9LZFdpc3ZNcnAxcHozME1HMUVzOXhQcUhYWHJrUy9ib0Vk?=
+ =?utf-8?B?QVlndkkyM0l4RmNXUkJaaUJPeUpKR2hIYjVZVnIzS2xwTVc5dGhIRTdxRGxY?=
+ =?utf-8?B?TytiejJkL0I0bDg4Mlk5bW5rR1oybGhmMFl0VjduSm5UREdxV1pTQWNjV0lC?=
+ =?utf-8?B?eFN5K3Q0UXRKSlZHc1FHay9RRUVUL2FxbVRXU0tYSkk2Qml6cEQ2bHNOOE9E?=
+ =?utf-8?Q?fERU=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba275988-73b8-4589-b5e6-08dbb3541d51
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2023 05:50:05.3543
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kzQMzR9xX8CW6I/FhU5Iaq9AiKR1XUnBBYc7cdbmV2ab+bgvarayTKVsYSrg1xU34351JLzxnnmw9PbTNUo+Eg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7370
+Subject: [virtio-dev] RE: [virtio-comment] [PATCH 5/5] virtio-pci: implement
+ VIRTIO_F_QUEUE_STATE
 
-On Mon, Sep 11, 2023 at 2:47=E2=80=AFPM Parav Pandit <parav@nvidia.com> wro=
-te:
->
->
->
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Monday, September 11, 2023 12:01 PM
-> >
-> > On Mon, Sep 11, 2023 at 12:12=E2=80=AFPM Parav Pandit <parav@nvidia.com=
-> wrote:
-> > >
-> > > Hi Michael,
-> > >
-> > > > From: virtio-comment@lists.oasis-open.org
-> > > > <virtio-comment@lists.oasis- open.org> On Behalf Of Jason Wang
-> > > > Sent: Monday, September 11, 2023 8:31 AM
-> > > >
-> > > > On Wed, Sep 6, 2023 at 4:33=E2=80=AFPM Michael S. Tsirkin <mst@redh=
-at.com>
-> > wrote:
-> > > > >
-> > > > > On Wed, Sep 06, 2023 at 04:16:37PM +0800, Zhu Lingshan wrote:
-> > > > > > This patch adds two new le16 fields to common configuration
-> > > > > > structure to support VIRTIO_F_QUEUE_STATE in PCI transport laye=
-r.
-> > > > > >
-> > > > > > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> > > > >
-> > > > >
-> > > > > I do not see why this would be pci specific at all.
-> > > >
-> > > > This is the PCI interface for live migration. The facility is not s=
-pecific to PCI.
-> > > >
-> > > > It can choose to reuse the common configuration or not, but the
-> > > > semantic is general enough to be used by other transports. We can
-> > > > introduce one for MMIO for sure.
-> > > >
-> > > > >
-> > > > > But besides I thought work on live migration will use admin queue=
-.
-> > > > > This was explicitly one of the motivators.
-> > > >
-> > > Please find the proposal that uses administration commands for device
-> > migration at [1] for passthrough devices.
-> > >
-> > > [1]
-> > > https://lists.oasis-open.org/archives/virtio-comment/202309/msg00061.=
-h
-> > > tml
-> >
-> > This proposal couples live migration with several requirements, and suf=
-fers from
-> > the exact issues I've mentioned below.
-> >
-> It does not.
-> Can you please list which one?
->
-> > In some cases, it's even worse (coupling with PCI/SR-IOV, second state =
-machine
-> > other than the device status).
-> >
-> There is no state machine in [1].
-
-Isn't the migration modes of "active, stop, freeze" a state machine?
-
-> It is not coupled with PCI/SR-IOV either.
-> It supports PCI/SR-IOV transport and in future other transports too when =
-they evolve.
->
-
-For example:
-
-+struct virtio_dev_ctx_pci_vq_cfg {
-+ le16 vq_index;
-+        le16 queue_size;
-+        le16 queue_msix_vector;
-+ le64 queue_desc=C3=8D
-+        le64 queue_driver=C3=8D
-+        le64 queue_device=C3=8D
-+};
-+\end{lstlisting}
-
-And does this mean we will have commands for MMIO and other transport?
-(Most of the fields except the msix are general enough). And it's just
-a partial implementation of the queue related functionality of the
-common cfg, so I wonder how it can work.
-
-Thanks
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1ZXNk
+YXksIFNlcHRlbWJlciAxMiwgMjAyMyA5OjE0IEFNDQo+IA0KPiBPbiBNb24sIFNlcCAxMSwgMjAy
+MyBhdCA3OjUw4oCvUE0gUGFyYXYgUGFuZGl0IDxwYXJhdkBudmlkaWEuY29tPiB3cm90ZToNCj4g
+Pg0KPiA+ID4gRnJvbTogWmh1LCBMaW5nc2hhbiA8bGluZ3NoYW4uemh1QGludGVsLmNvbT4NCj4g
+PiA+IFNlbnQ6IE1vbmRheSwgU2VwdGVtYmVyIDExLCAyMDIzIDM6MDMgUE0NCj4gPg0KPiA+ID4g
+QnkgdGhlIHdheSwgZG8geW91IHNlZSBhbnl0aGluZyB3ZSBuZWVkIHRvIGltcHJvdmUgaW4gdGhp
+cyBzZXJpZXM/DQo+ID4NCj4gPiBBZG1pbiBjb21tYW5kcyBmb3IgcGFzc3Rocm91Z2ggZGV2aWNl
+cyBvZiBbMV0gaXMgY29tcHJlaGVuc2l2ZSBwcm9wb3NhbA0KPiBjb3ZlcmluZyBhbGwgdGhlIGFz
+cGVjdHMuDQo+IA0KPiBXaGF0IGRvIHlvdSBtZWFuIGJ5ICJhbGwgdGhlIGFzcGVjdHMiPw0KVGhl
+eSBhcmUgY292ZXJlZCBpbiB0aGUgcHJvcG9zYWwgY292ZXIgbGV0dGVyLg0KMS4gc3RhdGUgbWln
+cmF0aW9uLCBwMnAsIGRpcnR5IHBhZ2UgdHJhY2tpbmcsIGxvd2VyIGRvd250aW1lLCBmbHIsIGRl
+dmljZSByZXNldCwgbm8gZXh0cmEgbWVkaWF0aW9uIHJlcXVpcmVtZW50Lg0KDQo+IA0KPiBPZiBj
+b3Vyc2UgaXQgY2FuJ3QgaGFuZGxlIG5lc3Rpbmcgd2VsbCwgcGFzc3Rocm91Z2ggZG9lc24ndCB3
+b3JrIHdoZW4geW91cg0KPiBoYXJkd2FyZSBoYXMgTiBsZXZlbHMgYWJzdHJhY3Rpb25zIGJ1dCBu
+ZXN0aW5nIGlzIE0gbGV2ZWxzLiBUcmFwIGFuZCBlbXVsYXRpb24NCj4gaXMgYSBtdXN0Lg0KT25l
+IGNhbiBkZWxpY2F0ZSB0aGUgd29yayB0byBvdGhlciBWRiBmb3IgcHVycG9zZSBvZiBuZXN0aW5n
+Lg0KDQpPbmUgY2FuIGJ1aWxkIGluZmluaXRlIGxldmVsIG9mIG5lc3RpbmcgdG8gbm90IGRvIHBh
+c3N0aHJvdWdoLCBhdCB0aGUgZW5kIHVzZXIgYXBwbGljYXRpb25zIHJlbWFpbnMgc2xvdy4NClNv
+IGZvciBzdWNoIE4gYW5kIE0gYmVpbmcgPiAxLCBvbmUgY2FuIHVzZSBzb2Z0d2FyZSBiYXNlIGVt
+dWxhdGlvbiBhbnl3YXkuDQoNCj4gDQo+IEFuZCBleHBvc2luZyB0aGUgd2hvbGUgZGV2aWNlIHRv
+IHRoZSBndWVzdCBkcml2ZXJzIHdpbGwgaGF2ZSBzZWN1cml0eQ0KPiBpbXBsaWNhdGlvbnMsIHlv
+dXIgcHJvcG9zYWwgaGFzIGRlbW9uc3RyYXRlZCB0aGF0IHlvdSBuZWVkIGEgd29ya2Fyb3VuZCBm
+b3INClRoZXJlIGlzIG5vIHNlY3VyaXR5IGltcGxpY2F0aW9ucyBpbiBwYXNzdGhyb3VnaC4NCg0K
+PiBGTFIgYXQgbGVhc3QuDQpJdCBpcyBhY3R1YWxseSB0aGUgb3Bwb3NpdGUuDQpGTFIgaXMgc3Vw
+cG9ydGVkIHdpdGggdGhlIHByb3Bvc2FsIHdpdGhvdXQgYW55IHdvcmthcm91bmRzIGFuZCBtZWRp
+YXRpb24uDQoNCj4gDQo+IEZvciBub24gc3RhbmRhcmQgZGV2aWNlIHdlIGRvbid0IGhhdmUgY2hv
+aWNlcyBvdGhlciB0aGFuIHBhc3N0aHJvdWdoLCBidXQgZm9yDQo+IHN0YW5kYXJkIGRldmljZXMg
+d2UgaGF2ZSBvdGhlciBjaG9pY2VzLg0KDQpQYXNzdGhyb3VnaCBpcyBiYXNpYyByZXF1aXJlbWVu
+dCB0aGF0IHdlIHdpbGwgYmUgZnVsZmlsbGluZy4NCklmIG9uZSB3YW50cyB0byBkbyBzcGVjaWFs
+IG5lc3RpbmcsIG1heSBiZSwgdGhlcmUuDQpJZiBib3RoIGNvbW1hbmRzIGNhbiBjb252ZXJnZSBp
+dHMgZ29vZCwgaWYgbm90LCB0aGV5IGFyZSBvcnRob2dvbmFsIHJlcXVpcmVtZW50cy4NCg0K
 
