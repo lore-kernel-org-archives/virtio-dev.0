@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13728-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13729-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8FBB5EE49B7
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 02:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22E8BCA0ED1
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 04:01:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id EF978F3F4E
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 02:23:13 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5DBAB42A99
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 04:01:30 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E25D5986662
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 02:23:13 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 58F70986646
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 04:01:30 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D5F5A986637; Wed, 13 Sep 2023 02:23:13 +0000 (UTC)
+	id 45E2B98612D; Wed, 13 Sep 2023 04:01:30 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,130 +24,234 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C0EFF986630;
-	Wed, 13 Sep 2023 02:23:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 30171986630;
+	Wed, 13 Sep 2023 04:01:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jp2AxD3qHNshoFr20nRoqJLauY/1iJVgOARLo2R+b/hxW6f9xEaZ1yHLuA53nLDLQktdbGMOJFWzt0w9qA/FIHN1bhfnApKJlKbZQjvQ+ZMFGJt9fya/sw5aiDx0tizg+vnUmT91COSKXlPLEyTHfJqHnUa5HLb69YYHtHx3/2NHyWf9pZ9UJ9D1ZMtc7XzVEsnRnXCtGI0fvd4qz/rO4auyw/xSxzETYuYLJh+mOPgHh+XDVckTW04DX6kqTla4igL+Fh4pKjlvBeNZ29HLwIfGK8LOLP7TjMPAjuTNH/m49xwTsS1mkCiW68CuiPmGaMjjFRasv6mRvAygejq6Dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pgfJYZCPAve3NlmxBKcxsyo63dcNfYC50DGQXZieEnk=;
- b=UFAl7gUErSPk9jlkGUvRL/GSCRiP+njgZeWrGYKlYtUOpemLm64L+iTDU5PPGWLOWQWtil4vO1WPP0WZiUMRXcQXnEDbOnrnc3nH2gXxztUqeltjgv2vC3tGcP4+BJXupsJtCml9C6+PppgMGJSqdoXjwjVliVJCC95+otO/IsRSSO8HHKKzp/lY0SrWNcSxkCnBPXJNlJrhEVvnb1CfX9dEoQ+TVmMqsDhx3Kw45QcWP9/eDgdmcTjFafdMINVSvmdmSx2+sxeY+uaVCvcjHc3banKD70ul4nxAOlVZZVObIgWNwh8VUNwAEx0qMprWzttUpKUdafg2X7H5L7Dx8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Zhu, Lingshan" <lingshan.zhu@intel.com>, Jason Wang <jasowang@redhat.com>
-CC: "Michael S. Tsirkin" <mst@redhat.com>, "eperezma@redhat.com"
-	<eperezma@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"stefanha@redhat.com" <stefanha@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Thread-Topic: [virtio-comment] [PATCH 5/5] virtio-pci: implement
- VIRTIO_F_QUEUE_STATE
-Thread-Index:
- AQHZ4JzDvq0yIsiJnUeYIlWmAxqqv7AU9yyAgAASRHCAAChCgIAAAkbQgAAFdACAAACHUIAABQ0AgAAAWWCAAArYgIAAAHNwgAANI4CAAABkAIAADHeAgAAlTICAAQzqAIAAIezQgAANVgCAAALLcIAAC5qAgAAEIzCAABbWAIAAAKAAgAAF4bCAAAyxAIABDe5g
-Date: Wed, 13 Sep 2023 02:23:06 +0000
-Message-ID:
- <PH0PR12MB5481EF64F3BA3D13C34D016EDCF0A@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="378469770"
+X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
+   d="scan'208";a="378469770"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="990753446"
+X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
+   d="scan'208";a="990753446"
+Message-ID: <7424d2ae-2366-882f-bd84-04ee5714764b@intel.com>
+Date: Wed, 13 Sep 2023 12:01:15 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.0
+Content-Language: en-US
+To: Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+ "eperezma@redhat.com" <eperezma@redhat.com>,
+ "cohuck@redhat.com" <cohuck@redhat.com>,
+ "stefanha@redhat.com" <stefanha@redhat.com>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 References: <20230906081637.32185-1-lingshan.zhu@intel.com>
- <PH0PR12MB5481D11A7DF45292103D9290DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <88b8b14c-88d8-1f76-0e6e-7b5f334171f1@intel.com>
  <PH0PR12MB5481CBE0CDFF4ACD712F371CDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <2b3e8da1-5cbb-f990-0c1d-c0e894a73486@intel.com>
- <PH0PR12MB5481E8114A659954251F17DCDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <17514b93-2da4-42b3-a5bf-b96358a7a875@intel.com>
- <PH0PR12MB5481F236858D5CD97EF55732DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <9fabd346-9b6f-a727-3de8-813ec3570772@intel.com>
- <PH0PR12MB5481468378DC1E5491A5427CDCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <2baee870-bf38-5d83-0543-1d0a68f8e651@intel.com>
- <PH0PR12MB5481A26B62962979C19280D2DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <8bd1c228-856a-9454-752d-750997c4f4db@intel.com>
- <4c195683-0eb8-5e92-d97a-217cfa8af760@intel.com>
- <PH0PR12MB5481860AEAD92C74A5BC19F6DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <f132cd22-e2e1-971a-894a-d62aa7ca6334@intel.com>
-In-Reply-To: <f132cd22-e2e1-971a-894a-d62aa7ca6334@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CY8PR12MB8338:EE_
-x-ms-office365-filtering-correlation-id: c3a527d3-55fa-406f-f808-08dbb4005d50
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 5YxIGZM5mn7TS2v1HV2qAjiBkp650ho4DD+vECLSoBkvQZUEfcLA5ZAZc6LLpdEfSIFTyGYvt0087/cU7+XjlPOZm4nU/67gd3+t2bDjXaUwWiYPiZlmECWqBs3jvdAN/mUJY+L29K+U8T8b9Wf0RZGE3ugzwOWvilQrva49swQ5A3xJYhveRDFI5E1KSx/k1VHvQqe9mae4raqiPCZaitDs+WUFF2wVQKOBceOtU34zkEllq7smxIiX7FDD2DYDBohS4EzND6GlxuRr+t5PXD0OETAZZkxkoQ+wTdBA1Hv/hsv3IwwPM/xMPoPfwTDd0+9OxW5IHgxipE+BK4YkvTTldKdOFuW/PygRBS3WCweDQehmvEZ/jk5haS//+S676+8Snd+1zZu/IUR5P7LhV4Ehhas+a842KbeNDKYAebDwANEaM1uxxQAs7JccO1LJt12X6+vIrPnV+eJ0OuiDYpV1qc74r6rwenTDOypJKLZIZn7n2P67KIDMnTX/jZuOrOyreodQiySvOAEMlQ2domjunlJJ1wZG1R5COTwT53Kn/XqtRpP1DxRIP4eatfV0KOLxRcDqRj5UlNbEhfkTfqSlr7PwLcWllsCHbYZGnktcAuRHPQr32ew8Ntnjj2dw3wTwEaVgz1pThRZYIedsUddnuXeHAkV58Fq6kQMMEn8=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(396003)(376002)(136003)(346002)(1800799009)(451199024)(186009)(8676002)(41300700001)(8936002)(4326008)(110136005)(4744005)(54906003)(66556008)(52536014)(5660300002)(66476007)(76116006)(64756008)(66446008)(66946007)(316002)(2906002)(122000001)(38100700002)(83380400001)(38070700005)(55016003)(26005)(966005)(86362001)(478600001)(71200400001)(9686003)(7696005)(33656002)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?K1FsdW9ldmg3ZHh6NEQyNmNXU21Kb21qOWpCZUI3U1lsYXdiei9CdmVsWlpL?=
- =?utf-8?B?VVczU2YreDYzaFpOS283aGVIa08zMUQ3K2pmU1QwU0p0eDhPaG9KaUdiaGNH?=
- =?utf-8?B?dzA0U0ZXNEVPWTFDZWJkc1c4ZmJSaGJCYkVyUlNFck1PMnEyVDMwODcwWFFY?=
- =?utf-8?B?UU9TM0t0MTNMWXlsRGRSckJvQkJEV1JSa1hPUEhBL3RLbzN1dXQ2dmhaYUNK?=
- =?utf-8?B?c1NFK01VVWd1UmJha2FzbWppK21oQjk4ZFdDcTZac1dCWmJBSUxxOW9VZzVp?=
- =?utf-8?B?SG9yVTdWRCtFendsSml2UFViZVpSclRtR0Rwb01tOU9wZjJENmE1Z01qUHp3?=
- =?utf-8?B?MHVBMVZJWW1wUWFwaTc3eUg1VzBHUVNFZjAzL2djMnp5QkZYVUVWcGFyNFJI?=
- =?utf-8?B?ekx3clBPZk9heWhoV2dCT1RuV21RZjE5MnN1ckphalZTbnJiL3FDZlpwdDJr?=
- =?utf-8?B?NHhtQmx3dDhSTzcyY0p6cDBTUmN6ZlBISzdtUnBPZWJnditUcXU0L1J6YjFk?=
- =?utf-8?B?WHdTcE9rcGlZSUhLK09NMDRpM2tFNmM2eW0rZGt2VEN4bXhKNSszYk1KQWt5?=
- =?utf-8?B?Q2dxVmJkODNYRDhCckpDQndTUlhoakhUV2dqNXdwM1Jxb3NPNHZkQytUdVQy?=
- =?utf-8?B?T1luVUFpTnhNNkdmcnRMVXZpKzBmMjQybWxueno2aUxBcU1EZkt5K2w4VFlJ?=
- =?utf-8?B?NXdzZXlwVUJCdDkxWlhyc1BZeDZ6NFR1WUVvME5uSEdSS3R0YUxCY09NUEFr?=
- =?utf-8?B?cWVBVlJKTDdQL0NFR0xOTVNLU1dUZVdoZXRwSi9WcnhXQVBNODRNWGswazlF?=
- =?utf-8?B?UStFOG5TZmh1aXlOWXpXZ3ZGVG1DamNaeTJQZktrK1ZwK09NL094WTVWQ1lR?=
- =?utf-8?B?clF0MG5YeXFFT2lRZ1pVU3FVYXRCUmR1VFVFSU1pejdud3F3ZlAzVXY3T05I?=
- =?utf-8?B?NHl4MXdDbWsvdzZSclBZOEM3bzYxV0p2WWF3Um8yOUpYZEh1dWxvU2tYYnN4?=
- =?utf-8?B?NmxPOWhpVndlMUtqU3V1SkoyTFhlaWtDUW5JdjMwaVVQQmRaaFJvY2RoUzQ0?=
- =?utf-8?B?SHBwTmIzdDdZTTJuR0I3NFNZTkNSZGkyeUU3dHVUVnJ4WWtZQlR2ZlhLclNi?=
- =?utf-8?B?S2tsUDNLdDlLYWZuM2RkRUtKOGZKYjNFVWVVWEk4SEtmb3BNVFpLTWN6VHFG?=
- =?utf-8?B?cy9Sdkg0U2hlaVVOdXFMOGN6SklaNDRTay92VHZpQXp2TjB6cUttbm5ucFVv?=
- =?utf-8?B?QURGdnlGV3hTTmVBTnI1dVc1T3BObjhzUkw2eXdLaVVUSkFESlJFT0FPc3R2?=
- =?utf-8?B?Q0EwZys3dG9lSzkxTFZEejdqQWRwVjlqWTJjNjZhYnFIcHdnZnJwN2NmR0dH?=
- =?utf-8?B?TFlpUjhwZ3Y4WkxMM1dEaTFsRGFHNHlDNUlnTWtleGc1L1BaNXBmOGp6S3Rh?=
- =?utf-8?B?amVJTUZFK1daK29jMzBFb3VYdmFqWkM4blRiblJORDlJdFpsR3RUMmUyUVEy?=
- =?utf-8?B?akp1WXhFenYyNkRRcWJzaldkZkFiSndVc0dsTGgxWHIyVzlFdzFWNDRwbHZt?=
- =?utf-8?B?WitMYU9Jb2ROZUtHRVJ0QzlNSk91M016bjdLMUFod3pabmRkdGlwOGFBODE5?=
- =?utf-8?B?UGsxTnF2Mnp2QTYzMTZnQitnNmpleEtWQ0xES0xRODNXN3ZHcnoyS3I5bExv?=
- =?utf-8?B?NGdNQ2VqWVNBTHlINWhFSmszWCtpeXlpNWYxdmNLekRMMGQ5ZTRubElvdDMy?=
- =?utf-8?B?dEhmV3FMUDI4bDZjMG13dDk4cC9kTzBaeHZPdmlFTjJISjBBOVlaYThVem1Z?=
- =?utf-8?B?a2ZUeUJENWo1RXRCRU9FK3U4bEk0bk1wckpCWCtWV0JYZVVJdG9KNFZBYlJr?=
- =?utf-8?B?cDRReFZYd3RPMnBRa3JNY2NYQXZGNHphcWpvVHZ1YlRyTkptUHU4eVZrc1RG?=
- =?utf-8?B?cjQ2V1pzeERvaVdCYmdFR21qWkJvTG5vdUU3citYVUYyY1NnMldqVkhtdXc5?=
- =?utf-8?B?dGFRSmhNSVE4NEt5NEhvWmQralFVanN4TDRCU3pEakIxMXpFelNzNG00a3Bm?=
- =?utf-8?B?dHltelRaNkp5MmtGVzdaTzZoOG1jOHhkMnhFNzJ5QUZDTW5Jc210dlRUbXJn?=
- =?utf-8?Q?ecqE=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3a527d3-55fa-406f-f808-08dbb4005d50
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2023 02:23:06.1040
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zoacCknOwg5kWi7J8Kue22+ItN/BVJdDoCAvnA/qqpTmIXxUezb/HxavOJZGuEGengumNJU7PdBkq8G7WoIj4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8338
-Subject: [virtio-dev] RE: [virtio-comment] [PATCH 5/5] virtio-pci: implement
+ <PH0PR12MB5481E3CC2F6107515F9D7FFEDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <de9237c0-9088-9f1a-af6c-13d1f2662e82@intel.com>
+ <PH0PR12MB54815D2BB18E83B8DAFCFBC3DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <82805bc3-f891-a35a-12fd-f4799e28570c@intel.com>
+ <PH0PR12MB548180A5F840A34DC4DFE334DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <987f72eb-f82c-da4b-229c-ffc5b60d6fb4@intel.com>
+ <PH0PR12MB5481F256CCB58C10DB65A8D1DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <0861d9ff-d126-c6e4-0deb-74ca81675eeb@intel.com>
+ <PH0PR12MB5481678840AE3B1B2D97D512DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <30bed94a-e99e-1561-def3-719e25a0dd26@intel.com>
+ <PH0PR12MB5481687C209231F8C4CE8A1EDCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB5481687C209231F8C4CE8A1EDCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH 5/5] virtio-pci: implement
  VIRTIO_F_QUEUE_STATE
 
-DQo+IEZyb206IFpodSwgTGluZ3NoYW4gPGxpbmdzaGFuLnpodUBpbnRlbC5jb20+DQo+IFNlbnQ6
-IFR1ZXNkYXksIFNlcHRlbWJlciAxMiwgMjAyMyAzOjQ1IFBNDQoNCj4gPiBEbyB5b3UgZmluZCB0
-aGUgYWRtaW5pc3RyYXRpb24gY29tbWFuZHMgd2UgcHJvcG9zZWQgaW4gWzFdIHVzZWZ1bCBmb3IN
-Cj4gbmVzdGVkIGNhc2U/DQo+ID4gSWYgbm90LCBib3RoIHdpbGwgbGlrZWx5IGRpdmVyZ2UuDQo+
-IE5vdCB0aWxsIG5vdy4NCg0KSSBkb27igJl0IHRoaW5rIHlvdSByZXZpZXdlZCBbMV0gZW5vdWdo
-Lg0KRm9sbG93aW5nIGZ1bmN0aW9uYWxpdHkgdGhhdCB5b3Ugd2FudCB0byBwb3N0IGluIHYxIGlz
-IGFscmVhZHkgY292ZXJlZC4NCldoeSBjYW5ub3QgeW91IHVzZSBpdCBmcm9tIFsxXT8NCg0KYS4g
-RGlydHkgcGFnZSB0cmFja2luZyAod3JpdGUgcmVjb3JkaW5nIGluIFsxXSksIA0KYi4gZGV2aWNl
-IHN1c3BlbmQvcmVzdW1lIChtb2RlIHNldHRpbmcpDQpjLiBpbmZsaWdodCBkZXNjcmlwdG9ycyAo
-ZGV2aWNlIGNvbnRleHQpDQoNClsxXSBodHRwczovL2xpc3RzLm9hc2lzLW9wZW4ub3JnL2FyY2hp
-dmVzL3ZpcnRpby1jb21tZW50LzIwMjMwOS9tc2cwMDA2MS5odG1sDQoNCg0K
+
+
+On 9/12/2023 9:43 PM, Parav Pandit wrote:
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Tuesday, September 12, 2023 6:33 PM
+>>
+>> On 9/12/2023 5:21 PM, Parav Pandit wrote:
+>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Tuesday, September 12, 2023 2:33 PM admin vq require fixed and
+>>>> dedicated resource to serve the VMs, the question still remains, does
+>>>> is scale to server big amount of devices migration? how many admin
+>>>> vqs do you need to serve 10 VMs, how many for 100? and so on? How to
+>>>> scale?
+>>>>
+>>> Yes, it scales within the AQ and across multiple AQs.
+>>> Please consult your board designers to know such limits for your device.
+>> scales require multiple AQs, then how many should a vendor provide for the
+>> worst case?
+>>
+>> I am boring for the same repeating questions.
+> I said it scales, within the AQ. (and across AQs).
+> I have answered enough times, so I will stop on same repeated question.
+> Your repeated question is not helping anyone as it is not in the scope of virtio.
+>
+> If you think it is, please get it written first for RSS and MQ in net section and post for review.
+You missed the point of the question and I agree no need to discuss this 
+anymore.
+>
+>>>> If one admin vq can serve 100 VMs, can it migrate 1000VMs in reasonable
+>> time?
+>>>> If not, how many exactly.
+>>>>
+>>> Yes, it can serve both 100 and 1000 VMs in reasonable time.
+>> I am not sure, the aq is limitless? Can serve thousands of VMs in a reasonable
+>> time? Like in 300ms?
+>>
+> Yes.
+really? limitless?
+>
+>> If you say, that require multiple AQ, then how many should a vendor provide?
+>>
+> I didn’t say multiple AQs must be used.
+> It is same as NIC RQs.
+don't you agree a single vq has its own performance limitations?
+>
+>> Don't say the board designer own the risks.
+>>>> And register does not need to scale, it resides on the VF and only
+>>>> serve the VF.
+>>>>
+>>> Since its per VF, by nature it is linearly growing entity that the board design
+>> needs to support read and write with guaranteed timing.
+>>> It clearly scaled poor than queue.
+>> Please read my series. For example, we introduce a new bit SUSPEND in the
+>> \field{device status}, any scalability issues here?
+> That must behave like queue_reset, (it must get acknowledged from the device) that it is suspended.
+> And that brings the scale issue.
+In this series, it says:
++When setting SUSPEND, the driver MUST re-read \field{device status} to 
+ensure the SUSPEND bit is set.
+
+And this is nothing to do with scale.
+> On top of that once the device is SUSPENDED, it cannot accept some other RESET_VQ command.
+so as SiWei suggested, there will be a new feature bit introduced in V2 
+for vq reset.
+>
+>>>> It does not reside on the PF to migrate the VFs.
+>>> Hence it does not scale and cannot do parallel operation within the VF, unless
+>> each register is replicated.
+>> Why its not scale? It is a per device facility.
+> Because the device needs to answer per device through some large scale memory to fit in a response time.
+Again, it is a per-device facility, and it is register based serve the 
+only one device itself.
+And we do not plan to log the dirty pages in bar.
+>
+>> Why do you need parallel operation against the LM facility?
+> Because your downtime was 300msec for 1000 VMs.
+the LM facility in this series is per-device, it only severs itself.
+>
+>> That doesn't make a lot of sense.
+>>> Using register of a queue for bulk data transfer is solved question when the
+>> virtio spec was born.
+>>> I don’t see a point to discuss it.
+>>> Snippet from spec: " As a device can have zero or more virtqueues for bulk
+>> data transport"
+>> Where do you see the series intends to transfer bulk data through registers?
+>>>> VFs config space can use the device dedicated resource like the bandwidth.
+>>>>
+>>>> for AQ, still you need to reserve resource and how much?
+>>> It depends on your board, please consult your board designer to know
+>> depending on the implementation.
+>>>   From spec point of view, it should not be same as any other virtqueue.
+>> so the vendor own the risk to implement AQ LM? Why they have to?
+>>>>> No. I do not agree. It can fail and very hard for board designers.
+>>>>> AQs are more reliable way to transport bulk data in scalable manner
+>>>>> for tens
+>>>> of member devices.
+>>>> Really? How often do you observe virtio config space fail?
+>>> On Intel Icelake server we have seen it failing with 128 VFs.
+>>> And device needs to do very weird things to support 1000+ VFs forever
+>> expanding config space, which is not the topic of this discussion anyway.
+>> That is your setup problem.
+>>>
+>>>>>> Please allow me to provide an extreme example, is one single admin
+>>>>>> vq limitless, that can serve hundreds to thousands of VMs migration?
+>>>>> It is left to the device implementation. Just like RSS and multi queue
+>> support?
+>>>>> Is one Q enough for 800Gbps to 10Mbps link?
+>>>>> Answer is: Not the scope of specification, spec provide the
+>>>>> framework to scale
+>>>> this way, but not impose on the device.
+>>>> Even if not support RSS or MQ, the device still can work with
+>>>> performance overhead, not fail.
+>>>>
+>>> _work_ is subjective.
+>>> The financial transaction (application) failed. Packeted worked.
+>>> LM commands were successful, but it was not timely.
+>>>
+>>> Same same..
+>>>
+>>>> Insufficient bandwidth & resource caused live migration fail is
+>>>> totally different.
+>>> Very abstract point and unrelated to administration commands.
+>> It is your design facing the problem.
+>>>>>> If not, two or
+>>>>>> three or what number?
+>>>>> It really does not matter. Its wrong point to discuss here.
+>>>>> Number of queues and command execution depends on the device
+>>>> implementation.
+>>>>> A financial transaction application can timeout when a device
+>>>>> queuing delay
+>>>> for virtio net rx queue is long.
+>>>>> And we don’t put details about such things in specification.
+>>>>> Spec takes the requirements and provides driver device interface to
+>>>> implement and scale.
+>>>>> I still don’t follow the motivation behind the question.
+>>>>> Is your question: How many admin queues are needed to migrate N
+>>>>> member
+>>>> devices? If so, it is implementation specific.
+>>>>> It is similar to how such things depend on implementation for 30
+>>>>> virtio device
+>>>> types.
+>>>>> And if are implying that because it is implementation specific, that
+>>>>> is why
+>>>> administration queue should not be used, but some configuration
+>>>> register should be used.
+>>>>> Than you should propose a config register interface to post
+>>>>> virtqueue
+>>>> descriptors that way for 30 device types!
+>>>> if so, leave it as undefined? A potential risk for device implantation?
+>>>> Then why must the admin vq?
+>>> Because administration commands and admin vq does not impose devices to
+>> implement thousands of registers which must have time bound completion
+>> guarantee.
+>>> The large part of industry including SIOV devices led by Intel and others are
+>> moving away from register access mode.
+>>> To summarize, administration commands and queue offer following benefits.
+>>>
+>>> 1. Ability to do bulk data transfer between driver and device
+>>>
+>>> 2. Ability to parallelize the work within driver and within device
+>>> within single or multiple virtqueues
+>>>
+>>> 3. Eliminates implementing PCI read/write MMIO registers which demand
+>>> low latency response interval
+>>>
+>>> 4. Better utilize host cpu as no one needs to poll on the device
+>>> register for completion
+>>>
+>>> 5. Ability to handle variability in command completion by device and
+>>> ability to notify the driver
+>>>
+>>> If this does not satisfy you, please refer to some of the past email discussions
+>> during administration virtuqueue time.
+>> I think you mixed up the facility and the implementation in my series, please
+>> read.
+> I don’t know what you refer to. You asked "why AQ is must?" I answered above what AQ has to offer than some synchronous register.
+Again, we are implementing facilities, V2 will include inflgiht 
+descriptors and dirty page tracking. That works for LM.
+
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
