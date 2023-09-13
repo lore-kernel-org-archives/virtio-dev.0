@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13748-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13749-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4873CCA5505
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 08:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 80CB2CA5524
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 09:33:21 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6F7617E991
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 08:28:06 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id B4A961CA24E
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 09:33:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4B649986649
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 08:28:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 939BE986641
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Sep 2023 09:33:20 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3044B986633; Wed, 13 Sep 2023 08:28:06 +0000 (UTC)
+	id 7EA0B986634; Wed, 13 Sep 2023 09:33:20 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,69 +24,138 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 21F30986634
-	for <virtio-dev@lists.oasis-open.org>; Wed, 13 Sep 2023 08:28:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6D1BA986633;
+	Wed, 13 Sep 2023 09:33:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: E_8PS12DNlSxTA992BYWLw-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694593681; x=1695198481;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WQqgAxUPyO+g57feyzMeKAmAJoms/DKgiw2QWgeS50M=;
-        b=CqrmS0893j9xxN2zLgeYreRhS3yWg1DJ0j5PeAMyVexFfbB3mAkfRZpEmTN2l/N1M7
-         h8MNqAok6+u4nuSsymlaphL7AP1segLMJKeVhqG9743wXOboK1BR/SsU5Wjehb5NDclm
-         fTnfRrQuRIz1LZkuoXnc8OJ22jLBzczfgX+etSajkGEUl9930kORnCK2Axt8L4yvUDKo
-         AuaZZ4R+/UmEL2zsgSd1a51YxsEf41ROVWwz0+fApcBY3oc43FZXanNUiJSXatk/GUm6
-         LbfPITI5HOsC4+7GJvYRDBWq+FCKAsIOCXieBKqqpzIJJSWRSAzHfKZvgX0HYmbWSEu8
-         vt6Q==
-X-Gm-Message-State: AOJu0YwAf5ARmsOcWzq1Rnl9XamCyT957ZvXBFBREqeKzaML9334PLrO
-	5bPkrAEZuoKWEY2Z5OtwvoQRWtt+MXi3hvWDWhw5XwYCwbO/ZM2pO4+F2fOsnOWsEppx0nw+V4a
-	rxMCuzO4tToLAGu5tkfo/KHBWbstR
-X-Received: by 2002:a19:6707:0:b0:4fb:911b:4e19 with SMTP id b7-20020a196707000000b004fb911b4e19mr1300151lfc.35.1694593680798;
-        Wed, 13 Sep 2023 01:28:00 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGEMcfP/0ymeb7vf8h/OuUASEiCzclKteOEwG8dyfw+VidzxlOkOnklYrY5KJg88nc4YZUb7A==
-X-Received: by 2002:a19:6707:0:b0:4fb:911b:4e19 with SMTP id b7-20020a196707000000b004fb911b4e19mr1300136lfc.35.1694593680402;
-        Wed, 13 Sep 2023 01:28:00 -0700 (PDT)
-Date: Wed, 13 Sep 2023 04:27:56 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>,
-	"Zhu, Lingshan" <lingshan.zhu@intel.com>,
-	"eperezma@redhat.com" <eperezma@redhat.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"stefanha@redhat.com" <stefanha@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Message-ID: <20230913042534-mutt-send-email-mst@kernel.org>
-References: <PH0PR12MB5481ED8DC23DC6D42665FB8EDCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <eb6c350e-1198-7d83-a553-99c9c8c21edc@intel.com>
- <PH0PR12MB5481760E00AD18DB8BF91636DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <ad1dd3a6-7c11-5c6b-b50f-d608ec027dcd@intel.com>
- <PH0PR12MB54819C4A4220712DCD57AD56DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <fff7720f-6019-bd87-b14b-c0bf996f3959@intel.com>
- <PH0PR12MB5481D11A7DF45292103D9290DCF2A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEt6=AC4pYEoxNn2dpbLLEKTLj-SYV2eSUAi1ZA1LWR3qg@mail.gmail.com>
- <PH0PR12MB5481E49BFCE50AA8F8373F45DCF1A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtor0uDs9xUDXH1ZA3n9Zb9kzP9MAYwN5h6em+39gNfXg@mail.gmail.com>
+X-IronPort-AV: E=Sophos;i="6.02,142,1688428800"; 
+   d="scan'208";a="363202927"
+Message-ID: <e738e7f0-dd13-44db-806c-543746aa6967@amazon.es>
+Date: Wed, 13 Sep 2023 11:32:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEtor0uDs9xUDXH1ZA3n9Zb9kzP9MAYwN5h6em+39gNfXg@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH 5/5] virtio-pci: implement
- VIRTIO_F_QUEUE_STATE
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: <virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
+	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
+	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>,
+	<bchalios@amazon.es>
+References: <20221121162756.350032-1-mst@redhat.com>
+ <20221121162756.350032-4-mst@redhat.com>
+ <0abb7518-16e0-4227-bfe1-a29bd27124e8@amazon.es>
+ <20230912170032-mutt-send-email-mst@kernel.org>
+From: Babis Chalios <bchalios@amazon.es>
+Autocrypt: addr=bchalios@amazon.es; keydata=
+ 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
+In-Reply-To: <20230912170032-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.1.213.6]
+X-ClientProxiedBy: EX19D035UWB001.ant.amazon.com (10.13.138.33) To
+ EX19D037EUB003.ant.amazon.com (10.252.61.119)
+Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
 
-On Wed, Sep 13, 2023 at 12:45:21PM +0800, Jason Wang wrote:
-> For example, KVM doesn't use
-> hardware to log dirty pages.
+ > I do not understand why this matters though. we know there was a leak,
+ > why does it matter whether there was one or two leaks?
+ >
+ > > In the last RFC implementing this in Linux we sent to LKML [1] we 
+avoid the
+ > > issue by pre-populating both
+ > > queues, but that does not solve the problem if a third entropy leak 
+event
+ > > arrives. The probability of this
+ > > happening is indeed small, but we thought of a potential solution 
+to this.
+ > >
+ > > What if we modify the spec here to instruct the VMM to deny taking a
+ > > snapshot if there are not any buffers
+ > > in the active leak queue? If we did this, we could even simplify 
+the spec to
+ > > just introduce a single entropy
+ > > leak queue, so we could avoid the complexity of switching between 
+active
+ > > leak queues in the driver and
+ > > the device. WDYT?
+ >
+ > here's the problem:
+ >
+ > - driver adds batch 1 of buffers
+ > - leak
+ > - device starts using buffers from batch 1
+ > - driver sees some buffers and starts adding batch 2
 
-It uses a mix of PML, PTE bit and EPT write protection.
+If understand this clause:
 
--- 
-MST
+ > > +\item Upon detecting that buffers have been used, driver
+ > > +      switches to another leak queue making it active
+ > > +      (e.g. from \field{leakq1} to \field{leakq2} or vice versa).
+ > > +      It then starts adding buffers to the new leak queue.
 
+correctly:
+
+At this point, the driver will first switch active leak queue and
+then add batch 2 to the new leak queue.
+
+and due to this:
+
+ > > +\item Device will keep using buffers in the active leak queue
+ > > +      until it detects that both the current leak queue is empty 
+and another
+ > > +      leak queue has buffers. At that point device switches to
+ > > +      another leak queue, making it active.
+ > > +\item After the switch, buffers from the new leak queue are not
+ > > +      used until an information leak is detected.
+ > > +\end{enumerate}
+
+the following won't happen:
+
+ > - device sees batch 2 and thinks this is part of batch 1
+ >    consumes them all
+
+Does it make sense?
+
+Cheers,
+Babis
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
