@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13767-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13768-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 43CC7EDE9A8
-	for <virtio-dev@archiver.kernel.org>; Thu, 14 Sep 2023 11:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AEA5DEDE989
+	for <virtio-dev@archiver.kernel.org>; Fri, 15 Sep 2023 02:46:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id ABB0345B3D
-	for <virtio-dev@archiver.kernel.org>; Thu, 14 Sep 2023 11:37:12 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 182292AC54
+	for <virtio-dev@archiver.kernel.org>; Fri, 15 Sep 2023 02:46:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9A5B2986651
-	for <virtio-dev@archiver.kernel.org>; Thu, 14 Sep 2023 11:37:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0DDF6986669
+	for <virtio-dev@archiver.kernel.org>; Fri, 15 Sep 2023 02:46:58 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8ED86986641; Thu, 14 Sep 2023 11:37:12 +0000 (UTC)
+	id 00C70983C27; Fri, 15 Sep 2023 02:46:58 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,83 +24,194 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 80361986639
-	for <virtio-dev@lists.oasis-open.org>; Thu, 14 Sep 2023 11:37:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id DF03A986659;
+	Fri, 15 Sep 2023 02:46:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: zUK8b1lfOayS6KDMuAJcHQ-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694691427; x=1695296227;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8fpcobUAQmNRu7g2td/pu6JTMcmiCHlmgba8nlGvTHI=;
-        b=maMigXaMxYFSUK0gi6VET+DYB9Eji/ouFhbthVHMKPAGPn5qNoUh+SlvkWC/09A/xJ
-         E9wbvwrEkAAkihlRmCXnG15tKs6oCG20Iy5XA0KmPzqEoJt6M1XF6KyIIWymMRw5kawj
-         gQczdAfrplLHRlgoJ3/qXT64EEolGYLI4afWhj9GQQotb93lO9MCzj/IYtfEFfW9Bj7j
-         D407KN96yFDNjGCaKn1cSfpISfeEfPXa1sr4rvXtLtVrp51p8t4qkU13N2hUazGKfWwb
-         6Yb2wx78LLr7iGCp1LO0o8zKhu9e65HYqf+obyU9p6136PUF/BI9lnC3UHQrDYfO0l0+
-         9JsQ==
-X-Gm-Message-State: AOJu0YwUQOVaQq0yDDiUr45BxV/RnRxnEzI8ysYFiBQOyWnrbxz3M9Hr
-	7JaiBrIJGB0nubj/lv5lcC7xq9ptYcJl+uNGGIpmkSaI1xo3DwSAb5Ls2+62a5szrcZ+gULQdww
-	NNucZ+G7PUwgbACGSzHsVt8lOXh/0
-X-Received: by 2002:a17:906:81c7:b0:9ad:b80c:c19d with SMTP id e7-20020a17090681c700b009adb80cc19dmr1464805ejx.56.1694691427512;
-        Thu, 14 Sep 2023 04:37:07 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGEK0oq6O1OoliLiyMC6De+KMMdv2NaSQMRcGmKAxCn6wgwKUff91rKqRG4RmyQ7168QeELuw==
-X-Received: by 2002:a17:906:81c7:b0:9ad:b80c:c19d with SMTP id e7-20020a17090681c700b009adb80cc19dmr1464792ejx.56.1694691427180;
-        Thu, 14 Sep 2023 04:37:07 -0700 (PDT)
-Date: Thu, 14 Sep 2023 07:37:02 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Zhu Lingshan <lingshan.zhu@intel.com>
-Cc: jasowang@redhat.com, eperezma@redhat.com, cohuck@redhat.com,
-	stefanha@redhat.com, virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org
-Message-ID: <20230914073454-mutt-send-email-mst@kernel.org>
-References: <20230906081637.32185-1-lingshan.zhu@intel.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="381868860"
+X-IronPort-AV: E=Sophos;i="6.02,147,1688454000"; 
+   d="scan'208";a="381868860"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="888047777"
+X-IronPort-AV: E=Sophos;i="6.02,147,1688454000"; 
+   d="scan'208";a="888047777"
+Message-ID: <5392f834-7755-b83d-a504-a6e720882129@intel.com>
+Date: Fri, 15 Sep 2023 10:46:36 +0800
 MIME-Version: 1.0
-In-Reply-To: <20230906081637.32185-1-lingshan.zhu@intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq state
-
-On Wed, Sep 06, 2023 at 04:16:32PM +0800, Zhu Lingshan wrote:
-> This series introduces
-> 1)a new SUSPEND bit in the device status
-> Which is used to suspend the device, so that the device states
-> and virtqueue states are stabilized.
-> 
-> 2)virtqueue state and its accessor, to get and set last_avail_idx
-> and last_used_idx of virtqueues.
-> 
-> The main usecase of these new facilities is Live Migration.
-> 
-> Future work: dirty page tracking and in-flight descriptors.
-> 
-> This series addresses many comments from Jason, Stefan and Eugenio
-> from RFC series.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Content-Language: en-US
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: jasowang@redhat.com, eperezma@redhat.com, cohuck@redhat.com,
+ stefanha@redhat.com, virtio-comment@lists.oasis-open.org,
+ virtio-dev@lists.oasis-open.org
+References: <20230906081637.32185-1-lingshan.zhu@intel.com>
+ <20230906081637.32185-2-lingshan.zhu@intel.com>
+ <20230914071439-mutt-send-email-mst@kernel.org>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20230914071439-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH 1/5] virtio: introduce vq state as basic
+ facility
 
 
-after going over this in detail, it is like I worried: this
-tries to do too much through a single register and
-the ownership is muddied significantly.
 
-I feel a separate capability for suspend/resume that would
-be independent of device status would be preferable.
+On 9/14/2023 7:25 PM, Michael S. Tsirkin wrote:
+> On Wed, Sep 06, 2023 at 04:16:33PM +0800, Zhu Lingshan wrote:
+>> This patch adds new device facility to save and restore virtqueue
+>> state. The virtqueue state is split into two parts:
+>>
+>> - The available state: The state that is used for read the next
+>>    available buffer.
+>> - The used state: The state that is used for make buffer used.
+>>
+>> This will simply the transport specific method implementation. E.g two
+>> le16 could be used instead of a single le32). For split virtqueue, we
+>> only need the available state since the used state is implemented in
+>> the virtqueue itself (the used index).
+> hmm no, simply because when ring is not running and when
+> buffers are processed in order, last avail == used.
+in the ideal case, yes.
 
-> Zhu Lingshan (5):
->   virtio: introduce vq state as basic facility
->   virtio: introduce SUSPEND bit in device status
->   virtqueue: constraints for virtqueue state
->   virtqueue: ignore resetting vqs when SUSPEND
->   virtio-pci: implement VIRTIO_F_QUEUE_STATE
-> 
->  content.tex       | 118 ++++++++++++++++++++++++++++++++++++++++++++++
->  transport-pci.tex |  18 +++++++
->  2 files changed, 136 insertions(+)
-> 
-> -- 
-> 2.35.3
+I will remove this since this may be ambiguous.
+>
+>> For packed virtqueue, we need
+>> both the available state and the used state.
+>>
+>> Those states are required to implement live migration support for
+>> virtio device.
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>
+>
+>> ---
+>>   content.tex | 65 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 65 insertions(+)
+>>
+>> diff --git a/content.tex b/content.tex
+>> index 0a62dce..0e492cd 100644
+>> --- a/content.tex
+>> +++ b/content.tex
+>> @@ -502,6 +502,71 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+>>   types. It is RECOMMENDED that devices generate version 4
+>>   UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+>>   
+>> +\section{Virtqueue State}\label{sec:Virtqueues / Virtqueue State}
+>> +
+>> +When VIRTIO_F_QUEUE_STATE has been negotiated, the driver can set and
+>> +get the device internal virtqueue state through the following
+>> +fields. The implementation of the interfaces is transport specific.
+>> +
+>> +\subsection{\field{Available State} Field}
+>> +
+>> +The available state field is two bytes of virtqueue state that is used by
+>> +the device to read the next available buffer.
+>> +
+>> +When VIRTIO_RING_F_PACKED is not negotiated, it contains:
+>> +
+>> +\begin{lstlisting}
+>> +le16 last_avail_idx;
+>> +\end{lstlisting}
+>> +
+>> +The \field{last_avail_idx} field is the free-running available ring
+>> +index where the device will read the next available head of a
+>> +descriptor chain.
+> I dislike how this pokes at split-ring.txt externally.
+> Will make it harder to add new formats down the road.
+I can move these contents to split-ring.tex and packed-ring.tex
+respectively, however some contents have to be duplicated.
+
+Thanks
+>
+>
+>
+>> +
+>> +See also \ref{sec:Basic Facilities of a Virtio Device / Virtqueues / The Virtqueue Available Ring}.
+>>
+>> +When VIRTIO_RING_F_PACKED is negotiated, it contains:
+>> +
+>> +\begin{lstlisting}
+>> +le16 {
+>> +  last_avail_idx : 15;
+>> +  last_avail_wrap_counter : 1;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The \field{last_avail_idx} field is the free-running location
+>> +where the device read the next descriptor from the virtqueue descriptor ring.
+>> +
+>> +The \field{last_avail_wrap_counter} field is the last driver ring wrap
+>> +counter that was observed by the device.
+>> +
+>> +See also \ref{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}.
+>
+>> +\subsection{\field{Used State} Field}
+>> +
+>> +The used state field is two bytes of virtqueue state that is used by
+>> +the device when marking a buffer used.
+>> +
+>> +When VIRTIO_RING_F_PACKED is negotiated, the used state contains:
+>> +
+>> +\begin{lstlisting}
+>> +le16 {
+>> +  used_idx : 15;
+>> +  used_wrap_counter : 1;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The \field{used_idx} field is the free-running location where the device write the next
+>> +used descriptor to the descriptor ring.
+>> +
+>> +The \field{used_wrap_counter} field is the wrap counter that is used
+>> +by the device.
+>> +
+>> +See also \ref{sec:Packed Virtqueues / Driver and Device Ring Wrap Counters}.
+>> +
+>> +When VIRTIO_RING_F_PACKED is not negotiated, the 16-bit value of \field{used_idx}
+>> +is always 0
+>> +
+>>   \input{admin.tex}
+>>   
+>>   \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+>> -- 
+>> 2.35.3
+>>
+>>
+>> This publicly archived list offers a means to provide input to the
+>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>
+>> In order to verify user consent to the Feedback License terms and
+>> to minimize spam in the list archive, subscription is required
+>> before posting.
+>>
+>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>> List help: virtio-comment-help@lists.oasis-open.org
+>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>> Committee: https://www.oasis-open.org/committees/virtio/
+>> Join OASIS: https://www.oasis-open.org/join/
+>>
+>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
+>
 
 
 ---------------------------------------------------------------------
