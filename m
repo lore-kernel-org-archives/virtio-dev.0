@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13829-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13830-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D377DCD54AB
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CEEDCCD54AB
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:03:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3F270602EE
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:02:01 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3981F759CC
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:03:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 310839864D1
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:02:01 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2601B986555
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:03:13 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1568F983E25; Tue, 19 Sep 2023 10:02:01 +0000 (UTC)
+	id 196F0983E25; Tue, 19 Sep 2023 10:03:13 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,134 +24,132 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0452D9864C2
-	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Sep 2023 10:01:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0C61A9864C2
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Sep 2023 10:03:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: CxGo1aX2OqWVQVrUL_dsfQ-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695117712; x=1695722512;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bwl7TvWfLs16+XYKBU8hHV9w64CnwrrYpRxy8I9Ja7c=;
-        b=ayfd/x6GQR4rL36NnY5iTEhRG7Nu8LRuqndWOw3SljpZ2vTu0qBAsl+RzFY8uSQ77u
-         UxGsa/aaCQMRW30/exSI236jrWbTcvr5Wd4uXW5EbQLRBPAJCU5+VhrD/kIvEDl3wNHG
-         zd/Vd3BSAVqKuLobGjEbmoqRvNgDXfAkmjh089UI0R7Ndefka/jViJLqgZFMATvzbImM
-         CI7lATqVlApzGG19/ubix05lGblRKDM0pkxDi3xuDK/Kq2TJ4/OaJbh/yjT1bi/sEUR5
-         0eIg6niIY49oEsTEGmLqY0jCCJOxD5ZCrTmH6FlJmQ3wnj6IeCKiHUUUxNh0ub7Vwg2u
-         MzOQ==
-X-Gm-Message-State: AOJu0YwiqIH0TDgcEjAsaDnV9oIWHBvDSJLb4Lq7G6OS0YoChzdQBHCz
-	OHh/YsQqvbDAIrs7LIRuHLkHF6tuzlg7tNkFfLpCcIiZqfkbioxMduILUk5VGvrmkUPfgGyIUYV
-	KfEsgtrzpjG4RHruGqHspkwKgFhl9
-X-Received: by 2002:a17:906:3158:b0:9a9:9c6c:c4ef with SMTP id e24-20020a170906315800b009a99c6cc4efmr10238894eje.23.1695117712401;
-        Tue, 19 Sep 2023 03:01:52 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IG7xMQrZ/jhwhOjjuD7W0f06ojU65NyFDKrvfqerUDN6QHVQ29CSQoXj7CeVP9ZyD3QT//IGA==
-X-Received: by 2002:a17:906:3158:b0:9a9:9c6c:c4ef with SMTP id e24-20020a170906315800b009a99c6cc4efmr10238875eje.23.1695117712089;
-        Tue, 19 Sep 2023 03:01:52 -0700 (PDT)
-Date: Tue, 19 Sep 2023 06:01:48 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Babis Chalios <bchalios@amazon.es>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	"Cali, Marco" <xmarcalx@amazon.co.uk>,
-	"Graf (AWS), Alexander" <graf@amazon.de>,
-	"Jason A. Donenfeld" <Jason@zx2c4.com>, aams@amazon.de
-Message-ID: <20230919055811-mutt-send-email-mst@kernel.org>
-References: <e738e7f0-dd13-44db-806c-543746aa6967@amazon.es>
- <20230913053707-mutt-send-email-mst@kernel.org>
- <d7d17e9f-e6ad-4106-a408-99281382a93f@amazon.es>
- <20230918083722-mutt-send-email-mst@kernel.org>
- <e75d9667-2ea0-44d0-a26f-fa3d5fe05651@amazon.es>
- <20230918091506-mutt-send-email-mst@kernel.org>
- <a22ba2cb-9b03-481a-b66e-0b78fbfb21f0@amazon.es>
- <20230918100355-mutt-send-email-mst@kernel.org>
- <4ab1b10e-4524-4b6c-a3df-863360fd225d@amazon.es>
- <c2e7076b-b07e-43cd-a912-9314d742a678@amazon.es>
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="378796049"
+X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
+   d="scan'208";a="378796049"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="695853463"
+X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
+   d="scan'208";a="695853463"
+Message-ID: <2e3bca3b-5292-cc89-80c8-225919717eb2@intel.com>
+Date: Tue, 19 Sep 2023 18:03:06 +0800
 MIME-Version: 1.0
-In-Reply-To: <c2e7076b-b07e-43cd-a912-9314d742a678@amazon.es>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Content-Language: en-US
+To: Parav Pandit <parav@nvidia.com>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
+References: <20230906081637.32185-1-lingshan.zhu@intel.com>
+ <20230914070911-mutt-send-email-mst@kernel.org>
+ <559c0875-24b8-0709-712e-24ffe7830022@intel.com>
+ <PH0PR12MB548159C982509436C6499279DCF4A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <09045654-d69c-845d-ee26-636fa08f68b4@intel.com>
+ <PH0PR12MB5481C41D4F32DA26D5831471DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com>
+ <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
+ <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <f1fe513e-d42d-03a6-348c-5e58aac0a759@intel.com>
+ <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com>
+ <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <c1361497-4c46-d00d-58e7-520d5f81b90a@intel.com>
+ <PH0PR12MB54810692ACC61C50A911ADE8DCFAA@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB54810692ACC61C50A911ADE8DCFAA@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
+ state
 
-On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
-> Resending to fix e-mail formatting issues (sorry for the spam)
-> 
-> On 18/9/23 18:30, Babis Chalios wrote:
-> > > > > > Yes, that's what the driver does now in the RFC patch.
-> > > > > > However, this just
-> > > > > > decreases
-> > > > > > the race window, it doesn't eliminate it. If a third
-> > > > > > leak event happens it
-> > > > > > might not
-> > > > > > find any buffers to use:
-> > > > > > 
-> > > > > > 1. available buffers to queue 1-X
-> > > > > > 2. available buffers to queue X
-> > > > > > 
-> > > > > > 
-> > > > > > 3. poll queue X
-> > > > > > 4. used buffers in queue X       <- leak event 1 will
-> > > > > > use buffers in X
-> > > > > > 5. avail buffers in queue X
-> > > > > > 6. poll queue 1-X                <- leak event 2 will
-> > > > > > use buffers in 1-X
-> > > > > > 7. used buffers in queue 1-X
-> > > > > > 8. avail buffers in queue 1-X
-> > > > > >                                    <- leak event 3 (it
-> > > > > > needs buffers in X, race with step 5)
-> > > > > > 9. goto 3
-> > > > > I don't get it. we added buffers in step 5.
-> > > > What if the leak event 3 arrives before step 5 had time to
-> > > > actually add the
-> > > > buffers in X and make
-> > > > them visible to the device?
-> > > 
-> > > Then it will see a single event in 1-X instead of two events.  A leak is
-> > > a leak though, I don't see does it matter how many triggered.
-> > > 
-> 
-> 
-> So the scenario I have in mind is the following:
-> 
-> (Epoch here is terminology that I used in the Linux RFC. It is a value
-> maintained by random.c
-> that changes every time a leak event happens).
-> 
-> 1. add buffers to 1-X
-> 2. add buffers to X
-> 3. poll queue X
-> 4. vcpu 0: get getrandom() entropy and cache epoch value
-> 5. Device: First snapshot, uses buffers in X
-> 6. vcpu 1: sees used buffers
-> 7. Device: Second snapshot, uses buffers in 1-X
-> 8. vcpu 0: getrandom() observes new  epoch value & caches it
-> 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
-> has not yet finished adding new buffers).
-> 10. vcpu 1 adds new buffer in X
-> 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
-> 
-> 
-> In this succession of events, when the third snapshot will happen, the
-> device won't find
-> any buffers in either queue, so it won't increase the RNG epoch value. So,
-> any entropy
-> gathered after step 8 will be the same across all snapshots. Am I missing
-> something?
-> 
-> Cheers,
-> Babis
-> 
 
-Yes but notice how this is followed by:
 
-12. vcpu 1: sees used buffers in 1-X
-
-Driver can notify getrandom I guess?
-
--- 
-MST
+On 9/19/2023 5:06 PM, Parav Pandit wrote:
+>
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Tuesday, September 19, 2023 1:32 PM
+>>
+>> On 9/19/2023 2:41 AM, Parav Pandit wrote:
+>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Monday, September 18, 2023 3:05 PM
+>>>>
+>>>> On 9/18/2023 2:54 PM, Parav Pandit wrote:
+>>>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>>>> Sent: Monday, September 18, 2023 12:19 PM so admin vq based LM
+>>>>>> solution can be a side channel attacking surface
+>>>>> It will be part of the DSM whenever it will be used in future.
+>>>>> Hence, it is not attack surface.
+>>>> I am not sure, why we have to trust the PF?
+>>>> This is out of virtio scope anyway.
+>>>>
+>>>> I have explained many times how it can be a attack surface, and examples.
+>>>>
+>>> And none of that make any sense as fundamentally, hypervisor is trusted
+>> regardless of the approach.
+>> this is not about hypervisors, I am saying admin vq based LM solution can be a
+>> side channel attacking surface Please refer to my previously listed examples
+>> and the TDISP spec is FYI.
+> In previous email you wrote " As I said before, CC and TDISP is out of spec, that means we should ignore them for now."
+> So I am ignoring it now and hence, I am ignoring above comment.
+> Lets reach to a common ground for simplified case and than consider more complex cases.
+ok
+>
+>>>> What happen if malicious SW dump guest memory by admin vq dirty page
+>>>> tracking feature?
+>>> What??
+>>> Where is this malicious SW is located, in guest VM?
+>> host, in this attacking model.
+>>>>>>>>>> For untrusted hypervisor, same set of attack surface is present
+>>>>>>>>>> with
+>>>>>>>>>> trap+emulation.
+>>>>>>>>>> So both method score same. Hence its not relevant point for
+>> discussion.
+>>>>>>>>> this is not hypervisor, Do you see any modern hypervisor have
+>>>>>>>>> these issues?
+>>>>>>>>>
+>>>>>>>>> This is admin vq for LM can be a side channel attacking surface.
+>>>>>>> It is not.
+>>>>>>> Hypervisor is trusted entity.
+>>>>>>> For untrusted hypervisor the TDISP is unified solution build by
+>>>>>>> the various
+>>>>>> industry bodies including DMTF, PCI for last few years.
+>>>>>>> We want to utilize that.
+>>>>>> first, TDISP is out of virtio spec.
+>>>>> Sure, hence, untrusted hypervisor are out of scope.
+>>>>> Otherwise, trap+emulation is equally dead which relies on the
+>>>>> hypervisor to
+>>>> do things.
+>>>> so lets focus on LM topic, other than confidential computing.
+>>> ok.
+>>>
+>>>>> Just because data transfer is not done, it does not mean that
+>>>>> thousands of
+>>>> polling register writes complete in stipulated time.
+>>>> 1) again, they are per-device facilities
+>>> That does not satisfy that it can somehow do work in < x usec time.
+>> why? Do you mind take examples of basic PCI virtio common config space
+>> registers?
+>>>> 2) we use very few registers, even status byte does not require
+>>>> polling, just re- read with delay.
+>>>>
+>>>> Please refer to the code for setting FEATURES_OK.
+>>> It wont work when one needs to suspend the device.
+>>> There is no point of doing such work over registers as fundamental framework
+>> is over the AQ.
+>> why it doesn't work?
+> For two following reasons.
+> 1. All the things needed cannot be communicated over registers efficiently, such as (a) device context, (b) dirty pages.
+for a) please read QEMU live migration code.
+for b) the registers in config space are control path, we don't store 
+dirty pages by the registers.
+You can review the next version.
+> 2. synchronous registers on the VF cannot inter operate with FLR and device reset flow.
+Why FLR is a concern to this series? Have you read QEMU live migration 
+code? Does it handle FLR explicitly?
+Does it need to handle all PCI attributes?
 
 
 ---------------------------------------------------------------------
