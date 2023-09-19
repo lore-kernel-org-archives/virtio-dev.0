@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13831-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13832-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CEBCACD54A9
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5B03CCD54B5
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 11:43:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1C8C5C623B
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:11:52 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A7BFC29FE6
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 11:43:09 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E4159986560
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 10:11:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 93DDD98655E
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 11:43:09 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C83C49864D1; Tue, 19 Sep 2023 10:11:51 +0000 (UTC)
+	id 841869864C2; Tue, 19 Sep 2023 11:43:09 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,168 +24,165 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B64779864C2;
-	Tue, 19 Sep 2023 10:11:49 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 739C09864D1;
+	Tue, 19 Sep 2023 11:43:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=Sophos;i="6.02,159,1688428800"; 
-   d="scan'208";a="357068151"
-Message-ID: <4c6d6710-43c8-402b-9ae6-d2f4cafbe9a7@amazon.es>
-Date: Tue, 19 Sep 2023 12:11:37 +0200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IHlkwvVp6ucoc7Jsmgx5Y2vTiY6vPMrd6XsPQsPNaKqlerddNhOVM7EDHI9eJk92m3NoeV3bI271MmhrfIy2BoSphubsUrKUkIoPoFRuHF5/2Cif5UriiXIyyg5jbx7EP4SXeKIiCBomnfR47W2jTPFKm9SieKcByy1xAlF62H6+W7guEkJDnhib4UrgwcjuJUGJw44s+ki2W94C//Ury+goLs4GuTHIE7O/7NgLkMPqGMPAJq7z9IsYjfJUQABHLhnhtInV3xzw+upRWmZYDtVlDIuO63tMhqxDZGDrL/sN91SgxW7MxhTU3un+KDuP/JpCX6Wh1tKBKjO8peTL2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Au5O3qF/D2W3vL35NSd42JBaWy2FzJt7RhjS4tbLWVo=;
+ b=APdqWI/DAOLIn7IoTR7gPAbd6kDnp48v+qiDBWlRbnfQAi1yWRzK1PysL8mNwcOVDjLssw2dNL0wF/lEZitY0LtTuGWovhtQ4JAn8dtMDWsbDlmhc9Z9/gMnxJsnBbxrypri8ZvGofVW15DBdMZmv8hU3niRZfAvncHjiTck+NtqhY582Ysao1x0b3GVugXju/kKj55j3+9D9Fmv9W2xJ2tcUsN12ogw2m70a1I1yoBkzPS0JsX4S3X7ObkQKsYuOGTx08PGBmu4JeBqmd8HtXYPAkq+QUGHbR6NbkfC2gDDROqXg8s9BtbY9Q2JtZAyrFyy1rOXgeAuKBTceBh6oQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+From: Jiqian Chen <Jiqian.Chen@amd.com>
+To: Gerd Hoffmann <kraxel@redhat.com>, Jason Wang <jasowang@redhat.com>,
+	"Michael S . Tsirkin" <mst@redhat.com>, Xuan Zhuo
+	<xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>, "Gurchetan
+ Singh" <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
+	=?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@gmail.com>, "Robert
+ Beckett" <bob.beckett@collabora.com>, Mikhail Golubev-Ciuchea
+	<Mikhail.Golubev-Ciuchea@opensynergy.com>, Parav Pandit <parav@nvidia.com>,
+	<virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>
+CC: <qemu-devel@nongnu.org>, <linux-kernel@vger.kernel.org>, "Stefano
+ Stabellini" <sstabellini@kernel.org>, =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?=
+	<roger.pau@citrix.com>, Alex Deucher <Alexander.Deucher@amd.com>, "Christian
+ Koenig" <Christian.Koenig@amd.com>, Stewart Hildebrand
+	<Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>,
+	Honglei Huang <Honglei1.Huang@amd.com>, Julia Zhang <Julia.Zhang@amd.com>,
+	Huang Rui <Ray.Huang@amd.com>, Jiqian Chen <Jiqian.Chen@amd.com>
+Date: Tue, 19 Sep 2023 19:42:41 +0800
+Message-ID: <20230919114242.2283646-1-Jiqian.Chen@amd.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: <virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
-	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
-	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>
-References: <e738e7f0-dd13-44db-806c-543746aa6967@amazon.es>
- <20230913053707-mutt-send-email-mst@kernel.org>
- <d7d17e9f-e6ad-4106-a408-99281382a93f@amazon.es>
- <20230918083722-mutt-send-email-mst@kernel.org>
- <e75d9667-2ea0-44d0-a26f-fa3d5fe05651@amazon.es>
- <20230918091506-mutt-send-email-mst@kernel.org>
- <a22ba2cb-9b03-481a-b66e-0b78fbfb21f0@amazon.es>
- <20230918100355-mutt-send-email-mst@kernel.org>
- <4ab1b10e-4524-4b6c-a3df-863360fd225d@amazon.es>
- <c2e7076b-b07e-43cd-a912-9314d742a678@amazon.es>
- <20230919055811-mutt-send-email-mst@kernel.org>
-From: Babis Chalios <bchalios@amazon.es>
-Autocrypt: addr=bchalios@amazon.es; keydata=
- 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
-In-Reply-To: <20230919055811-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.1.212.48]
-X-ClientProxiedBy: EX19D036UWB001.ant.amazon.com (10.13.139.133) To
- EX19D037EUB003.ant.amazon.com (10.252.61.119)
-Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PEPF00003439:EE_|DS0PR12MB8573:EE_
+X-MS-Office365-Filtering-Correlation-Id: 36c7d1c0-dc32-47dd-6393-08dbb905958a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	w18isxmLh4uds0TuMTFySlMPHefR9OMiV6OifUQgY2uWoPoDeuL0dEch2X7w4im0NV/5bYIDDfZ507aHogvyIzn4+Dl5QmkF7lg/4oyf32rSy+sep4E7CoOxV+C9EUBQ3JLeIEaDNl+Re0acTwS6lNonxHEb6kPw9Mjq7vbh4ub5i6UmbqGV33qOt7dAf+gHPOeUD0hi8eKDowg9n+RW1Pui6a+bEWrOB25HoXsupldrfsDQelPfq3Xvo6cgKgfze27/4QZqfpGiYJ8uk6b5RmNmF413AloOATw8FGLuGOsspVF7Ohma2kuL+GUY+3Ci83llIVm55s8zzEo21FbRZxQJjz/RWvajMssXaY8VI5lY5cDJXW0dzv8WZz8pulIrN8uzzPyLxylx6g9KMiPdB84JCh6TJ9PT+N+iyR70lo/+xE60lreciTbIrloqWX5FJ+HJAPVPqlMrB2YQMuztrOUl3Xznt2CCz4VH8bV6QsAcBbDupS5LVIrV9KAZnbagSxBWebfCGZdaHRzK1XUoG6KBURosY1cvBhyUxNo7A/DLK9/lLEiAkZ57axmi7/CdNV7IfXQMtdiDVB+NfIrGLhCbNeqCE1EV8wxYLYw7o35QKNyn5xYIxfFzRBvUVrvIyrDT8+X1BqNUkik1sOxYuDwzPwLJapFSbLAd8sfIYJP0hQ+uKGu/d0NC3qfAc8fSWhBFcDrUtiPKkcNwbckHtJ6GCf+lZOn7GRn165NskCZjFzZb/5DTOm05M4fNlZyRpSPtikf+FMZziw/1fAeXOQSZbqNg7W1KnhWkKpGrC9JQPA/RtcJ0NmRwehk/bmRa
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(136003)(346002)(396003)(39860400002)(1800799009)(82310400011)(186009)(451199024)(46966006)(36840700001)(40470700004)(5660300002)(26005)(16526019)(1076003)(8936002)(4326008)(8676002)(40460700003)(2616005)(47076005)(2906002)(7416002)(86362001)(356005)(921005)(81166007)(36860700001)(82740400003)(83380400001)(336012)(36756003)(426003)(40480700001)(7696005)(966005)(70586007)(70206006)(54906003)(110136005)(6666004)(478600001)(41300700001)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Sep 2023 11:43:03.6188
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36c7d1c0-dc32-47dd-6393-08dbb905958a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS2PEPF00003439.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8573
+Subject: [virtio-dev] [VIRTIO PCI PATCH v5 0/1] Add freeze_mode to virtio_pci_common_cfg
 
-On 19/9/23 12:01, Michael S. Tsirkin wrote:
-> On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
->> Resending to fix e-mail formatting issues (sorry for the spam)
->>
->> On 18/9/23 18:30, Babis Chalios wrote:
->>>>>>> Yes, that's what the driver does now in the RFC patch.
->>>>>>> However, this just
->>>>>>> decreases
->>>>>>> the race window, it doesn't eliminate it. If a third
->>>>>>> leak event happens it
->>>>>>> might not
->>>>>>> find any buffers to use:
->>>>>>>
->>>>>>> 1. available buffers to queue 1-X
->>>>>>> 2. available buffers to queue X
->>>>>>>
->>>>>>>
->>>>>>> 3. poll queue X
->>>>>>> 4. used buffers in queue X       <- leak event 1 will
->>>>>>> use buffers in X
->>>>>>> 5. avail buffers in queue X
->>>>>>> 6. poll queue 1-X                <- leak event 2 will
->>>>>>> use buffers in 1-X
->>>>>>> 7. used buffers in queue 1-X
->>>>>>> 8. avail buffers in queue 1-X
->>>>>>>                                     <- leak event 3 (it
->>>>>>> needs buffers in X, race with step 5)
->>>>>>> 9. goto 3
->>>>>> I don't get it. we added buffers in step 5.
->>>>> What if the leak event 3 arrives before step 5 had time to
->>>>> actually add the
->>>>> buffers in X and make
->>>>> them visible to the device?
->>>> Then it will see a single event in 1-X instead of two events.  A leak is
->>>> a leak though, I don't see does it matter how many triggered.
->>>>
->>
->> So the scenario I have in mind is the following:
->>
->> (Epoch here is terminology that I used in the Linux RFC. It is a value
->> maintained by random.c
->> that changes every time a leak event happens).
->>
->> 1. add buffers to 1-X
->> 2. add buffers to X
->> 3. poll queue X
->> 4. vcpu 0: get getrandom() entropy and cache epoch value
->> 5. Device: First snapshot, uses buffers in X
->> 6. vcpu 1: sees used buffers
->> 7. Device: Second snapshot, uses buffers in 1-X
->> 8. vcpu 0: getrandom() observes new  epoch value & caches it
->> 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
->> has not yet finished adding new buffers).
->> 10. vcpu 1 adds new buffer in X
->> 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
->>
->>
->> In this succession of events, when the third snapshot will happen, the
->> device won't find
->> any buffers in either queue, so it won't increase the RNG epoch value. So,
->> any entropy
->> gathered after step 8 will be the same across all snapshots. Am I missing
->> something?
->>
->> Cheers,
->> Babis
->>
-> Yes but notice how this is followed by:
->
-> 12. vcpu 1: sees used buffers in 1-X
->
-> Driver can notify getrandom I guess?
+Hi all,
+This is the v5 patches and makes below changes:
+* Since this series patches add a new mechanism that let virtgpu and Qemu can negotiate
+  their reset behavior, and other guys hope me can improve this mechanism to virtio pci
+  level, so that other virtio devices can also benefit from it. So instead of adding
+  new feature flag VIRTIO_GPU_F_FREEZE_S3 only serves for virtgpu, v5 add a new parameter
+  named freeze_mode to struct virtio_pci_common_cfg, when guest begin suspending, set
+  freeze_mode to VIRTIO_PCI_FREEZE_MODE_FREEZE_S3, and then all virtio devices can get
+  this status, and notice that guest is suspending, then they can change their reset
+  behavior.
 
-It could, but then we have the exact race condition that VMGENID had,
-userspace has already consumed stale entropy and there's nothing we
-can do about that.
+V5 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230919110225.2282914-1-Jiqian.Chen@amd.com/T/#t
+V5 of kernel patch:
+https://lore.kernel.org/lkml/20230919104607.2282248-1-Jiqian.Chen@amd.com/T/#t
 
-Although this is indeed a corner case, it feels like it beats the purpose
-of having the hardware update directly userspace (via copy on leak).
+The link to trace this issue:
+https://gitlab.com/qemu-project/qemu/-/issues/1860
 
-How do you feel about the proposal a couple of emails back? It looks to
-me that it avoids completely the race condition.
+Best regards,
+Jiqian Chen
 
-Cheers,
-Babis
+v4:
+no v4 patches.
+V4 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230719074726.1613088-1-Jiqian.Chen@amd.com/T/#t
+No v4 of kernel patch
+
+
+v3:
+makes below changes:
+* Use enum for freeze mode, so this can be extended with more
+  modes in the future.
+* Rename functions and paratemers with "_S3" postfix.
+* Explain in more detail
+Link:
+https://lists.oasis-open.org/archives/virtio-comment/202307/msg00209.html
+V3 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230720120816.8751-1-Jiqian.Chen@amd.com
+V3 of Kernel patch: https://lore.kernel.org/lkml/20230720115805.8206-1-Jiqian.Chen@amd.com/T/#t
+
+
+v2:
+makes below changes:
+* Elaborate on the types of resources.
+* Add some descriptions for S3 and S4.
+Link:
+https://lists.oasis-open.org/archives/virtio-comment/202307/msg00160.html
+V2 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230630070016.841459-1-Jiqian.Chen@amd.com/T/#t
+V2 of Kernel patch:
+https://lore.kernel.org/lkml/20230630073448.842767-1-Jiqian.Chen@amd.com/T/#t
+
+
+v1:
+Hi all,
+I am working to implement virtgpu S3 function on Xen.
+
+Currently on Xen, if we start a guest through Qemu with enabling virtgpu, and then suspend and
+s3resume guest. We can find that the guest kernel comes back, but the display doesn't. It just
+shown a black screen.
+
+That is because when guest was during suspending, it called into Qemu and Qemu destroyed all
+resources and reset renderer. This made the display gone after guest resumed.
+
+So, I add a mechanism that when guest is suspending, it will notify Qemu, and then Qemu will
+not destroy resources. That can help guest's display come back.
+
+As discussed and suggested by Robert Beckett and Gerd Hoffmann on v1 qemu's mailing list.
+Due to that mechanism needs cooperation between guest and host. What's more, as virtio drivers
+by design paravirt drivers, it is reasonable for guest to accept some cooperation with host to
+manage suspend/resume. So I request to add a new feature flag, so that guest and host can
+negotiate whenever freezing is supported or not.
+Link:
+https://lists.oasis-open.org/archives/virtio-comment/202306/msg00595.html
+V1 of Qemu patch:
+https://lore.kernel.org/qemu-devel/20230608025655.1674357-2-Jiqian.Chen@amd.com/
+V1 of Kernel patch:
+https://lore.kernel.org/lkml/20230608063857.1677973-1-Jiqian.Chen@amd.com/
+
+
+Jiqian Chen (1):
+  transport-pci: Add freeze_mode to virtio_pci_common_cfg
+
+ transport-pci.tex | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+-- 
+2.34.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
