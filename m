@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13822-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13823-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3A79CD549F
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 07:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A52A9CD54A4
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 08:01:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 40E6C8504D
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 07:56:27 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 055D612D353
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 08:01:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 34708986566
-	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 07:56:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D19FD986559
+	for <virtio-dev@archiver.kernel.org>; Tue, 19 Sep 2023 08:01:47 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 287D9983E25; Tue, 19 Sep 2023 07:56:27 +0000 (UTC)
+	id B3CF9983E25; Tue, 19 Sep 2023 08:01:47 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,140 +24,107 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 177E89864C2;
-	Tue, 19 Sep 2023 07:56:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A46FC9864C2
+	for <virtio-dev@lists.oasis-open.org>; Tue, 19 Sep 2023 08:01:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="377188522"
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="364927468"
 X-IronPort-AV: E=Sophos;i="6.02,158,1688454000"; 
-   d="scan'208";a="377188522"
+   d="scan'208";a="364927468"
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="749376829"
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="993077165"
 X-IronPort-AV: E=Sophos;i="6.02,158,1688454000"; 
-   d="scan'208";a="749376829"
-Message-ID: <56e2e755-82c5-ff03-9501-969e5ffd139e@intel.com>
-Date: Tue, 19 Sep 2023 15:56:14 +0800
+   d="scan'208";a="993077165"
+Message-ID: <c1361497-4c46-d00d-58e7-520d5f81b90a@intel.com>
+Date: Tue, 19 Sep 2023 16:01:41 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Firefox/102.0 Thunderbird/102.15.1
 Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: jasowang@redhat.com, eperezma@redhat.com, cohuck@redhat.com,
- stefanha@redhat.com, virtio-comment@lists.oasis-open.org,
- virtio-dev@lists.oasis-open.org
+To: Parav Pandit <parav@nvidia.com>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
 References: <20230906081637.32185-1-lingshan.zhu@intel.com>
- <20230906081637.32185-4-lingshan.zhu@intel.com>
- <20230914072857-mutt-send-email-mst@kernel.org>
- <313a60c5-34ac-ca77-b7e1-7cb7eaf11340@intel.com>
- <20230915071111-mutt-send-email-mst@kernel.org>
- <547e4395-4244-290d-9d6e-1de02d1e7e71@intel.com>
- <20230918132852-mutt-send-email-mst@kernel.org>
+ <20230914070911-mutt-send-email-mst@kernel.org>
+ <559c0875-24b8-0709-712e-24ffe7830022@intel.com>
+ <PH0PR12MB548159C982509436C6499279DCF4A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <09045654-d69c-845d-ee26-636fa08f68b4@intel.com>
+ <PH0PR12MB5481C41D4F32DA26D5831471DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com>
+ <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
+ <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <f1fe513e-d42d-03a6-348c-5e58aac0a759@intel.com>
+ <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com>
+ <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
 From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <20230918132852-mutt-send-email-mst@kernel.org>
+In-Reply-To: <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [virtio-comment] Re: [PATCH 3/5] virtqueue: constraints for
- virtqueue state
+Content-Transfer-Encoding: 7bit
+Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
+ state
 
 
 
-On 9/19/2023 1:30 AM, Michael S. Tsirkin wrote:
-> On Mon, Sep 18, 2023 at 11:02:18AM +0800, Zhu, Lingshan wrote:
+On 9/19/2023 2:41 AM, Parav Pandit wrote:
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Monday, September 18, 2023 3:05 PM
 >>
->> On 9/15/2023 7:16 PM, Michael S. Tsirkin wrote:
->>> On Fri, Sep 15, 2023 at 10:59:29AM +0800, Zhu, Lingshan wrote:
->>>> On 9/14/2023 7:30 PM, Michael S. Tsirkin wrote:
->>>>> On Wed, Sep 06, 2023 at 04:16:35PM +0800, Zhu Lingshan wrote:
->>>>>> This commit specifies the constraints of the virtqueue state,
->>>>>> and the actions should be taken by the device when SUSPEND
->>>>>> and DRIVER_OK is set
->>>>>>
->>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
->>>>>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->>>>>> ---
->>>>>>     content.tex | 19 +++++++++++++++++++
->>>>>>     1 file changed, 19 insertions(+)
->>>>>>
->>>>>> diff --git a/content.tex b/content.tex
->>>>>> index 0fab537..9d727ce 100644
->>>>>> --- a/content.tex
->>>>>> +++ b/content.tex
->>>>>> @@ -594,6 +594,25 @@ \subsection{\field{Used State} Field}
->>>>>>     When VIRTIO_RING_F_PACKED is not negotiated, the 16-bit value of \field{used_idx}
->>>>>>     is always 0
->>>>>> +\drivernormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated but VIRTIO_RING_F_PACKED not been negotiated,
->>>>>> +the driver SHOULD NOT access \field{Used State} of any virtqueues, it SHOULD use the
->>>>>> +used index in the used ring.
->>>>>> +
->>>>>> +\devicenormative{\subsection}{Virtqueue State}{Basic Facilities of a Virtio Device / Virtqueue State}
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE has been negotiated, the device SHOULD only accept setting
->>>>>> +Virtqueue State of any virtqueues when DRIVER_OK is not set in \field{device status},
->>>>>> +or both of DRIVER_OK and SUSPEND are set in \field{device status}.
->>>>>> +Otherwise the device MUST ignore any writes to Virtqueue State of any virtqueues.
->>>>>> +
->>>>>> +If VIRTIO_F_QUEUE_STATE have been negotiated, when SUSPEND is set,
->>>>>> +the device MUST record the Virtqueue State of every enabled virtqueue
->>>>>> +in \field{Available State} and \field{Used State} respectively,
->>>>> record how?
->>>> This is transport specific, for PCI they are recorded in the common config
->>>> space,
->>>> two new fields of them are introduced in patch 5.
->>> that is not enough space to record state for every enabled vq.
->> They can work with queue_select like many other vq configurations.
-> queue select is under driver control.
-queue_select works for other fields like queue_size which is also RW.
-
-It looks no difference between queue_size and vq_state.
+>> On 9/18/2023 2:54 PM, Parav Pandit wrote:
+>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Monday, September 18, 2023 12:19 PM
+>>>> so admin vq based LM solution can be a side channel attacking surface
+>>> It will be part of the DSM whenever it will be used in future.
+>>> Hence, it is not attack surface.
+>> I am not sure, why we have to trust the PF?
+>> This is out of virtio scope anyway.
+>>
+>> I have explained many times how it can be a attack surface, and examples.
+>>
+> And none of that make any sense as fundamentally, hypervisor is trusted regardless of the approach.
+this is not about hypervisors, I am saying admin vq based LM solution 
+can be a side channel attacking surface
+Please refer to my previously listed examples and the TDISP spec is FYI.
 >
+>> What happen if malicious SW dump guest memory by admin vq dirty page
+>> tracking feature?
+> What??
+> Where is this malicious SW is located, in guest VM?
+host, in this attacking model.
 >
->> I will mention this in the comment.
->>>>>> +and correspondingly restore the Virtqueue State of every enabled virtqueue
->>>>>> +from \field{Available State} and \field{Used State} when DRIVER_OK is set.
->>>>> when is that?
->>>> When the DRIVER sets DRIVER_OK and done before the device presents
->>>> DRIVER_OK.
->>> I don't really understand the flow here. does SUSPEND clear DRIVER_OK
->>> then?
->> SUSPEND does not clear DRIVER, I think this is not a must.
-> then I don't get what does "when DRIVER_OK is set" mean - it stays
-> set all the time.
-That means the driver sets DRIVER_OK.
-
-I am not a native speaker, but This wording can be found throughout the 
-spec, e.g.:
-
-2.1.2 Device Requirements: Device Status Field
-
-If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device MUST 
-send a device configuration
-change notification to the driver.
+>>>>>>>> For untrusted hypervisor, same set of attack surface is present
+>>>>>>>> with
+>>>>>>>> trap+emulation.
+>>>>>>>> So both method score same. Hence its not relevant point for discussion.
+>>>>>>> this is not hypervisor, Do you see any modern hypervisor have
+>>>>>>> these issues?
+>>>>>>>
+>>>>>>> This is admin vq for LM can be a side channel attacking surface.
+>>>>> It is not.
+>>>>> Hypervisor is trusted entity.
+>>>>> For untrusted hypervisor the TDISP is unified solution build by the
+>>>>> various
+>>>> industry bodies including DMTF, PCI for last few years.
+>>>>> We want to utilize that.
+>>>> first, TDISP is out of virtio spec.
+>>> Sure, hence, untrusted hypervisor are out of scope.
+>>> Otherwise, trap+emulation is equally dead which relies on the hypervisor to
+>> do things.
+>> so lets focus on LM topic, other than confidential computing.
+> ok.
 >
->
->>>
->>>>>> +
->>>>>>     \input{admin.tex}
->>>>>>     \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
->>>>>> -- 
->>>>>> 2.35.3
->>> This publicly archived list offers a means to provide input to the
->>> OASIS Virtual I/O Device (VIRTIO) TC.
->>>
->>> In order to verify user consent to the Feedback License terms and
->>> to minimize spam in the list archive, subscription is required
->>> before posting.
->>>
->>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
->>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
->>> List help: virtio-comment-help@lists.oasis-open.org
->>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
->>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
->>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
->>> Committee: https://www.oasis-open.org/committees/virtio/
->>> Join OASIS: https://www.oasis-open.org/join/
->>>
+>>> Just because data transfer is not done, it does not mean that thousands of
+>> polling register writes complete in stipulated time.
+>> 1) again, they are per-device facilities
+> That does not satisfy that it can somehow do work in < x usec time.
+why? Do you mind take examples of basic PCI virtio common config space 
+registers?
+>> 2) we use very few registers, even status byte does not require polling, just re-
+>> read with delay.
+>>
+>> Please refer to the code for setting FEATURES_OK.
+> It wont work when one needs to suspend the device.
+> There is no point of doing such work over registers as fundamental framework is over the AQ.
+why it doesn't work?
 
 
 ---------------------------------------------------------------------
