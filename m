@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13886-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13887-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2946ACE79D2
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 14:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 66A1CCE79CE
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 14:16:13 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6F0788742C
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 14:13:50 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9689812D358
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 14:16:12 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4D53C986674
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 14:13:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 688E098667A
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 14:16:12 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3642398666B; Wed, 20 Sep 2023 14:13:50 +0000 (UTC)
+	id 4F4FE98666B; Wed, 20 Sep 2023 14:16:12 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,37 +24,37 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2471098666C
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2023 14:13:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 403D898666C
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2023 14:16:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: lxwjB42VNcu3ncKZI1JV9w-1
+X-MC-Unique: 2RS-1uPVOVGnXTm70fvVVg-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695219226; x=1695824026;
+        d=1e100.net; s=20230601; t=1695219368; x=1695824168;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GWIfaJigRXBNPfQTBV0dvLWw4bjXY2fZaDf230/MnnU=;
-        b=coesz5kXwWvjUioOElZx30t13qsTWpm6oEX9Z3k7HrbPdl1/JM3DO0QVxSQgJBuTRe
-         AD/lxQtkoTVw728fpUzbxRHCd783USqXW2UgAWFzN+UKZaN5oi1E0KScZQ3zsOMiyT+9
-         6qBB0P45wJvFTpW525ah++7jkK820vOXZxHW+dxn6tWH/WNO/Bn4R38Spyfr4I4TBUVI
-         p1Kz3zLkb4KQhnxMyUfHilbi2sJmRaLjEnT2GbZrnFBMd7AJNolEzG8RUS44LiQ9kbIB
-         PgoKgstmUN4mQodfIefzoDBcXBKaYXJiia0fob7JoExUU3AbhhpTcrQgKt0wahA49QME
-         Ce7g==
-X-Gm-Message-State: AOJu0YxmLVvUFkBYOQq32vPBbHD+gfd/6O706N30w4ulAXdWbDeUexzk
-	bwSSFJiPXihp7E/kguqfy18Or8Rh0bM1bMFYRJQbD198/G0HUynZP0jme33QKJn6QysKgpCZmqJ
-	zxb23KGar3uL4hbw6FTx5+QkK356f
-X-Received: by 2002:aa7:de91:0:b0:521:8777:b00d with SMTP id j17-20020aa7de91000000b005218777b00dmr1931288edv.15.1695219226664;
-        Wed, 20 Sep 2023 07:13:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHJ67WWpQgVTehTIubr5x4KEpnR1/1l2FeN9W5Mu9r0BDTXT71mR8YBxors+hMM1q+/xKp8Og==
-X-Received: by 2002:aa7:de91:0:b0:521:8777:b00d with SMTP id j17-20020aa7de91000000b005218777b00dmr1931277edv.15.1695219226398;
-        Wed, 20 Sep 2023 07:13:46 -0700 (PDT)
-Date: Wed, 20 Sep 2023 10:13:41 -0400
+        bh=wWCZpURgCu/EOsxI5VaP1DWFknByf+RQb5nAQ5saRss=;
+        b=B86nomWXSpsfo0maRjvWLxDW2XiVbLutkBlU1qR2f1h49CghT2jdttbizZHK9xnlR2
+         4wxHyf2T6XS87PM3D6RzueXASoMMG4qruj/PeBJQrXhNj1nrS+7vAloOVobIDFp926oO
+         4BJH+Y4x2jlVlOIWe4pPwSt5h4vAVvQd5g4TxZY0uaAJDX27luQGkNY8A/vRBLt7bgf9
+         10W2cT6gFnAWPAADJDboPGxs9BYbzBmSte3Onboz7HwDRAmNlU+A74gQND4RBlRkuky+
+         dP3G8hjtr7qBpvL4SYmTT+VQqk41vzbI0CsF3r8TbAartrVzfW+Ymov2BiQhXHYvlzNz
+         LKWw==
+X-Gm-Message-State: AOJu0YzO9FcsT9OF2j2Yx5yKgqm07nuxDKqCx5Gh7LMBMXjh7/bH6AT3
+	Lp/0MoGVKJIjij4zk0sHb/CvFt/IlIFD+H8mNih48Giv0j5u/6vukpMbBJFAZtxAxFASIcUeQnw
+	0KzK7BSUV2TRW3Lpe53FXLgDS3aFy
+X-Received: by 2002:a17:906:5308:b0:9a1:e941:6f47 with SMTP id h8-20020a170906530800b009a1e9416f47mr2282907ejo.42.1695219368689;
+        Wed, 20 Sep 2023 07:16:08 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEIFufMDOmWLQAiliJpdND/Agp1baCfYJUK6R1FlsOXJNVwZwC2ppU/DZ6DMi2ItROyBcBr8A==
+X-Received: by 2002:a17:906:5308:b0:9a1:e941:6f47 with SMTP id h8-20020a170906530800b009a1e9416f47mr2282891ejo.42.1695219368335;
+        Wed, 20 Sep 2023 07:16:08 -0700 (PDT)
+Date: Wed, 20 Sep 2023 10:16:04 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Parav Pandit <parav@nvidia.com>
 Cc: "Zhu, Lingshan" <lingshan.zhu@intel.com>,
 	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
 	Jason Wang <jasowang@redhat.com>
-Message-ID: <20230920101142-mutt-send-email-mst@kernel.org>
+Message-ID: <20230920101402-mutt-send-email-mst@kernel.org>
 References: <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
  <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com>
  <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -75,12 +75,54 @@ Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
  vq state
 
 On Wed, Sep 20, 2023 at 01:41:00PM +0000, Parav Pandit wrote:
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Wednesday, September 20, 2023 6:12 PM
+> 
+> > And Parav same goes for you - can you summarize Zhu Lingshan's position?
+> 
+> Below is my summary about Zhu Lingshan's position:
+> 
+> One line summary of his position in my view:
+> 
+> 0. Use inband device migration only, use mediation, mediation is secure, but AQ is not secure.
+> 
+> Details of his position in my view:
+> 
+> 1. Device migration must be done through VF itself by suspending specific vqs and the VF device both.
+> 2. When device migration is done using #1, it must be done using mediation approach in hypervisor.
+> 
+> 3. When migration is done using inband mediation it is more secure than AQ approach.
+> (as opposed to AQ of the owner device who enables/disables SR-IOV).
+> 
+> 4. AQ is not secure.
+> But,
+> 5. AQ and admin commands can be built on top of his proposal #1, even if AQ is less secure. Opposing statements...
+> 
+> 6. Dirty page tracking and inflight descriptors tracking to be done in his v1. but he does not want to review such coverage in [1].
+> 
+> 8. Since his series does not cover any device context migration and does not talk anything about it, 
+> I deduce that he plans to use cvq for setting ups RSS and other fields using inband CVQ of the VF.
+> This further limit the solution to only net device, ignoring rest of the other 20+ device types, where all may not have the CVQ.
+> 
+> 9. trapping and emulation of following objects: AQ, CVQ, virtio config space, PCI FLR flow in hypervisor is secure, but when if AQ of the PF do far small work of it, AQ is not secure.
+> 
+> 10. Any traps proposed in #9 mostly do not work with future TDISP as TDISP do not bifurcate the device, so ignore them for now to promote inband migration.
+> 
+> 11. He do not show interest in collaboration (even after requesting few times) to see if we can produce common commands that may work for both passthrough (without mediation) and using mediation for nested case.
+> 
 > 12. Some how register access on single physical card for the PFs and VFs gives better QoS guarantee than virtqueue as registers can scale infinitely no matter how many VFs or for multiple VQs because it is per VF.
->
+> 
+> [1] https://lore.kernel.org/virtio-comment/20230909142911.524407-7-parav@nvidia.com/T/#md9fcfa1ba997463de8c7fb8c6d1786b224b0bead
 
-This makes some sense as memory accesses to independent devices do not
-need to be ordered. AQ's answer is multiple queues and out of order
-execution within the queue. Not sure whether this is good enough.
+
+OK so with this summary in mind, can you find any advantages to
+inband+mediation that are real or do you just see disadvantages? And
+it's a tricky question because I can see some advantages ;)
+
+
+-- 
+MST
 
 
 ---------------------------------------------------------------------
