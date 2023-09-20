@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13870-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13871-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9ECA5CE79B0
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 10:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0222CE79CB
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:11:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id CD51E12D353
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 10:55:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id EB8762AD67
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A495B986679
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 10:55:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B1B5698667C
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 886F9986669; Wed, 20 Sep 2023 10:55:17 +0000 (UTC)
+	id 8C2D3986669; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,33 +24,28 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 78BE198666A
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2023 10:55:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7C65E98666A
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q/g3eg0EhcZK8aJTqez+SF97w7EgCavYGVQMZMv8VywO0qjACvKOK79auxJFhY7/6xCm3IwjYMNgieA02w8A7vRQano5tWvXEeqDY/o6UmWcEgvFHg+kmS9rOm/IOIl/EeKNxRM4pkgr3VOMS1QndDWRjUj/ebTUtwMMLdauqFrrj1FZdryGCzFbH6XytiW8IDbXWNqNWlFAYRg5vopbnQ9hmxyGsVb5ctjLPcwGXL6LfyeXwpIg+axWlZsw3JtYRHHoRBntLzmgT57+gRsj98QdjITHo7I4TkJ+G5i4AJ99oJ5hqrp9tJJBGBU9tjzLHiZxKNenQJ/ClqUAZU8GpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4XmGW9p08zZPYMCarGVy8eRViPf+e5BMrBvdxwS9f3U=;
- b=PvR236kQzkN1kgGrnQxFNx/j3cqtJMxdrslJBDODXJUy/cKWP+zbUWIO5inJZvqi71jDuHpAQUzL5z02mvvn85NAnlgUEJnH71pdXjAKEp8iWC320cAPATG985SgSOELDF319Ky9dzwCOMTE0Qtaq3NK5WEnXVpxudma+7yQEqa8PrEUGqTdAGmGCxJGs6XAv95iXqJWjTUe8qihgnRWsRZe3ar0/ycOMp8kiul2pxWZUf4WWhKLYEu/BDugBNTctjVotwHB5PKHENq2r4jQ2+b9KP1ViAusvPx4E3pngxNshfJlNfaODF+RfI9EpFdNK4hkkETmzQvqQF/vkRv5pg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>, "Zhu, Lingshan"
-	<lingshan.zhu@intel.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason
- Wang <jasowang@redhat.com>
-Thread-Topic: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
- vq state
-Thread-Index:
- AQHZ540fvvI9R/h+mUufqKbomRy5frAegLUwgAFrbQCAABUsgIAAD5cAgAAA+ACAABKeIIAABNaAgAAAXmCAAC3dgIAAl98QgAADDoCAAk+KgIAAS2wAgAACd5A=
-Date: Wed, 20 Sep 2023 10:55:14 +0000
-Message-ID:
- <PH0PR12MB54817E095D0F3F86A9D1C3DADCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References:
- <PH0PR12MB5481C41D4F32DA26D5831471DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="379076370"
+X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
+   d="scan'208,217";a="379076370"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="920244216"
+X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
+   d="scan'208,217";a="920244216"
+Content-Type: multipart/alternative;
+ boundary="------------Z4VIngHpbxStoL01a8htve5T"
+Message-ID: <a009e6ec-4bea-d1c3-afbc-b65321341514@intel.com>
+Date: Wed, 20 Sep 2023 19:11:25 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Content-Language: en-US
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ Jason Wang <jasowang@redhat.com>
+References: <PH0PR12MB548159C982509436C6499279DCF4A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com>
  <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
  <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -60,129 +55,532 @@ References:
  <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20230918144312-mutt-send-email-mst@kernel.org>
  <bb402c34-ad07-063a-f4f5-d8c6b3a642c7@intel.com>
- <20230920054836-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230920054836-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|MN2PR12MB4128:EE_
-x-ms-office365-filtering-correlation-id: b42f2bf1-0a2a-44e1-e8ac-08dbb9c81193
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- Jb/AcuSwx9wpS+mdTU5cIPCK5UA7fePP8aWXJ+FCCXWDLrnLTmD9rXJGUCE9QD1A+vw4GD8GcjHkya7Vpd4cGEQtZG1G0EinFzgUBmNCNHMnQjFTWs1mlkkINMf721Ku0uX0c38EUa2JtFz9eWTPSU1IiISMBT2yWP3Xiwn/7Z5GY0TIDMiK6dRLMjutC/1WxWrMFbI0IAbhTbqJeSZBU8zP5mRn77mwx+XUFVxt19n1DIj/Cj27euoWL6fxLU0cUwQZy/Uah5DmCaLLqiCJA5N4ATNPni6A4+dusm4LsUi0tn2APKuS51RsOq2HDIWnGMiNouOf7Pz6BA8Zf963moSSTJ/kAQoB2CWdOesC73tCpSfMxcgObBUdV31RLVrjaF1JLHXpUg3YNlssJ4A15a60Y6zlTJKCPgoBCGK5+TUXEMmZaZxNSF35JDTABBoBDT+/YdtHPyRAG4Dhm/Ht6tioyLmk5Bv4BTvleFIFtJ8bHzyBiBLyC52QIFbEik55ATxrAlqEtRRuezFS1EuFhym4sYHB1A8iq9UTKUpmbqTVW0FlnDWBEtzVOXChAmHpUvaixFyAhAXTfOGj3AdPpOukuNGeroNuf4gREDBkcLuB+ea2SjXrxo1xwI1NV6rLZBeYj6utqBvADhFgYz1aOrdynNdEsxUzHFRyWw7jfJc=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(396003)(376002)(39860400002)(346002)(1800799009)(186009)(451199024)(52536014)(26005)(8936002)(8676002)(122000001)(33656002)(4326008)(83380400001)(2906002)(55016003)(86362001)(7696005)(6506007)(71200400001)(966005)(478600001)(5660300002)(316002)(9686003)(54906003)(38070700005)(110136005)(76116006)(64756008)(38100700002)(66556008)(66946007)(66446008)(66476007)(41300700001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?8iuXXpRgaZcoIao8pMka4Ygn1wbkRoZ8g3Xh+OnuKHplgL1giFH1UVYeNfaI?=
- =?us-ascii?Q?VFt0Ft4mSllsSXjNwZp6v9iH8yf/1Xj/gMB/jrTJR+9m/BbZUswQG4E6T+01?=
- =?us-ascii?Q?vahEgnWPYjLRlnilaKHdylRvShjjQpeSXrNBAOw4O9OiTjvyXBP11I2KGcfq?=
- =?us-ascii?Q?aMPg0toOKDE3RTcVYSsturIIzBH2lcpa3ICzo2abq0LKPiFnyXR9yT7zFLU0?=
- =?us-ascii?Q?RxbI966+Fu3U+Cby2Ia1tAahJyNVlfv9qo1FK63IFeGG0FsiU6FiViQ5Ofa3?=
- =?us-ascii?Q?9HZfZfUOOoIdTSv3TKFTSEi2WKtDC2GpEimLkzdVCWdFDBLGcoXs37Jm5M7C?=
- =?us-ascii?Q?liVT84WktuKJPXzgbEeM4ENmM5QFgElQ3icee/N95ie/TSrnqWSENoC7Pody?=
- =?us-ascii?Q?3WCgUXliwwGcdgGPR/u2q5eiluVf3vdJrGFxFQ9Q54Jlcc3ii/zXj7n2tLbX?=
- =?us-ascii?Q?0OZBwvBcrfbQIRLUVX9/t5Vy6ZEf25MjaYL+d7gmbqhbEg7bTF17VTQpnPq+?=
- =?us-ascii?Q?ab9waA/l90Rf+f1HbTFejRoni+9vx+AFZ98ljuk5YwAWrTffDzZA6CqLL5rI?=
- =?us-ascii?Q?G8hY3zncyp2TlOZgEIPcpZfhzYyCxM7yEOV8MKGYkvUQeEaNTA2+vefQY/Xd?=
- =?us-ascii?Q?QIhdUDjf8EEPIqWbTC5BifMn/E/41tK0PZajWEFkzFhj6Rqg5gG8qap73KCI?=
- =?us-ascii?Q?AswsBpseFiOWTtkdV/SOSI5hXpVFafiSr7aAx4FUXaqvDBnSNzzzyGTLGyhO?=
- =?us-ascii?Q?b6aeMGu8Zo4WZyX9aqjiRI26Fbr01nEfguY7kEzSFc5LzJDRU7IHNIt+tQu1?=
- =?us-ascii?Q?QI9ObpNaKS8JUS+dBknr2TgFouXPPqhWMJ0mevQs5FLMCDpcYcckl1xHBBLV?=
- =?us-ascii?Q?HzO+8DtbV1zEoHXOP8m94XR+kNVU72x8ZhQaclg7AQ0x4GDKhkFIyRY1NjG7?=
- =?us-ascii?Q?8yKyexwiz29vhKi396fKL6W8CnWoqsa5csVVj3P10tC4Krp4+UrsXzHaIdoI?=
- =?us-ascii?Q?ZmGDYR4FNizUVttMhj0NQv/iTLA+cMMTmXMAmZx0rWw3fSlp8K1aFDYAa/wF?=
- =?us-ascii?Q?oTAEKziF85RPlGpon/yGeGFJExB03vgRou4kNXHdlt641rBQcqDpcTwZp5dQ?=
- =?us-ascii?Q?j9W6PkbnldiETQahcMORQdPmWKU/lTO+3vXUX8oWtLU/F3soP8UuwCeXFVAG?=
- =?us-ascii?Q?EiSA2HDOJDDhMExiFMVFkqaVSHdbMggJvfRMC7zYtePDgo67IwLzTdtaWVx0?=
- =?us-ascii?Q?7Eb3TNTy5wWqYJBPxHTI2Ongj3B7TmxGj0xLj4Zoi2gJCWSPQ83PdruFE+ht?=
- =?us-ascii?Q?RVXlvhF7Thv5t9GjaAMUqXXh9Fa8EdNqEzu5QpzC+xDK4vTZKtWR9rqeAfQp?=
- =?us-ascii?Q?7My4Zw6xp3UGFdgjzUL6QxdZNm1WpP6sZeHSLAsKc2PJo0HXWKD7r2mLMATj?=
- =?us-ascii?Q?DNo4W6BnGLN3ZAcYtUOw9iNpuR8Ttk9CaoFZ0ID+mwKtLiNvUUl/oJN9i67y?=
- =?us-ascii?Q?zPeCytDkjurPV9TYgtcM0pKRhyHBzVqUuL1zoX2SJvtIxnkwYG9XNuneXirF?=
- =?us-ascii?Q?zD6PMYies62A8XYe9rQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b42f2bf1-0a2a-44e1-e8ac-08dbb9c81193
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2023 10:55:14.2357
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Awrn86c6l66SNJzLXT9gB6t2C28cgyJD+QcihmoqpZXeMi2OzXtkGZaltH6VjMb2EpXtorXcsDxar4hKCu75HA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4128
-Subject: RE: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
+ <PH0PR12MB5481E94B590F6696F2A23028DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <c81dc719-1abf-ff56-1c1b-07536d197354@intel.com>
+ <PH0PR12MB5481F731EF62DB5CCE777918DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <84b2f6b0-c4fb-9b28-53ab-cc8c0b6763c2@intel.com>
+ <PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
  state
 
+--------------Z4VIngHpbxStoL01a8htve5T
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Wednesday, September 20, 2023 4:06 PM
+On 9/20/2023 5:52 PM, Parav Pandit wrote:
+>
+> Hi Lingshan,
+>
+> Last two email replies in non-next format are getting hard to follow.
+>
+> Can you please revert back to have text-based emails?
+>
+> When one wants to use PF for the live migration in trusted hypervisor, 
+> PF is in the trust zone.
+>
+even without live migration, it can be an attacking surface while guest 
+running.
+As repeated for many times, it can be used by malicious SW to dump guest 
+memory
+>
+> In future when hypervisor is not trusted, the task of LM will be 
+> delegated to other infrastructure TVM.
+>
+> Ravi at Intel already explained this a year ago using migration TD.
+>
+> This fits very well without bifurcating the member device which is 
+> extremely hard.
+>
+TD, TDX or TDX-IO are more complex topics, and we should
+focus on our live migration solution, not CC.
 
->=20
-> I freely admit the finer points of this extended flamewar have been lost =
-on me,
-> and I wager I'm not the only one. I thought you wanted to migrate the dev=
-ice
-> just by accessing the device itself (e.g. the VF) without accessing other=
- devices
-> (e.g. the PF), while Parav wants it in a separate device so the whole of =
-the
-> device itself can passed through to guest. Isn't this, fundamentally, the=
- issue?
-Right. An admin device doing the work of device migration. Today it is the =
-owner PF.
-In future it can be other admin device who is deleted this task of migratio=
-n, who can be group owner.
-All the admin commands that we plumb here just works great in that CC/TDI f=
-uture, because only thing changes is the admin device issuing this command.
+My point is: using bar cap as a proxy for admin vq based LM is still 
+problematic.
 
->=20
-> > the bar is only a proxy, doesn't fix anything. and even larger side
-> > channel attacking surface: vf-->pf-->vf
->=20
-> In this model there's no pf. BAR belongs to vf itself and you submit comm=
-ands
-> for the VF through its BAR.
-> Just separate from the pci config space.
->=20
-> The whole attacking surface discussion is also puzzling.  We either are o=
-r are
-> not discussing confidential computing/TDI.  I couldn't figure it out. Thi=
-s needs a
-> separate thread I think.
+Maybe we can close this.
+>
+> Parav
+>
+> *From:* Zhu, Lingshan <lingshan.zhu@intel.com>
+> *Sent:* Wednesday, September 20, 2023 3:15 PM
+> *To:* Parav Pandit <parav@nvidia.com>; Michael S. Tsirkin <mst@redhat.com>
+> *Cc:* virtio-dev@lists.oasis-open.org; Jason Wang <jasowang@redhat.com>
+> *Subject:* Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND 
+> bit and vq state
+>
+> On 9/20/2023 4:34 PM, Parav Pandit wrote:
+>
+>     @font-face {font-family:"Cambria Math"; panose-1:2 4 5 3 5 4 6 3 2
+>     4;}@font-face {font-family:Calibri; panose-1:2 15 5 2 2 2 4 3 2
+>     4;}@font-face {font-family:Consolas; panose-1:2 11 6 9 2 2 4 3 2
+>     4;}p.MsoNormal, li.MsoNormal, div.MsoNormal {margin:0in;
+>     font-size:11.0pt; font-family:"Calibri",sans-serif;}a:link,
+>     span.MsoHyperlink {mso-style-priority:99; color:blue;
+>     text-decoration:underline;}pre {mso-style-priority:99;
+>     mso-style-link:"HTML Preformatted Char"; margin:0in;
+>     margin-bottom:.0001pt; font-size:10.0pt; font-family:"Courier
+>     New";}span.HTMLPreformattedChar {mso-style-name:"HTML Preformatted
+>     Char"; mso-style-priority:99; mso-style-link:"HTML Preformatted";
+>     font-family:Consolas;}span.fontstyle0
+>     {mso-style-name:fontstyle0;}span.EmailStyle21
+>     {mso-style-type:personal-reply; font-family:"Calibri",sans-serif;
+>     color:windowtext;}.MsoChpDefault {mso-style-type:export-only;
+>     font-size:10.0pt; mso-ligatures:none;}div.WordSection1
+>     {page:WordSection1;}
+>
+>     > There can be malicious SW on the host, and the host may be hacked
+>     and compromised.
+>     > For example:
+>     > 1) SUSPEND the a running guest by admin vq
+>     > 2) dumping guest memory through admin vq dirty page tracking.
+>
+>
+>     No. hypervisor is trusted entity who is hosting the VM.
+>
+> The PF may not owned by the hypervisor and the host can be hacked and 
+> computerized.
+>
+>     The device migration is initiated by the hypervisor.
+>
+>     I am omitting the TDISP question for now as talked before.
+>
+>     TDISP spec will evolve for hypercalls when we get there.
+>
+> Confidential computing is out of the spec, as we discussed and agreed.
+>
+> This is to demonstrate why even using a bar cap as proxy for admin vq 
+> LM is still problematic.
+> TDISP gives examples of the attacking models, and admin vq based LM
+> conforms to the models.
+>
+>     *From:*virtio-dev@lists.oasis-open.org
+>     <virtio-dev@lists.oasis-open.org>
+>     <mailto:virtio-dev@lists.oasis-open.org> *On Behalf Of *Zhu, Lingshan
+>     *Sent:* Wednesday, September 20, 2023 12:01 PM
+>     *To:* Parav Pandit <parav@nvidia.com> <mailto:parav@nvidia.com>;
+>     Michael S. Tsirkin <mst@redhat.com> <mailto:mst@redhat.com>
+>     *Cc:* virtio-dev@lists.oasis-open.org; Jason Wang
+>     <jasowang@redhat.com> <mailto:jasowang@redhat.com>
+>     *Subject:* Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce
+>     SUSPEND bit and vq state
+>
+>     On 9/20/2023 2:08 PM, Parav Pandit wrote:
+>
+>           
+>
+>             From: Zhu, Lingshan<lingshan.zhu@intel.com>  <mailto:lingshan.zhu@intel.com>
+>
+>             Sent: Wednesday, September 20, 2023 11:36 AM
+>
+>               
+>
+>             On 9/19/2023 2:49 AM, Michael S. Tsirkin wrote:
+>
+>                 On Mon, Sep 18, 2023 at 06:41:55PM +0000, Parav Pandit wrote:
+>
+>                         Please refer to the code for setting FEATURES_OK.
+>
+>                     It wont work when one needs to suspend the device.
+>
+>                     There is no point of doing such work over registers as fundamental
+>
+>             framework is over the AQ.
+>
+>                 Well not really. It's over admin commands. When these were built the
+>
+>                 intent always was that it's possible to use admin commands through
+>
+>                 another interface, other than admin queue. Is there a problem
+>
+>                 implementing admin commands over a memory BAR? For example, I can see
+>
+>                 an "admin command" capability pointing at a BAR where commands are
+>
+>                 supplied, and using a new group type referring to device itself.
+>
+>             I am not sure, if a bar cap would be implemented as a proxy for the admin vq
+>
+>             based live migration. then the problems of admin vq LM that we have discussed
+>
+>             still exist. the bar is only a proxy, doesn't fix anything. and even larger side
+>
+>             channel attacking surface: vf-->pf-->vf
+>
+>           
+>
+>         AQ LM using PF has no side channel attack as hypervisor and owner device is trusted entity as already discussed.
+>
+>     I believe we have discussed this for many times, and I even
+>     provide you some examples.
+>
+>     Let me repeat for the last time.
+>
+>     There can be malicious SW on the host, and the host may be hacked
+>     and compromised.
+>     For example:
+>     1) SUSPEND the a running guest by admin vq
+>     2) dumping guest memory through admin vq dirty page tracking.
+>
+>     These above can happen right?
+>
+>     You made TDISP as an example, but have you really read the TDISP spec?
+>     In the spec:
+>
+>     Device Security Architecture - Administrative interfaces (e.g., a
+>     PF) may be
+>     used to influence the security properties of the TDI used by the TVM.
+>
+>     TEE-I/O requires the device to organize its hardware/software
+>     interfaces such that the PF cannot
+>     be used to affect the security of a TDI when it is in use by a TVM
+>
+>     Clear?
+>
+>
+>           
+>
 
-True. Many of Lingshan thoughts/comments gets mixed I feel.
-Because he proposes trap+emulation/mediation-based solution by hypervisor a=
-nd none of that is secure anyway in CC/TDI concept.
-He keeps attacking AQ as some side channel attack, while somehow trap+emula=
-tion also done by hypervisor is secure, which obviously does not make sense=
- in CC/TDI concept.
-Both scores equal where hypervisor trust is of concern.
+--------------Z4VIngHpbxStoL01a8htve5T
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-And admin command approach [1] has clear direction for CC to delete those a=
-dmin commands to a dedicated trusted entity instead of hypervisor.
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <font face="monospace">On 9/20/2023 5:52 PM, Parav Pandit wrote:</font><br>
+    <blockquote type="cite"
+cite="mid:PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="Generator" content="Microsoft Word 15 (filtered
+        medium)">
+      <style>@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;}p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}pre
+	{mso-style-priority:99;
+	mso-style-link:"HTML Preformatted Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";}span.HTMLPreformattedChar
+	{mso-style-name:"HTML Preformatted Char";
+	mso-style-priority:99;
+	mso-style-link:"HTML Preformatted";
+	font-family:Consolas;}span.fontstyle0
+	{mso-style-name:fontstyle0;}span.EmailStyle21
+	{mso-style-type:personal-reply;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}div.WordSection1
+	{page:WordSection1;}</style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext="edit" spidmax="1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext="edit">
+<o:idmap v:ext="edit" data="1" />
+</o:shapelayout></xml><![endif]-->
+      <div class="WordSection1">
+        <p class="MsoNormal">Hi Lingshan,<o:p></o:p></p>
+        <p class="MsoNormal"><o:p> </o:p></p>
+        <p class="MsoNormal">Last two email replies in non-next format
+          are getting hard to follow.<o:p></o:p></p>
+        <p class="MsoNormal">Can you please revert back to have
+          text-based emails?<o:p></o:p></p>
+        <p class="MsoNormal"><o:p> </o:p></p>
+        <p class="MsoNormal">When one wants to use PF for the live
+          migration in trusted hypervisor, PF is in the trust zone.</p>
+      </div>
+    </blockquote>
+    <font face="monospace">even without live migration, it can be an
+      attacking surface while guest running.<br>
+      As repeated for many times, it can be used by malicious SW to dump
+      guest memory<br>
+    </font>
+    <blockquote type="cite"
+cite="mid:PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com">
+      <div class="WordSection1">
+        <p class="MsoNormal"><o:p></o:p></p>
+        <p class="MsoNormal"><o:p> </o:p></p>
+        <p class="MsoNormal">In future when hypervisor is not trusted,
+          the task of LM will be delegated to other infrastructure TVM.<o:p></o:p></p>
+        <p class="MsoNormal">Ravi at Intel already explained this a year
+          ago using migration TD.<o:p></o:p></p>
+        <p class="MsoNormal">This fits very well without bifurcating the
+          member device which is extremely hard.</p>
+      </div>
+    </blockquote>
+    <font face="monospace">TD, TDX or TDX-IO are more complex topics,
+      and we should<br>
+      focus on our live migration solution, not CC.<br>
+      <br>
+      My point is: using bar cap as a proxy for admin vq based LM is
+      still problematic.<br>
+      <br>
+      Maybe we can close this. <br>
+    </font>
+    <blockquote type="cite"
+cite="mid:PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com">
+      <div class="WordSection1">
+        <p class="MsoNormal"><o:p></o:p></p>
+        <p class="MsoNormal"><o:p> </o:p></p>
+        <p class="MsoNormal">Parav<o:p></o:p></p>
+        <p class="MsoNormal"><o:p> </o:p></p>
+        <div style="border:none;border-left:solid blue 1.5pt;padding:0in
+          0in 0in 4.0pt">
+          <div>
+            <div style="border:none;border-top:solid #E1E1E1
+              1.0pt;padding:3.0pt 0in 0in 0in">
+              <p class="MsoNormal"><b>From:</b> Zhu, Lingshan
+                <a class="moz-txt-link-rfc2396E" href="mailto:lingshan.zhu@intel.com">&lt;lingshan.zhu@intel.com&gt;</a> <br>
+                <b>Sent:</b> Wednesday, September 20, 2023 3:15 PM<br>
+                <b>To:</b> Parav Pandit <a class="moz-txt-link-rfc2396E" href="mailto:parav@nvidia.com">&lt;parav@nvidia.com&gt;</a>;
+                Michael S. Tsirkin <a class="moz-txt-link-rfc2396E" href="mailto:mst@redhat.com">&lt;mst@redhat.com&gt;</a><br>
+                <b>Cc:</b> <a class="moz-txt-link-abbreviated" href="mailto:virtio-dev@lists.oasis-open.org">virtio-dev@lists.oasis-open.org</a>; Jason Wang
+                <a class="moz-txt-link-rfc2396E" href="mailto:jasowang@redhat.com">&lt;jasowang@redhat.com&gt;</a><br>
+                <b>Subject:</b> Re: [virtio-dev] Re: [PATCH 0/5] virtio:
+                introduce SUSPEND bit and vq state<o:p></o:p></p>
+            </div>
+          </div>
+          <p class="MsoNormal"><o:p> </o:p></p>
+          <p class="MsoNormal" style="margin-bottom:12.0pt"><o:p> </o:p></p>
+          <div>
+            <p class="MsoNormal"><span style="font-family: &quot;Courier
+                New&quot;;">On 9/20/2023 4:34 PM, Parav Pandit wrote:</span><o:p></o:p></p>
+          </div>
+          <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
+            <p class="MsoNormal"><span style="font-family: &quot;Courier
+                New&quot;;">@font-face {font-family:"Cambria Math";
+                panose-1:2 4 5 3 5 4 6 3 2 4;}@font-face
+                {font-family:Calibri; panose-1:2 15 5 2 2 2 4 3 2
+                4;}@font-face {font-family:Consolas; panose-1:2 11 6 9 2
+                2 4 3 2 4;}p.MsoNormal, li.MsoNormal, div.MsoNormal
+                {margin:0in; font-size:11.0pt;
+                font-family:"Calibri",sans-serif;}a:link,
+                span.MsoHyperlink {mso-style-priority:99; color:blue;
+                text-decoration:underline;}pre {mso-style-priority:99;
+                mso-style-link:"HTML Preformatted Char"; margin:0in;
+                margin-bottom:.0001pt; font-size:10.0pt;
+                font-family:"Courier New";}span.HTMLPreformattedChar
+                {mso-style-name:"HTML Preformatted Char";
+                mso-style-priority:99; mso-style-link:"HTML
+                Preformatted"; font-family:Consolas;}span.fontstyle0
+                {mso-style-name:fontstyle0;}span.EmailStyle21
+                {mso-style-type:personal-reply;
+                font-family:"Calibri",sans-serif;
+                color:windowtext;}.MsoChpDefault
+                {mso-style-type:export-only; font-size:10.0pt;
+                mso-ligatures:none;}div.WordSection1
+                {page:WordSection1;}</span>
+              <o:p></o:p></p>
+            <div>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;">&gt;
+                  There can be malicious SW on the host, and the host
+                  may be hacked and compromised.<br>
+                  &gt; For example:<br>
+                  &gt; 1) SUSPEND the a running guest by admin vq<br>
+                  &gt; 2) dumping guest memory through admin vq dirty
+                  page tracking.<br>
+                  <br>
+                  <br>
+                </span><o:p></o:p></p>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;">No.
+                  hypervisor is trusted entity who is hosting the VM.</span><o:p></o:p></p>
+            </div>
+          </blockquote>
+          <p class="MsoNormal"><span style="font-family: &quot;Courier
+              New&quot;;">The PF may not owned by the hypervisor and the
+              host can be hacked and computerized.
+            </span><br>
+            <br>
+            <o:p></o:p></p>
+          <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
+            <div>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;">The
+                  device migration is initiated by the hypervisor.</span><o:p></o:p></p>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;">I am
+                  omitting the TDISP question for now as talked before.</span><o:p></o:p></p>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;">TDISP
+                  spec will evolve for hypercalls when we get there.</span><o:p></o:p></p>
+            </div>
+          </blockquote>
+          <p class="MsoNormal"><span style="font-family: &quot;Courier
+              New&quot;;">Confidential computing is out of the spec, as
+              we discussed and agreed.<br>
+              <br>
+              This is to demonstrate why even using a bar cap as proxy
+              for admin vq LM is still problematic. 
+              <br>
+              TDISP gives examples of the attacking models, and admin vq
+              based LM<br>
+              conforms to the models.<br>
+              <br>
+            </span><o:p></o:p></p>
+          <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
+            <div>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
+              <div>
+                <div style="border:none;border-top:solid #E1E1E1
+                  1.0pt;padding:3.0pt 0in 0in 0in">
+                  <p class="MsoNormal"
+                    style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><b><span
+                        style="font-family: &quot;Courier New&quot;;">From:</span></b><span
+                      style="font-family: &quot;Courier New&quot;;">
+                      <a href="mailto:virtio-dev@lists.oasis-open.org"
+                        moz-do-not-send="true"
+                        class="moz-txt-link-freetext">virtio-dev@lists.oasis-open.org</a>
+                      <a href="mailto:virtio-dev@lists.oasis-open.org"
+                        moz-do-not-send="true">&lt;virtio-dev@lists.oasis-open.org&gt;</a>
+                      <b>On Behalf Of </b>Zhu, Lingshan<br>
+                      <b>Sent:</b> Wednesday, September 20, 2023 12:01
+                      PM<br>
+                      <b>To:</b> Parav Pandit <a
+                        href="mailto:parav@nvidia.com"
+                        moz-do-not-send="true">&lt;parav@nvidia.com&gt;</a>;
+                      Michael S. Tsirkin
+                      <a href="mailto:mst@redhat.com"
+                        moz-do-not-send="true">&lt;mst@redhat.com&gt;</a><br>
+                      <b>Cc:</b> <a
+                        href="mailto:virtio-dev@lists.oasis-open.org"
+                        moz-do-not-send="true"
+                        class="moz-txt-link-freetext">virtio-dev@lists.oasis-open.org</a>;
+                      Jason Wang
+                      <a href="mailto:jasowang@redhat.com"
+                        moz-do-not-send="true">&lt;jasowang@redhat.com&gt;</a><br>
+                      <b>Subject:</b> Re: [virtio-dev] Re: [PATCH 0/5]
+                      virtio: introduce SUSPEND bit and vq state</span><o:p></o:p></p>
+                </div>
+              </div>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;margin-bottom:12.0pt"><span
+                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
+              <div>
+                <p class="MsoNormal"
+                  style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                    style="font-family: &quot;Courier New&quot;;">On
+                    9/20/2023 2:08 PM, Parav Pandit wrote:</span><o:p></o:p></p>
+              </div>
+              <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
+                <pre> <o:p></o:p></pre>
+                <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
+                  <pre>From: Zhu, Lingshan <a href="mailto:lingshan.zhu@intel.com" moz-do-not-send="true">&lt;lingshan.zhu@intel.com&gt;</a><o:p></o:p></pre>
+                  <pre>Sent: Wednesday, September 20, 2023 11:36 AM<o:p></o:p></pre>
+                  <pre> <o:p></o:p></pre>
+                  <pre>On 9/19/2023 2:49 AM, Michael S. Tsirkin wrote:<o:p></o:p></pre>
+                  <blockquote
+                    style="margin-top:5.0pt;margin-bottom:5.0pt">
+                    <pre>On Mon, Sep 18, 2023 at 06:41:55PM +0000, Parav Pandit wrote:<o:p></o:p></pre>
+                    <blockquote
+                      style="margin-top:5.0pt;margin-bottom:5.0pt">
+                      <blockquote
+                        style="margin-top:5.0pt;margin-bottom:5.0pt">
+                        <pre>Please refer to the code for setting FEATURES_OK.<o:p></o:p></pre>
+                      </blockquote>
+                      <pre>It wont work when one needs to suspend the device.<o:p></o:p></pre>
+                      <pre>There is no point of doing such work over registers as fundamental<o:p></o:p></pre>
+                    </blockquote>
+                  </blockquote>
+                  <pre>framework is over the AQ.<o:p></o:p></pre>
+                  <blockquote
+                    style="margin-top:5.0pt;margin-bottom:5.0pt">
+                    <pre>Well not really. It's over admin commands. When these were built the<o:p></o:p></pre>
+                    <pre>intent always was that it's possible to use admin commands through<o:p></o:p></pre>
+                    <pre>another interface, other than admin queue. Is there a problem<o:p></o:p></pre>
+                    <pre>implementing admin commands over a memory BAR? For example, I can see<o:p></o:p></pre>
+                    <pre>an "admin command" capability pointing at a BAR where commands are<o:p></o:p></pre>
+                    <pre>supplied, and using a new group type referring to device itself.<o:p></o:p></pre>
+                  </blockquote>
+                  <pre>I am not sure, if a bar cap would be implemented as a proxy for the admin vq<o:p></o:p></pre>
+                  <pre>based live migration. then the problems of admin vq LM that we have discussed<o:p></o:p></pre>
+                  <pre>still exist. the bar is only a proxy, doesn't fix anything. and even larger side<o:p></o:p></pre>
+                  <pre>channel attacking surface: vf--&gt;pf--&gt;vf<o:p></o:p></pre>
+                </blockquote>
+                <pre> <o:p></o:p></pre>
+                <pre>AQ LM using PF has no side channel attack as hypervisor and owner device is trusted entity as already discussed.<o:p></o:p></pre>
+              </blockquote>
+              <p class="MsoNormal"
+                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                  style="font-family: &quot;Courier New&quot;;">I
+                  believe we have discussed this for many times, and I
+                  even provide you some examples.<br>
+                  <br>
+                  Let me repeat for the last time.<br>
+                  <br>
+                  There can be malicious SW on the host, and the host
+                  may be hacked and compromised.<br>
+                  For example:<br>
+                  1) SUSPEND the a running guest by admin vq<br>
+                  2) dumping guest memory through admin vq dirty page
+                  tracking.<br>
+                  <br>
+                  These above can happen right? <br>
+                  <br>
+                  You made TDISP as an example, but have you really read
+                  the TDISP spec?<br>
+                  In the spec:<br>
+                  <br>
+                  <span class="fontstyle0">Device Security Architecture
+                    - Administrative interfaces (e.g., a PF) may be</span><br>
+                  <span class="fontstyle0">used to influence the
+                    security properties of the TDI used by the TVM.</span><br>
+                  <br>
+                  TEE-I/O requires the device to organize its
+                  hardware/software interfaces such that the PF cannot<br>
+                  be used to affect the security of a TDI when it is in
+                  use by a TVM<br>
+                  <br>
+                  Clear?<br>
+                  <br>
+                  <br>
+                </span><o:p></o:p></p>
+              <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
+                <pre> <o:p></o:p></pre>
+              </blockquote>
+              <div style="border:none;border-left:solid blue
+                1.5pt;padding:0in 0in 0in 4.0pt">
+                <p class="MsoNormal"
+                  style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
+                    style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
+              </div>
+            </div>
+          </blockquote>
+          <p class="MsoNormal"><o:p> </o:p></p>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+  </body>
+</html>
 
-I try to explain these few times, but..
-
-Anyways, if AQ has some comments better to reply in its thread at [1].
-
-[1] https://lore.kernel.org/virtio-comment/20230909142911.524407-7-parav@nv=
-idia.com/T/#md9fcfa1ba997463de8c7fb8c6d1786b224b0bead
-
-I will post v1 for [1] with more mature device context this week along with=
- future provisioning item note.
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-
+--------------Z4VIngHpbxStoL01a8htve5T--
