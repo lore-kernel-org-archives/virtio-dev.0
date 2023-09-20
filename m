@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13851-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13852-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8779FCE79AD
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 689CACE79AD
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:27:46 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id E5904157EEE
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:24:20 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CED9B2A8EE
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:27:45 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DDA7E98667A
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:24:20 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C4B67986675
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:27:45 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D0D96986669; Wed, 20 Sep 2023 07:24:20 +0000 (UTC)
+	id B583C986669; Wed, 20 Sep 2023 07:27:45 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,45 +24,42 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BEB09986668;
-	Wed, 20 Sep 2023 07:24:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A2A00986668;
+	Wed, 20 Sep 2023 07:27:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d6gMUcZzvP/qQA0FWBakLB0ZouTa0xbn4PMFSUl6uYR0YXwsZecGoGZfekdKnTEzZRB06gi3TTJKre7VbAX7xS3/lhhDOJr2NS2V5TKlqdcahzc0qI2Bgs79z6AneqlatlnDVXe0K3fjEuNIbOlIBMnq/S7urFwVxzjb8prqutfjzJKut7Wn7NQo9WCspd3omJd8UuW00T2iM6fKZ7VcZ8CHf0aFMLq6b89aKqdk3KvOngW+yDeYAec0mfdzoHzgkvjbQ3VUwMg6Df+glE7yBHEBpbCvljQ8YlIK0s48KguGdsJimCo11TtVL8SgSDTHRLkXLon08bbz6L/YVB8Piw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fLWQMpNO+MJCSll4ve+JLs6hyOCAlW6nHf6xc6UNP4Y=;
- b=akYIYenPZb+DLCNf5DvfykkcdiwoA/etZu1HWt0EBRhsvTEVHZ+F8HFoDkjwNwTC17maPkMcfWmGYkIeui0g7MwQHeox8PmM4lH+geE+99626xLAveeMmenEslgKE265VTsCHJUDOlpL5t0CmAxc5ld6EsoGy9uaHrFge//dnL+D5gxyhLzlSsftBEAw3aFRNkdPlXO6Z56YhLFngB+HGF2vcPYbKQlErmb3ZxR/21Mek+c82D7aMFKww/dInOEjngcgESh3+K5byYXQzmV10xrb5WuEIV6GbVEgWuj6qs6/4p0JPvwuYDfRpeSxQwqnF1fxs3lYpESACBvNPFT5pA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-From: "Chen, Jiqian" <Jiqian.Chen@amd.com>
-To: "Zhu, Lingshan" <lingshan.zhu@intel.com>, Parav Pandit <parav@nvidia.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>
-CC: Gerd Hoffmann <kraxel@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan
- Zhuo <xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
-	=?utf-8?B?TWFyYy1BbmRyw6kgTHVyZWF1?= <marcandre.lureau@gmail.com>, Robert
- Beckett <bob.beckett@collabora.com>, Mikhail Golubev-Ciuchea
-	<Mikhail.Golubev-Ciuchea@opensynergy.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"qemu-devel@nongnu.org" <qemu-devel@nongnu.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Stefano
- Stabellini <sstabellini@kernel.org>, =?utf-8?B?Um9nZXIgUGF1IE1vbm7DqQ==?=
-	<roger.pau@citrix.com>, "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-	"Koenig, Christian" <Christian.Koenig@amd.com>, "Hildebrand, Stewart"
-	<Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>,
-	"Huang, Honglei1" <Honglei1.Huang@amd.com>, "Zhang, Julia"
-	<Julia.Zhang@amd.com>, "Huang, Ray" <Ray.Huang@amd.com>, "Chen, Jiqian"
-	<Jiqian.Chen@amd.com>
-Thread-Topic: [virtio-dev] Re: [virtio-comment] Re: [VIRTIO PCI PATCH v5 1/1]
- transport-pci: Add freeze_mode to virtio_pci_common_cfg
-Thread-Index: AQHZ6u53lm7slkvYHEmC01qhzu9Vn7AiFHuAgAEk1ACAAI2IgP//hVyKgACKb4A=
-Date: Wed, 20 Sep 2023 07:24:11 +0000
-Message-ID:
- <BL1PR12MB5849A542AA93F6ED9FEEAAF0E7F9A@BL1PR12MB5849.namprd12.prod.outlook.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="411088293"
+X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
+   d="scan'208";a="411088293"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="781592828"
+X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
+   d="scan'208";a="781592828"
+Message-ID: <91c3e7ec-d702-ee61-c420-59ddc8dac6dc@intel.com>
+Date: Wed, 20 Sep 2023 15:27:30 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Content-Language: en-US
+To: Parav Pandit <parav@nvidia.com>, "Chen, Jiqian" <Jiqian.Chen@amd.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
+ <olvaffe@gmail.com>, =?UTF-8?Q?Marc-Andr=c3=a9_Lureau?=
+ <marcandre.lureau@gmail.com>, Robert Beckett <bob.beckett@collabora.com>,
+ Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ =?UTF-8?Q?Roger_Pau_Monn=c3=a9?= <roger.pau@citrix.com>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+ "Koenig, Christian" <Christian.Koenig@amd.com>,
+ "Hildebrand, Stewart" <Stewart.Hildebrand@amd.com>,
+ Xenia Ragiadakou <burzalodowa@gmail.com>,
+ "Huang, Honglei1" <Honglei1.Huang@amd.com>,
+ "Zhang, Julia" <Julia.Zhang@amd.com>, "Huang, Ray" <Ray.Huang@amd.com>
 References: <20230919114242.2283646-1-Jiqian.Chen@amd.com>
  <20230919114242.2283646-2-Jiqian.Chen@amd.com>
  <20230919082802-mutt-send-email-mst@kernel.org>
@@ -70,113 +67,51 @@ References: <20230919114242.2283646-1-Jiqian.Chen@amd.com>
  <BL1PR12MB5849E32A76165F1307492185E7F9A@BL1PR12MB5849.namprd12.prod.outlook.com>
  <PH0PR12MB5481D2CBCFBF7BCBF427EE1EDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <701bb67c-c52d-4eb3-a6ed-f73bd5d0ff33@intel.com>
-In-Reply-To: <701bb67c-c52d-4eb3-a6ed-f73bd5d0ff33@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-exchange-imapappendstamp: BL1PR12MB5849.namprd12.prod.outlook.com
- (15.20.6792.025)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BL1PR12MB5849:EE_|BL0PR12MB4964:EE_
-x-ms-office365-filtering-correlation-id: 58146377-01f3-4963-43be-08dbb9aa9631
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- K7lfWSTZfIKSgAOlTDdOwA3aAZFrQjzNUptnwMuj2HoZrOqpdhT/La5EY0qZCvbBTj34gJptgVIoKxNu/EO0g7vhpQQ5RcedG2q3TCSMMaUDeaMqE5LlQwC0K80+e2ZJU90hT3xOYEjJE0p77K2AxOjteDqSmGmh/9C1VsZXJmiVuXseHJ8GOej4EZY0Pu0mLp0aPZnUotBnGW7xFgCHcyY3juT81zMsPxsGxed/VoJi3mX2WeuwTtVMpDZbBKzrTu+cALocXqOnGS0hwxLbrObAhtJIEiHbxA4BG4bjEpeL0mHcsVuzpWXyj/ubE8iO3ugEtqPjCvPQthnyk9+bvf4XbtMBWmzxbvkWqA69kVL6DrC+Fnxa26qog74/OyrUuroH4oyl6x4MzUath4tGfDe7okNeR9+ql8PJQSQPrrqgeqmydWSa8b5Z11ybnj2nUNT/bFuhR1iiWJpIuKUn2lHsK8zPBCwJjXX8Xjne+EOW13YkrjYskRUol5hGI6tAPwZQdHvS0XpGQbaCI6/O1tY1Nob2kCEdSFINaKXpeRqK5otDAEH6tYbHSt/GTIxX2m/L/Hz9UYdCaP8DRfS8bMqkp0Kkpt/vzh/S6sE/Pn8mK9aD+Kw+NYCygn9beTWf
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(366004)(136003)(376002)(346002)(1800799009)(186009)(451199024)(9686003)(478600001)(7696005)(6506007)(53546011)(8936002)(8676002)(52536014)(83380400001)(66946007)(64756008)(76116006)(54906003)(66446008)(66556008)(66476007)(71200400001)(316002)(110136005)(5660300002)(55016003)(33656002)(38100700002)(38070700005)(4326008)(26005)(2906002)(7416002)(41300700001)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?bEQyRDhJK202T2xPUEo2NWlrOWR5ZDZTblZ0cGxlMHBMYjg4MVB2WG56d0tT?=
- =?utf-8?B?d2x6ZW9qYTcxeVFwV25zd2k3VERhZXpDeFFnSTZIV3BGQUNjR2ZCSUJENHFF?=
- =?utf-8?B?L3pGZjZvZE45MWlvaVM3WDdwUFFCcjdya09iYmk3TDZlSFkwTi9temFsa01s?=
- =?utf-8?B?azdoUm1FQURFaU9hdUYxM1RranN4NlgxVVZ4NU01dzZPMUJzTEZZWkEwUWRC?=
- =?utf-8?B?NmpDOE9CdDMwRFFwMmtXL1d1RHd1U0ROUzhvOE1zb1VBSE5ZUWpnVFdWZWhN?=
- =?utf-8?B?czducnptOW00Z1lLVnZvdnFCeitEMlJDVHhZMVkzL2FiYjJhSUE4NjZnMENE?=
- =?utf-8?B?TGM2eTcwcFczbWNPNVY3RW9tMjFYaWtTSGZmaEtEQVQwWE1YVlBSZy80MnNw?=
- =?utf-8?B?bmUzaWF2ZjJ3M2pPU1BLNTE3Q0lEcEN3QlBqdXRhTkw3WXFSWEkzRWxJbGor?=
- =?utf-8?B?WFhsNUdveHJLbjRabVIvNGMxN0NOZUZkVlE0NnlpR1NoSFk4cVlzYnFrSnZT?=
- =?utf-8?B?THMyY1h6KzI1MmhMU1RmcC9iYzBJcFRaS1paYjZRZDNUT3gzZW9QZXhpMEg2?=
- =?utf-8?B?U1ZXc2xPQ1pQdzBJVE9NemRvS29PdlUvN252SVh3U29wNGJ0WHlhV2dYL0pi?=
- =?utf-8?B?RVM0ekpzZWNNa3VIUXdNSFRMUXMrenlhNyt5NE1XMFJ5MUJRNXNqdDNLZlNz?=
- =?utf-8?B?azVKRGxvSDhZTE5WdThzVEduT3plRWJUQTk5RkdLNSt2Wm5CN2hpQ09vVEFx?=
- =?utf-8?B?NWFLUlF3dU9RMzk4QmdtUUE4OWhHeThhYjVLT29wVW50dUFyRGZweXFMTzRz?=
- =?utf-8?B?WjRxQk1NQklIM3BSZDc3WVNId09KaDAzUnlaNDUrWDNEbXE5VGxScmRjRjZB?=
- =?utf-8?B?cDdPT0lqMEoxcG9WYlNVeVFHdkRhZFBwK0dNQS9ZaWw4amVSV255YzZqVHBS?=
- =?utf-8?B?czIxSVNSV2g0NERIdFg3Vlk5QVA4OTU2c0FkRDZWQXd4K0RTT3JTa1hQbTBr?=
- =?utf-8?B?YTVab3UyQ2pKSmFod1Z4N0pDMUdGbCt2TFlQa2k1R0RwZU5ZTWVITHBIVGZW?=
- =?utf-8?B?aGlHVlZVcnlVZVI2WGpsaDBoNndNN1g4SW5hVGNIdHVpNWltMW16cko2UGVw?=
- =?utf-8?B?RW1qNlU3czNHY3ZoSjYxeXk2YlN6S0o4V2JrN1BmMkpneEJvam9uZ1R1QlFu?=
- =?utf-8?B?WWFaUzhLZmtSVDVkUlR0czYvR0lrQmpOSXRXc25aejBobDNubFhIbG1CQ0hQ?=
- =?utf-8?B?WVhua1FIOExDZWh4UnNpMFNiQTMyUkp2aEErVzdadWR3NStXNk1LTTJxYzM3?=
- =?utf-8?B?TDRZeDNyUWFPd0ljeDJDNWJuU2EvQllpOXVEUStNZU5YZVRKL2VhTVA4U2tQ?=
- =?utf-8?B?VmkrZmgvdmMydm4rY3lMYzZtTUZKelE2STBjVlJwKzlpUStXTVpNZ3ZReE8z?=
- =?utf-8?B?S3Y5ZG9vb3JYNFQ1OTBQd0VWVi9UU1RmNlhHcWtUMUZsdmxVdG1QSHdRQXpT?=
- =?utf-8?B?UDNjby8xMEJCMlR5akova3Fmc0d1SXhQNnhFMnNuVS93U1U1dGVYcjYxWSty?=
- =?utf-8?B?dDNsT0JnNWtmamJwclRTV0U4c0NNbkd5Y0d3Z1NIZnpVeUoyRkZhV0lVdnpn?=
- =?utf-8?B?NFFaY3RIQmxCQWZHajNsbG5DZHVJSlc4VzFvYTcxOC9zaTU2aXZrQVlqY0FJ?=
- =?utf-8?B?RDJtc1gwUzk3Q1lRTG10UkdrQkFBRlZHeCtiMmNyMElQanhlU2ZYQ3NoOUZ6?=
- =?utf-8?B?ZWhDMHhpNDVwVWw3RXJBVDcyMVVQZnBBQ0tkOGtvV01iRXJEU3JVTU8wbzdU?=
- =?utf-8?B?RXhHU1VFWjA3VnZBcnA0ejBYeVFYczc1d01pazV5ckw3K1BEQ3EveTQ5Ti9y?=
- =?utf-8?B?NFhDeTVKamd3WHZhZUVsc3puM3piVTRkOWdkYUpvVGNjbWg2N21ndnhMdUYw?=
- =?utf-8?B?M3c2TklBL1AvQnpTMVR3dDRiUHIwNThvQkNldzRITWxQWmwydmZnRDVIM0NY?=
- =?utf-8?B?cTlxTFVJTUFjd0k5ZnlUL29ndDZvOHE4NThVbjlLZm13eVI2bW9KbWZJbml6?=
- =?utf-8?B?RnZpcHBNa2lZNWVKWW9VN3RET2k5aEIxYzBDVUlWeVRZSlowSG53M0U4U25T?=
- =?utf-8?Q?Fa/8=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F827510A5A7F4345B0AE861296F326DE@amdcloud.onmicrosoft.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58146377-01f3-4963-43be-08dbb9aa9631
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2023 07:24:11.7995
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0QJTcqFQRBTdmEflKbhC8u2JnCiesP23gvxOaFzon8gY9psq3ZjxnP4G+Nhkpw4Xe46FhGHaiBO88sh8dDhJyg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4964
+ <PH0PR12MB5481891053E37A79920991F6DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB5481891053E37A79920991F6DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [VIRTIO PCI PATCH v5 1/1]
  transport-pci: Add freeze_mode to virtio_pci_common_cfg
 
-SGkgTGluZ3NoYW4sDQpJdCBzZWVtcyB5b3UgcmVwbHkgdG8gdGhlIHdyb25nIGVtYWlsIHRocmVh
-ZC4gVGhleSBhcmUgbm90IHJlbGF0ZWQgdG8gbXkgcGF0Y2guDQoNCk9uIDIwMjMvOS8yMCAxNTow
-NiwgWmh1LCBMaW5nc2hhbiB3cm90ZToNCj4gDQo+IA0KPiBPbiA5LzIwLzIwMjMgMjo1OCBQTSwg
-UGFyYXYgUGFuZGl0IHdyb3RlOg0KPj4+IEZyb206IENoZW4sIEppcWlhbiA8SmlxaWFuLkNoZW5A
-YW1kLmNvbT4NCj4+PiBTZW50OiBXZWRuZXNkYXksIFNlcHRlbWJlciAyMCwgMjAyMyAxMjowMyBQ
-TQ0KPj4+IElmIGRyaXZlciB3cml0ZSAwIHRvIHJlc2V0IGRldmljZSwgY2FuIHRoZSBTVVNQRU5E
-IGJpdCBiZSBjbGVhcmVkPw0KPj4gSXQgbXVzdCBhcyByZXNldCBvcGVyYXRpb24sIHJlc2V0cyBl
-dmVyeXRoaW5nIGVsc2UgYW5kIHNvIHRoZSBzdXNwZW5kIHRvby4NCj4+DQo+Pj4gKHBjaV9wbV9y
-ZXN1bWUtPnZpcnRpb19wY2lfcmVzdG9yZS0+dmlydGlvX2RldmljZV9yZXN0b3JlLQ0KPj4+PiB2
-aXJ0aW9fcmVzZXRfZGV2aWNlKQ0KPj4+IElmIFNVU1BFTkQgaXMgY2xlYXJlZCwgdGhlbiBkdXJp
-bmcgdGhlIHJlc2V0IHByb2Nlc3MgaW4gUWVtdSwgSSBjYW4ndCBqdWRnZSBpZg0KPj4+IHRoZSBy
-ZXNldCByZXF1ZXN0IGlzIGZyb20gZ3Vlc3QgcmVzdG9yZSBwcm9jZXNzIG9yIG5vdCwgYW5kIHRo
-ZW4gSSBjYW4ndCBjaGFuZ2UNCj4+PiB0aGUgcmVzZXQgYmVoYXZpb3IuDQo+PiBSZXNldCBzaG91
-bGQgbm90IGJlIGluZmx1ZW5jZWQgYnkgc3VzcGVuZC4NCj4+IFN1c3BlbmQgc2hvdWxkIGRvIHRo
-ZSB3b3JrIG9mIHN1c3BlbmQgYW5kIHJlc2V0IHRvIGRvIHRoZSByZXNldC4NCj4+DQo+PiBUaGUg
-cHJvYmxlbSB0byBvdmVyY29tZSBpbiBbMV0gaXMsIHJlc3VtZSBvcGVyYXRpb24gbmVlZHMgdG8g
-YmUgc3luY2hyb25vdXMgYXMgaXQgaW52b2x2ZXMgbGFyZ2UgcGFydCBvZiBjb250ZXh0IHRvIHJl
-c3VtZSBiYWNrLCBhbmQgaGVuY2UganVzdCBhc3luY2hyb25vdXNseSBzZXR0aW5nIERSSVZFUl9P
-SyBpcyBub3QgZW5vdWdoLg0KPj4gVGhlIHN3IG11c3QgdmVyaWZ5IGJhY2sgdGhhdCBkZXZpY2Ug
-aGFzIHJlc3VtZWQgdGhlIG9wZXJhdGlvbiBhbmQgcmVhZHkgdG8gYW5zd2VyIHJlcXVlc3RzLg0K
-PiB0aGlzIGlzIG5vdCBsaXZlIG1pZ3JhdGlvbiwgYWxsIGRldmljZSBzdGF0dXMgYW5kIG90aGVy
-IGluZm9ybWF0aW9uIHN0aWxsIHN0YXkgaW4gdGhlIGRldmljZSwgbm8gbmVlZCB0byAicmVzdW1l
-IiBjb250ZXh0LCBqdXN0IHJlc3VtZSBydW5uaW5nLg0KPiANCj4gTGlrZSByZXN1bWUgZnJvbSBh
-IGZhaWxlZCBMTS4NCj4+DQo+PiBUaGlzIGlzIHNsaWdodGx5IGRpZmZlcmVudCBmbG93IHRoYW4g
-c2V0dGluZyB0aGUgRFJJVkVSX09LIGZvciB0aGUgZmlyc3QgdGltZSBkZXZpY2UgaW5pdGlhbGl6
-YXRpb24gc2VxdWVuY2UgYXMgaXQgZG9lcyBub3QgaW52b2x2ZSBsYXJnZSByZXN0b3JhdGlvbi4N
-Cj4+DQo+PiBTbywgdG8gbWVyZ2UgdHdvIGlkZWFzLCBpbnN0ZWFkIG9mIGRvaW5nIERSSVZFUl9P
-SyB0byByZXN1bWUsIHRoZSBkcml2ZXIgc2hvdWxkIGNsZWFyIHRoZSBTVVNQRU5EIGJpdCBhbmQg
-dmVyaWZ5IHRoYXQgaXQgaXMgb3V0IG9mIFNVU1BFTkQuDQo+Pg0KPj4gQmVjYXVzZSBkcml2ZXIg
-aXMgc3RpbGwgaW4gX09LXyBkcml2aW5nIHRoZSBkZXZpY2UgZmxpcHBpbmcgdGhlIFNVU1BFTkQg
-Yml0Lg0KPiBQbGVhc2UgcmVhZCB0aGUgc3BlYywgaXQgc2F5czoNCj4gVGhlIGRyaXZlciBNVVNU
-IE5PVCBjbGVhciBhIGRldmljZSBzdGF0dXMgYml0DQo+IA0KPiANCg0KLS0gDQpCZXN0IHJlZ2Fy
-ZHMsDQpKaXFpYW4gQ2hlbi4NCg==
+
+
+On 9/20/2023 3:10 PM, Parav Pandit wrote:
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Wednesday, September 20, 2023 12:37 PM
+>>> The problem to overcome in [1] is, resume operation needs to be synchronous
+>> as it involves large part of context to resume back, and hence just
+>> asynchronously setting DRIVER_OK is not enough.
+>>> The sw must verify back that device has resumed the operation and ready to
+>> answer requests.
+>> this is not live migration, all device status and other information still stay in the
+>> device, no need to "resume" context, just resume running.
+>>
+> I am aware that it is not live migration. :)
+>
+> "Just resuming" involves lot of device setup task. The device implementation does not know for how long a device is suspended.
+> So for example, a VM is suspended for 6 hours, hence the device context could be saved in a slow disk.
+> Hence, when the resume is done, it needs to setup things again and driver got to verify before accessing more from the device.
+The restore procedures should perform by the hypervisor and done before 
+set DRIVER_OK and wake up the guest.
+And the hypervisor/driver needs to check the device status by re-reading.
+>   
+>> Like resume from a failed LM.
+>>> This is slightly different flow than setting the DRIVER_OK for the first time
+>> device initialization sequence as it does not involve large restoration.
+>>> So, to merge two ideas, instead of doing DRIVER_OK to resume, the driver
+>> should clear the SUSPEND bit and verify that it is out of SUSPEND.
+>>> Because driver is still in _OK_ driving the device flipping the SUSPEND bit.
+>> Please read the spec, it says:
+>> The driver MUST NOT clear a device status bit
+>>
+> Yes, this is why either DRIER_OK validation by the driver is needed or Jiqian's synchronous new register..
+so re-read
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
