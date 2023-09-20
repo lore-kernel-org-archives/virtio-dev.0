@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13855-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13856-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E121ACE79AC
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CAC65CE79AB
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:43:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3D9362AC46
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:35:39 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 400D8602E2
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:43:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2AD79986675
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:35:39 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3834598667C
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 07:43:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 19947986668; Wed, 20 Sep 2023 07:35:39 +0000 (UTC)
+	id 2BD89986668; Wed, 20 Sep 2023 07:43:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,139 +24,205 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 06347986669;
-	Wed, 20 Sep 2023 07:35:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1AC63986669;
+	Wed, 20 Sep 2023 07:43:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KVdN/AvdBtC3C2bnDnXqfzgnZKaDKhc9BZi5GA+wvFcqUbxq97abi1kh3VtxdJjT0C9mkWOAJQTimXhzmF2d5QRS1Qur4eLuf6aaqgK/kYgmJzldBViEAsiLDBGbN+B9CG80m8HBRGF1pQhJ/rEV+9Zx827cl6QFe+2OpQ1sw04WcCNeKte2X+pnyyAr4xu69wj8WKy9hUeAKCI9UiRvohlZDX0xfQnQQLYMtP4qyQX0yXiiBPANngtuAZ9uQZr++1oCGSvbATG6srjFRx04XCWJX4UmF+RhMGa+HfuIxBwrWEmUpjLpMytO6Z1sQHqrXsG7ygeOwUyVWzE5dl1gsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YECQx/UWESkEpmJ2r90CTg6JgqARvf1tSbyYy6VeXTs=;
- b=Z/fozslOa2E9rUI4qQnVe1eOSFtifVnfJbU1Oh6llUsQnioGan+HNSM8I8vQugtGOYkLOfDtN8+JwYZgEiHqGRNtfe4WDqff6dpxkFFfEQ20b6FsqxH3vtvV2/qsoDteHOnkdyCMCWLvyrWcbn+iYSwRvNLPW0EzAL59IO1Ky+moXXLhM7oYyTE+r5YJEggEs8mYgEpBGid9nwdxo2vwaAHsdoyf+ABJOQWyLU1VpOXMH8ptBItqq/OwswE1s1pRKEPhlaVWW3G9Dc+hYRhbfwyYDRbE6nxqVjcOT7E4Wt5OHlPvVD9nQX2mukMo8MpPXajLEJizPynRbTY1E7NooA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Zhu, Lingshan" <lingshan.zhu@intel.com>, "Chen, Jiqian"
-	<Jiqian.Chen@amd.com>, "Michael S. Tsirkin" <mst@redhat.com>
-CC: Gerd Hoffmann <kraxel@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan
- Zhuo <xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
-	=?utf-8?B?TWFyYy1BbmRyw6kgTHVyZWF1?= <marcandre.lureau@gmail.com>, Robert
- Beckett <bob.beckett@collabora.com>, Mikhail Golubev-Ciuchea
-	<Mikhail.Golubev-Ciuchea@opensynergy.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"qemu-devel@nongnu.org" <qemu-devel@nongnu.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Stefano
- Stabellini <sstabellini@kernel.org>, =?utf-8?B?Um9nZXIgUGF1IE1vbm7DqQ==?=
-	<roger.pau@citrix.com>, "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-	"Koenig, Christian" <Christian.Koenig@amd.com>, "Hildebrand, Stewart"
-	<Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>,
-	"Huang, Honglei1" <Honglei1.Huang@amd.com>, "Zhang, Julia"
-	<Julia.Zhang@amd.com>, "Huang, Ray" <Ray.Huang@amd.com>
-Thread-Topic: [virtio-dev] Re: [virtio-comment] Re: [VIRTIO PCI PATCH v5 1/1]
- transport-pci: Add freeze_mode to virtio_pci_common_cfg
-Thread-Index:
- AQHZ6u55wdLgYEJT5UeWhzYWiXOCmrAiFHuAgAEk1ACAAAlvAIAABTWAgAAEKYCAAATtgIAAAbEAgAAAlkA=
-Date: Wed, 20 Sep 2023 07:35:33 +0000
-Message-ID:
- <PH0PR12MB54817E116B756914B3FC1860DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="446623145"
+X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
+   d="scan'208";a="446623145"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="816792544"
+X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
+   d="scan'208";a="816792544"
+Message-ID: <c928e39c-fe4a-81d5-51a9-11bc14959a80@intel.com>
+Date: Wed, 20 Sep 2023 15:42:50 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Content-Language: en-US
+To: "Chen, Jiqian" <Jiqian.Chen@amd.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
+ <olvaffe@gmail.com>, =?UTF-8?Q?Marc-Andr=c3=a9_Lureau?=
+ <marcandre.lureau@gmail.com>, Robert Beckett <bob.beckett@collabora.com>,
+ Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>,
+ Parav Pandit <parav@nvidia.com>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ =?UTF-8?Q?Roger_Pau_Monn=c3=a9?= <roger.pau@citrix.com>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+ "Koenig, Christian" <Christian.Koenig@amd.com>,
+ "Hildebrand, Stewart" <Stewart.Hildebrand@amd.com>,
+ Xenia Ragiadakou <burzalodowa@gmail.com>,
+ "Huang, Honglei1" <Honglei1.Huang@amd.com>,
+ "Zhang, Julia" <Julia.Zhang@amd.com>, "Huang, Ray" <Ray.Huang@amd.com>
 References: <20230919114242.2283646-1-Jiqian.Chen@amd.com>
  <20230919114242.2283646-2-Jiqian.Chen@amd.com>
  <20230919082802-mutt-send-email-mst@kernel.org>
  <cd8d306b-6acc-34be-516c-b89c23ac108d@intel.com>
  <BL1PR12MB5849E32A76165F1307492185E7F9A@BL1PR12MB5849.namprd12.prod.outlook.com>
- <PH0PR12MB5481D2CBCFBF7BCBF427EE1EDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <701bb67c-c52d-4eb3-a6ed-f73bd5d0ff33@intel.com>
- <BL1PR12MB5849A542AA93F6ED9FEEAAF0E7F9A@BL1PR12MB5849.namprd12.prod.outlook.com>
- <a636b841-1bfc-925a-406e-6c4469e7e4c6@intel.com>
-In-Reply-To: <a636b841-1bfc-925a-406e-6c4469e7e4c6@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM6PR12MB4298:EE_
-x-ms-office365-filtering-correlation-id: a260b1c4-ad6b-4e45-c2f9-08dbb9ac2cd0
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- DQ3SGoSP0sdwQixG2c84fWrbug62AVetictZYDDmbYX+fbWaP06obGzYY4EuIUl/AUtJpV0T7rR4Um1Bm1IUKRxjJ0svVrByTBXCsn0Hd/X/dRZ64WMPN43eo8e+ZkLna5ne1QH6YBc4PToHCTS3pgecfAw+16MvktwysX89q7yUvPCtuwYxWrTmjBuXvk1LQzfVJcpoz2cc5jWSVwTKIjCQ6UpaysFOkEx2PckbSgcF/fowG50CaI00SMlmvNyvqx8Z76FOu5BXdauyDeTa8VCVma3nG7zZM07Veg3FiYgXSN3/PZZFLk2giktmL0WvOZmT/F6SZUinG/cStrgzf0zwR3Xjd2G1v1J4LJXmJZswP2cdwkafFAWPVYPMF2pp3X7kPRq6OR74AletTKjVa1ZwVe7KYoBRxDYWCob+93rvgbKKGqi3yL1AyDsEJWYQL2ugnW4tR+jdEjgYedu2gQ4KUVuxkWNONeP1m59QKiG8ZG2Cv+RxBoQ+2yYukkammmUh2ri5LylpETDcD/sB5JP1/TzBNa0DdUE3ifqk1mK53TMOiCnJ7mcGOu2TfCbEOYEwsFRobszagkISIj1GwQAZ3RERwl4KJMmUbR0ALWklH3aAJsggTOrusfi/1fYD
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(346002)(376002)(366004)(39860400002)(396003)(186009)(1800799009)(451199024)(38100700002)(55016003)(38070700005)(6506007)(7696005)(53546011)(71200400001)(478600001)(33656002)(86362001)(122000001)(2906002)(26005)(4744005)(9686003)(83380400001)(64756008)(5660300002)(41300700001)(52536014)(4326008)(8676002)(110136005)(7416002)(66556008)(8936002)(66946007)(316002)(54906003)(66446008)(76116006)(66476007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?Q29mRElpbXBqMmtxdDVGS09BWldPNHNQVDJRMkJRc1JaUzQ1dUN0b2o5SC9l?=
- =?utf-8?B?cUZxdnBhRlM4aHlLUnV2bTFwMEJFVDVJcE15dTIvWDIyd2Y3ZVZMeURIcWlV?=
- =?utf-8?B?ME1wQW9jQUtCTGNSMUdIaXAyOXBmaFNQMmp6bTJBcnl3Z2hXOXZOUU00S01N?=
- =?utf-8?B?RkMweWlzT1p6L3oxY2h6bEVpZ1k4amFnZmNSemRZK3ZIcXhKdE44d0RpSU54?=
- =?utf-8?B?TVdqcnVFSHBqVlduVk1oVlFmUE9Yb0E2c21sUGF2Y3ZGZFhMQmZ6NU96TE5I?=
- =?utf-8?B?TEpRdGE5WWJCbW1CSHA3N2l1a2UzbjFwNWRTZHhQeVdZeXpTMEZneW1kbGlw?=
- =?utf-8?B?YUl2QlM1Q0RSem9HbC9Kd2F0bUF5dzh1bUNPOTV3UExuRFZqS25tT2pOcFBM?=
- =?utf-8?B?bHJZT0FQaThEOTdQNWNteSt3SVNDUDhtRldOS3U1Nkx0TlZLckIwKzRmUzFa?=
- =?utf-8?B?Y25iYTJsd2hLa1M3aUlrd2lkN0RaSDZTOHpaUWlRR004cWN6SG1vS3ArYmpN?=
- =?utf-8?B?VmM5alZZOEVNSVY5UmxEU1dYbEM2MzBDNDYxVlY0Y1NaeDBYYzJZUlFUMmNY?=
- =?utf-8?B?YWVUSUdDTkErbm1NVVlyYTlkcWFReWZjcTBEdGlyQ091Uk9idm5LZkMzNzNL?=
- =?utf-8?B?cHI1NExDQ05ZYVk3a3Z3YXJaN2o4bUF6WVpXVkl4QkM2VzJaZ0FicS9FSVZt?=
- =?utf-8?B?VS9GZmZMU1hkRE9IR1Z6d3FxbDV0Z0gzYnpGR0FneWR0RzdLUDRTSWJWZEVG?=
- =?utf-8?B?WHhRaGkrZzJvRjVhcWZucDl6TUd3YWZydk10V3p1TnlCeGlBc0U4NkppUnhZ?=
- =?utf-8?B?aHorNFJmNzRpT29zL1k4ekhOWHQ1cDYyVjZ0S1ZUVlZMZ2cwcUNpUnRHRkdU?=
- =?utf-8?B?cVVBOXZvRHhVYlFNZVZYdzVnMjFaTkgvRStxRDF6YTk4Qmw2b1kzbC9WU1Yw?=
- =?utf-8?B?aEN6cjE5dW5FUDdLY0pETU9nL0RHc2hrcWxNMmt4L1VvVHl6WncrN05lQWZs?=
- =?utf-8?B?dkpjRXBONWY5eUJoUjRJN2w3dVRtbmlEOUxKSEsrMG5GRFBpdUJLdXZJVE5z?=
- =?utf-8?B?TWhzVzAyTjNTbnlERWg3cy8rcXduK04yMWRJY3RnZ0NMendMWGNqRmhQbGQx?=
- =?utf-8?B?SFRZN0RZVkN2M050QU1pTUNJZ0VjQWtkY0Zhd3JSeHdFZDQzTkNhZ0FabWFt?=
- =?utf-8?B?cWxmMEJ1cW1wTDg5cnVqdFJsb3NGaDQ3UjhOU3laa2JWc0ZMbUxCU3poWVZp?=
- =?utf-8?B?S1NYcURTenZIM3VZNlJXNEw5QnozZDFxemMyOGJRNXMrMURhY0o3NVAvdmNU?=
- =?utf-8?B?MHVuWTRNV1FUVUFBWGs4MkhhVHE2N05TS0hPcThjeFV4Q0RHRVN2aExxZnBH?=
- =?utf-8?B?bWdSSE9iVEEyc0pYcG9NVFRlRXZ5R1FRK05JWFlHRHVoR2hLTlRaSEwrMmJI?=
- =?utf-8?B?SHBvNDh6LzJvc0ppVGhPZnR5OTN6cnhJc01OdzYvRnVMQlBwY0hWMzZ2YURv?=
- =?utf-8?B?Y3d5R1lsOUZ5bHNpOFpNWFk5TllRVEVuWkdFckxxUnBCdWxndDFUUks1TmtH?=
- =?utf-8?B?VTlFSDhITk9CRkpoT1FQcng2a3d0RFZEQ1ppNm0wb2JFbjdKQ25HVXA3aGwv?=
- =?utf-8?B?ejdaTWRZMkdJZHBaMWE2ak9aOVc1VmcrQ0Y0c0ZOM2p5RndoT0xFVXVXQ2RN?=
- =?utf-8?B?MWsycW14cGJUWk1WUU1qWXhtVXJrejM5TG1nWGdvODhYUS9pVmtNbUVLZnlY?=
- =?utf-8?B?bUd5MGgvZFlNbGZoRFJydG0zMUlsODNIL0RuZUVzNzF6NjVNZ2U5ZkJGc3du?=
- =?utf-8?B?eS9qRFdUTXFRQTZqaTFZV0pzS3MrUlI5YTFVM3ErM2FyM21KcEluTE5hKzB2?=
- =?utf-8?B?K0NseXdEdXJKZ2ZZVVJYd0h1bDhrS1FSdy8rRUEzeStYM050ci80ZElPZ2pj?=
- =?utf-8?B?VDdzd1hLdHdQRnQ2OVlBWmpsQzJTSFppbEswYUJQV3M2MkFQM2h3d1FqU1pu?=
- =?utf-8?B?VHIyZGtRZUZUbHhpMXhNa1FIUGhrSnFteGliQjk0QUx0ZTc5NExQeHJMdVpS?=
- =?utf-8?B?RUhPaEF2MEhUTzRSVTRjREwvUFF4cGF3S1phOVN3QWlibUw0amZpajVMVDNh?=
- =?utf-8?Q?oh+s=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a260b1c4-ad6b-4e45-c2f9-08dbb9ac2cd0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2023 07:35:34.0035
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ynxYcseOYBn9ciE4+LcUeDAB3oWSSsauBSgbkQ+wVtYtk1KubpHTSCAgUCC2yd7vjIlDuOA0cMQ10V5nnQvZeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4298
-Subject: RE: [virtio-dev] Re: [virtio-comment] Re: [VIRTIO PCI PATCH v5 1/1]
- transport-pci: Add freeze_mode to virtio_pci_common_cfg
+ <badb53e0-513c-f88c-67b9-ecd59d1cf051@intel.com>
+ <BL1PR12MB584905241D62294075BC701BE7F9A@BL1PR12MB5849.namprd12.prod.outlook.com>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <BL1PR12MB584905241D62294075BC701BE7F9A@BL1PR12MB5849.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re:
+ [VIRTIO PCI PATCH v5 1/1] transport-pci: Add freeze_mode to
+ virtio_pci_common_cfg
 
-DQo+IEZyb206IFpodSwgTGluZ3NoYW4gPGxpbmdzaGFuLnpodUBpbnRlbC5jb20+DQo+IFNlbnQ6
-IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIwLCAyMDIzIDE6MDAgUE0NCj4gDQo+IE9uIDkvMjAvMjAy
-MyAzOjI0IFBNLCBDaGVuLCBKaXFpYW4gd3JvdGU6DQo+ID4gSGkgTGluZ3NoYW4sDQo+ID4gSXQg
-c2VlbXMgeW91IHJlcGx5IHRvIHRoZSB3cm9uZyBlbWFpbCB0aHJlYWQuIFRoZXkgYXJlIG5vdCBy
-ZWxhdGVkIHRvIG15DQo+IHBhdGNoLg0KPiBUaGVzZSByZXBseSB0byBQYXJ2YSdzIGNvbW1lbnRz
-Lg0KPiBAUGFydmEsIGlmIHlvdSB3YW50IHRvIGRpc2N1c3MgbW9yZSBhYm91dCBsaXZlIG1pZ3Jh
-dGlvbiwgcGxlYXNlIHJlcGx5IGluIG15DQo+IHRocmVhZCwgbGV0cyBkb24ndCBmbG9vZCBoZXJl
-Lg0KWW91IG1hZGUgdGhlIHBvaW50IHRoYXQgInRoaXMgaXMgbm90IGxpdmUgbWlncmF0aW9uIi4N
-CkkgYW0gbm90IGRpc2N1c3NpbmcgbGl2ZSBtaWdyYXRpb24gaW4gdGhpcyB0aHJlYWQuDQoNCkkg
-cmVwbGllZCBmb3IgdGhlIHBvaW50IHRoYXQgZGV2aWNlIHJlc3RvcmF0aW9uIGZyb20gc3VzcGVu
-ZCBmb3IgcGh5c2ljYWwgYW5kIGh5cGV2aXNvciBiYXNlZCBkZXZpY2UgaXMgbm90IGEgNDBuc2Vj
-IHdvcnRoIG9mIHdvcmsgdG8gcmVzdG9yZSBieSBqdXN0IGRvaW5nIGEgcmVnaXN0ZXIgd3JpdGUu
-DQpUaGlzIGlzIG5vdCBsaXZlIG9yIGRldmljZSBtaWdyYXRpb24uIFRoaXMgaXMgcmVzdG9yaW5n
-IHRoZSBkZXZpY2UgY29udGV4dCBpbml0aWF0ZWQgYnkgdGhlIGRyaXZlciBvd25pbmcgdGhlIGRl
-dmljZS4NCg==
+
+
+On 9/20/2023 3:17 PM, Chen, Jiqian wrote:
+> Hi Lingshan,
+>
+> On 2023/9/20 14:58, Zhu, Lingshan wrote:
+>>
+>> On 9/20/2023 2:33 PM, Chen, Jiqian wrote:
+>>> Hi Lingshan,
+>>>
+>>> On 2023/9/20 13:59, Zhu, Lingshan wrote:
+>>>> On 9/19/2023 8:31 PM, Michael S. Tsirkin wrote:
+>>>>> On Tue, Sep 19, 2023 at 07:42:42PM +0800, Jiqian Chen wrote:
+>>>>>> When guest vm does S3, Qemu will reset and clear some things of virtio
+>>>>>> devices, but guest can't aware that, so that may cause some problems.
+>>>>>> For excample, Qemu calls virtio_reset->virtio_gpu_gl_reset when guest
+>>>>>> resume, that function will destroy render resources of virtio-gpu. As
+>>>>>> a result, after guest resume, the display can't come back and we only
+>>>>>> saw a black screen. Due to guest can't re-create all the resources, so
+>>>>>> we need to let Qemu not to destroy them when S3.
+>>>>>>
+>>>>>> For above purpose, we need a mechanism that allows guests and QEMU to
+>>>>>> negotiate their reset behavior. So this patch add a new parameter
+>>>>>> named freeze_mode to struct virtio_pci_common_cfg. And when guest
+>>>>>> suspends, it can write freeze_mode to be FREEZE_S3, and then virtio
+>>>>>> devices can change their reset behavior on Qemu side according to
+>>>>>> freeze_mode. What's more, freeze_mode can be used for all virtio
+>>>>>> devices to affect the behavior of Qemu, not just virtio gpu device.
+>>>> Hi Jiqian,
+>>>>
+>>>> Have you seen this series: [PATCH 0/5] virtio: introduce SUSPEND bit and vq state
+>>>> https://lore.kernel.org/all/3f4cbf84-010c-cffa-0b70-33c449b5561b@intel.com/T/
+>>>>
+>>>> We introduced a bit in the device status SUSPEND, when VIRTIO_F_SUSPEND is
+>>>> negotiated, the driver can set SUSPEND in the device status to suspend the
+>>>> device.
+>>>>
+>>>> When SUSPEND, the device should pause its operations and preserve its configurations
+>>>> in its configuration space.
+>>>>
+>>>> The driver re-write DRIVER_OK to clear SUSPEND, so the device resumes running.
+>>>>
+>>>> This is originally to serve live migration, but I think it can also meet your needs.
+>>> I noticed your series, but I am not sure they are also meet my needs.
+>>> If driver write 0 to reset device, can the SUSPEND bit be cleared? (pci_pm_resume->virtio_pci_restore->virtio_device_restore->virtio_reset_device)
+>> if the driver writes 0, it resets all virtio functionalities. So SUSPEND is cleared.
+> Then your patches are not meet my needs. In my scene, it needs to keep the SUSPEND bit util the resume process is complete.
+> Because in my virtio-gpu scene, when guest resume, it call virtio_reset_device to clear all device status bits, and then reset virtio-gpu in Qemu, and then destroy render resources, I don't want the resources are destroyed during the resume process. So, I add freeze_mode to tell Qemu that guest is doing S3 and resources need to be kept.
+When a guest set to S3, the hypervisor suspend the guest to RAM, and the 
+passthrough-ed device are in low power state.
+I am not sure the device can keep its status/context/data, maybe need to 
+recover from RAM anyway.
+
+So I suggest not reset the device, there need some code changes in QEMU
+When set to S3, SUSPEND the device, then suspend to RAM
+When resume from S3, restore from RAM and set DRIVER_OK to resume running.
+>
+>> device reset can also be used to recover the device from fatal errors, so it should reset everything in virtio.
+>>> If SUSPEND is cleared, then during the reset process in Qemu, I can't judge if the reset request is from guest restore process or not, and then I can't change the reset behavior.
+>> I think when enter S3, the hypervisor/driver should set SUSPEND to the device. And when resume from S3, the hypervisor/driver should
+>> re-write DRIVER_OK to clear SUSPEND, then the device resume running.
+>>> Can you send me your patch link on kernel and qemu side? I will take a deep look.
+>> There are no patches for qemu/kernel yet, spec first.
+>>>> Thanks,
+>>>> Zhu Lingshan
+>>>>>> Signed-off-by: Jiqian Chen <Jiqian.Chen@amd.com>
+>>>>>> ---
+>>>>>>     transport-pci.tex | 7 +++++++
+>>>>>>     1 file changed, 7 insertions(+)
+>>>>>>
+>>>>>> diff --git a/transport-pci.tex b/transport-pci.tex
+>>>>>> index a5c6719..2543536 100644
+>>>>>> --- a/transport-pci.tex
+>>>>>> +++ b/transport-pci.tex
+>>>>>> @@ -319,6 +319,7 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>>>>>>             le64 queue_desc;                /* read-write */
+>>>>>>             le64 queue_driver;              /* read-write */
+>>>>>>             le64 queue_device;              /* read-write */
+>>>>>> +        le16 freeze_mode;               /* read-write */
+>>>>>>             le16 queue_notif_config_data;   /* read-only for driver */
+>>>>>>             le16 queue_reset;               /* read-write */
+>>>>>>
+>>>>> we can't add fields in the middle of the structure like this -
+>>>>> offset of queue_notif_config_data and queue_reset changes.
+>>>>>
+>>>>>    
+>>>>>> @@ -393,6 +394,12 @@ \subsubsection{Common configuration structure layout}\label{sec:Virtio Transport
+>>>>>>     \item[\field{queue_device}]
+>>>>>>             The driver writes the physical address of Device Area here.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+>>>>>>     +\item[\field{freeze_mode}]
+>>>>>> +        The driver writes this to set the freeze mode of virtio pci.
+>>>>>> +        VIRTIO_PCI_FREEZE_MODE_UNFREEZE - virtio-pci is running;
+>>>>>> +        VIRTIO_PCI_FREEZE_MODE_FREEZE_S3 - guest vm is doing S3, and virtio-pci enters S3 suspension;
+>>>>>> +        Other values are reserved for future use, like S4, etc.
+>>>>>> +
+>>>>> we need to specify these values then.
+>>>>>
+>>>>> we also need
+>>>>> - feature bit to detect support for S3
+>>>>> - conformance statements documenting behavious under S3
+>>>>>
+>>>>>
+>>>>>>     \item[\field{queue_notif_config_data}]
+>>>>>>             This field exists only if VIRTIO_F_NOTIF_CONFIG_DATA has been negotiated.
+>>>>>>             The driver will use this value when driver sends available buffer
+>>>>>> -- 
+>>>>>> 2.34.1
+>>>>> This publicly archived list offers a means to provide input to the
+>>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>>
+>>>>> In order to verify user consent to the Feedback License terms and
+>>>>> to minimize spam in the list archive, subscription is required
+>>>>> before posting.
+>>>>>
+>>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>>> Join OASIS: https://www.oasis-open.org/join/
+>>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>>>
+>>
+>> This publicly archived list offers a means to provide input to the
+>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>
+>> In order to verify user consent to the Feedback License terms and
+>> to minimize spam in the list archive, subscription is required
+>> before posting.
+>>
+>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>> List help: virtio-comment-help@lists.oasis-open.org
+>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>> Committee: https://www.oasis-open.org/committees/virtio/
+>> Join OASIS: https://www.oasis-open.org/join/
+>>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
