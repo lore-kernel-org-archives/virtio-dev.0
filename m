@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13871-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13872-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0222CE79CB
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 010C2CE79CC
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:15:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id EB8762AD67
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 324EE330A3
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:15:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B1B5698667C
-	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 12DDB986673
+	for <virtio-dev@archiver.kernel.org>; Wed, 20 Sep 2023 11:15:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8C2D3986669; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
+	id EF3FD986669; Wed, 20 Sep 2023 11:15:33 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,28 +24,33 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7C65E98666A
-	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2023 11:11:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E0B8998666A
+	for <virtio-dev@lists.oasis-open.org>; Wed, 20 Sep 2023 11:15:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="379076370"
-X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
-   d="scan'208,217";a="379076370"
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="920244216"
-X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
-   d="scan'208,217";a="920244216"
-Content-Type: multipart/alternative;
- boundary="------------Z4VIngHpbxStoL01a8htve5T"
-Message-ID: <a009e6ec-4bea-d1c3-afbc-b65321341514@intel.com>
-Date: Wed, 20 Sep 2023 19:11:25 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.15.1
-Content-Language: en-US
-To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
- Jason Wang <jasowang@redhat.com>
-References: <PH0PR12MB548159C982509436C6499279DCF4A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LmHqjHHJmLcAlaOs0QhkS66pjffcBiv1FuiuKPHfpS9NeggFaeyt5KlZRSKST/GC5eEAJKUSYop4LNkY2Dz1k5rJsrvVdHtFvqxuImM8+LxksbH/XGzVLCEzJeTs6dOWFNMCSVjp7osDrRfenfso2Y7P9a9FW+oxbe6jPq0oMjbTW0DdAA2f5JIm1WND9IKxFxnH/zsF2wppwbwhbi/pgxDV9Wf4pmCcY95elFFiE1xXzLyjprf/K6VzzGNxNxa9/9TTMDMeOT4bnVukY/5ZVg9Kg/JMgyibW3o4x3MhhgGul+JbUS0p+ifl02JAtNw31IMlAwwwULQQv7VsClSE4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ReMpbbpObLdHuUuC6GIROVIBX4J7pNBdcFrRTcy0SiY=;
+ b=LzNjoVReZqqC8p8tdx9ApEXB6IjqkHFTPVkSMHWpib03SGxd0x1fgSbdS5D8hmcCf5YQbGJHwWkzZtDHyAHNezTF5AIZH/BHMn1ysbDE7/Pyze36aTtNPwMd7uaA5shIKeRD4AF0z0Uc9vR1gsvurfgUVQXP5ROkBCN3TThnXMzHa0OYGzlFLemkeidYTb3MUpxACqMoInuchTETwGMBKdZw2SA9+RaI1O4hsxAfwoiUJoIBVv7zW/GoxTrxT00Zf73bJKOiFONzBh683vpyJqqVIFpakcVJZzC+mws347j9sgtbN0kAhzcHcFDQUY6tkLcqwplltsvqYTLqWiWylQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+From: Parav Pandit <parav@nvidia.com>
+To: "Zhu, Lingshan" <lingshan.zhu@intel.com>, "Michael S. Tsirkin"
+	<mst@redhat.com>
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Jason
+ Wang <jasowang@redhat.com>
+Thread-Topic: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
+ vq state
+Thread-Index:
+ AQHZ540fvvI9R/h+mUufqKbomRy5frAegLUwgAFrbQCAABUsgIAAD5cAgAAA+ACAABKeIIAABNaAgAAAXmCAAC3dgIAAl98QgAADDoCAAk+KgIAAAFWwgAAGqACAACGKcIAAFIIAgAAATLCAABfxgIAAAEYA
+Date: Wed, 20 Sep 2023 11:15:21 +0000
+Message-ID:
+ <PH0PR12MB548188922E73315ABDAC16B5DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
+References:
+ <PH0PR12MB548159C982509436C6499279DCF4A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com>
  <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
  <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -60,527 +65,484 @@ References: <PH0PR12MB548159C982509436C6499279DCF4A@PH0PR12MB5481.namprd12.prod.
  <PH0PR12MB5481F731EF62DB5CCE777918DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <84b2f6b0-c4fb-9b28-53ab-cc8c0b6763c2@intel.com>
  <PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
-Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
+ <a009e6ec-4bea-d1c3-afbc-b65321341514@intel.com>
+In-Reply-To: <a009e6ec-4bea-d1c3-afbc-b65321341514@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|IA0PR12MB7507:EE_
+x-ms-office365-filtering-correlation-id: 6c4cd5d6-252d-4dae-93f8-08dbb9cae119
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ yAB/lAciaHUf5fqcFRYRCNNGD/YldFE5fgBP7ct0h0iuI9iXZ0cKH6RTMigkNc9D6XjvkiimMbL7Y9CBrx3fkmHDGiZKjCO+8M+EUvzR4XfeQBovkOx6OcNJij3mnSG7uU9uEfptcxUQXbRYI6H4EJ9/6811evwGag/knRbbLnxKbVxWldcbC5HXAeopVc4WM0LlvyDgr8Mz17mEmMavWhRBrU2+wELCUXsWGmlWal8q1GbiiKJUmjc3y0bTEXTfo1PgSRSqrXH1oyPoLTR4n6atPUnSLm1ySfKThHqyR1imz9Ld/tW/KzjCl4jYOhSENntVRbgQFu42aw+0pjafQnudi1Yg6B3kSrsIB2PcrEuzfBXgcrGjiYwJ72l4kfQr1q6VMwc/n6QBnYKmm2NkMES+zH08uP9ULhgSWS+8FigfFdl44EXtgolNrKodT2Fkp0nEAzQJiJvw7MHxuIqX+6S169jehjJWsUzLLPQg72v+YoMshrg7RXLlsu9jgMN1PmT7sk7JvHytkWDim7tkUQoWSgsbtUGiDn+U724kqoaTXIJfy9DaEBflG/2W/oa/twC2qF5oKOF67h2Rago2gpxd/hiceoBZgFxRG6vuCYR83qmTsAn5x5VV8rt6IMtZyvKH7D03JpVgphyuZ6rIUyYJGrk788I/PQODoKfL7lc=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(376002)(136003)(39860400002)(396003)(1800799009)(186009)(451199024)(52536014)(26005)(8936002)(122000001)(8676002)(15650500001)(83380400001)(2906002)(33656002)(4326008)(55016003)(5660300002)(166002)(86362001)(966005)(6506007)(7696005)(53546011)(110136005)(71200400001)(54906003)(66446008)(478600001)(38100700002)(76116006)(41300700001)(66556008)(38070700005)(66946007)(64756008)(316002)(9686003)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?bXlpcm1DblZjSVdUdncwWEEzL012bkxyb1FqR280T3RrUVBLTE9tV1k1Qm1r?=
+ =?utf-8?B?Nkh1MGhMM3JFWXM1SUdMZzhaWG80bmxTdkdGMnN4bjI5SzV0Q0lHaHNmSjhW?=
+ =?utf-8?B?UElrR0dpS0REM0s0SUQvL2tkdXJya2pVVjQ3OW5PQVZUMnJWR0J1bHR6dWY3?=
+ =?utf-8?B?eHFubHVlK0tLd1FKd2ZoaERMNk9ERWVENEFQNFFkRTRINGUrMXBMZTVrb21m?=
+ =?utf-8?B?SmovK1gwd2RyNWMxZjhUZGVidGFEcjRrcnlhVlFGUVFWRkhvQnl0QlhXaEJO?=
+ =?utf-8?B?M1ZVMjlzWExacSt1QytFTG9vdThJeXl1Vm02SnQvbTd1YzhxVUNIR0xsYk9E?=
+ =?utf-8?B?MzJsOTRHOVdCRGMrbGtCd01MV0dDN0cyWHl2RTg0Yi8wSHpIQTlwdVMzNjQy?=
+ =?utf-8?B?ZkFnQ3hJVEFLbVNHZXQ1cmRrcWdDelpoZklNaDhXVW9RejNYS1YxVU84SmZa?=
+ =?utf-8?B?SDJ5Sk03MVIrUVZxNUtZR0xBSmJyL0EzcUVPZ1N1Zjk3ZW9kdDdVYm1jVnpM?=
+ =?utf-8?B?NjVHblpsdSs3V3NSU2ZGdEtHVWtKdHBwQkE3YUs2THdWOVlLMXkrSEJoM0tY?=
+ =?utf-8?B?VlRuS3V4ekp4OWxpTkRNM2szaEh0UDVZbFdmbkVMa1kwMms3NnFodlJoZGZv?=
+ =?utf-8?B?SzNmODl0M2hDalFpaXduMzV3K1J3NFFVNTI2OUtQcHZQSk5jZ1JBRGVjY1dh?=
+ =?utf-8?B?VWlaazJLVFN4K2w0am9oUGc4NXBaaE1ZUVBsa1NnOFlQT05jZFo5NjFsdWhF?=
+ =?utf-8?B?TSszQTRvcmh6bzRUbUxHdXRjcVlVQjQ4cU5TVTVyeHZkVTltaGxwQzBoM0gw?=
+ =?utf-8?B?UTVkSktDcUQrZmpUMHdSN29PSmU4VFBNMkFSUVpIU2pvNjF3cDRnRmZHNEFV?=
+ =?utf-8?B?L3IycmpYNzg3bFNlMlVUV3FSMUhpdWl3WnBSUjgxamxqWFBsSVE5aHlPUE5X?=
+ =?utf-8?B?b1h6a0YrQ1VkTW1TVkZnWk1TQnNZSjdoNWdQK2V2RldhNEVGMmdjMHIyV0xB?=
+ =?utf-8?B?dXZjTVp6cjRoRDAwTEw4OWRyaHN4bHpXUVJOS0JGL0toOFJpbE84UkU5VTVM?=
+ =?utf-8?B?Wk96djdycnYzNzBMTmMwT3htU2pEY0JrQ2NGV3JkTm0rbHJPekVwUzFHNlFj?=
+ =?utf-8?B?ZUJrMXg4MVVUYnVCcUdFTGM4bDR3SGlqZVIvTEdMVHVyUTRGWWw2UzNSSnp1?=
+ =?utf-8?B?ZTNOenJybng2UE8wUjJNbGw3UUR6WW1hdzI5emlnN1dIMldrSkZGd0U4TldB?=
+ =?utf-8?B?cGZYN01tWnF0TzFZeVhFejhIUUg0OWdTNFh1UFlRK29nSmQ5MEFXREd4NFFE?=
+ =?utf-8?B?bVZROUNoM1haOUd1eVV6SUVXQlcreGVUVlA4UVZJOWhISHdnRFkwRDhkd1Bl?=
+ =?utf-8?B?QUczMENTYmZPSzFDd1ZHRFZTZVUzbjQ2ZjdxQkhqVVBwQU1hV0h1T0RhbzRa?=
+ =?utf-8?B?RGpiRThvbjUweG9jUWI4TUtmWGhDYkoyYjE3dVdYa2E2cmd1MlFVd1ZTVjhU?=
+ =?utf-8?B?UHhYbFJIMEtwQlBMcGxFZnJpUHlGczdJeVBJNGZEdVRnaUJzc0UyYzkrenAr?=
+ =?utf-8?B?ZGxsdlBUaFpyTVAvTi9VeXgwVWNWajBPRlEwdEdzQ0E1UHI3b29aU2xFdUpy?=
+ =?utf-8?B?M1VSTUptci9hVWhjdnBFa3MwbzZ1Rmt4NFFsYUJxVDNjVjlLQU9RUER1dWY4?=
+ =?utf-8?B?MzZWNEl2U21zdWZEdEFSSDIvVWI1dGdBY2YvNmo2aGVmN0xENjNkZnVCWTVz?=
+ =?utf-8?B?cUZDc2RnNFl2WUtLVW5NMFpXSEx0TEpXNmJEUXMrajZraGYzam9zTW9Eb1FY?=
+ =?utf-8?B?cEQ1b056VnRSUUdRd01hWHN5ZVpKV3R0ZHhlbVdKZWxVTTc0TTk4NElSQjcx?=
+ =?utf-8?B?cmgyOG5TdjNwL0xHS1lSWERmcGF1M1N1YkZQSW9uOXZ0aWxNVG9tbmhmS211?=
+ =?utf-8?B?SUFVSzI4akRzQ2RBYUM5dy9jL2F4Q3huR3NCVU15bm83TDJNVG40QnU4YmRa?=
+ =?utf-8?B?V2tCNUpHeG1YWHRZV3QvRjhlREZWNHBDVlFOamQ3MTg1c1BaVlZidG5SUCtC?=
+ =?utf-8?B?VHNmRmZJdzVBbG53c1hndWhyL3dvVUdTVStGY2MyUmY0Uk5zSkJFZ2UzNkdN?=
+ =?utf-8?Q?bcNE=3D?=
+Content-Type: multipart/alternative;
+	boundary="_000_PH0PR12MB548188922E73315ABDAC16B5DCF9APH0PR12MB5481namp_"
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c4cd5d6-252d-4dae-93f8-08dbb9cae119
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2023 11:15:21.3978
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tApuu/Kozno4Tpq5XheqqSf4dF8RtfKmNun3cwbv6auAC+xg0RU+Vzy/qBagjXlsbxOZAvK2XxXBwMZt97oaFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7507
+Subject: RE: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
  state
 
---------------Z4VIngHpbxStoL01a8htve5T
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--_000_PH0PR12MB548188922E73315ABDAC16B5DCF9APH0PR12MB5481namp_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-On 9/20/2023 5:52 PM, Parav Pandit wrote:
->
-> Hi Lingshan,
->
-> Last two email replies in non-next format are getting hard to follow.
->
-> Can you please revert back to have text-based emails?
->
-> When one wants to use PF for the live migration in trusted hypervisor, 
-> PF is in the trust zone.
->
-even without live migration, it can be an attacking surface while guest 
-running.
-As repeated for many times, it can be used by malicious SW to dump guest 
-memory
->
-> In future when hypervisor is not trusted, the task of LM will be 
-> delegated to other infrastructure TVM.
->
-> Ravi at Intel already explained this a year ago using migration TD.
->
-> This fits very well without bifurcating the member device which is 
-> extremely hard.
->
-TD, TDX or TDX-IO are more complex topics, and we should
-focus on our live migration solution, not CC.
+UmFuZG9tIHdvcmRzIGxpa2UgbWFsaWNpb3VzIFNXIHRvIGRlc2NyaWJlIGFuIGF0dGFjayBkbyBu
+b3QgbWFrZSBzZW5zZS4NCg0KUmVmZXIgdGhlIHBhdGNoZXMgYW5kIHNlcmllcyBhbmQgdXNhZ2Ug
+bW9kZWwgdG8gZGVzY3JpYmUgdGhlIHN3IGF0dGFjayBpZiBhbnkuDQpJIGRpc2FncmVlIGFuZCBJ
+IHdpbGwgbm90IHJlcGVhdCBhbGwgdGhlIHBvaW50cyBhbnltb3JlLg0KSWYgeW91IGhhdmUgY29t
+bWVudHMgaW4gWzFdLCBwbGVhc2UgcmVwbHkgaW4gWzFdLg0KDQpTZXJpZXMgWzFdIGNsZWFybHkg
+ZGVzY3JpYmVzIHRoZSB1c2FnZSBtb2RlbCBhdCBsZWFzdCBmb3Igb25lIHdpZGVseSB1c2VkIE9T
+ID0gTGludXguDQoNClsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy92aXJ0aW8tY29tbWVudC8y
+MDIzMDkwOTE0MjkxMS41MjQ0MDctNy1wYXJhdkBudmlkaWEuY29tL1QvI21kOWZjZmExYmE5OTc0
+NjNkZThjN2ZiOGM2ZDE3ODZiMjI0YjBiZWFkDQoNCkZyb206IFpodSwgTGluZ3NoYW4gPGxpbmdz
+aGFuLnpodUBpbnRlbC5jb20+DQpTZW50OiBXZWRuZXNkYXksIFNlcHRlbWJlciAyMCwgMjAyMyA0
+OjQxIFBNDQpUbzogUGFyYXYgUGFuZGl0IDxwYXJhdkBudmlkaWEuY29tPjsgTWljaGFlbCBTLiBU
+c2lya2luIDxtc3RAcmVkaGF0LmNvbT4NCkNjOiB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4u
+b3JnOyBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPg0KU3ViamVjdDogUmU6IFt2aXJ0
+aW8tZGV2XSBSZTogW1BBVENIIDAvNV0gdmlydGlvOiBpbnRyb2R1Y2UgU1VTUEVORCBiaXQgYW5k
+IHZxIHN0YXRlDQoNCk9uIDkvMjAvMjAyMyA1OjUyIFBNLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQoN
+CkhpIExpbmdzaGFuLA0KDQpMYXN0IHR3byBlbWFpbCByZXBsaWVzIGluIG5vbi1uZXh0IGZvcm1h
+dCBhcmUgZ2V0dGluZyBoYXJkIHRvIGZvbGxvdy4NCkNhbiB5b3UgcGxlYXNlIHJldmVydCBiYWNr
+IHRvIGhhdmUgdGV4dC1iYXNlZCBlbWFpbHM/DQoNCldoZW4gb25lIHdhbnRzIHRvIHVzZSBQRiBm
+b3IgdGhlIGxpdmUgbWlncmF0aW9uIGluIHRydXN0ZWQgaHlwZXJ2aXNvciwgUEYgaXMgaW4gdGhl
+IHRydXN0IHpvbmUuDQpldmVuIHdpdGhvdXQgbGl2ZSBtaWdyYXRpb24sIGl0IGNhbiBiZSBhbiBh
+dHRhY2tpbmcgc3VyZmFjZSB3aGlsZSBndWVzdCBydW5uaW5nLg0KQXMgcmVwZWF0ZWQgZm9yIG1h
+bnkgdGltZXMsIGl0IGNhbiBiZSB1c2VkIGJ5IG1hbGljaW91cyBTVyB0byBkdW1wIGd1ZXN0IG1l
+bW9yeQ0KDQoNCkluIGZ1dHVyZSB3aGVuIGh5cGVydmlzb3IgaXMgbm90IHRydXN0ZWQsIHRoZSB0
+YXNrIG9mIExNIHdpbGwgYmUgZGVsZWdhdGVkIHRvIG90aGVyIGluZnJhc3RydWN0dXJlIFRWTS4N
+ClJhdmkgYXQgSW50ZWwgYWxyZWFkeSBleHBsYWluZWQgdGhpcyBhIHllYXIgYWdvIHVzaW5nIG1p
+Z3JhdGlvbiBURC4NClRoaXMgZml0cyB2ZXJ5IHdlbGwgd2l0aG91dCBiaWZ1cmNhdGluZyB0aGUg
+bWVtYmVyIGRldmljZSB3aGljaCBpcyBleHRyZW1lbHkgaGFyZC4NClRELCBURFggb3IgVERYLUlP
+IGFyZSBtb3JlIGNvbXBsZXggdG9waWNzLCBhbmQgd2Ugc2hvdWxkDQpmb2N1cyBvbiBvdXIgbGl2
+ZSBtaWdyYXRpb24gc29sdXRpb24sIG5vdCBDQy4NCg0KTXkgcG9pbnQgaXM6IHVzaW5nIGJhciBj
+YXAgYXMgYSBwcm94eSBmb3IgYWRtaW4gdnEgYmFzZWQgTE0gaXMgc3RpbGwgcHJvYmxlbWF0aWMu
+DQoNCk1heWJlIHdlIGNhbiBjbG9zZSB0aGlzLg0KDQoNClBhcmF2DQoNCkZyb206IFpodSwgTGlu
+Z3NoYW4gPGxpbmdzaGFuLnpodUBpbnRlbC5jb20+PG1haWx0bzpsaW5nc2hhbi56aHVAaW50ZWwu
+Y29tPg0KU2VudDogV2VkbmVzZGF5LCBTZXB0ZW1iZXIgMjAsIDIwMjMgMzoxNSBQTQ0KVG86IFBh
+cmF2IFBhbmRpdCA8cGFyYXZAbnZpZGlhLmNvbT48bWFpbHRvOnBhcmF2QG52aWRpYS5jb20+OyBN
+aWNoYWVsIFMuIFRzaXJraW4gPG1zdEByZWRoYXQuY29tPjxtYWlsdG86bXN0QHJlZGhhdC5jb20+
+DQpDYzogdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZzxtYWlsdG86dmlydGlvLWRldkBs
+aXN0cy5vYXNpcy1vcGVuLm9yZz47IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+PG1h
+aWx0bzpqYXNvd2FuZ0ByZWRoYXQuY29tPg0KU3ViamVjdDogUmU6IFt2aXJ0aW8tZGV2XSBSZTog
+W1BBVENIIDAvNV0gdmlydGlvOiBpbnRyb2R1Y2UgU1VTUEVORCBiaXQgYW5kIHZxIHN0YXRlDQoN
+Cg0KT24gOS8yMC8yMDIzIDQ6MzQgUE0sIFBhcmF2IFBhbmRpdCB3cm90ZToNCkBmb250LWZhY2Ug
+e2ZvbnQtZmFtaWx5OiJDYW1icmlhIE1hdGgiOyBwYW5vc2UtMToyIDQgNSAzIDUgNCA2IDMgMiA0
+O31AZm9udC1mYWNlIHtmb250LWZhbWlseTpDYWxpYnJpOyBwYW5vc2UtMToyIDE1IDUgMiAyIDIg
+NCAzIDIgNDt9QGZvbnQtZmFjZSB7Zm9udC1mYW1pbHk6Q29uc29sYXM7IHBhbm9zZS0xOjIgMTEg
+NiA5IDIgMiA0IDMgMiA0O31wLk1zb05vcm1hbCwgbGkuTXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFs
+IHttYXJnaW46MGluOyBmb250LXNpemU6MTEuMHB0OyBmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fu
+cy1zZXJpZjt9YTpsaW5rLCBzcGFuLk1zb0h5cGVybGluayB7bXNvLXN0eWxlLXByaW9yaXR5Ojk5
+OyBjb2xvcjpibHVlOyB0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO31wcmUge21zby1zdHlsZS1w
+cmlvcml0eTo5OTsgbXNvLXN0eWxlLWxpbms6IkhUTUwgUHJlZm9ybWF0dGVkIENoYXIiOyBtYXJn
+aW46MGluOyBtYXJnaW4tYm90dG9tOi4wMDAxcHQ7IGZvbnQtc2l6ZToxMC4wcHQ7IGZvbnQtZmFt
+aWx5OiJDb3VyaWVyIE5ldyI7fXNwYW4uSFRNTFByZWZvcm1hdHRlZENoYXIge21zby1zdHlsZS1u
+YW1lOiJIVE1MIFByZWZvcm1hdHRlZCBDaGFyIjsgbXNvLXN0eWxlLXByaW9yaXR5Ojk5OyBtc28t
+c3R5bGUtbGluazoiSFRNTCBQcmVmb3JtYXR0ZWQiOyBmb250LWZhbWlseTpDb25zb2xhczt9c3Bh
+bi5mb250c3R5bGUwIHttc28tc3R5bGUtbmFtZTpmb250c3R5bGUwO31zcGFuLkVtYWlsU3R5bGUy
+MSB7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtcmVwbHk7IGZvbnQtZmFtaWx5OiJDYWxpYnJpIixz
+YW5zLXNlcmlmOyBjb2xvcjp3aW5kb3d0ZXh0O30uTXNvQ2hwRGVmYXVsdCB7bXNvLXN0eWxlLXR5
+cGU6ZXhwb3J0LW9ubHk7IGZvbnQtc2l6ZToxMC4wcHQ7IG1zby1saWdhdHVyZXM6bm9uZTt9ZGl2
+LldvcmRTZWN0aW9uMSB7cGFnZTpXb3JkU2VjdGlvbjE7fQ0KPiBUaGVyZSBjYW4gYmUgbWFsaWNp
+b3VzIFNXIG9uIHRoZSBob3N0LCBhbmQgdGhlIGhvc3QgbWF5IGJlIGhhY2tlZCBhbmQgY29tcHJv
+bWlzZWQuDQo+IEZvciBleGFtcGxlOg0KPiAxKSBTVVNQRU5EIHRoZSBhIHJ1bm5pbmcgZ3Vlc3Qg
+YnkgYWRtaW4gdnENCj4gMikgZHVtcGluZyBndWVzdCBtZW1vcnkgdGhyb3VnaCBhZG1pbiB2cSBk
+aXJ0eSBwYWdlIHRyYWNraW5nLg0KDQoNCg0KTm8uIGh5cGVydmlzb3IgaXMgdHJ1c3RlZCBlbnRp
+dHkgd2hvIGlzIGhvc3RpbmcgdGhlIFZNLg0KVGhlIFBGIG1heSBub3Qgb3duZWQgYnkgdGhlIGh5
+cGVydmlzb3IgYW5kIHRoZSBob3N0IGNhbiBiZSBoYWNrZWQgYW5kIGNvbXB1dGVyaXplZC4NCg0K
+DQpUaGUgZGV2aWNlIG1pZ3JhdGlvbiBpcyBpbml0aWF0ZWQgYnkgdGhlIGh5cGVydmlzb3IuDQoN
+CkkgYW0gb21pdHRpbmcgdGhlIFRESVNQIHF1ZXN0aW9uIGZvciBub3cgYXMgdGFsa2VkIGJlZm9y
+ZS4NClRESVNQIHNwZWMgd2lsbCBldm9sdmUgZm9yIGh5cGVyY2FsbHMgd2hlbiB3ZSBnZXQgdGhl
+cmUuDQpDb25maWRlbnRpYWwgY29tcHV0aW5nIGlzIG91dCBvZiB0aGUgc3BlYywgYXMgd2UgZGlz
+Y3Vzc2VkIGFuZCBhZ3JlZWQuDQoNClRoaXMgaXMgdG8gZGVtb25zdHJhdGUgd2h5IGV2ZW4gdXNp
+bmcgYSBiYXIgY2FwIGFzIHByb3h5IGZvciBhZG1pbiB2cSBMTSBpcyBzdGlsbCBwcm9ibGVtYXRp
+Yy4NClRESVNQIGdpdmVzIGV4YW1wbGVzIG9mIHRoZSBhdHRhY2tpbmcgbW9kZWxzLCBhbmQgYWRt
+aW4gdnEgYmFzZWQgTE0NCmNvbmZvcm1zIHRvIHRoZSBtb2RlbHMuDQoNCg0KDQpGcm9tOiB2aXJ0
+aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnPG1haWx0bzp2aXJ0aW8tZGV2QGxpc3RzLm9hc2lz
+LW9wZW4ub3JnPiA8dmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZz48bWFpbHRvOnZpcnRp
+by1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc+IE9uIEJlaGFsZiBPZiBaaHUsIExpbmdzaGFuDQpT
+ZW50OiBXZWRuZXNkYXksIFNlcHRlbWJlciAyMCwgMjAyMyAxMjowMSBQTQ0KVG86IFBhcmF2IFBh
+bmRpdCA8cGFyYXZAbnZpZGlhLmNvbT48bWFpbHRvOnBhcmF2QG52aWRpYS5jb20+OyBNaWNoYWVs
+IFMuIFRzaXJraW4gPG1zdEByZWRoYXQuY29tPjxtYWlsdG86bXN0QHJlZGhhdC5jb20+DQpDYzog
+dmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZzxtYWlsdG86dmlydGlvLWRldkBsaXN0cy5v
+YXNpcy1vcGVuLm9yZz47IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+PG1haWx0bzpq
+YXNvd2FuZ0ByZWRoYXQuY29tPg0KU3ViamVjdDogUmU6IFt2aXJ0aW8tZGV2XSBSZTogW1BBVENI
+IDAvNV0gdmlydGlvOiBpbnRyb2R1Y2UgU1VTUEVORCBiaXQgYW5kIHZxIHN0YXRlDQoNCg0KT24g
+OS8yMC8yMDIzIDI6MDggUE0sIFBhcmF2IFBhbmRpdCB3cm90ZToNCg0KDQoNCkZyb206IFpodSwg
+TGluZ3NoYW4gPGxpbmdzaGFuLnpodUBpbnRlbC5jb20+PG1haWx0bzpsaW5nc2hhbi56aHVAaW50
+ZWwuY29tPg0KDQpTZW50OiBXZWRuZXNkYXksIFNlcHRlbWJlciAyMCwgMjAyMyAxMTozNiBBTQ0K
+DQoNCg0KT24gOS8xOS8yMDIzIDI6NDkgQU0sIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToNCg0K
+T24gTW9uLCBTZXAgMTgsIDIwMjMgYXQgMDY6NDE6NTVQTSArMDAwMCwgUGFyYXYgUGFuZGl0IHdy
+b3RlOg0KDQpQbGVhc2UgcmVmZXIgdG8gdGhlIGNvZGUgZm9yIHNldHRpbmcgRkVBVFVSRVNfT0su
+DQoNCkl0IHdvbnQgd29yayB3aGVuIG9uZSBuZWVkcyB0byBzdXNwZW5kIHRoZSBkZXZpY2UuDQoN
+ClRoZXJlIGlzIG5vIHBvaW50IG9mIGRvaW5nIHN1Y2ggd29yayBvdmVyIHJlZ2lzdGVycyBhcyBm
+dW5kYW1lbnRhbA0KDQpmcmFtZXdvcmsgaXMgb3ZlciB0aGUgQVEuDQoNCldlbGwgbm90IHJlYWxs
+eS4gSXQncyBvdmVyIGFkbWluIGNvbW1hbmRzLiBXaGVuIHRoZXNlIHdlcmUgYnVpbHQgdGhlDQoN
+CmludGVudCBhbHdheXMgd2FzIHRoYXQgaXQncyBwb3NzaWJsZSB0byB1c2UgYWRtaW4gY29tbWFu
+ZHMgdGhyb3VnaA0KDQphbm90aGVyIGludGVyZmFjZSwgb3RoZXIgdGhhbiBhZG1pbiBxdWV1ZS4g
+SXMgdGhlcmUgYSBwcm9ibGVtDQoNCmltcGxlbWVudGluZyBhZG1pbiBjb21tYW5kcyBvdmVyIGEg
+bWVtb3J5IEJBUj8gRm9yIGV4YW1wbGUsIEkgY2FuIHNlZQ0KDQphbiAiYWRtaW4gY29tbWFuZCIg
+Y2FwYWJpbGl0eSBwb2ludGluZyBhdCBhIEJBUiB3aGVyZSBjb21tYW5kcyBhcmUNCg0Kc3VwcGxp
+ZWQsIGFuZCB1c2luZyBhIG5ldyBncm91cCB0eXBlIHJlZmVycmluZyB0byBkZXZpY2UgaXRzZWxm
+Lg0KDQpJIGFtIG5vdCBzdXJlLCBpZiBhIGJhciBjYXAgd291bGQgYmUgaW1wbGVtZW50ZWQgYXMg
+YSBwcm94eSBmb3IgdGhlIGFkbWluIHZxDQoNCmJhc2VkIGxpdmUgbWlncmF0aW9uLiB0aGVuIHRo
+ZSBwcm9ibGVtcyBvZiBhZG1pbiB2cSBMTSB0aGF0IHdlIGhhdmUgZGlzY3Vzc2VkDQoNCnN0aWxs
+IGV4aXN0LiB0aGUgYmFyIGlzIG9ubHkgYSBwcm94eSwgZG9lc24ndCBmaXggYW55dGhpbmcuIGFu
+ZCBldmVuIGxhcmdlciBzaWRlDQoNCmNoYW5uZWwgYXR0YWNraW5nIHN1cmZhY2U6IHZmLS0+cGYt
+LT52Zg0KDQoNCg0KQVEgTE0gdXNpbmcgUEYgaGFzIG5vIHNpZGUgY2hhbm5lbCBhdHRhY2sgYXMg
+aHlwZXJ2aXNvciBhbmQgb3duZXIgZGV2aWNlIGlzIHRydXN0ZWQgZW50aXR5IGFzIGFscmVhZHkg
+ZGlzY3Vzc2VkLg0KSSBiZWxpZXZlIHdlIGhhdmUgZGlzY3Vzc2VkIHRoaXMgZm9yIG1hbnkgdGlt
+ZXMsIGFuZCBJIGV2ZW4gcHJvdmlkZSB5b3Ugc29tZSBleGFtcGxlcy4NCg0KTGV0IG1lIHJlcGVh
+dCBmb3IgdGhlIGxhc3QgdGltZS4NCg0KVGhlcmUgY2FuIGJlIG1hbGljaW91cyBTVyBvbiB0aGUg
+aG9zdCwgYW5kIHRoZSBob3N0IG1heSBiZSBoYWNrZWQgYW5kIGNvbXByb21pc2VkLg0KRm9yIGV4
+YW1wbGU6DQoxKSBTVVNQRU5EIHRoZSBhIHJ1bm5pbmcgZ3Vlc3QgYnkgYWRtaW4gdnENCjIpIGR1
+bXBpbmcgZ3Vlc3QgbWVtb3J5IHRocm91Z2ggYWRtaW4gdnEgZGlydHkgcGFnZSB0cmFja2luZy4N
+Cg0KVGhlc2UgYWJvdmUgY2FuIGhhcHBlbiByaWdodD8NCg0KWW91IG1hZGUgVERJU1AgYXMgYW4g
+ZXhhbXBsZSwgYnV0IGhhdmUgeW91IHJlYWxseSByZWFkIHRoZSBURElTUCBzcGVjPw0KSW4gdGhl
+IHNwZWM6DQoNCkRldmljZSBTZWN1cml0eSBBcmNoaXRlY3R1cmUgLSBBZG1pbmlzdHJhdGl2ZSBp
+bnRlcmZhY2VzIChlLmcuLCBhIFBGKSBtYXkgYmUNCnVzZWQgdG8gaW5mbHVlbmNlIHRoZSBzZWN1
+cml0eSBwcm9wZXJ0aWVzIG9mIHRoZSBUREkgdXNlZCBieSB0aGUgVFZNLg0KDQpURUUtSS9PIHJl
+cXVpcmVzIHRoZSBkZXZpY2UgdG8gb3JnYW5pemUgaXRzIGhhcmR3YXJlL3NvZnR3YXJlIGludGVy
+ZmFjZXMgc3VjaCB0aGF0IHRoZSBQRiBjYW5ub3QNCmJlIHVzZWQgdG8gYWZmZWN0IHRoZSBzZWN1
+cml0eSBvZiBhIFRESSB3aGVuIGl0IGlzIGluIHVzZSBieSBhIFRWTQ0KDQpDbGVhcj8NCg0KDQoN
+Cg0KDQoNCg0KDQo=
 
-My point is: using bar cap as a proxy for admin vq based LM is still 
-problematic.
+--_000_PH0PR12MB548188922E73315ABDAC16B5DCF9APH0PR12MB5481namp_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Maybe we can close this.
->
-> Parav
->
-> *From:* Zhu, Lingshan <lingshan.zhu@intel.com>
-> *Sent:* Wednesday, September 20, 2023 3:15 PM
-> *To:* Parav Pandit <parav@nvidia.com>; Michael S. Tsirkin <mst@redhat.com>
-> *Cc:* virtio-dev@lists.oasis-open.org; Jason Wang <jasowang@redhat.com>
-> *Subject:* Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND 
-> bit and vq state
->
-> On 9/20/2023 4:34 PM, Parav Pandit wrote:
->
->     @font-face {font-family:"Cambria Math"; panose-1:2 4 5 3 5 4 6 3 2
->     4;}@font-face {font-family:Calibri; panose-1:2 15 5 2 2 2 4 3 2
->     4;}@font-face {font-family:Consolas; panose-1:2 11 6 9 2 2 4 3 2
->     4;}p.MsoNormal, li.MsoNormal, div.MsoNormal {margin:0in;
->     font-size:11.0pt; font-family:"Calibri",sans-serif;}a:link,
->     span.MsoHyperlink {mso-style-priority:99; color:blue;
->     text-decoration:underline;}pre {mso-style-priority:99;
->     mso-style-link:"HTML Preformatted Char"; margin:0in;
->     margin-bottom:.0001pt; font-size:10.0pt; font-family:"Courier
->     New";}span.HTMLPreformattedChar {mso-style-name:"HTML Preformatted
->     Char"; mso-style-priority:99; mso-style-link:"HTML Preformatted";
->     font-family:Consolas;}span.fontstyle0
->     {mso-style-name:fontstyle0;}span.EmailStyle21
->     {mso-style-type:personal-reply; font-family:"Calibri",sans-serif;
->     color:windowtext;}.MsoChpDefault {mso-style-type:export-only;
->     font-size:10.0pt; mso-ligatures:none;}div.WordSection1
->     {page:WordSection1;}
->
->     > There can be malicious SW on the host, and the host may be hacked
->     and compromised.
->     > For example:
->     > 1) SUSPEND the a running guest by admin vq
->     > 2) dumping guest memory through admin vq dirty page tracking.
->
->
->     No. hypervisor is trusted entity who is hosting the VM.
->
-> The PF may not owned by the hypervisor and the host can be hacked and 
-> computerized.
->
->     The device migration is initiated by the hypervisor.
->
->     I am omitting the TDISP question for now as talked before.
->
->     TDISP spec will evolve for hypercalls when we get there.
->
-> Confidential computing is out of the spec, as we discussed and agreed.
->
-> This is to demonstrate why even using a bar cap as proxy for admin vq 
-> LM is still problematic.
-> TDISP gives examples of the attacking models, and admin vq based LM
-> conforms to the models.
->
->     *From:*virtio-dev@lists.oasis-open.org
->     <virtio-dev@lists.oasis-open.org>
->     <mailto:virtio-dev@lists.oasis-open.org> *On Behalf Of *Zhu, Lingshan
->     *Sent:* Wednesday, September 20, 2023 12:01 PM
->     *To:* Parav Pandit <parav@nvidia.com> <mailto:parav@nvidia.com>;
->     Michael S. Tsirkin <mst@redhat.com> <mailto:mst@redhat.com>
->     *Cc:* virtio-dev@lists.oasis-open.org; Jason Wang
->     <jasowang@redhat.com> <mailto:jasowang@redhat.com>
->     *Subject:* Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce
->     SUSPEND bit and vq state
->
->     On 9/20/2023 2:08 PM, Parav Pandit wrote:
->
->           
->
->             From: Zhu, Lingshan<lingshan.zhu@intel.com>  <mailto:lingshan.zhu@intel.com>
->
->             Sent: Wednesday, September 20, 2023 11:36 AM
->
->               
->
->             On 9/19/2023 2:49 AM, Michael S. Tsirkin wrote:
->
->                 On Mon, Sep 18, 2023 at 06:41:55PM +0000, Parav Pandit wrote:
->
->                         Please refer to the code for setting FEATURES_OK.
->
->                     It wont work when one needs to suspend the device.
->
->                     There is no point of doing such work over registers as fundamental
->
->             framework is over the AQ.
->
->                 Well not really. It's over admin commands. When these were built the
->
->                 intent always was that it's possible to use admin commands through
->
->                 another interface, other than admin queue. Is there a problem
->
->                 implementing admin commands over a memory BAR? For example, I can see
->
->                 an "admin command" capability pointing at a BAR where commands are
->
->                 supplied, and using a new group type referring to device itself.
->
->             I am not sure, if a bar cap would be implemented as a proxy for the admin vq
->
->             based live migration. then the problems of admin vq LM that we have discussed
->
->             still exist. the bar is only a proxy, doesn't fix anything. and even larger side
->
->             channel attacking surface: vf-->pf-->vf
->
->           
->
->         AQ LM using PF has no side channel attack as hypervisor and owner device is trusted entity as already discussed.
->
->     I believe we have discussed this for many times, and I even
->     provide you some examples.
->
->     Let me repeat for the last time.
->
->     There can be malicious SW on the host, and the host may be hacked
->     and compromised.
->     For example:
->     1) SUSPEND the a running guest by admin vq
->     2) dumping guest memory through admin vq dirty page tracking.
->
->     These above can happen right?
->
->     You made TDISP as an example, but have you really read the TDISP spec?
->     In the spec:
->
->     Device Security Architecture - Administrative interfaces (e.g., a
->     PF) may be
->     used to influence the security properties of the TDI used by the TVM.
->
->     TEE-I/O requires the device to organize its hardware/software
->     interfaces such that the PF cannot
->     be used to affect the security of a TDI when it is in use by a TVM
->
->     Clear?
->
->
->           
->
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
+IDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDb25zb2xhczsNCglwYW5vc2UtMToyIDEx
+IDYgOSAyIDIgNCAzIDIgNDt9DQpAZm9udC1mYWNlDQoJe2ZvbnQtZmFtaWx5OiJDb3VyaWVyIE5l
+dyBcOyI7DQoJcGFub3NlLTE6MCAwIDAgMCAwIDAgMCAwIDAgMDt9DQovKiBTdHlsZSBEZWZpbml0
+aW9ucyAqLw0KcC5Nc29Ob3JtYWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJn
+aW46MGluOw0KCWZvbnQtc2l6ZToxMS4wcHQ7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMt
+c2VyaWY7fQ0KYTpsaW5rLCBzcGFuLk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUtcHJpb3JpdHk6
+OTk7DQoJY29sb3I6Ymx1ZTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnByZQ0KCXtt
+c28tc3R5bGUtcHJpb3JpdHk6OTk7DQoJbXNvLXN0eWxlLWxpbms6IkhUTUwgUHJlZm9ybWF0dGVk
+IENoYXIiOw0KCW1hcmdpbjowaW47DQoJbWFyZ2luLWJvdHRvbTouMDAwMXB0Ow0KCWZvbnQtc2l6
+ZToxMC4wcHQ7DQoJZm9udC1mYW1pbHk6IkNvdXJpZXIgTmV3Ijt9DQpzcGFuLkhUTUxQcmVmb3Jt
+YXR0ZWRDaGFyDQoJe21zby1zdHlsZS1uYW1lOiJIVE1MIFByZWZvcm1hdHRlZCBDaGFyIjsNCglt
+c28tc3R5bGUtcHJpb3JpdHk6OTk7DQoJbXNvLXN0eWxlLWxpbms6IkhUTUwgUHJlZm9ybWF0dGVk
+IjsNCglmb250LWZhbWlseTpDb25zb2xhczt9DQpzcGFuLmZvbnRzdHlsZTANCgl7bXNvLXN0eWxl
+LW5hbWU6Zm9udHN0eWxlMDt9DQpzcGFuLkVtYWlsU3R5bGUyMg0KCXttc28tc3R5bGUtdHlwZTpw
+ZXJzb25hbC1yZXBseTsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjsNCgljb2xv
+cjp3aW5kb3d0ZXh0O30NCi5Nc29DaHBEZWZhdWx0DQoJe21zby1zdHlsZS10eXBlOmV4cG9ydC1v
+bmx5Ow0KCWZvbnQtc2l6ZToxMC4wcHQ7DQoJbXNvLWxpZ2F0dXJlczpub25lO30NCkBwYWdlIFdv
+cmRTZWN0aW9uMQ0KCXtzaXplOjguNWluIDExLjBpbjsNCgltYXJnaW46MS4waW4gMS4waW4gMS4w
+aW4gMS4waW47fQ0KZGl2LldvcmRTZWN0aW9uMQ0KCXtwYWdlOldvcmRTZWN0aW9uMTt9DQotLT48
+L3N0eWxlPjwhLS1baWYgZ3RlIG1zbyA5XT48eG1sPg0KPG86c2hhcGVkZWZhdWx0cyB2OmV4dD0i
+ZWRpdCIgc3BpZG1heD0iMTAyNiIgLz4NCjwveG1sPjwhW2VuZGlmXS0tPjwhLS1baWYgZ3RlIG1z
+byA5XT48eG1sPg0KPG86c2hhcGVsYXlvdXQgdjpleHQ9ImVkaXQiPg0KPG86aWRtYXAgdjpleHQ9
+ImVkaXQiIGRhdGE9IjEiIC8+DQo8L286c2hhcGVsYXlvdXQ+PC94bWw+PCFbZW5kaWZdLS0+DQo8
+L2hlYWQ+DQo8Ym9keSBsYW5nPSJFTi1VUyIgbGluaz0iYmx1ZSIgdmxpbms9InB1cnBsZSIgc3R5
+bGU9IndvcmQtd3JhcDpicmVhay13b3JkIj4NCjxkaXYgY2xhc3M9IldvcmRTZWN0aW9uMSI+DQo8
+cCBjbGFzcz0iTXNvTm9ybWFsIj5SYW5kb20gd29yZHMgbGlrZSBtYWxpY2lvdXMgU1cgdG8gZGVz
+Y3JpYmUgYW4gYXR0YWNrIGRvIG5vdCBtYWtlIHNlbnNlLjxvOnA+PC9vOnA+PC9wPg0KPHAgY2xh
+c3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFs
+Ij5SZWZlciB0aGUgcGF0Y2hlcyBhbmQgc2VyaWVzIGFuZCB1c2FnZSBtb2RlbCB0byBkZXNjcmli
+ZSB0aGUgc3cgYXR0YWNrIGlmIGFueS48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3Jt
+YWwiPkkgZGlzYWdyZWUgYW5kIEkgd2lsbCBub3QgcmVwZWF0IGFsbCB0aGUgcG9pbnRzIGFueW1v
+cmUuPG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5JZiB5b3UgaGF2ZSBjb21t
+ZW50cyBpbiBbMV0sIHBsZWFzZSByZXBseSBpbiBbMV0uPG86cD48L286cD48L3A+DQo8cCBjbGFz
+cz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwi
+PlNlcmllcyBbMV0gY2xlYXJseSBkZXNjcmliZXMgdGhlIHVzYWdlIG1vZGVsIGF0IGxlYXN0IGZv
+ciBvbmUgd2lkZWx5IHVzZWQgT1MgPSBMaW51eC48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJN
+c29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+WzFd
+IDxhIGhyZWY9Imh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3ZpcnRpby1jb21tZW50LzIwMjMwOTA5
+MTQyOTExLjUyNDQwNy03LXBhcmF2QG52aWRpYS5jb20vVC8jbWQ5ZmNmYTFiYTk5NzQ2M2RlOGM3
+ZmI4YzZkMTc4NmIyMjRiMGJlYWQiPg0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvdmlydGlvLWNv
+bW1lbnQvMjAyMzA5MDkxNDI5MTEuNTI0NDA3LTctcGFyYXZAbnZpZGlhLmNvbS9ULyNtZDlmY2Zh
+MWJhOTk3NDYzZGU4YzdmYjhjNmQxNzg2YjIyNGIwYmVhZDwvYT48bzpwPjwvbzpwPjwvcD4NCjxw
+IGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPGRpdiBzdHlsZT0iYm9y
+ZGVyOm5vbmU7Ym9yZGVyLWxlZnQ6c29saWQgYmx1ZSAxLjVwdDtwYWRkaW5nOjBpbiAwaW4gMGlu
+IDQuMHB0Ij4NCjxkaXY+DQo8ZGl2IHN0eWxlPSJib3JkZXI6bm9uZTtib3JkZXItdG9wOnNvbGlk
+ICNFMUUxRTEgMS4wcHQ7cGFkZGluZzozLjBwdCAwaW4gMGluIDBpbiI+DQo8cCBjbGFzcz0iTXNv
+Tm9ybWFsIj48Yj5Gcm9tOjwvYj4gWmh1LCBMaW5nc2hhbiAmbHQ7bGluZ3NoYW4uemh1QGludGVs
+LmNvbSZndDsgPGJyPg0KPGI+U2VudDo8L2I+IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIwLCAyMDIz
+IDQ6NDEgUE08YnI+DQo8Yj5Ubzo8L2I+IFBhcmF2IFBhbmRpdCAmbHQ7cGFyYXZAbnZpZGlhLmNv
+bSZndDs7IE1pY2hhZWwgUy4gVHNpcmtpbiAmbHQ7bXN0QHJlZGhhdC5jb20mZ3Q7PGJyPg0KPGI+
+Q2M6PC9iPiB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBKYXNvbiBXYW5nICZsdDtq
+YXNvd2FuZ0ByZWRoYXQuY29tJmd0Ozxicj4NCjxiPlN1YmplY3Q6PC9iPiBSZTogW3ZpcnRpby1k
+ZXZdIFJlOiBbUEFUQ0ggMC81XSB2aXJ0aW86IGludHJvZHVjZSBTVVNQRU5EIGJpdCBhbmQgdnEg
+c3RhdGU8bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFs
+Ij48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxl
+PSJmb250LWZhbWlseTomcXVvdDtDb3VyaWVyIE5ldyZxdW90OyI+T24gOS8yMC8yMDIzIDU6NTIg
+UE0sIFBhcmF2IFBhbmRpdCB3cm90ZTo8L3NwYW4+PGJyPg0KPGJyPg0KPG86cD48L286cD48L3A+
+DQo8YmxvY2txdW90ZSBzdHlsZT0ibWFyZ2luLXRvcDo1LjBwdDttYXJnaW4tYm90dG9tOjUuMHB0
+Ij4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkhpIExpbmdzaGFuLDxvOnA+PC9vOnA+PC9wPg0KPHAg
+Y2xhc3M9Ik1zb05vcm1hbCI+Jm5ic3A7PG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9y
+bWFsIj5MYXN0IHR3byBlbWFpbCByZXBsaWVzIGluIG5vbi1uZXh0IGZvcm1hdCBhcmUgZ2V0dGlu
+ZyBoYXJkIHRvIGZvbGxvdy48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPkNh
+biB5b3UgcGxlYXNlIHJldmVydCBiYWNrIHRvIGhhdmUgdGV4dC1iYXNlZCBlbWFpbHM/PG86cD48
+L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj4mbmJzcDs8bzpwPjwvbzpwPjwvcD4NCjxw
+IGNsYXNzPSJNc29Ob3JtYWwiPldoZW4gb25lIHdhbnRzIHRvIHVzZSBQRiBmb3IgdGhlIGxpdmUg
+bWlncmF0aW9uIGluIHRydXN0ZWQgaHlwZXJ2aXNvciwgUEYgaXMgaW4gdGhlIHRydXN0IHpvbmUu
+PG86cD48L286cD48L3A+DQo8L2Jsb2NrcXVvdGU+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3Bh
+biBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmllciBOZXcmcXVvdDsiPmV2ZW4gd2l0aG91
+dCBsaXZlIG1pZ3JhdGlvbiwgaXQgY2FuIGJlIGFuIGF0dGFja2luZyBzdXJmYWNlIHdoaWxlIGd1
+ZXN0IHJ1bm5pbmcuPGJyPg0KQXMgcmVwZWF0ZWQgZm9yIG1hbnkgdGltZXMsIGl0IGNhbiBiZSB1
+c2VkIGJ5IG1hbGljaW91cyBTVyB0byBkdW1wIGd1ZXN0IG1lbW9yeTxicj4NCjxicj4NCjwvc3Bh
+bj48bzpwPjwvbzpwPjwvcD4NCjxibG9ja3F1b3RlIHN0eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21h
+cmdpbi1ib3R0b206NS4wcHQiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+Jm5ic3A7PG86cD48L286
+cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5JbiBmdXR1cmUgd2hlbiBoeXBlcnZpc29yIGlz
+IG5vdCB0cnVzdGVkLCB0aGUgdGFzayBvZiBMTSB3aWxsIGJlIGRlbGVnYXRlZCB0byBvdGhlciBp
+bmZyYXN0cnVjdHVyZSBUVk0uPG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5S
+YXZpIGF0IEludGVsIGFscmVhZHkgZXhwbGFpbmVkIHRoaXMgYSB5ZWFyIGFnbyB1c2luZyBtaWdy
+YXRpb24gVEQuPG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5UaGlzIGZpdHMg
+dmVyeSB3ZWxsIHdpdGhvdXQgYmlmdXJjYXRpbmcgdGhlIG1lbWJlciBkZXZpY2Ugd2hpY2ggaXMg
+ZXh0cmVtZWx5IGhhcmQuPG86cD48L286cD48L3A+DQo8L2Jsb2NrcXVvdGU+DQo8cCBjbGFzcz0i
+TXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmllciBOZXcmcXVv
+dDsiPlRELCBURFggb3IgVERYLUlPIGFyZSBtb3JlIGNvbXBsZXggdG9waWNzLCBhbmQgd2Ugc2hv
+dWxkPGJyPg0KZm9jdXMgb24gb3VyIGxpdmUgbWlncmF0aW9uIHNvbHV0aW9uLCBub3QgQ0MuPGJy
+Pg0KPGJyPg0KTXkgcG9pbnQgaXM6IHVzaW5nIGJhciBjYXAgYXMgYSBwcm94eSBmb3IgYWRtaW4g
+dnEgYmFzZWQgTE0gaXMgc3RpbGwgcHJvYmxlbWF0aWMuPGJyPg0KPGJyPg0KTWF5YmUgd2UgY2Fu
+IGNsb3NlIHRoaXMuIDxicj4NCjxicj4NCjwvc3Bhbj48bzpwPjwvbzpwPjwvcD4NCjxibG9ja3F1
+b3RlIHN0eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21hcmdpbi1ib3R0b206NS4wcHQiPg0KPHAgY2xh
+c3M9Ik1zb05vcm1hbCI+Jm5ic3A7PG86cD48L286cD48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFs
+Ij5QYXJhdjxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+Jm5ic3A7PG86cD48
+L286cD48L3A+DQo8ZGl2IHN0eWxlPSJib3JkZXI6bm9uZTtib3JkZXItbGVmdDpzb2xpZCBibHVl
+IDEuNXB0O3BhZGRpbmc6MGluIDBpbiAwaW4gNC4wcHQiPg0KPGRpdj4NCjxkaXYgc3R5bGU9ImJv
+cmRlcjpub25lO2JvcmRlci10b3A6c29saWQgI0UxRTFFMSAxLjBwdDtwYWRkaW5nOjMuMHB0IDBp
+biAwaW4gMGluIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxiPkZyb206PC9iPiBaaHUsIExpbmdz
+aGFuIDxhIGhyZWY9Im1haWx0bzpsaW5nc2hhbi56aHVAaW50ZWwuY29tIj4NCiZsdDtsaW5nc2hh
+bi56aHVAaW50ZWwuY29tJmd0OzwvYT4gPGJyPg0KPGI+U2VudDo8L2I+IFdlZG5lc2RheSwgU2Vw
+dGVtYmVyIDIwLCAyMDIzIDM6MTUgUE08YnI+DQo8Yj5Ubzo8L2I+IFBhcmF2IFBhbmRpdCA8YSBo
+cmVmPSJtYWlsdG86cGFyYXZAbnZpZGlhLmNvbSI+Jmx0O3BhcmF2QG52aWRpYS5jb20mZ3Q7PC9h
+PjsgTWljaGFlbCBTLiBUc2lya2luDQo8YSBocmVmPSJtYWlsdG86bXN0QHJlZGhhdC5jb20iPiZs
+dDttc3RAcmVkaGF0LmNvbSZndDs8L2E+PGJyPg0KPGI+Q2M6PC9iPiA8YSBocmVmPSJtYWlsdG86
+dmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZyI+dmlydGlvLWRldkBsaXN0cy5vYXNpcy1v
+cGVuLm9yZzwvYT47IEphc29uIFdhbmcNCjxhIGhyZWY9Im1haWx0bzpqYXNvd2FuZ0ByZWRoYXQu
+Y29tIj4mbHQ7amFzb3dhbmdAcmVkaGF0LmNvbSZndDs8L2E+PGJyPg0KPGI+U3ViamVjdDo8L2I+
+IFJlOiBbdmlydGlvLWRldl0gUmU6IFtQQVRDSCAwLzVdIHZpcnRpbzogaW50cm9kdWNlIFNVU1BF
+TkQgYml0IGFuZCB2cSBzdGF0ZTxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2Rpdj4NCjxwIGNs
+YXNzPSJNc29Ob3JtYWwiPiZuYnNwOzxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1h
+bCIgc3R5bGU9Im1hcmdpbi1ib3R0b206MTIuMHB0Ij4mbmJzcDs8bzpwPjwvbzpwPjwvcD4NCjxk
+aXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7
+Q291cmllciBOZXcgOyZxdW90OyxzZXJpZiI+T24gOS8yMC8yMDIzIDQ6MzQgUE0sIFBhcmF2IFBh
+bmRpdCB3cm90ZTo8L3NwYW4+PG86cD48L286cD48L3A+DQo8L2Rpdj4NCjxibG9ja3F1b3RlIHN0
+eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21hcmdpbi1ib3R0b206NS4wcHQiPg0KPHAgY2xhc3M9Ik1z
+b05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiZxdW90O0NvdXJpZXIgTmV3IDsmcXVv
+dDssc2VyaWYiPkBmb250LWZhY2Uge2ZvbnQtZmFtaWx5OiZxdW90O0NhbWJyaWEgTWF0aCZxdW90
+OzsgcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9QGZvbnQtZmFjZSB7Zm9udC1mYW1pbHk6
+Q2FsaWJyaTsgcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAyIDQ7fUBmb250LWZhY2Uge2ZvbnQt
+ZmFtaWx5OkNvbnNvbGFzOyBwYW5vc2UtMToyIDExIDYgOSAyDQogMiA0IDMgMiA0O31wLk1zb05v
+cm1hbCwgbGkuTXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFsIHttYXJnaW46MGluOyBmb250LXNpemU6
+MTEuMHB0OyBmb250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWY7fWE6bGlu
+aywgc3Bhbi5Nc29IeXBlcmxpbmsge21zby1zdHlsZS1wcmlvcml0eTo5OTsgY29sb3I6Ymx1ZTsg
+dGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9cHJlIHttc28tc3R5bGUtcHJpb3JpdHk6OTk7IG1z
+by1zdHlsZS1saW5rOiZxdW90O0hUTUwgUHJlZm9ybWF0dGVkDQogQ2hhciZxdW90OzsgbWFyZ2lu
+OjBpbjsgbWFyZ2luLWJvdHRvbTouMDAwMXB0OyBmb250LXNpemU6MTAuMHB0OyBmb250LWZhbWls
+eTomcXVvdDtDb3VyaWVyIE5ldyZxdW90Ozt9c3Bhbi5IVE1MUHJlZm9ybWF0dGVkQ2hhciB7bXNv
+LXN0eWxlLW5hbWU6JnF1b3Q7SFRNTCBQcmVmb3JtYXR0ZWQgQ2hhciZxdW90OzsgbXNvLXN0eWxl
+LXByaW9yaXR5Ojk5OyBtc28tc3R5bGUtbGluazomcXVvdDtIVE1MIFByZWZvcm1hdHRlZCZxdW90
+OzsgZm9udC1mYW1pbHk6Q29uc29sYXM7fXNwYW4uZm9udHN0eWxlMCB7bXNvLXN0eWxlLW5hbWU6
+Zm9udHN0eWxlMDt9c3Bhbi5FbWFpbFN0eWxlMjENCiB7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwt
+cmVwbHk7IGZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjsgY29sb3I6
+d2luZG93dGV4dDt9Lk1zb0NocERlZmF1bHQge21zby1zdHlsZS10eXBlOmV4cG9ydC1vbmx5OyBm
+b250LXNpemU6MTAuMHB0OyBtc28tbGlnYXR1cmVzOm5vbmU7fWRpdi5Xb3JkU2VjdGlvbjEge3Bh
+Z2U6V29yZFNlY3Rpb24xO308L3NwYW4+DQo8bzpwPjwvbzpwPjwvcD4NCjxkaXY+DQo8cCBjbGFz
+cz0iTXNvTm9ybWFsIiBzdHlsZT0ibXNvLW1hcmdpbi10b3AtYWx0OmF1dG87bXNvLW1hcmdpbi1i
+b3R0b20tYWx0OmF1dG8iPjxzcGFuIHN0eWxlPSJmb250LWZhbWlseTomcXVvdDtDb3VyaWVyIE5l
+dyZxdW90OyI+Jmd0OyBUaGVyZSBjYW4gYmUgbWFsaWNpb3VzIFNXIG9uIHRoZSBob3N0LCBhbmQg
+dGhlIGhvc3QgbWF5IGJlIGhhY2tlZCBhbmQgY29tcHJvbWlzZWQuPGJyPg0KJmd0OyBGb3IgZXhh
+bXBsZTo8YnI+DQomZ3Q7IDEpIFNVU1BFTkQgdGhlIGEgcnVubmluZyBndWVzdCBieSBhZG1pbiB2
+cTxicj4NCiZndDsgMikgZHVtcGluZyBndWVzdCBtZW1vcnkgdGhyb3VnaCBhZG1pbiB2cSBkaXJ0
+eSBwYWdlIHRyYWNraW5nLjxicj4NCjxicj4NCjxicj4NCjxicj4NCjwvc3Bhbj48bzpwPjwvbzpw
+PjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtc28tbWFyZ2luLXRvcC1hbHQ6YXV0
+bzttc28tbWFyZ2luLWJvdHRvbS1hbHQ6YXV0byI+PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiZx
+dW90O0NvdXJpZXIgTmV3JnF1b3Q7Ij5Oby4gaHlwZXJ2aXNvciBpcyB0cnVzdGVkIGVudGl0eSB3
+aG8gaXMgaG9zdGluZyB0aGUgVk0uPC9zcGFuPjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2Js
+b2NrcXVvdGU+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6
+JnF1b3Q7Q291cmllciBOZXcgOyZxdW90OyxzZXJpZiI+VGhlIFBGIG1heSBub3Qgb3duZWQgYnkg
+dGhlIGh5cGVydmlzb3IgYW5kIHRoZSBob3N0IGNhbiBiZSBoYWNrZWQgYW5kIGNvbXB1dGVyaXpl
+ZC4NCjwvc3Bhbj48YnI+DQo8YnI+DQo8YnI+DQo8bzpwPjwvbzpwPjwvcD4NCjxibG9ja3F1b3Rl
+IHN0eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21hcmdpbi1ib3R0b206NS4wcHQiPg0KPGRpdj4NCjxw
+IGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtc28tbWFyZ2luLXRvcC1hbHQ6YXV0bzttc28tbWFy
+Z2luLWJvdHRvbS1hbHQ6YXV0byI+PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiZxdW90O0NvdXJp
+ZXIgTmV3JnF1b3Q7Ij5UaGUgZGV2aWNlIG1pZ3JhdGlvbiBpcyBpbml0aWF0ZWQgYnkgdGhlIGh5
+cGVydmlzb3IuPC9zcGFuPjxvOnA+PC9vOnA+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5
+bGU9Im1zby1tYXJnaW4tdG9wLWFsdDphdXRvO21zby1tYXJnaW4tYm90dG9tLWFsdDphdXRvIj48
+c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmllciBOZXcmcXVvdDsiPiZuYnNwOzwv
+c3Bhbj48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtc28tbWFy
+Z2luLXRvcC1hbHQ6YXV0bzttc28tbWFyZ2luLWJvdHRvbS1hbHQ6YXV0byI+PHNwYW4gc3R5bGU9
+ImZvbnQtZmFtaWx5OiZxdW90O0NvdXJpZXIgTmV3JnF1b3Q7Ij5JIGFtIG9taXR0aW5nIHRoZSBU
+RElTUCBxdWVzdGlvbiBmb3Igbm93IGFzIHRhbGtlZCBiZWZvcmUuPC9zcGFuPjxvOnA+PC9vOnA+
+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1zby1tYXJnaW4tdG9wLWFsdDphdXRv
+O21zby1tYXJnaW4tYm90dG9tLWFsdDphdXRvIj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1
+b3Q7Q291cmllciBOZXcmcXVvdDsiPlRESVNQIHNwZWMgd2lsbCBldm9sdmUgZm9yIGh5cGVyY2Fs
+bHMgd2hlbiB3ZSBnZXQgdGhlcmUuPC9zcGFuPjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2Js
+b2NrcXVvdGU+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6
+JnF1b3Q7Q291cmllciBOZXcgOyZxdW90OyxzZXJpZiI+Q29uZmlkZW50aWFsIGNvbXB1dGluZyBp
+cyBvdXQgb2YgdGhlIHNwZWMsIGFzIHdlIGRpc2N1c3NlZCBhbmQgYWdyZWVkLjxicj4NCjxicj4N
+ClRoaXMgaXMgdG8gZGVtb25zdHJhdGUgd2h5IGV2ZW4gdXNpbmcgYSBiYXIgY2FwIGFzIHByb3h5
+IGZvciBhZG1pbiB2cSBMTSBpcyBzdGlsbCBwcm9ibGVtYXRpYy4mbmJzcDsNCjxicj4NClRESVNQ
+IGdpdmVzIGV4YW1wbGVzIG9mIHRoZSBhdHRhY2tpbmcgbW9kZWxzLCBhbmQgYWRtaW4gdnEgYmFz
+ZWQgTE08YnI+DQpjb25mb3JtcyB0byB0aGUgbW9kZWxzLjxicj4NCjxicj4NCjxicj4NCjwvc3Bh
+bj48bzpwPjwvbzpwPjwvcD4NCjxibG9ja3F1b3RlIHN0eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21h
+cmdpbi1ib3R0b206NS4wcHQiPg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJt
+c28tbWFyZ2luLXRvcC1hbHQ6YXV0bzttc28tbWFyZ2luLWJvdHRvbS1hbHQ6YXV0byI+PHNwYW4g
+c3R5bGU9ImZvbnQtZmFtaWx5OiZxdW90O0NvdXJpZXIgTmV3JnF1b3Q7Ij4mbmJzcDs8L3NwYW4+
+PG86cD48L286cD48L3A+DQo8ZGl2Pg0KPGRpdiBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLXRv
+cDpzb2xpZCAjRTFFMUUxIDEuMHB0O3BhZGRpbmc6My4wcHQgMGluIDBpbiAwaW4iPg0KPHAgY2xh
+c3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1zby1tYXJnaW4tdG9wLWFsdDphdXRvO21zby1tYXJnaW4t
+Ym90dG9tLWFsdDphdXRvIj48Yj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmll
+ciBOZXcmcXVvdDsiPkZyb206PC9zcGFuPjwvYj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1
+b3Q7Q291cmllciBOZXcmcXVvdDsiPg0KPGEgaHJlZj0ibWFpbHRvOnZpcnRpby1kZXZAbGlzdHMu
+b2FzaXMtb3Blbi5vcmciPnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc8L2E+DQo8YSBo
+cmVmPSJtYWlsdG86dmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZyI+Jmx0O3ZpcnRpby1k
+ZXZAbGlzdHMub2FzaXMtb3Blbi5vcmcmZ3Q7PC9hPg0KPGI+T24gQmVoYWxmIE9mIDwvYj5aaHUs
+IExpbmdzaGFuPGJyPg0KPGI+U2VudDo8L2I+IFdlZG5lc2RheSwgU2VwdGVtYmVyIDIwLCAyMDIz
+IDEyOjAxIFBNPGJyPg0KPGI+VG86PC9iPiBQYXJhdiBQYW5kaXQgPGEgaHJlZj0ibWFpbHRvOnBh
+cmF2QG52aWRpYS5jb20iPiZsdDtwYXJhdkBudmlkaWEuY29tJmd0OzwvYT47IE1pY2hhZWwgUy4g
+VHNpcmtpbg0KPGEgaHJlZj0ibWFpbHRvOm1zdEByZWRoYXQuY29tIj4mbHQ7bXN0QHJlZGhhdC5j
+b20mZ3Q7PC9hPjxicj4NCjxiPkNjOjwvYj4gPGEgaHJlZj0ibWFpbHRvOnZpcnRpby1kZXZAbGlz
+dHMub2FzaXMtb3Blbi5vcmciPnZpcnRpby1kZXZAbGlzdHMub2FzaXMtb3Blbi5vcmc8L2E+OyBK
+YXNvbiBXYW5nDQo8YSBocmVmPSJtYWlsdG86amFzb3dhbmdAcmVkaGF0LmNvbSI+Jmx0O2phc293
+YW5nQHJlZGhhdC5jb20mZ3Q7PC9hPjxicj4NCjxiPlN1YmplY3Q6PC9iPiBSZTogW3ZpcnRpby1k
+ZXZdIFJlOiBbUEFUQ0ggMC81XSB2aXJ0aW86IGludHJvZHVjZSBTVVNQRU5EIGJpdCBhbmQgdnEg
+c3RhdGU8L3NwYW4+PG86cD48L286cD48L3A+DQo8L2Rpdj4NCjwvZGl2Pg0KPHAgY2xhc3M9Ik1z
+b05vcm1hbCIgc3R5bGU9Im1zby1tYXJnaW4tdG9wLWFsdDphdXRvO21zby1tYXJnaW4tYm90dG9t
+LWFsdDphdXRvIj48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmllciBOZXcmcXVv
+dDsiPiZuYnNwOzwvc3Bhbj48bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0
+eWxlPSJtc28tbWFyZ2luLXRvcC1hbHQ6YXV0bzttYXJnaW4tYm90dG9tOjEyLjBwdCI+PHNwYW4g
+c3R5bGU9ImZvbnQtZmFtaWx5OiZxdW90O0NvdXJpZXIgTmV3JnF1b3Q7Ij4mbmJzcDs8L3NwYW4+
+PG86cD48L286cD48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1zby1t
+YXJnaW4tdG9wLWFsdDphdXRvO21zby1tYXJnaW4tYm90dG9tLWFsdDphdXRvIj48c3BhbiBzdHls
+ZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmllciBOZXcmcXVvdDsiPk9uIDkvMjAvMjAyMyAyOjA4
+IFBNLCBQYXJhdiBQYW5kaXQgd3JvdGU6PC9zcGFuPjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8
+YmxvY2txdW90ZSBzdHlsZT0ibWFyZ2luLXRvcDo1LjBwdDttYXJnaW4tYm90dG9tOjUuMHB0Ij4N
+CjxwcmU+Jm5ic3A7PG86cD48L286cD48L3ByZT4NCjxibG9ja3F1b3RlIHN0eWxlPSJtYXJnaW4t
+dG9wOjUuMHB0O21hcmdpbi1ib3R0b206NS4wcHQiPg0KPHByZT5Gcm9tOiBaaHUsIExpbmdzaGFu
+IDxhIGhyZWY9Im1haWx0bzpsaW5nc2hhbi56aHVAaW50ZWwuY29tIj4mbHQ7bGluZ3NoYW4uemh1
+QGludGVsLmNvbSZndDs8L2E+PG86cD48L286cD48L3ByZT4NCjxwcmU+U2VudDogV2VkbmVzZGF5
+LCBTZXB0ZW1iZXIgMjAsIDIwMjMgMTE6MzYgQU08bzpwPjwvbzpwPjwvcHJlPg0KPHByZT4mbmJz
+cDs8bzpwPjwvbzpwPjwvcHJlPg0KPHByZT5PbiA5LzE5LzIwMjMgMjo0OSBBTSwgTWljaGFlbCBT
+LiBUc2lya2luIHdyb3RlOjxvOnA+PC9vOnA+PC9wcmU+DQo8YmxvY2txdW90ZSBzdHlsZT0ibWFy
+Z2luLXRvcDo1LjBwdDttYXJnaW4tYm90dG9tOjUuMHB0Ij4NCjxwcmU+T24gTW9uLCBTZXAgMTgs
+IDIwMjMgYXQgMDY6NDE6NTVQTSArMDAwMCwgUGFyYXYgUGFuZGl0IHdyb3RlOjxvOnA+PC9vOnA+
+PC9wcmU+DQo8YmxvY2txdW90ZSBzdHlsZT0ibWFyZ2luLXRvcDo1LjBwdDttYXJnaW4tYm90dG9t
+OjUuMHB0Ij4NCjxibG9ja3F1b3RlIHN0eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21hcmdpbi1ib3R0
+b206NS4wcHQiPg0KPHByZT5QbGVhc2UgcmVmZXIgdG8gdGhlIGNvZGUgZm9yIHNldHRpbmcgRkVB
+VFVSRVNfT0suPG86cD48L286cD48L3ByZT4NCjwvYmxvY2txdW90ZT4NCjxwcmU+SXQgd29udCB3
+b3JrIHdoZW4gb25lIG5lZWRzIHRvIHN1c3BlbmQgdGhlIGRldmljZS48bzpwPjwvbzpwPjwvcHJl
+Pg0KPHByZT5UaGVyZSBpcyBubyBwb2ludCBvZiBkb2luZyBzdWNoIHdvcmsgb3ZlciByZWdpc3Rl
+cnMgYXMgZnVuZGFtZW50YWw8bzpwPjwvbzpwPjwvcHJlPg0KPC9ibG9ja3F1b3RlPg0KPC9ibG9j
+a3F1b3RlPg0KPHByZT5mcmFtZXdvcmsgaXMgb3ZlciB0aGUgQVEuPG86cD48L286cD48L3ByZT4N
+CjxibG9ja3F1b3RlIHN0eWxlPSJtYXJnaW4tdG9wOjUuMHB0O21hcmdpbi1ib3R0b206NS4wcHQi
+Pg0KPHByZT5XZWxsIG5vdCByZWFsbHkuIEl0J3Mgb3ZlciBhZG1pbiBjb21tYW5kcy4gV2hlbiB0
+aGVzZSB3ZXJlIGJ1aWx0IHRoZTxvOnA+PC9vOnA+PC9wcmU+DQo8cHJlPmludGVudCBhbHdheXMg
+d2FzIHRoYXQgaXQncyBwb3NzaWJsZSB0byB1c2UgYWRtaW4gY29tbWFuZHMgdGhyb3VnaDxvOnA+
+PC9vOnA+PC9wcmU+DQo8cHJlPmFub3RoZXIgaW50ZXJmYWNlLCBvdGhlciB0aGFuIGFkbWluIHF1
+ZXVlLiBJcyB0aGVyZSBhIHByb2JsZW08bzpwPjwvbzpwPjwvcHJlPg0KPHByZT5pbXBsZW1lbnRp
+bmcgYWRtaW4gY29tbWFuZHMgb3ZlciBhIG1lbW9yeSBCQVI/IEZvciBleGFtcGxlLCBJIGNhbiBz
+ZWU8bzpwPjwvbzpwPjwvcHJlPg0KPHByZT5hbiAmcXVvdDthZG1pbiBjb21tYW5kJnF1b3Q7IGNh
+cGFiaWxpdHkgcG9pbnRpbmcgYXQgYSBCQVIgd2hlcmUgY29tbWFuZHMgYXJlPG86cD48L286cD48
+L3ByZT4NCjxwcmU+c3VwcGxpZWQsIGFuZCB1c2luZyBhIG5ldyBncm91cCB0eXBlIHJlZmVycmlu
+ZyB0byBkZXZpY2UgaXRzZWxmLjxvOnA+PC9vOnA+PC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8cHJl
+PkkgYW0gbm90IHN1cmUsIGlmIGEgYmFyIGNhcCB3b3VsZCBiZSBpbXBsZW1lbnRlZCBhcyBhIHBy
+b3h5IGZvciB0aGUgYWRtaW4gdnE8bzpwPjwvbzpwPjwvcHJlPg0KPHByZT5iYXNlZCBsaXZlIG1p
+Z3JhdGlvbi4gdGhlbiB0aGUgcHJvYmxlbXMgb2YgYWRtaW4gdnEgTE0gdGhhdCB3ZSBoYXZlIGRp
+c2N1c3NlZDxvOnA+PC9vOnA+PC9wcmU+DQo8cHJlPnN0aWxsIGV4aXN0LiB0aGUgYmFyIGlzIG9u
+bHkgYSBwcm94eSwgZG9lc24ndCBmaXggYW55dGhpbmcuIGFuZCBldmVuIGxhcmdlciBzaWRlPG86
+cD48L286cD48L3ByZT4NCjxwcmU+Y2hhbm5lbCBhdHRhY2tpbmcgc3VyZmFjZTogdmYtLSZndDtw
+Zi0tJmd0O3ZmPG86cD48L286cD48L3ByZT4NCjwvYmxvY2txdW90ZT4NCjxwcmU+Jm5ic3A7PG86
+cD48L286cD48L3ByZT4NCjxwcmU+QVEgTE0gdXNpbmcgUEYgaGFzIG5vIHNpZGUgY2hhbm5lbCBh
+dHRhY2sgYXMgaHlwZXJ2aXNvciBhbmQgb3duZXIgZGV2aWNlIGlzIHRydXN0ZWQgZW50aXR5IGFz
+IGFscmVhZHkgZGlzY3Vzc2VkLjxvOnA+PC9vOnA+PC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8cCBj
+bGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibXNvLW1hcmdpbi10b3AtYWx0OmF1dG87bXNvLW1hcmdp
+bi1ib3R0b20tYWx0OmF1dG8iPjxzcGFuIHN0eWxlPSJmb250LWZhbWlseTomcXVvdDtDb3VyaWVy
+IE5ldyZxdW90OyI+SSBiZWxpZXZlIHdlIGhhdmUgZGlzY3Vzc2VkIHRoaXMgZm9yIG1hbnkgdGlt
+ZXMsIGFuZCBJIGV2ZW4gcHJvdmlkZSB5b3Ugc29tZSBleGFtcGxlcy48YnI+DQo8YnI+DQpMZXQg
+bWUgcmVwZWF0IGZvciB0aGUgbGFzdCB0aW1lLjxicj4NCjxicj4NClRoZXJlIGNhbiBiZSBtYWxp
+Y2lvdXMgU1cgb24gdGhlIGhvc3QsIGFuZCB0aGUgaG9zdCBtYXkgYmUgaGFja2VkIGFuZCBjb21w
+cm9taXNlZC48YnI+DQpGb3IgZXhhbXBsZTo8YnI+DQoxKSBTVVNQRU5EIHRoZSBhIHJ1bm5pbmcg
+Z3Vlc3QgYnkgYWRtaW4gdnE8YnI+DQoyKSBkdW1waW5nIGd1ZXN0IG1lbW9yeSB0aHJvdWdoIGFk
+bWluIHZxIGRpcnR5IHBhZ2UgdHJhY2tpbmcuPGJyPg0KPGJyPg0KVGhlc2UgYWJvdmUgY2FuIGhh
+cHBlbiByaWdodD8gPGJyPg0KPGJyPg0KWW91IG1hZGUgVERJU1AgYXMgYW4gZXhhbXBsZSwgYnV0
+IGhhdmUgeW91IHJlYWxseSByZWFkIHRoZSBURElTUCBzcGVjPzxicj4NCkluIHRoZSBzcGVjOjxi
+cj4NCjxicj4NCjxzcGFuIGNsYXNzPSJmb250c3R5bGUwIj5EZXZpY2UgU2VjdXJpdHkgQXJjaGl0
+ZWN0dXJlIC0gQWRtaW5pc3RyYXRpdmUgaW50ZXJmYWNlcyAoZS5nLiwgYSBQRikgbWF5IGJlPC9z
+cGFuPjxicj4NCjxzcGFuIGNsYXNzPSJmb250c3R5bGUwIj51c2VkIHRvIGluZmx1ZW5jZSB0aGUg
+c2VjdXJpdHkgcHJvcGVydGllcyBvZiB0aGUgVERJIHVzZWQgYnkgdGhlIFRWTS48L3NwYW4+PGJy
+Pg0KPGJyPg0KVEVFLUkvTyByZXF1aXJlcyB0aGUgZGV2aWNlIHRvIG9yZ2FuaXplIGl0cyBoYXJk
+d2FyZS9zb2Z0d2FyZSBpbnRlcmZhY2VzIHN1Y2ggdGhhdCB0aGUgUEYgY2Fubm90PGJyPg0KYmUg
+dXNlZCB0byBhZmZlY3QgdGhlIHNlY3VyaXR5IG9mIGEgVERJIHdoZW4gaXQgaXMgaW4gdXNlIGJ5
+IGEgVFZNPGJyPg0KPGJyPg0KQ2xlYXI/PGJyPg0KPGJyPg0KPGJyPg0KPGJyPg0KPC9zcGFuPjxv
+OnA+PC9vOnA+PC9wPg0KPGJsb2NrcXVvdGUgc3R5bGU9Im1hcmdpbi10b3A6NS4wcHQ7bWFyZ2lu
+LWJvdHRvbTo1LjBwdCI+DQo8cHJlPiZuYnNwOzxvOnA+PC9vOnA+PC9wcmU+DQo8L2Jsb2NrcXVv
+dGU+DQo8ZGl2IHN0eWxlPSJib3JkZXI6bm9uZTtib3JkZXItbGVmdDpzb2xpZCBibHVlIDEuNXB0
+O3BhZGRpbmc6MGluIDBpbiAwaW4gNC4wcHQiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9
+Im1zby1tYXJnaW4tdG9wLWFsdDphdXRvO21zby1tYXJnaW4tYm90dG9tLWFsdDphdXRvIj48c3Bh
+biBzdHlsZT0iZm9udC1mYW1pbHk6JnF1b3Q7Q291cmllciBOZXcmcXVvdDsiPiZuYnNwOzwvc3Bh
+bj48bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8L2Jsb2NrcXVvdGU+DQo8cCBjbGFz
+cz0iTXNvTm9ybWFsIj4mbmJzcDs8bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9ibG9ja3F1b3Rl
+Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8L2Rpdj4NCjwv
+ZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K
 
---------------Z4VIngHpbxStoL01a8htve5T
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+--_000_PH0PR12MB548188922E73315ABDAC16B5DCF9APH0PR12MB5481namp_--
 
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <font face="monospace">On 9/20/2023 5:52 PM, Parav Pandit wrote:</font><br>
-    <blockquote type="cite"
-cite="mid:PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com">
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <meta name="Generator" content="Microsoft Word 15 (filtered
-        medium)">
-      <style>@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}@font-face
-	{font-family:Consolas;
-	panose-1:2 11 6 9 2 2 4 3 2 4;}p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}pre
-	{mso-style-priority:99;
-	mso-style-link:"HTML Preformatted Char";
-	margin:0in;
-	margin-bottom:.0001pt;
-	font-size:10.0pt;
-	font-family:"Courier New";}span.HTMLPreformattedChar
-	{mso-style-name:"HTML Preformatted Char";
-	mso-style-priority:99;
-	mso-style-link:"HTML Preformatted";
-	font-family:Consolas;}span.fontstyle0
-	{mso-style-name:fontstyle0;}span.EmailStyle21
-	{mso-style-type:personal-reply;
-	font-family:"Calibri",sans-serif;
-	color:windowtext;}.MsoChpDefault
-	{mso-style-type:export-only;
-	font-size:10.0pt;
-	mso-ligatures:none;}div.WordSection1
-	{page:WordSection1;}</style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext="edit" spidmax="1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext="edit">
-<o:idmap v:ext="edit" data="1" />
-</o:shapelayout></xml><![endif]-->
-      <div class="WordSection1">
-        <p class="MsoNormal">Hi Lingshan,<o:p></o:p></p>
-        <p class="MsoNormal"><o:p> </o:p></p>
-        <p class="MsoNormal">Last two email replies in non-next format
-          are getting hard to follow.<o:p></o:p></p>
-        <p class="MsoNormal">Can you please revert back to have
-          text-based emails?<o:p></o:p></p>
-        <p class="MsoNormal"><o:p> </o:p></p>
-        <p class="MsoNormal">When one wants to use PF for the live
-          migration in trusted hypervisor, PF is in the trust zone.</p>
-      </div>
-    </blockquote>
-    <font face="monospace">even without live migration, it can be an
-      attacking surface while guest running.<br>
-      As repeated for many times, it can be used by malicious SW to dump
-      guest memory<br>
-    </font>
-    <blockquote type="cite"
-cite="mid:PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com">
-      <div class="WordSection1">
-        <p class="MsoNormal"><o:p></o:p></p>
-        <p class="MsoNormal"><o:p> </o:p></p>
-        <p class="MsoNormal">In future when hypervisor is not trusted,
-          the task of LM will be delegated to other infrastructure TVM.<o:p></o:p></p>
-        <p class="MsoNormal">Ravi at Intel already explained this a year
-          ago using migration TD.<o:p></o:p></p>
-        <p class="MsoNormal">This fits very well without bifurcating the
-          member device which is extremely hard.</p>
-      </div>
-    </blockquote>
-    <font face="monospace">TD, TDX or TDX-IO are more complex topics,
-      and we should<br>
-      focus on our live migration solution, not CC.<br>
-      <br>
-      My point is: using bar cap as a proxy for admin vq based LM is
-      still problematic.<br>
-      <br>
-      Maybe we can close this. <br>
-    </font>
-    <blockquote type="cite"
-cite="mid:PH0PR12MB5481E1007F900AD9C2E52E1DDCF9A@PH0PR12MB5481.namprd12.prod.outlook.com">
-      <div class="WordSection1">
-        <p class="MsoNormal"><o:p></o:p></p>
-        <p class="MsoNormal"><o:p> </o:p></p>
-        <p class="MsoNormal">Parav<o:p></o:p></p>
-        <p class="MsoNormal"><o:p> </o:p></p>
-        <div style="border:none;border-left:solid blue 1.5pt;padding:0in
-          0in 0in 4.0pt">
-          <div>
-            <div style="border:none;border-top:solid #E1E1E1
-              1.0pt;padding:3.0pt 0in 0in 0in">
-              <p class="MsoNormal"><b>From:</b> Zhu, Lingshan
-                <a class="moz-txt-link-rfc2396E" href="mailto:lingshan.zhu@intel.com">&lt;lingshan.zhu@intel.com&gt;</a> <br>
-                <b>Sent:</b> Wednesday, September 20, 2023 3:15 PM<br>
-                <b>To:</b> Parav Pandit <a class="moz-txt-link-rfc2396E" href="mailto:parav@nvidia.com">&lt;parav@nvidia.com&gt;</a>;
-                Michael S. Tsirkin <a class="moz-txt-link-rfc2396E" href="mailto:mst@redhat.com">&lt;mst@redhat.com&gt;</a><br>
-                <b>Cc:</b> <a class="moz-txt-link-abbreviated" href="mailto:virtio-dev@lists.oasis-open.org">virtio-dev@lists.oasis-open.org</a>; Jason Wang
-                <a class="moz-txt-link-rfc2396E" href="mailto:jasowang@redhat.com">&lt;jasowang@redhat.com&gt;</a><br>
-                <b>Subject:</b> Re: [virtio-dev] Re: [PATCH 0/5] virtio:
-                introduce SUSPEND bit and vq state<o:p></o:p></p>
-            </div>
-          </div>
-          <p class="MsoNormal"><o:p> </o:p></p>
-          <p class="MsoNormal" style="margin-bottom:12.0pt"><o:p> </o:p></p>
-          <div>
-            <p class="MsoNormal"><span style="font-family: &quot;Courier
-                New&quot;;">On 9/20/2023 4:34 PM, Parav Pandit wrote:</span><o:p></o:p></p>
-          </div>
-          <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
-            <p class="MsoNormal"><span style="font-family: &quot;Courier
-                New&quot;;">@font-face {font-family:"Cambria Math";
-                panose-1:2 4 5 3 5 4 6 3 2 4;}@font-face
-                {font-family:Calibri; panose-1:2 15 5 2 2 2 4 3 2
-                4;}@font-face {font-family:Consolas; panose-1:2 11 6 9 2
-                2 4 3 2 4;}p.MsoNormal, li.MsoNormal, div.MsoNormal
-                {margin:0in; font-size:11.0pt;
-                font-family:"Calibri",sans-serif;}a:link,
-                span.MsoHyperlink {mso-style-priority:99; color:blue;
-                text-decoration:underline;}pre {mso-style-priority:99;
-                mso-style-link:"HTML Preformatted Char"; margin:0in;
-                margin-bottom:.0001pt; font-size:10.0pt;
-                font-family:"Courier New";}span.HTMLPreformattedChar
-                {mso-style-name:"HTML Preformatted Char";
-                mso-style-priority:99; mso-style-link:"HTML
-                Preformatted"; font-family:Consolas;}span.fontstyle0
-                {mso-style-name:fontstyle0;}span.EmailStyle21
-                {mso-style-type:personal-reply;
-                font-family:"Calibri",sans-serif;
-                color:windowtext;}.MsoChpDefault
-                {mso-style-type:export-only; font-size:10.0pt;
-                mso-ligatures:none;}div.WordSection1
-                {page:WordSection1;}</span>
-              <o:p></o:p></p>
-            <div>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;">&gt;
-                  There can be malicious SW on the host, and the host
-                  may be hacked and compromised.<br>
-                  &gt; For example:<br>
-                  &gt; 1) SUSPEND the a running guest by admin vq<br>
-                  &gt; 2) dumping guest memory through admin vq dirty
-                  page tracking.<br>
-                  <br>
-                  <br>
-                </span><o:p></o:p></p>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;">No.
-                  hypervisor is trusted entity who is hosting the VM.</span><o:p></o:p></p>
-            </div>
-          </blockquote>
-          <p class="MsoNormal"><span style="font-family: &quot;Courier
-              New&quot;;">The PF may not owned by the hypervisor and the
-              host can be hacked and computerized.
-            </span><br>
-            <br>
-            <o:p></o:p></p>
-          <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
-            <div>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;">The
-                  device migration is initiated by the hypervisor.</span><o:p></o:p></p>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;">I am
-                  omitting the TDISP question for now as talked before.</span><o:p></o:p></p>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;">TDISP
-                  spec will evolve for hypercalls when we get there.</span><o:p></o:p></p>
-            </div>
-          </blockquote>
-          <p class="MsoNormal"><span style="font-family: &quot;Courier
-              New&quot;;">Confidential computing is out of the spec, as
-              we discussed and agreed.<br>
-              <br>
-              This is to demonstrate why even using a bar cap as proxy
-              for admin vq LM is still problematic. 
-              <br>
-              TDISP gives examples of the attacking models, and admin vq
-              based LM<br>
-              conforms to the models.<br>
-              <br>
-            </span><o:p></o:p></p>
-          <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
-            <div>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
-              <div>
-                <div style="border:none;border-top:solid #E1E1E1
-                  1.0pt;padding:3.0pt 0in 0in 0in">
-                  <p class="MsoNormal"
-                    style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><b><span
-                        style="font-family: &quot;Courier New&quot;;">From:</span></b><span
-                      style="font-family: &quot;Courier New&quot;;">
-                      <a href="mailto:virtio-dev@lists.oasis-open.org"
-                        moz-do-not-send="true"
-                        class="moz-txt-link-freetext">virtio-dev@lists.oasis-open.org</a>
-                      <a href="mailto:virtio-dev@lists.oasis-open.org"
-                        moz-do-not-send="true">&lt;virtio-dev@lists.oasis-open.org&gt;</a>
-                      <b>On Behalf Of </b>Zhu, Lingshan<br>
-                      <b>Sent:</b> Wednesday, September 20, 2023 12:01
-                      PM<br>
-                      <b>To:</b> Parav Pandit <a
-                        href="mailto:parav@nvidia.com"
-                        moz-do-not-send="true">&lt;parav@nvidia.com&gt;</a>;
-                      Michael S. Tsirkin
-                      <a href="mailto:mst@redhat.com"
-                        moz-do-not-send="true">&lt;mst@redhat.com&gt;</a><br>
-                      <b>Cc:</b> <a
-                        href="mailto:virtio-dev@lists.oasis-open.org"
-                        moz-do-not-send="true"
-                        class="moz-txt-link-freetext">virtio-dev@lists.oasis-open.org</a>;
-                      Jason Wang
-                      <a href="mailto:jasowang@redhat.com"
-                        moz-do-not-send="true">&lt;jasowang@redhat.com&gt;</a><br>
-                      <b>Subject:</b> Re: [virtio-dev] Re: [PATCH 0/5]
-                      virtio: introduce SUSPEND bit and vq state</span><o:p></o:p></p>
-                </div>
-              </div>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;margin-bottom:12.0pt"><span
-                  style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
-              <div>
-                <p class="MsoNormal"
-                  style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                    style="font-family: &quot;Courier New&quot;;">On
-                    9/20/2023 2:08 PM, Parav Pandit wrote:</span><o:p></o:p></p>
-              </div>
-              <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
-                <pre> <o:p></o:p></pre>
-                <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
-                  <pre>From: Zhu, Lingshan <a href="mailto:lingshan.zhu@intel.com" moz-do-not-send="true">&lt;lingshan.zhu@intel.com&gt;</a><o:p></o:p></pre>
-                  <pre>Sent: Wednesday, September 20, 2023 11:36 AM<o:p></o:p></pre>
-                  <pre> <o:p></o:p></pre>
-                  <pre>On 9/19/2023 2:49 AM, Michael S. Tsirkin wrote:<o:p></o:p></pre>
-                  <blockquote
-                    style="margin-top:5.0pt;margin-bottom:5.0pt">
-                    <pre>On Mon, Sep 18, 2023 at 06:41:55PM +0000, Parav Pandit wrote:<o:p></o:p></pre>
-                    <blockquote
-                      style="margin-top:5.0pt;margin-bottom:5.0pt">
-                      <blockquote
-                        style="margin-top:5.0pt;margin-bottom:5.0pt">
-                        <pre>Please refer to the code for setting FEATURES_OK.<o:p></o:p></pre>
-                      </blockquote>
-                      <pre>It wont work when one needs to suspend the device.<o:p></o:p></pre>
-                      <pre>There is no point of doing such work over registers as fundamental<o:p></o:p></pre>
-                    </blockquote>
-                  </blockquote>
-                  <pre>framework is over the AQ.<o:p></o:p></pre>
-                  <blockquote
-                    style="margin-top:5.0pt;margin-bottom:5.0pt">
-                    <pre>Well not really. It's over admin commands. When these were built the<o:p></o:p></pre>
-                    <pre>intent always was that it's possible to use admin commands through<o:p></o:p></pre>
-                    <pre>another interface, other than admin queue. Is there a problem<o:p></o:p></pre>
-                    <pre>implementing admin commands over a memory BAR? For example, I can see<o:p></o:p></pre>
-                    <pre>an "admin command" capability pointing at a BAR where commands are<o:p></o:p></pre>
-                    <pre>supplied, and using a new group type referring to device itself.<o:p></o:p></pre>
-                  </blockquote>
-                  <pre>I am not sure, if a bar cap would be implemented as a proxy for the admin vq<o:p></o:p></pre>
-                  <pre>based live migration. then the problems of admin vq LM that we have discussed<o:p></o:p></pre>
-                  <pre>still exist. the bar is only a proxy, doesn't fix anything. and even larger side<o:p></o:p></pre>
-                  <pre>channel attacking surface: vf--&gt;pf--&gt;vf<o:p></o:p></pre>
-                </blockquote>
-                <pre> <o:p></o:p></pre>
-                <pre>AQ LM using PF has no side channel attack as hypervisor and owner device is trusted entity as already discussed.<o:p></o:p></pre>
-              </blockquote>
-              <p class="MsoNormal"
-                style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                  style="font-family: &quot;Courier New&quot;;">I
-                  believe we have discussed this for many times, and I
-                  even provide you some examples.<br>
-                  <br>
-                  Let me repeat for the last time.<br>
-                  <br>
-                  There can be malicious SW on the host, and the host
-                  may be hacked and compromised.<br>
-                  For example:<br>
-                  1) SUSPEND the a running guest by admin vq<br>
-                  2) dumping guest memory through admin vq dirty page
-                  tracking.<br>
-                  <br>
-                  These above can happen right? <br>
-                  <br>
-                  You made TDISP as an example, but have you really read
-                  the TDISP spec?<br>
-                  In the spec:<br>
-                  <br>
-                  <span class="fontstyle0">Device Security Architecture
-                    - Administrative interfaces (e.g., a PF) may be</span><br>
-                  <span class="fontstyle0">used to influence the
-                    security properties of the TDI used by the TVM.</span><br>
-                  <br>
-                  TEE-I/O requires the device to organize its
-                  hardware/software interfaces such that the PF cannot<br>
-                  be used to affect the security of a TDI when it is in
-                  use by a TVM<br>
-                  <br>
-                  Clear?<br>
-                  <br>
-                  <br>
-                </span><o:p></o:p></p>
-              <blockquote style="margin-top:5.0pt;margin-bottom:5.0pt">
-                <pre> <o:p></o:p></pre>
-              </blockquote>
-              <div style="border:none;border-left:solid blue
-                1.5pt;padding:0in 0in 0in 4.0pt">
-                <p class="MsoNormal"
-                  style="mso-margin-top-alt:auto;mso-margin-bottom-alt:auto"><span
-                    style="font-family: &quot;Courier New&quot;;"> </span><o:p></o:p></p>
-              </div>
-            </div>
-          </blockquote>
-          <p class="MsoNormal"><o:p> </o:p></p>
-        </div>
-      </div>
-    </blockquote>
-    <br>
-  </body>
-</html>
-
---------------Z4VIngHpbxStoL01a8htve5T--
