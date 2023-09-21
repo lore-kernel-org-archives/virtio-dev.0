@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13919-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13920-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 744E0E70705
-	for <virtio-dev@archiver.kernel.org>; Thu, 21 Sep 2023 09:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E804E70703
+	for <virtio-dev@archiver.kernel.org>; Thu, 21 Sep 2023 10:01:49 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C74752AC76
-	for <virtio-dev@archiver.kernel.org>; Thu, 21 Sep 2023 09:55:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7FAD145B28
+	for <virtio-dev@archiver.kernel.org>; Thu, 21 Sep 2023 10:01:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B91D798668D
-	for <virtio-dev@archiver.kernel.org>; Thu, 21 Sep 2023 09:55:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 674F0986689
+	for <virtio-dev@archiver.kernel.org>; Thu, 21 Sep 2023 10:01:48 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id AA1C3986680; Thu, 21 Sep 2023 09:55:17 +0000 (UTC)
+	id 4EA1498667E; Thu, 21 Sep 2023 10:01:48 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,93 +24,232 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 987A698667E;
-	Thu, 21 Sep 2023 09:55:15 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3EB8B98667F
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Sep 2023 10:01:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="360721742"
-X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
-   d="scan'208";a="360721742"
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="870733947"
-X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
-   d="scan'208";a="870733947"
-Message-ID: <c1afd674-28bb-d8d4-7eee-ab1916a3f947@intel.com>
-Date: Thu, 21 Sep 2023 17:55:06 +0800
+X-MC-Unique: c0FBJrMbMa-rAvt4BrZQaA-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695290504; x=1695895304;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lA51qzIkC3Ei3qh8AAdoLXNDluKefCIP1HZGyDmo4HI=;
+        b=B+/FMm8B6sopONplfjQMH0mL3bBitifIOCkcHraR2ppSDFSPVcZYNeY8Qx5MxPMigL
+         cP4k1sgzK6OxAGvUbhpgrl5g/qz+T30TefquMf/2/zH+sU92keaMj5Ywvd1Lo5SxM1t1
+         DoBQur2ZegPJgam1W0srVeaNCjiJP5mQpmkVWqUo7uVEGV2Opf4taMisfn0oI3jeeUC/
+         lmgJKbVxdZB/7rJHMI0tKlDo3BE8lPQphY+oawKDSTdBODJGHjvR+IxpTBvlQmVN2e8R
+         e6bERbh7742HRIsM1yzV33lgHSBKxj3v9JFPLkNehW5LwuN2jGvpeatiBXvb62dmn3K2
+         m6hw==
+X-Gm-Message-State: AOJu0YzsKmmTkf2rjy2bz+vW6bI0dXSIN2jaGdicD/EOEWoG28Ku/5R7
+	kUwTZBoCV4VCtNz2r786TiYLkdO9RPg3PoYWuQeerWqE1DCR6SGAmPH1ld4+KiS5hDcJFRRqZRN
+	w5z0BjzSIUvudPmkPCDuvX+CsylfV
+X-Received: by 2002:a05:6402:1ada:b0:530:52a0:8b1a with SMTP id ba26-20020a0564021ada00b0053052a08b1amr4299184edb.25.1695290504636;
+        Thu, 21 Sep 2023 03:01:44 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGlLrvijKIiC1OtEZ8gRENBJX2ucLgsJAtCD4O+ixHF76zFUzKk0lvqp8zKaKz/Kqe7uTxUyg==
+X-Received: by 2002:a05:6402:1ada:b0:530:52a0:8b1a with SMTP id ba26-20020a0564021ada00b0053052a08b1amr4299165edb.25.1695290504183;
+        Thu, 21 Sep 2023 03:01:44 -0700 (PDT)
+Date: Thu, 21 Sep 2023 06:01:39 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	Jason Wang <jasowang@redhat.com>
+Message-ID: <20230921054959-mutt-send-email-mst@kernel.org>
+References: <20230920160218-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54814A89793CF796412D6A27DCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230921004957-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481E096E0298F29C9EA73B4DCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230921015810-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481821D526E376771E70204DCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230921031129-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54810CEA225EA1BB896AF7C2DCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230921040133-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481F59CBD9B2B615D6F4B0EDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.15.1
-Content-Language: en-US
-To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>,
- "eperezma@redhat.com" <eperezma@redhat.com>,
- Stefan Hajnoczi <stefanha@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
- Jason Wang <jasowang@redhat.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
- "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>
-References: <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <f1fe513e-d42d-03a6-348c-5e58aac0a759@intel.com>
- <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com>
- <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230918144312-mutt-send-email-mst@kernel.org>
- <bb402c34-ad07-063a-f4f5-d8c6b3a642c7@intel.com>
- <20230920054836-mutt-send-email-mst@kernel.org>
- <2f67fb85-2238-9c34-a265-b0f97b7ab7e1@intel.com>
- <20230920075243-mutt-send-email-mst@kernel.org>
- <20230920084058-mutt-send-email-mst@kernel.org>
- <PH0PR12MB548110E53C924C984FA24A49DCF9A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <e8d00e8c-fe32-83fc-fd13-edf3458b8c33@intel.com>
- <PH0PR12MB548188F479E7D7FF56845F39DCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB548188F479E7D7FF56845F39DCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
- state
+In-Reply-To: <PH0PR12MB5481F59CBD9B2B615D6F4B0EDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
+ vq state
+
+On Thu, Sep 21, 2023 at 09:17:53AM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Thursday, September 21, 2023 1:41 PM
+> 
+> > > I mean to say,
+> > > Virtio spec has not achieved mediation less, device migration.
+> > > Virtio spec has not achieved device migration using mediation.
+> > 
+> > But yes it has - it was implemented with shadow vq.
+> >
+> Shadow vq + several other trap points on config space, cvq and more.
+
+exactly.
+
+> we cannot suspend the whole device and resume from where it was left off.
+> Those extensions are happening now.
+> 
+> > > And two proposals are trying to do it.
+> > >
+> > > >
+> > > > > >
+> > > > > > > > 1. For mediation something that works within existing
+> > > > > > > > mediation framework - e.g. reusing as he does feature bits -
+> > > > > > > > will require less support than a completely separate facility.
+> > > > > > > > I think Zhu Lingshan also believes that since there will be
+> > > > > > > > less code -> less security issues.
+> > > > > > > >
+> > > > > > > With approach of [1], there is less code in the core device
+> > > > > > > migration flow
+> > > > > > because none of those fields etc are parsed/read/written by the
+> > > > > > driver software.
+> > > > > >
+> > > > > > What is or is not executed in a specific flow is a separate question.
+> > > > > > But the point is vdpa and any mediation have to talk virtio
+> > > > > > things such as feature bits. So reusing e.g. feature bits needs
+> > > > > > less code than operating the admin command machinery to check
+> > > > > > what is supported. Yes, you can operate this machinery during
+> > > > > > setup and not during migration itself. It's still less code to maintain.
+> > > > > >
+> > > > > I wouldn't go down the path of code comparison.
+> > > > > But if you want to: we can take a concrete example of what is done
+> > > > > by similar
+> > > > device who uses admin command approach.
+> > > > > The admin command-based approach migration driver is likely 10x
+> > > > > smaller
+> > > > than the actual driver driving the feature bits and rest of the config.
+> > > >
+> > > > yes but mediation driver already has to do feature bits. so if doing
+> > > > mediation then the cost of adding this specific extension is low.
+> > > >
+> > > I thought first you were counting the cost of the code and not the spec in your
+> > point "feature bits needs less code than operating".
+> > 
+> > yes - with vdpa it's mostly just
+> > 	vdev->status |= SUSPEND
+> > 	vdev->status &= ~SUSPEND
+> > all over the place.
+> > 
+> + inflight descriptors.
+
+for sure, this is just stopping it.
+
+> > > > > If one needs more precise numbers of number of lines of code, I can
+> > derive it.
+> > > > > As features and functionality grows, every line of code gets added
+> > > > > there in
+> > > > mediation too.
+> > > > > I agree such mediation has value and use case, as we know it is
+> > > > > not the only
+> > > > approach fitting all use cases.
+> > > >
+> > > > Do you see how this extension is easier for mediation than driving
+> > > > admin queue though?
+> > > >
+> > > If we count the total cost of code than building the mediation framework +
+> > extensions, than it is not.
+> > > But as I said, I wouldn't compare two solutions as they are addressing a slightly
+> > different requirement.
+> > 
+> > yes they are. the point of comparison was explaining why people who use
+> > mediation anyway might not want to also use aq. can i assume that's clear?
+> >
+> I am not fully sure.
+> I frankly don't find it right for member virtio device itself to be mediated.
+> Vdpa stack make total sense when the underlying device is not virtio and hence emulation.
+> But when there is native virtio member device, further mediation is overkill for certain scenarios.
+> But I understand that it helps to utilize a vdpa stack and thereby overcome some limitations, while it introduces other limitations...
+
+yes. whether it makes sense depends on the use-case.
 
 
+> > > What to compare is what can be reused between two solutions.
+> > >
+> > > > > >
+> > > > > > > > 2. With or without mediation, the mapping of commands to VFs
+> > > > > > > > is simpler, allowing more control - for example, let's say
+> > > > > > > > you want to reset a VF - you do not need to flush the queue
+> > > > > > > > of existing commands, which might potentially take a long
+> > > > > > > > time because some other VFs are very busy - you just reset
+> > > > > > > > the VF which any unmap flow will
+> > > > > > already do.
+> > > > > > > >
+> > > > > > > If I understand you right, to reset a VF, no need to flush the
+> > > > > > > queues without
+> > > > > > mediation too.
+> > > > > > > Just do VF FLR or do device reset, both will be fine.
+> > > > > >
+> > > > > > Not to reset the VF - that's a narrow definition. To put it back
+> > > > > > in its original state unrelated to any VMs.  Nope, FLR is not
+> > > > > > enough - there could be commands in queue addressing the VF. If
+> > > > > > they take effect after FLR VF state changed and it can't be
+> > > > > > cleanly assigned to a new
+> > > > VM.
+> > > > > >
+> > > > > If you mean the SR-PCIM command, than it is virtio spec to define them.
+> > > > > We ratified this recently in the PCI-SIG of what gets cleared on
+> > > > > VF FLR and
+> > > > what stays that SR-PCIM interface to do.
+> > > >
+> > > > Interesting. Which ECN exactly do you refer to?
+> > > >
+> > > B405.
+> > >
+> > > > > So if other commands are in pipe, only after they are done, such
+> > > > > VF will be
+> > > > assigned to new VM.
+> > > >
+> > > > Exactly. this is exactly what I meant when I said "flush the queue"
+> > > > - you have to wait until these commands are done, then do reset.
+> > > >
+> > > Not exactly. VF reset is fully controlled by the guest.
+> > > Hence, it does not collide with admin side of commands,
+> > 
+> > No, host does VF reset in a number of situations, including guest restart, guest
+> > shutdown, etc.
+> > 
+> That is fine, it can do.
+> 
+> > > Same admin command for dirty page tracking and device context do not mess
+> > with FLR.
+> > > This is the critical because VF FLR cannot clear the page addresses already
+> > reported and not yet read by the driver.
+> > > It is covered in admin proposal.
+> > 
+> > They might not mess with it in that you can still do FLR but they will mess with
+> > what hosts commonly try to achieve with FLR which is getting a clean VF that
+> > has nothing to do with a given guest state.
+> > For example
+> > - queue stop command on PF
+> > - flr on VF
+> > - stop command is seen by PF
+> >
+> This just fine, because FLR is not resetting what PF has done.
+> PF is not touching FLR side of things either.
+>  
+> > will get you a VF that is not running and can not be given to another guest. You
+> > have to
+> > - queue stop command on PF
+> > - stop command is seen by PF
+> > - flr on VF
+> > in this order.
+> > 
+> Since you are discussing the admin patches of [1], better to discuss there.
+> But even if we follow the sequence you described, it is also fine.
 
-On 9/21/2023 5:26 PM, Parav Pandit wrote:
->
->> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->> Sent: Thursday, September 21, 2023 2:49 PM
->> TDISP devices can not be migrated for now, and the TDISP spec make clear
->> examples of attacking models, your admin vq LM on the PF exactly match the
->> model.
-> I gave hint yesterday to you to consult Ravi at Intel who showed TDISP migration using a dedicated TVM using similar mechanism as admin command.
-> But you sadly ignored...
->
-> So let me make another attempt to explain,
->
-> When in future TDISP device migration to be supported, the admin command will be done through a dedicated PF or a VF that resides in another trust domain, for example another TVM.
-> Such admin virtio device will not be located in the hypervisor.
-> Thereby, it will be secure.
-> The admin commands pave the road to make this happen. Only thing changes is delegation of admin commands to another admin device instead of a PF.
-if you plan to do it in future, then lets discuss in the future.
+well then flr itself is now insufficient to reset the VF completely to
+its original state.  I can't say whether you see why one has to make
+sure device is not stopped before assigning it to guest or not.
+a stopped device can't be used by guest the way it expects.
+And to make sure, one has to wait for some admin command to complete,
+one way or another.
 
-And TDISP can be migrated in future does not mean admin vq LM is secure, 
-I have repeated for so many times of the attacking model. and I will not 
-repeat again.
->
-> There are other solutions too that will arise.
-> I have seen another one too, may be DPU.
->
-> In all the 2 approaches, TDISP is migratable and spec will evolve as multiple vendors including Intel, AMD and others showed the path towards it without mediation.
-> Virtio will be able to leverage that as well using admin commands.
->
-> I want to emphasize again, do not keep repeating AQ in your comments.
-> It is admin commands in proposal [1].
-we are discussing LM, right? Can TDISP help you here? TDISP spec gives 
-examples of attacking models, and your admin vq matches it, I gave you 
-quote of the spec yesterday.
-
-This thread is about live migration anyway, not TDISP.
->
-> As Michael also requested, I kindly request to co-operate on doing join technical work, shared ideas, knowledge and improve the spec.
->
-> [1] https://lore.kernel.org/virtio-comment/20230909142911.524407-7-parav@nvidia.com/T/#mf15b68617f772770c6bf79f70e8ddc6fea834cfa
-see other threads, I propose to reuse the basic facilities of live 
-migration in admin vq.
->
+-- 
+MST
 
 
 ---------------------------------------------------------------------
