@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13944-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13945-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC9BFCE7A95
-	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 15:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2680CCE7A9A
+	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 16:17:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id CB1D87A1AC
-	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 15:38:24 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 65BAD120D4D
+	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 16:17:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id AFBBA9863A9
-	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 15:38:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3BF5C986387
+	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 16:17:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 990C9986379; Mon, 25 Sep 2023 15:38:24 +0000 (UTC)
+	id 19C77986379; Mon, 25 Sep 2023 16:17:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,150 +24,331 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 895EC98637A
-	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Sep 2023 15:38:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0854E98637A
+	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Sep 2023 16:17:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
+X-TM-MAIL-RECEIVED-TIME: 1695658607.507000
+X-TM-MAIL-UUID: 98eb904b-928d-4c2b-87bd-5b45f6393613
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KGPHCX3ccwucBOBkGevr5HLiHgb6apB4dBfYSS/Qz6+HXsLMefaJwKNydwpkbCKS7jDKRmU6Jvvk6tIyg/M3G9TprtMnOnwNIlEOJ+yUzuedv+QBavkQfqaEIaNuiXjH98VI45RLlJLiG0TQQ+Oqvgz1/UPWmEJj94oN89j0ToZW8wkt7+MgVvd8J0APlw1EwxFSO7j3AcckvxMVIjEze58OZawEaDjPJijwbMES9rkEx1njp5ORm3rXmtj8yJx8D/pUk4fBGoC/4EEaR2yKj1YzRoTHaSZbzlXKbutC7Kbf+REbz1cPBkFbwIaibEgeFYEN+Q1FsTjzTzb8xJHqOw==
+ b=JHbO+jXyCLelwUpDQI+aGElKiWfX+9LJLUWWXTGmhwm9jwW+1COPdcVzEgbMw/r0xhIXT99raESh0E69djF9OkE2UzJBK/AYrsW+qCl5NfVk+hbJX0K094KUHQScojK8GsnJIgrlFqEOeVi7EBQFHlNCgfYF6q6PD2NALJqqnSx+n7zf9oorc6LzStoAN/NMK0oLZ+tRiXgmAKDmopJZEGIDrsSNqu5cdg7UNS3/jlL5cjqKOINF/Zwma3Z1WYqwRHvhBXawEMu8j4/L+UEIl40Ka6aY/0zi32fAdDl1jpxZt0YHf9jHrqhXMPvEiFzR87U9BGSFnxxFYHehePvHaQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WSr5/G8m9CFBoeDOgFFGdUtxAV/Cq3aDgyUmCtgF504=;
- b=M4g/0g6UKwNHPTrrZUiEgR7orGA/oHGZ7A/a5GFlRzdbIwg31C5cfzivXyth1KWes5wn3sM4t4xcLXYp8DYwpmdGme505pGV8QEPQDQmQcKjd5ouPwYG5LCc/NTYtfduwBAF0Ta19vCOn0V5urHlDJ9mPWi30p9eFY3sKi+bc4fsUxFWiYwCAKJo269nKXt19CKbtLsf70XmRHUmvoj797L6P9BxxqxuodlDpZfcazXC/3z4MU4RSwwrC0jRriIRJ7OmkDZzkP0iVs+n4CoHsHA2P0dcu1jQXoYkCUEbhkTisPToKHtdhE75yDGsFS1ZFDgYaB4eyddecnGao2WENA==
+ bh=pBWRXxqpMgapwFqD9Z7Jke8m/5piwWcaDKlPLpOpAEw=;
+ b=T8Ggwn/Gm2d6wgR/JNyOSwQI9QcHsBeVkqHF1nHEQ7fFHWl2ypDMSHlhsSi4599MEDuL7mB8+t6gd2+o2ITeTmSB2pCkrktCPjqpP6LntWv5m/yhn+svvhofCwqmIQ1Fh2ne/JEzRNssYRLytymXc2gBZzJJ/myXFDxM/qQbNLIZ3/3gPeuXH4x+mxsFqexFrbCGzcPX9elK+Y5ZHltlLI3hM8kIMM2tOs3mvNyNxTBmBdrpB2kmK8MI836ANDt2FUGEHE+f6zpEC5T5+OuBkbx0IUEd3HlmX/OI8FeqsUDgd0LDZplMzZAwRbZFmrBXPMmpHxvwdtyvndc59XdE9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: jeshwank <JESHWANTHKUMAR.NK@amd.com>, "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>
-CC: "Mythri.Pandeshwarakrishna@amd.com" <Mythri.Pandeshwarakrishna@amd.com>,
-	"Devaraj.Rangasamy@amd.com" <Devaraj.Rangasamy@amd.com>,
-	"Rijo-john.Thomas@amd.com" <Rijo-john.Thomas@amd.com>, "Nimesh.Easow@amd.com"
-	<Nimesh.Easow@amd.com>, "babulu.ellune@amd.com" <babulu.ellune@amd.com>
-Thread-Topic: [virtio-dev] [PATCH v2] virtio-tee: Reserve device ID 46 for TEE
- device
-Thread-Index: AQHZ76H22ay2E/QuEkGoBDFkRsXpPbArrOHA
-Date: Mon, 25 Sep 2023 15:38:21 +0000
-Message-ID:
- <PH0PR12MB54813F8968ABA023D551E05FDCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
-References:
- <80a2e4337affb043909c348395fb45aeeb693dc7.1695640593.git.JESHWANTHKUMAR.NK@amd.com>
-In-Reply-To:
- <80a2e4337affb043909c348395fb45aeeb693dc7.1695640593.git.JESHWANTHKUMAR.NK@amd.com>
-Accept-Language: en-US
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <a297deb7-8b7c-441d-901b-eb910018fba9@opensynergy.com>
+Date: Mon, 25 Sep 2023 18:16:39 +0200
+From: Alexander Gordeev <alexander.gordeev@opensynergy.com>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: virtio-dev@lists.oasis-open.org, linux-media@vger.kernel.org,
+ acourbot@chromium.org, alexlau@chromium.org, daniel@ffwll.ch,
+ dstaessens@chromium.org, egranata@google.com, fziglio@redhat.com,
+ hverkuil@xs4all.nl, keiichiw@chromium.org, kraxel@redhat.com,
+ marcheu@chromium.org, posciak@chromium.org,
+ spice-devel@lists.freedesktop.org, stevensd@chromium.org,
+ tfiga@chromium.org, uril@redhat.com, devicetree@vger.kernel.org,
+ alex.bennee@linaro.org, aesteve@redhat.com, Matti.Moell@opensynergy.com,
+ andrew.gazizov@opensynergy.com, daniel.almeida@collabora.com,
+ cohuck@redhat.com, mwojtas@google.com, mst@redhat.com,
+ peter.griffin@linaro.org, bag@semihalf.com, bgrzesik@google.com,
+ hmazur@google.com, mikrawczyk@google.com, srosek@google.com
+References: <a9235fe7-7448-fa9f-ea52-fd27f4845bc4@opensynergy.com>
+ <20230922100303.GF19112@pendragon.ideasonboard.com>
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|CY8PR12MB7292:EE_
-x-ms-office365-filtering-correlation-id: 2ca2bc95-ac33-45ab-7258-08dbbddd72be
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- JqeA4MVK8cDFgYSvrl/2Rc0EqJUWFEThF60Imiva8K36szwW+pKiUeEh1FLhNBMLLdYjRSKLZBzLzuCbUUGJgwLMq07Hke0OKkVF2ViKqwOt5eQUAsaAV259lj4VVEojTP565r4HbiWL35CBPmJGGXLD5vnOLIu2ZiF0CF0Q8fUJ1zxJl8AVER7GeqN1KOMMisF90o0YM6cMHO6Ju1hOIGBHfRMYsRRQSJYzJRGjNY78lBh1bMIyL3xAqBnyDjjNgDqR9M/DnYrvqyU4voQuL0NijPf8TkLxpdWruYqnqm+IR3ax3bWMbrLewM2IpezR3v46LEFJ/4T5iXttH4x2hu9XniTD6ZDXwjfzVbpQ14Ly4YJrGUyVCC0mXJxY92cN/SiXbZ6xU8aOdNjDRjS1b1pnMTKk/8svAPFuIxu2vPDhLVpvC0NlornljOfDu1aJpPpVQvBbXna7/tKGKwBIbU8lIEP236QBfhedH2Frint7ubJ2MK5zNO/lktwEWpQCg0jDluM9LUi7Sdnh7+mV6W9PebhgBrDZ7epIOI7LMH4p9XF5jQtIJ7U/KfLKjD3yB45k7rwTqyDpwxw0tT9uMp5F1ncIKEoO3ydNoevEpNdyGGvr0A0yuB/OYMkzt/sc
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(346002)(396003)(366004)(376002)(230922051799003)(186009)(451199024)(1800799009)(41300700001)(316002)(66476007)(76116006)(5660300002)(8936002)(26005)(64756008)(66946007)(66446008)(9686003)(54906003)(53546011)(6506007)(110136005)(71200400001)(8676002)(52536014)(66556008)(7696005)(4326008)(2906002)(83380400001)(478600001)(66899024)(55016003)(38070700005)(38100700002)(122000001)(33656002)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?RUhieDkwR0ZKNVVjN1VWNkw2ci9TOGRCYjlqUkltcnBRQ3FMM1hpV1l6Q3c0?=
- =?utf-8?B?Wm11TEtReHV4aktHZHhHbFdMRWNYTjMvOVMxdGpzQVNIK0VDUjlaWURCMUcw?=
- =?utf-8?B?NDRmVHN0OXVBaXFZSXVENm5SVlpoZ3V6VVZGaDUwZElZNWx6c2xsU1l4dk5m?=
- =?utf-8?B?R0ZmNDE0ZW53R1BWN2pPWXVzMGFmaU1BeWVHSk5Vb3FOamdBNXYxUVBxN3FJ?=
- =?utf-8?B?aDgwZ1hvRmZvSXQvN1BjRGtSbzBZbDFSZnEyYkk5MGNDWXdTVC9ENkpDQUJv?=
- =?utf-8?B?ZzJwV3JpZ09SVmxIeWJaL0NybU9Gc0tCTCt5Z29ocGptMWJpSlFQQXJXMWtD?=
- =?utf-8?B?Zml6U2FXZ3poL0JRUEtrUWR2NEdZeFVmTUZHbWFMaEVqOUNRZjRRMjhqM0tu?=
- =?utf-8?B?aXFjVFdWQWtoK3pXa21CdjZ0eTR5dWRNMDdxNXlvMVR5a2FrenlKa3J6WUJZ?=
- =?utf-8?B?NUhDTXFaQk85V3plRmtVUTU2TW0vdE1KWjQ3R09rQ0hVeXdTKzVBUDNaVjNw?=
- =?utf-8?B?NFVGWFpRMnhMalFoWm5Nem1qZXpMYjVZY09NNVEzTTZkTDdTc080WUpzYnVO?=
- =?utf-8?B?VFRsNUp2SjNiVlY4UWJWS0wwRFp6aVNzZ2Uvb0U0MUVPYWc4d3BVL3FoQlhN?=
- =?utf-8?B?dzZNanNZRUdQZlluRSsweTVhWFFDRTJva3RqenRMRG4vUkttaWZpN1dJNk83?=
- =?utf-8?B?RzhPK1B0bXNPNEFMdno4d0l5MHYwTjZwWXJMQjZhdVpZaUg5ZldzUnlpUEps?=
- =?utf-8?B?bWpZWHhsNEZzbC9nT0c3ajFWczRTK3RrclAvbG1qUVVVclRQQ2Nqd0tqM3FX?=
- =?utf-8?B?aGtaOUlxdzFOQ0xvUVlsTm9RZ2NLMk5TN0pObnliQzQxNlNueFdkOHhDcU4w?=
- =?utf-8?B?WXlJTG9hc3Q4WmhjRi83eTgvdFVXbjV3dTMwNmJWSkpHMTFkUHZIa0phejM4?=
- =?utf-8?B?VmZXZzZydTcyTlFXc0J1QzV5RWFhZDlBSElKUDNEOGxlT2xGb1JzODQ3MWpt?=
- =?utf-8?B?VVhaMTI1cDBUUXdkc0lzb3JrdnV4RDZGVkJRRThKUFJneEkwUTJGVzBadG83?=
- =?utf-8?B?bmo0OW5rZWcwWDJ6a2J6eDU3WHlFVE5yWWZhNGNYWmxtTDVoamw2N0lHR0NQ?=
- =?utf-8?B?VU9kSk5EbkgvVEpKZ09oZjNPUVpEeG5WWkdIYVV3aW5xOW5Nd1VhMlJRRE9C?=
- =?utf-8?B?U1h6VitGYXFjSnRVSTY4VzIvTnZqVm1jdkdkY0VHbzhRQWhaTXlMYmRSWVVO?=
- =?utf-8?B?dWlUbU1oSG5LSXBRRkVLWmVGbDJoRDZubm54ZDcyMStiQTNvQ3RkaFU4MXcv?=
- =?utf-8?B?a2JaazIrMktzZWNrVjVjWS92TmVhQS9UZFFLbXV1eXcrQ1kwb2RtSzNBMTFF?=
- =?utf-8?B?cmxqd0pPaDhKQkZnQjRWOG9nRy9QcTFDNUJueXljNktidGJDU0tKV2EwVmIw?=
- =?utf-8?B?Wm1HaGd2SkVtWlNIblVwT1pTZE5pK1RNUHdLbnM4eU1UdnVlNUcyWGdpamtM?=
- =?utf-8?B?dGYzK0xrM3lObGk0MS9WMHZLNEFkNm16TGhYS2VmQ29WY3pMRnZCMm9TWmYx?=
- =?utf-8?B?cFdzMVd1Vk1FVURpK0dMUUhxU0sweGhuL1NIY0JNenAwbDVTbVEyTWVYelk5?=
- =?utf-8?B?WGtidlljOE9Qd2tBNmk1UWNNL2RJOWlkOFVYdmZQTFA1Q2w1MldNeTZENmVr?=
- =?utf-8?B?S3UwUHp0WitCU1VWMVhEYUF2VXNqWjc2OW5ZYjJJTThkSm52L2JKN3lQKzJK?=
- =?utf-8?B?MHlRQTV0R3hIejg2TzlCSURkMFhxS0ZIZzJLZGpKMWlnOXFwMFFrS3dNZVVL?=
- =?utf-8?B?Qi9Qa3VkTk9uRTlkL3dDZDJlWW9zb25IeXdRYXh4WDJDaFVNUWk5bG1OSFgw?=
- =?utf-8?B?eGwwVzE3NkxYcmRReCswNUU0eUx1bzVyZnJGTjJNOVhPUE1zdE9xeCtrUEdq?=
- =?utf-8?B?NytSaUxxRjRNWHVCT2U5eEdYelB6enhrOXZaUmtRaFg3WGR2ZGk3Unk3VVN4?=
- =?utf-8?B?SHoxM1hGQlpLNUZrejhwZnZnM3dGTHpMeE1BeExJdDcwRm5KdHBnTm95ZkVs?=
- =?utf-8?B?aTZGcndtN09yZ1hKREE0ZXlpNW45anRGSlp6aVhoRkJQMG5XbHcvVmMyMDBx?=
- =?utf-8?Q?6AKQ=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <20230922100303.GF19112@pendragon.ideasonboard.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PA7P264CA0243.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:371::8) To BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:4d::9)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BE1P281MB2663:EE_|BEXP281MB0149:EE_
+X-MS-Office365-Filtering-Correlation-Id: 62b62f2e-6a23-4ae5-3728-08dbbde2d04f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6mgz7l8ayj4oW2cZCKtDV4KqaDmmRc5WqKE0kbeamzIygfiuDYf2UTnMWZ83PoDijsHm4ox04hH0qCcXdNnQProqw/kdkYL362m/OAcdy0U30bg6y2tB5duexmida3M30t7NQyg9doltCr2YF7yjKOAt486G98LJq5RgmNJAs+vOMsFAyX6dtuikd+TZJijbASxi+jO9PX8UMAA2raVESAG0tCr6aeylfJEFandIQtsN/3UqtSC347GsPNuvDh7k8xuti9mogAGCXN2q2fWqVUbsBNBv3z+xfyKzH2uQKtM9OQh2Nu9MFoH2hmghVFZHFGj3QRbnDpYH2YdwMx7moiZIwImnkzzRL90iHL2499Fgh48xCluW88pMKJe7U/1IlkQDsC8oOjH3Vxv7135dQDPjDKRNThcZ0a8+XO/kd00cXAsyfqr7LYZwgWT1esUS5DRjeEmdZVm/NUp9Ij0zA9Aab5Fr6vMakZADaYp9SVh6EMa8gmHtD+hT6uJcnBYOzHbvv2GTIBsKw3ad8MdQbwtug87rCg77Pxyzv6Ai3Fm5i23jFefQTYdCZtJj1h7mK+eSeVzhs5HVHs6HYvnzoAclL5f7LLkSTERpZJMrU4BwyrIJ9A277Opruq8vaLQhHq2+rUw54RLkQz3Yt2rhSdmxlW95ab/SfCF4oPCz+VpopQSP2JyZP8xYLJzIcDQh1in5dgwqNS4QbMhGKwpxAkCA55UEpZxRGywM3b7aHtGSKP+V56vYwIskxxB9nGej1+h76fhHLh5ZpZrWVDkHfg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(366004)(39840400004)(346002)(136003)(230922051799003)(186009)(451199024)(1800799009)(83380400001)(26005)(8936002)(8676002)(4326008)(66556008)(316002)(966005)(478600001)(41300700001)(5660300002)(42186006)(6916009)(66946007)(66476007)(53546011)(2616005)(2906002)(7416002)(44832011)(7406005)(55236004)(15974865002)(36756003)(38100700002)(31696002)(86362001)(31686004)(5930299018)(18886075002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?YlhDN2dPSVFjR3o3Z3NCcFdSWmtlUEFRYWpseDhpbmkzanVtemVLc1JZWjEw?=
+ =?utf-8?B?ZzByTHN1Y3haZHd4bWJoRnhPOEI5VFZSMVg4M0hpQVVqVXh1V25pZUFWa0Vq?=
+ =?utf-8?B?eDcrd1BUUElOSFQ0ems1SEVqOG5ZMWJRQXdRZEUzTFZGT2xzdTFkTXUyVXVC?=
+ =?utf-8?B?bTFscE12RWluYjlEaitVQW9udlRRNmdaTyszOHF5eUozZmR2OHFvM1pZbGRz?=
+ =?utf-8?B?NXJETkxqQ2VxcEVqeHRDS3JxcllWei9OYzRxMmphanl1Ym94RnEzYjdLOXJG?=
+ =?utf-8?B?UlBibEFPZ2NVQUtESDR0akRlRDFrV1hHQkdiOFgyTDBQOGdDWERUb3Zub09m?=
+ =?utf-8?B?aTA1dmdQdGpLaXdCUkFJT29CTFY4WjlVRnFLaDluQm9Xa1lKOFRFblpoSVJW?=
+ =?utf-8?B?WmJSa0VFR1p2QVBXWllCdFkwSnpQN2NsUTBrZWpScndQZGZqZHhOWTlvbjJF?=
+ =?utf-8?B?aHo0c0hUOXRCMkg4bFZFM3JWY2RYT1hSQmFlaFp3clFneG5oK0dMdU1aTEdm?=
+ =?utf-8?B?THlVM0lpaDRkMStzWThRUS9KOGdacDNOamhtK0toaTBvOUh3ZU5xK3hKNnI5?=
+ =?utf-8?B?OGVSRUpROHJwOHJMNHIrbTFxQVBrWVB5TllubU52d0J3aHhmbTY2M25EakM3?=
+ =?utf-8?B?SnNEcUNiUy9NUmVncGJ1aDAxMTVOZjB2Mm92ZnNwNG5hVnVYbTZ4YWh0NzBh?=
+ =?utf-8?B?Y0ptSFlnM3I5dVZKZkdIKzFUbWUzd0tuV1FHbVY3VXhTbjlkRzRHR0xHV3B3?=
+ =?utf-8?B?NHRiZHZ4Ky9IdVRrbE1pTnh4S0VINW9vV3JCK2s1dThKYWRXa250UmVENDdE?=
+ =?utf-8?B?czhBT3lNM0tvdDFlb0VBSlcrMThvZnlOU3VHaW4vOVB5dGNFQUNUVzQ1STFT?=
+ =?utf-8?B?aFhlYlBpS2hOdUFVa2V2TUpuaWtHL0xSYmljTG9FL3dtL2JKYWFMeCtVdEly?=
+ =?utf-8?B?ekZ5QU5BMG9vWGRBdEUwd25sQzlxRHBlR2J2MlhMM1VHc051QXI2K0NhKzJG?=
+ =?utf-8?B?bzB3NVJhcDdtTWJKR3Z0NytnRERyeVh0UGF0a1Q2S01JWmZRRkk3YTg5czlx?=
+ =?utf-8?B?RlpCRmlpWEJucSs4eVlzK3BoTXlDQUkrbGk3ZzhzcDlzc2p2TGxEZ0hPY01v?=
+ =?utf-8?B?K2tBY1A1dDlsU3B4Y1lUeHluK1pMTmphTGhsUkFZRi85TjNzRXNPS0hOYVBC?=
+ =?utf-8?B?UlBrYU9HbWQ0QU5FVmkyUGx1cmpWK1pzR3M2N1U0aEw2dVZzUzZEYmRkZXVR?=
+ =?utf-8?B?Rm1DdW0wb0hpMm9sSnhlcVkxU3A1RkZ5elhIelRlV2xvRmNJVFloZHNMbEJi?=
+ =?utf-8?B?ZmRNUjhDa085QVFKMW4wUktrblhtSXlCQlREbmFNalpFc0JEckNtRHo4eGhS?=
+ =?utf-8?B?SzRQOThVSzZKWXI5c3QvQmQxRmtrSU16T3k3T21MSmk2Y3A0RjNtMDBtdG5h?=
+ =?utf-8?B?YXAwZjltL2F2NTYyMG9IZ0RQbnJEaElic3NhbUNWZ3R2NzVSTjgzeWVUczBZ?=
+ =?utf-8?B?NFV0WXIzSmkyRGI2ZnFyVEdmNFpBTytiSisxU1NUVWU4NnYyc0pab3NkYk1P?=
+ =?utf-8?B?RTJYbkFiNlJrbXdhK0t3ZENMTFJBeWhmT25IZVBIMU1HYmpDeFp3NWZNTFpj?=
+ =?utf-8?B?U1djQkIzQ3lHM3hSUGdFd0cvSFU5VVRJc0Nrditjd0ZqV2wwM29PSnZWTFFU?=
+ =?utf-8?B?RjJCSE5vT2dhaXR6SEFwRGZqNXU3M0FYdEVlak51WUpISVl5dFFZZzdWZnZY?=
+ =?utf-8?B?Y3ZNbmpMcDhEU2FhNGpvL0RmREd1a1VBbE1KYmp1ZkF3dTVkVnJVUmFnclFk?=
+ =?utf-8?B?VlIraGRkbGNLdHFQanpXTGlYL20yazIwbEJoVkZ3ME9hL0VKWVhVTUQ1azho?=
+ =?utf-8?B?c2lCY21uMjZpbkM1WnpqWE0zamYwTWVQRnlEMDh1MXk4NUhiMGlMMnJXMyti?=
+ =?utf-8?B?N25Ha0Nvc2NBL1J6VVBHUyszMHNUcWVzTlhYdDViU05yN2ZzclExSEorSkM0?=
+ =?utf-8?B?UFVPYnpiaFFwQTdHUW90UVBkUjVEazc0ZVpDNEdoNXJKRWNqV3ROOENBSCtO?=
+ =?utf-8?B?K1BNZTRFVGFIbE1NWEtnSlJMTXd2WHE2Wk5ubllqTUxhUEhkcXlkQlYzOW91?=
+ =?utf-8?Q?cRKK6uk50/woEUh48DFaawfTm?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62b62f2e-6a23-4ae5-3728-08dbbde2d04f
+X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB2663.DEUP281.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ca2bc95-ac33-45ab-7258-08dbbddd72be
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2023 15:38:21.3349
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 16:16:45.9821
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xt112o+zoSb0dv+jI1aLxScxi3J6h6lGsIejTValUoDFCdJkzksIvrPrAipiT7G4mm7uMKXLHdMKwF79EczTPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7292
-Subject: RE: [virtio-dev] [PATCH v2] virtio-tee: Reserve device ID 46 for TEE
- device
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Dc2P4fbzd5ivVS2rrN/xcIh7+5JRCMDriW3ueZbtOfd5X8Zxo6mLNGRRzOrUkd3+H+uOWU6XkRIo9Dx/GXwlvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BEXP281MB0149
+X-TM-AS-ERS: 104.47.11.174-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-27898.000
+X-TMASE-Result: 10--40.187100-4.000000
+X-TMASE-MatchedRID: iKTMlETJ4pvJjvpr29Z2QHTvf6d+YucDDDgMha/WNJWmiVeoNe/DCjwj
+	HDiOsFcFQ1wDzjTPU3laGZcyAf0vNi7ZLsJjpCUPQvBVww1CnWc70BtMXRaQwtVOnN7i+WoGNiX
+	SKppuWEkKCsu+OWACaG0i642nGquUB0lk0hmon5ozBJn3PDO4dMWRrnuF8w1zB4BMfq4SzeLlbw
+	jdfEVENCMU4UslUsVcwlWW+xzj3MLWy2rJK4eMPG0+k9MhHUhysX4aFYAMIYPriyrp6RgprbLYp
+	wOck9HZAa+s0lW1ZqQg2kvpApScAdyvdUTaWVvuEfinJ3N6jMwIjw+vaMoIm+aPNLebur6Dlja+
+	I+hTvQKp0LbUi4tp6AwXH/xGjK+MJLy+6CFlC9e5e3S8qRPhgVo/1P3BDpl/xWc5pOGo87gyjxR
+	r39/xwhFmqrD9IqPqf5IgAdmuOnYHV0MiAgw75yx4RW/3LuIKuEKZe9OwaKwYSi2tIBS3CoyVhx
+	B8WWw9eGmk8XSExgHQu+YGwjjHcnUHkxTRq4C53v325aRdTsjU0ho7mxaK+BvlZxq14kYAmRe+l
+	3HbYsEwIsfl+1c0m29ChqKqS3E39iJtv4Em8ydmaxFtxxNj+yo16IZYyQ7Lls6RilmnIsSXYoGY
+	te3R6uwNFI7ui5rI6mz53q60RG7V5DFTSN/zXdNH2fq9dvP3ajuQRPPofdJE64d0xcPXxVJ7G83
+	umMVvZ2k7mV7r/t99KXLwHGfNYeTCLpdQ10cv4FXis8rXx1Bxev1HSNY2wJWa6EbToghtwtRBzT
+	IfyPiSkFoZxFIaxWjPQNkB1rR8xiurQszX6rAJ4vmrWAiMs0I9AEPfED/do4NJa7SjFsoNof8VS
+	2Ruh07zklyhPTD9Y7lOQ6fvf34AkucAPJ85a6JYuGaIjh0/IOKWWMbJYW0ONKiUWfcjWwP90fJP
+	9eHt
+X-TMASE-XGENCLOUD: cb20cfa2-fd24-46c7-be0c-28e2e4decc6f-0-0-200-0
+X-TM-Deliver-Signature: 72B56D9B37A9212C0906A6F6DC85D31B
+X-TM-Addin-Auth: paBiH2xaRclWN1kfVUOE1v4G8KfSMneo8yimeMoqmQFjqpHYX8y+y12qv3+
+	GLQblJi76l6Q7pdKHdNa7ur+9CK7BUVcqafUkiZ7l6k6wcPE9eW9r+VAP6rgu0dy8i0gscycH51
+	jOxbfXm0pKXr1/0HSwlKYhiP7aVHyOxoxM1NzsNMg+1j0oQU7AecPAHiEHr1M96PQUO9sJ/rVr/
+	rz4K4R5S2kxtR7CPVnojQa0NdLHKZFmpzm9DRwHLm6Yrepsyq2og32Js6ZGfGZL9KHAWuhc17nD
+	0bjkiagKhNEu5jc=.Bp8TW2PuGYgvxpi/Ths/OxSmlOq7hwD7HJRT2voGbosa00ROSVx2CadkYI
+	xYg5OqckS21sI5KPZBMz4xKtMufQEGX1aea0/J8YMyZXwt79zw+ccQw+FPg8wqF0jriWMGbPj5b
+	4jpMZEF7ed26aDk/DwW84Ix1p532tQ5esXvwc+r9DdrpLZDKdOwjIgJ6eSPpsarXDHg6EtjP/Z2
+	osKinb189eDXkb8FO7o7z9LBbMm1jgspCc/3I9tQqWEHA4t+5MJ3IN/5EPAmuP2k6Dj0mir3i61
+	Vcix/Z1O1Sdxh8l9X+Sd6JcfUGhebOlpbKGYmw3z8l49T6ZDeqJXYXJq9dQ==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] Re: Potential ways to describe virtio-video device capabilities
 
-DQoNCj4gRnJvbTogdmlydGlvLWRldkBsaXN0cy5vYXNpcy1vcGVuLm9yZyA8dmlydGlvLWRldkBs
-aXN0cy5vYXNpcy1vcGVuLm9yZz4gT24NCj4gQmVoYWxmIE9mIGplc2h3YW5rDQo+IFNlbnQ6IE1v
-bmRheSwgU2VwdGVtYmVyIDI1LCAyMDIzIDQ6NDcgUE0NCj4gVG86IHZpcnRpby1kZXZAbGlzdHMu
-b2FzaXMtb3Blbi5vcmcNCg0KSSBub3RpY2UgdGhpcyByZXBlYXRlZCBvY2N1cnMgZXJyb3Igb2Yg
-Y2hvb3NpbmcgdGhlIG1haWxpbmcgbGlzdCBhcyB2aXJ0aW8tZGV2IGZvciBzcGVjIHdvcmsuDQpJ
-IHdpbGwgZml4IHRoZSBPQVNJUyBkb2N1bWVudCByZWZlcmVuY2VzLg0KDQpJbiB0aGUgbWVhbnQg
-dGltZSwgdGhlIG1haWxpbmcgbGlzdCBzaG91bGQgYmUgdmlydGlvLWNvbW1lbnRAbGlzdHMuLi4g
-Rm9yIHRoaXMgcGF0Y2guDQoNCg0KPiANCj4gSW4gYSB2aXJ0dWFsIGVudmlyb25tZW50LCBhbiBh
-cHBsaWNhdGlvbiBydW5uaW5nIGluIGd1ZXN0IFZNIG1heSB3YW50IHRvDQo+IGRlbGVnYXRlIHNl
-Y3VyaXR5IHNlbnNpdGl2ZSB0YXNrcyB0byBhIFRydXN0ZWQgQXBwbGljYXRpb24gKFRBKSBydW5u
-aW5nIHdpdGhpbiBhDQo+IFRydXN0ZWQgRXhlY3V0aW9uIEVudmlyb25tZW50IChURUUpLiBBIFRF
-RSBpcyBhIHRydXN0ZWQgT1MgcnVubmluZyBpbiBzb21lDQo+IHNlY3VyZSBlbnZpcm9ubWVudCwg
-Zm9yIGV4YW1wbGUsIFRydXN0Wm9uZSBvbiBBUk0gQ1BVcywgb3IgYSBzZXBhcmF0ZSBzZWN1cmUN
-Cj4gY28tcHJvY2Vzc29yIGV0Yy4NCj4gDQo+IEEgdmlydHVhbCBURUUgZGV2aWNlIGVtdWxhdGVz
-IGEgVEVFIHdpdGhpbiBhIGd1ZXN0IFZNLiBTdWNoIGEgdmlydHVhbCBURUUgZGV2aWNlDQo+IHN1
-cHBvcnRzIG11bHRpcGxlIG9wZXJhdGlvbnMgc3VjaCBhczoNCj4gDQo+IFZJUlRJT19URUVfQ01E
-X09QRU5fREVWSUNFIOKAkyBPcGVuIGEgY29tbXVuaWNhdGlvbiBjaGFubmVsIHdpdGggdmlydGlv
-DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVEVFIGRldmljZS4NCj4gVklSVElPX1RF
-RV9DTURfQ0xPU0VfREVWSUNFIOKAkyBDbG9zZSBjb21tdW5pY2F0aW9uIGNoYW5uZWwgd2l0aCB2
-aXJ0aW8NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVEVFIGRldmljZS4NCj4gVklS
-VElPX1RFRV9DTURfR0VUX1ZFUlNJT04g4oCTIEdldCB2ZXJzaW9uIG9mIHZpcnRpbyBURUUuDQo+
-IFZJUlRJT19URUVfQ01EX09QRU5fU0VTU0lPTiDigJMgT3BlbiBhIHNlc3Npb24gdG8gY29tbXVu
-aWNhdGUgd2l0aA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0cnVzdGVkIGFwcGxp
-Y2F0aW9uIHJ1bm5pbmcgaW4gVEVFLg0KPiBWSVJUSU9fVEVFX0NNRF9DTE9TRV9TRVNTSU9OIOKA
-kyBDbG9zZSBhIHNlc3Npb24gdG8gZW5kIGNvbW11bmljYXRpb24NCj4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHdpdGggdHJ1c3RlZCBhcHBsaWNhdGlvbiBydW5uaW5nIGluIFRFRS4N
-Cj4gVklSVElPX1RFRV9DTURfSU5WT0tFX0ZVTkMg4oCTIEludm9rZSBhIGNvbW1hbmQgb3IgZnVu
-Y3Rpb24gaW4gdHJ1c3RlZA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFwcGxpY2F0
-aW9uIHJ1bm5pbmcgaW4gVEVFLg0KPiBWSVJUSU9fVEVFX0NNRF9DQU5DRUxfUkVRIOKAkyBDYW5j
-ZWwgYW4gb25nb2luZyBjb21tYW5kIHdpdGhpbiBURUUuDQo+IA0KPiBXZSB3b3VsZCBsaWtlIHRv
-IHJlc2VydmUgZGV2aWNlIElEIDQ2IGZvciBWaXJ0aW8tVEVFIGRldmljZS4NCj4gDQo+IFNpZ25l
-ZC1vZmYtYnk6IEplc2h3YW50aCBLdW1hciA8amVzaHdhbnRoa3VtYXIubmtAYW1kLmNvbT4NClJl
-dmlld2VkLWJ5OiBQYXJhdiBQYW5kaXQgPHBhcmF2QG52aWRpYS5jb20+DQoNCj4gLS0tDQo+ICBj
-b250ZW50LnRleCB8IDIgKysNCj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKykNCj4g
-DQo+IGRpZmYgLS1naXQgYS9jb250ZW50LnRleCBiL2NvbnRlbnQudGV4DQo+IGluZGV4IDBhNjJk
-Y2UuLjY0NGFhNGEgMTAwNjQ0DQo+IC0tLSBhL2NvbnRlbnQudGV4DQo+ICsrKyBiL2NvbnRlbnQu
-dGV4DQo+IEBAIC03MzksNiArNzM5LDggQEAgXGNoYXB0ZXJ7RGV2aWNlIFR5cGVzfVxsYWJlbHtz
-ZWM6RGV2aWNlIFR5cGVzfSAgXGhsaW5lDQo+ICA0NSAgICAgICAgICYgICBTUEkgbWFzdGVyIFxc
-DQo+ICBcaGxpbmUNCj4gKzQ2ICAgICAgICAgJiAgIFRFRSBkZXZpY2UgXFwNCj4gK1xobGluZQ0K
-PiAgXGVuZHt0YWJ1bGFyfQ0KPiANCj4gIFNvbWUgb2YgdGhlIGRldmljZXMgYWJvdmUgYXJlIHVu
-c3BlY2lmaWVkIGJ5IHRoaXMgZG9jdW1lbnQsDQo+IC0tDQo+IDIuMjUuMQ0KPiANCj4gDQo+IC0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQ0KPiBUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2Ny
-aWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1h
-aWw6IHZpcnRpby1kZXYtaGVscEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KDQo=
+On 22.09.23 12:03, Laurent Pinchart wrote:
+> On Fri, Sep 22, 2023 at 07:07:34AM +0200, Alexander Gordeev wrote:
+>> Hi,
+>>
+>> I'm working on updating virtio-video draft v8 spec [1] and the
+>> virtio-video V4L2 driver [2]. One of the things, that I don't like in
+>> the current spec draft is sharing the device's capabilities with the
+>> guest VM. The main requirement is making these capabilities compatible
+>> with V4L2.
+>>
+>> These capabilities could be pretty complex, see [3] and [4]:
+>> 1. First there could be several coded video formats. Coded formats have
+>> their specific sets of supported controls.
+>> 2. Then for each coded video formats there could be different sets of
+>> raw video formats, that could be used in combination with the selected
+>> encoded format for decoding/encoding.
+>> 3. Then for each combination of the coded and raw format there could be
+>> different sets of supported resolutions.
+>> 4. (Optional) for each coded format, raw format and resolution there
+>> could be different sets of supported frame rates/intervals.
+>>
+>> In the future new formats, controls, flags, etc could be defined. Right
+>> now there is a rather static structure, see section 5.20.7.3.1
+>> (VIRTIO_VIDEO_CMD_DEVICE_QUERY_CAPS) in [5]. It looks too inflexible.
+>>
+>> The V4L2 approach with many different ioctl's and complex querying logic
+>> doesn't fit well for virtio-video IMHO. syscall overhead is only a few
+>> hundred nanoseconds, so doing tens or hundreds of them is bearable in
+>> case of video. But a roundtrip over virtio may take hundreds of
+>> microseconds even in the local case. We at OpenSynergy already have
+>> setups where the real hardware is accessed over a network. Then it can
+>> take a millisecond. People already seem to agree, that this amount of
+>> overhead makes V4L2-style discovery process unbearable on a per stream
+>> basis. So all the relevant data has to be obtained during the device
+>> probing. This means, that in many cases there is a complex structure
+>> with all the data on the device side, and we just need to move it to the
+>> driver side. Moving it in one step seems easier to me and better because
+>> of the latency. Boot time matters too sometimes.
+> 
+> No disagreement here. For what it's worth, I think V4L2 should also
+> evolve and get a way to query capabilities with a single (or a very
+> small number of) ioctl.
+
+That would be great in my opinion. Maybe a little bit different use-case 
+ADAIU because the direction is somewhat reversed: with the virtio-video 
+the kernel would need to read a DTB, and with normal V4L2 kernel drivers 
+it would have to write a DTB. I think writing a DTB in the kernel is 
+already possible with the current implementation, but I haven't checked. 
+Reading a DTB in user-space is not an issue. I'll take this use-case 
+into account in the future.
+
+>> One of the ideas is to replace the mentioned
+>> VIRTIO_VIDEO_CMD_DEVICE_QUERY_CAPS command response with a standalone
+>> Device Tree Blob. It looks the most promising to me right now. I guess,
+>> it may sound crazy to many people, but actually it fits into one of the
+>> device tree usage patterns outlined in [6]. This document is referenced
+>> in the kernel device tree documentation, so I assume it is correct.
+> 
+> If we want to pass flexible structured data we need a binary format, and
+> DT provides a binary format. Whether it's the best option or not, I
+> don't know, but it doesn't seem too crazy to me.
+
+Good! Well, I'm not sure if DT is the best option certainly. Form my PoV 
+having a spec that hopefully could be used as a normative reference is 
+essential. The there is a lot of tooling, that I mentioned. There is 
+ACPI, but it is too bloated IMO. I know of ALSA topologies and netlink 
+protocol specs in YAML, but looks like they're very Linux specific. 
+Besides that not sure what else could fit...
+
+>> A simplified version could look like this, for example:
+>>
+>> /dts-v1/;
+>>
+>> / {
+>>       virtio-video {
+>>           compatible = "virtio,video";
+>>
+>>           virtio,video-caps {
+>>               h264 {
+>>                   profiles-mask = <0x3ffff>;
+>>                   levels-mask = <0xfffff>;
+>>                   num-resources-range = <1 32>;
+>>                   buffer-size = <0x100000>;
+>>                   bitrates-range = <100000 10000000>;
+>>
+>>                   yuv420 {
+>>                       plane-layout-mask = <0x3>;
+>>                       plane-align = <1>;
+>>                       stride-align-mask = <0x10>;
+>>                       widths-range-stepwise = <96 1920 8>;
+>>                       heights-range-stepwise = <96 1080 1>;
+>>                       num-resources-range = <4 50>;
+>>                   };
+>>
+>>                   nv12 {
+>>                       /* ... */
+>>                   };
+>>
+>>                   rgba {
+>>                       /* ... */
+>>                   };
+>>               };
+>>
+>>               hevc {
+>>                   /* ... */
+>>               };
+>>
+>>               vp8 {
+>>                   /* ... */
+>>               };
+>>
+>>               vp9 {
+>>                   /* ... */
+>>               };
+>>           };
+>>       };
+>> };
+>>
+>> Or maybe the resolutions could be defined separately and linked using
+>> phandles to avoid duplication because they are going to depend on the
+>> raw formats exclusively in most cases, I think.
+>>
+>> There are many benefits IMO:
+>>
+>> 1. Device tree can be used to describe arbitrary trees (and even
+>> arbitrary graphs with phandles). The underlying data structure is
+>> generic. It looks like it can fit very well here.
+>> 2. There is a specification of the format [7]. I hope it could be
+>> referenced in the virtio spec, right?
+>> 3. There is already DTS, DTC, libfdt and DTB parsing code in Linux. All
+>> of this can be reused. For example, at the moment we have a custom
+>> configuration file format and a big chunk of code to handle it in our
+>> virtio-video device. These could be replaced by DTS and calls to libfdt
+>> completely, I think. There is also an implementation in Rust [8].
+> 
+> How does libfdt fare when it comes to ease of use and performance ?
+> License-wise it seems to be dual-licensed under the terms of the GPL v2
+> and BSD-2, so it should be fine.
+
+There are some tools in the dtc repository, that use the libfdt. They 
+seem relatively simple:
+https://git.kernel.org/pub/scm/utils/dtc/dtc.git/tree/fdtget.c
+https://git.kernel.org/pub/scm/utils/dtc/dtc.git/tree/fdtput.c
+https://git.kernel.org/pub/scm/utils/dtc/dtc.git/tree/fdtdump.c
+
+I haven't tested the performance that much. I tried dtc and the 
+mentioned utils with dts file similar to the one above, it was always 
+instant. Also the representation of the DT in memory, when parsed in the 
+kernel, seems pretty straightforward. I've found the description here: 
+https://docs.kernel.org/devicetree/of_unittest.html#adding-the-test-data.
+So I guess it should be fine from performance PoV. But maybe we should 
+discuss a benchmark.
+I'd be happy to learn about other options as well.
+
+>> 4. I think the standalone DTB could be integrated into a board DTB later
+>> reducing the amount of queries to zero. It is not going to make a big
+>> difference in latency though.
+>>
+>> If device trees are used, then we'll need add a binding/schema to the
+>> kernel or to the dt-schema repo [9]. Maybe the schema could be
+>> referenced in the virtio-video spec instead of duplicating it? This
+>> would reduce the spec size.
+>>
+>> I don't know if anybody has already done anything like this and I'm not
+>> sure if the device tree maintainers and other involved parties would
+>> approve it. That's why I'm starting this thread. Please share your
+>> opinions about the idea.
+>>
+>> An alternative to using device trees would be inventing something
+>> similar and simpler (without phandles and strings) from scratch. That's
+>> fine too, but doesn't allow to reuse the tooling and also is going to
+>> make the virtio-video spec even bigger.
+>>
+>> [1] https://lore.kernel.org/virtio-comment/20230629144915.597188-1-Alexander.Gordeev@opensynergy.com/
+>> [2] https://lore.kernel.org/linux-media/20200218202753.652093-1-dmitry.sepp@opensynergy.com/
+>> [3] https://docs.kernel.org/userspace-api/media/v4l/dev-decoder.html#querying-capabilities
+>> [4] https://docs.kernel.org/userspace-api/media/v4l/dev-encoder.html#querying-capabilities
+>> [5] https://drive.google.com/file/d/1uPg4kxThlNPBSiC4b5veyFz4OFGytU7v/view
+>> [6] https://elinux.org/Device_Tree_Usage#Device_Specific_Data
+>> [7] https://www.devicetree.org/specifications/
+>> [8] https://github.com/rust-vmm/vm-fdt
+>> [9] https://github.com/devicetree-org/dt-schema
+
+-- 
+Alexander Gordeev
+Senior Software Engineer
+
+OpenSynergy GmbH
+Rotherstr. 20, 10245 Berlin
+www.opensynergy.com
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
