@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13940-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13941-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F6DCE6FE52
-	for <virtio-dev@archiver.kernel.org>; Fri, 22 Sep 2023 16:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5F2D5CE7A94
+	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 02:52:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 534CC2AC79
-	for <virtio-dev@archiver.kernel.org>; Fri, 22 Sep 2023 16:01:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9AF4E2AEEF
+	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 02:52:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3F8329866B5
-	for <virtio-dev@archiver.kernel.org>; Fri, 22 Sep 2023 16:01:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 52A3398640A
+	for <virtio-dev@archiver.kernel.org>; Mon, 25 Sep 2023 02:52:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 30E029866A2; Fri, 22 Sep 2023 16:01:34 +0000 (UTC)
+	id 2AC08986379; Mon, 25 Sep 2023 02:52:36 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,172 +24,205 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 231609866A3
-	for <virtio-dev@lists.oasis-open.org>; Fri, 22 Sep 2023 16:01:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1740B98637A
+	for <virtio-dev@lists.oasis-open.org>; Mon, 25 Sep 2023 02:52:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: oMkJRIxaO-2Dh4ZxFtLrrw-1
+X-MC-Unique: miIb-y64M2y2F_BiEHTM2Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695398489; x=1696003289;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2ck2ltjArzlzGjJC14IWtZYvlWabDbDccqrNd/0+lCk=;
-        b=L7e77xE4WS/VLS4t1QrIIrj/JWBtro+b7XjctADTQnC1oenQHuYoUxjgkAOg/HEKoU
-         CHbzZ9gWo29FMUG2wCRffiu9s9BOaBP1FIpF9iLtNhHEqw5OMpyRtjtI1fR9VGQRMjyx
-         RXTXAaMh7sBhknsvSmECrtZaATzHxm1D/ADF0Ia6DSpW2EZ2L/5Ok5LIOoYgwjJBffle
-         MCtY9Utp6P0TS0lmjgb4OrXf30JeEtZZwulzAW3FtkFBlKr9nGmlCxRDyPkim9glc0iU
-         8AQoQYJQdVFxAx6UskHXp4IKZkvm8IiqSOEkUFD3ISAeJBDhS5MD15SXFtjKTwSQPDSa
-         pzrg==
-X-Gm-Message-State: AOJu0Yzl4t+YcPfT+5rIkdg2J0NCRu+OCSM5KsDPvwKX0ucHcvKhKVqJ
-	jiH1T8849LVngePJ+JvmWRM6aDenssUbHR9/7QPcjTEBlaynpTwL91lHrYfVaAZ0tMbHsGpQu5P
-	0jSUeL+f3cfgRRxPXlOOF4vSrchkf
-X-Received: by 2002:a17:906:309a:b0:99c:5056:4e31 with SMTP id 26-20020a170906309a00b0099c50564e31mr222741ejv.15.1695398489653;
-        Fri, 22 Sep 2023 09:01:29 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGkaZghu2g9JmY+fHalif7lY8IkbAq8RF9OcoTHJtPNahwsp+XGtn6qvw6Yfc4axI59VKfu1A==
-X-Received: by 2002:a17:906:309a:b0:99c:5056:4e31 with SMTP id 26-20020a170906309a00b0099c50564e31mr222542ejv.15.1695398488016;
-        Fri, 22 Sep 2023 09:01:28 -0700 (PDT)
-Date: Fri, 22 Sep 2023 12:01:20 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Babis Chalios <bchalios@amazon.es>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	"Cali, Marco" <xmarcalx@amazon.co.uk>,
-	"Graf (AWS), Alexander" <graf@amazon.de>,
-	"Jason A. Donenfeld" <Jason@zx2c4.com>, aams@amazon.de
-Message-ID: <20230922115920-mutt-send-email-mst@kernel.org>
-References: <e75d9667-2ea0-44d0-a26f-fa3d5fe05651@amazon.es>
- <20230918091506-mutt-send-email-mst@kernel.org>
- <a22ba2cb-9b03-481a-b66e-0b78fbfb21f0@amazon.es>
- <20230918100355-mutt-send-email-mst@kernel.org>
- <4ab1b10e-4524-4b6c-a3df-863360fd225d@amazon.es>
- <c2e7076b-b07e-43cd-a912-9314d742a678@amazon.es>
- <20230919055811-mutt-send-email-mst@kernel.org>
- <4c6d6710-43c8-402b-9ae6-d2f4cafbe9a7@amazon.es>
- <20230922110329-mutt-send-email-mst@kernel.org>
- <c0c5b159-997f-4ddf-ab3e-1c749ad93e10@amazon.es>
+        d=1e100.net; s=20230601; t=1695610352; x=1696215152;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dvSNAd005cPkGlRILEQbu1tvQcInzbTRhT9CZO/Khiw=;
+        b=S8W0zcqa2Nd6oHFmTgLhYqCSMKGW2KQ7e5/BnlL54WptUad8iZeP/qTc+gIZpPnJKN
+         DbA4BSEL0fPXWJMQvrQ1gLHtb18b+++COQoNYqUkAk/5kkBcZWKs8nVYjMikvJaMBMTx
+         fsTKPVzcxLGvjqVvQ5FcNKrtE/cBVQ25XY0NtUfp+NNTIJCosE2SrL45p0YznWWiaIrR
+         7LT6Vl9y8rEttEYtOkPYKfwBKJWJue4nCmOjmVidIrgrsM39mmx650fu9z0rPFaQe4YH
+         BC9aRzqzdg4lMjm9nvyt39a95FhAAtwFkFfy460l7uqBwNq3v4SsA4x3ueSbm3AKjwR+
+         TffQ==
+X-Gm-Message-State: AOJu0YytlCL1Q88elORCx6OnUcDJJzGiUxJk4V+xNVqqLrM91z0ovopn
+	yi+N7Fe+rNYrlIlTG4l/SgzwT3QNa/1peHF9GjaLl/x//ghhefEw5JJpI3n47XJQ5bSaUFZR2Fq
+	lSJfvW0bksQtrhIl/QBCgdTj7LmVDi68aoEzoNEUSctaU
+X-Received: by 2002:a05:6512:3043:b0:503:9c2:e44e with SMTP id b3-20020a056512304300b0050309c2e44emr5477022lfb.55.1695610352134;
+        Sun, 24 Sep 2023 19:52:32 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEYkcmxSFRmz4bV1vaXQBWC3Hagr0bVdlUMbajCZhWM7FIzduz2o2bsO8DnG6xVp3slwSFzNKGiZx4OjbRtGy0=
+X-Received: by 2002:a05:6512:3043:b0:503:9c2:e44e with SMTP id
+ b3-20020a056512304300b0050309c2e44emr5476990lfb.55.1695610351568; Sun, 24 Sep
+ 2023 19:52:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <c0c5b159-997f-4ddf-ab3e-1c749ad93e10@amazon.es>
+References: <20230919114242.2283646-1-Jiqian.Chen@amd.com> <20230919114242.2283646-2-Jiqian.Chen@amd.com>
+ <CACGkMEuEXk2UzXU7sFUk-nHEeE7QoB3kbjnHgktY7KWuK71Xrg@mail.gmail.com>
+ <BL1PR12MB58490A484087B2B2C37B6E43E7F8A@BL1PR12MB5849.namprd12.prod.outlook.com>
+ <CACGkMEtx-i_9dgdONFzEmmWYNRhaoJQZX7a5OmLfDvGoUaajPQ@mail.gmail.com> <BL1PR12MB5849E38DE89D80B8A4CB7128E7FFA@BL1PR12MB5849.namprd12.prod.outlook.com>
+In-Reply-To: <BL1PR12MB5849E38DE89D80B8A4CB7128E7FFA@BL1PR12MB5849.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Mon, 25 Sep 2023 10:52:20 +0800
+Message-ID: <CACGkMEv0d3frw9KJcC3qDs0p8ZeWg6dowNEHcAHsgaOTm4CAAQ@mail.gmail.com>
+To: "Chen, Jiqian" <Jiqian.Chen@amd.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>, 
+	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>, 
+	=?UTF-8?B?TWFyYy1BbmRyw6kgTHVyZWF1?= <marcandre.lureau@gmail.com>, 
+	Robert Beckett <bob.beckett@collabora.com>, 
+	Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>, Parav Pandit <parav@nvidia.com>, 
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, 
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, 
+	Stefano Stabellini <sstabellini@kernel.org>, =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>, 
+	"Deucher, Alexander" <Alexander.Deucher@amd.com>, "Koenig, Christian" <Christian.Koenig@amd.com>, 
+	"Hildebrand, Stewart" <Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>, 
+	"Huang, Honglei1" <Honglei1.Huang@amd.com>, "Zhang, Julia" <Julia.Zhang@amd.com>, 
+	"Huang, Ray" <Ray.Huang@amd.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] Re: [VIRTIO PCI PATCH v5 1/1] transport-pci: Add
+ freeze_mode to virtio_pci_common_cfg
 
-On Fri, Sep 22, 2023 at 05:40:50PM +0200, Babis Chalios wrote:
-> 
-> 
-> On 22/9/23 17:06, Michael S. Tsirkin wrote:
-> > On Tue, Sep 19, 2023 at 12:11:37PM +0200, Babis Chalios wrote:
-> > > On 19/9/23 12:01, Michael S. Tsirkin wrote:
-> > > > On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
-> > > > > Resending to fix e-mail formatting issues (sorry for the spam)
-> > > > > 
-> > > > > On 18/9/23 18:30, Babis Chalios wrote:
-> > > > > > > > > > Yes, that's what the driver does now in the RFC patch.
-> > > > > > > > > > However, this just
-> > > > > > > > > > decreases
-> > > > > > > > > > the race window, it doesn't eliminate it. If a third
-> > > > > > > > > > leak event happens it
-> > > > > > > > > > might not
-> > > > > > > > > > find any buffers to use:
-> > > > > > > > > > 
-> > > > > > > > > > 1. available buffers to queue 1-X
-> > > > > > > > > > 2. available buffers to queue X
-> > > > > > > > > > 
-> > > > > > > > > > 
-> > > > > > > > > > 3. poll queue X
-> > > > > > > > > > 4. used buffers in queue X       <- leak event 1 will
-> > > > > > > > > > use buffers in X
-> > > > > > > > > > 5. avail buffers in queue X
-> > > > > > > > > > 6. poll queue 1-X                <- leak event 2 will
-> > > > > > > > > > use buffers in 1-X
-> > > > > > > > > > 7. used buffers in queue 1-X
-> > > > > > > > > > 8. avail buffers in queue 1-X
-> > > > > > > > > >                                      <- leak event 3 (it
-> > > > > > > > > > needs buffers in X, race with step 5)
-> > > > > > > > > > 9. goto 3
-> > > > > > > > > I don't get it. we added buffers in step 5.
-> > > > > > > > What if the leak event 3 arrives before step 5 had time to
-> > > > > > > > actually add the
-> > > > > > > > buffers in X and make
-> > > > > > > > them visible to the device?
-> > > > > > > Then it will see a single event in 1-X instead of two events.  A leak is
-> > > > > > > a leak though, I don't see does it matter how many triggered.
-> > > > > > > 
-> > > > > So the scenario I have in mind is the following:
-> > > > > 
-> > > > > (Epoch here is terminology that I used in the Linux RFC. It is a value
-> > > > > maintained by random.c
-> > > > > that changes every time a leak event happens).
-> > > > > 
-> > > > > 1. add buffers to 1-X
-> > > > > 2. add buffers to X
-> > > > > 3. poll queue X
-> > > > > 4. vcpu 0: get getrandom() entropy and cache epoch value
-> > > > > 5. Device: First snapshot, uses buffers in X
-> > > > > 6. vcpu 1: sees used buffers
-> > > > > 7. Device: Second snapshot, uses buffers in 1-X
-> > > > > 8. vcpu 0: getrandom() observes new  epoch value & caches it
-> > > > > 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
-> > > > > has not yet finished adding new buffers).
-> > > > > 10. vcpu 1 adds new buffer in X
-> > > > > 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
-> > > > > 
-> > > > > 
-> > > > > In this succession of events, when the third snapshot will happen, the
-> > > > > device won't find
-> > > > > any buffers in either queue, so it won't increase the RNG epoch value. So,
-> > > > > any entropy
-> > > > > gathered after step 8 will be the same across all snapshots. Am I missing
-> > > > > something?
-> > > > > 
-> > > > > Cheers,
-> > > > > Babis
-> > > > > 
-> > > > Yes but notice how this is followed by:
-> > > > 
-> > > > 12. vcpu 1: sees used buffers in 1-X
-> > > > 
-> > > > Driver can notify getrandom I guess?
-> > > It could, but then we have the exact race condition that VMGENID had,
-> > > userspace has already consumed stale entropy and there's nothing we
-> > > can do about that.
-> > > 
-> > > Although this is indeed a corner case, it feels like it beats the purpose
-> > > of having the hardware update directly userspace (via copy on leak).
-> > > 
-> > > How do you feel about the proposal a couple of emails back? It looks to
-> > > me that it avoids completely the race condition.
-> > > 
-> > > Cheers,
-> > > Babis
-> > It does. The problem of course is that this means that e.g.
-> > taking a snapshot of a guest that is stuck won't work well.
-> 
-> That is true, but does it matter? The intention of the proposal
-> is that if it is not safe to take snapshots (i.e. no buffers in the
-> queue) don't take snapshots.
-> 
-> > I have been thinking of adding MAP/UNMAP descriptors for
-> > a while now. Thus it will be possible to modify
-> > userspace memory without consuming buffers.
-> > Would something like this solve the problem?
-> 
-> I am not familiar with MAP/UNMAP descriptors. Is there
-> a link where I can read about them?
-> 
-> Cheers,
-> Babis
+On Fri, Sep 22, 2023 at 4:07=E2=80=AFPM Chen, Jiqian <Jiqian.Chen@amd.com> =
+wrote:
+>
+> Hi Jason,
+>
+> On 2023/9/22 11:17, Jason Wang wrote:
+> > On Thu, Sep 21, 2023 at 2:28=E2=80=AFPM Chen, Jiqian <Jiqian.Chen@amd.c=
+om> wrote:
+> >>
+> >> Hi Jason,
+> >>
+> >> On 2023/9/21 12:22, Jason Wang wrote:
+> >>> On Tue, Sep 19, 2023 at 7:43=E2=80=AFPM Jiqian Chen <Jiqian.Chen@amd.=
+com> wrote:
+> >>>>
+> >>>> When guest vm does S3, Qemu will reset and clear some things of virt=
+io
+> >>>> devices, but guest can't aware that, so that may cause some problems=
+.
+> >>>> For excample, Qemu calls virtio_reset->virtio_gpu_gl_reset when gues=
+t
+> >>>> resume, that function will destroy render resources of virtio-gpu. A=
+s
+> >>>> a result, after guest resume, the display can't come back and we onl=
+y
+> >>>> saw a black screen. Due to guest can't re-create all the resources, =
+so
+> >>>> we need to let Qemu not to destroy them when S3.
+> >>>>
+> >>>> For above purpose, we need a mechanism that allows guests and QEMU t=
+o
+> >>>> negotiate their reset behavior. So this patch add a new parameter
+> >>>> named freeze_mode to struct virtio_pci_common_cfg. And when guest
+> >>>> suspends, it can write freeze_mode to be FREEZE_S3, and then virtio
+> >>>> devices can change their reset behavior on Qemu side according to
+> >>>> freeze_mode. What's more, freeze_mode can be used for all virtio
+> >>>> devices to affect the behavior of Qemu, not just virtio gpu device.
+> >>>
+> >>> A simple question, why is this issue specific to pci?
+> >> I thought you possibly missed the previous version patches. At the beg=
+inning, I just wanted to add a new feature flag VIRTIO_GPU_F_FREEZE_S3 for =
+virtio-gpu since I encountered virtio-gpu issue during guest S3, so that th=
+e guest and qemu can negotiate and change the reset behavior during S3. But=
+ Parav and Mikhail hoped me can improve the feature to a pci level, then ot=
+her virtio devices can also benefit from it. Although I am not sure if expa=
+nding its influence is appropriate, I have not received any feedback from o=
+thers, so I change it to the pci level and made this version.
+> >> If you are interested, please see the previous version: https://lists.=
+oasis-open.org/archives/virtio-comment/202307/msg00209.html, thank you.
+> >
+> > This is not a good answer. Let me ask you differently, why don't you
+> > see it in other forms of transport like virtio-gpu-mmio?
+> Sorry for not understanding your question before. Did you mean why did I =
+add freeze_mode for virtio-pci type devices instead of virtio-mmio type dev=
+ices?
 
+Yes.
 
-Heh no I just came up with the name. Will write up in a couple
-of days, but the idea is that driver does get_user_pages,
-adds buffer to queue, and device will remember the address
-and change that memory on a snapshot. If there are buffers
-in the queue it will also use these to tell driver,
-but if there are no buffers then it won't.
+> If that's the case, it isn't well thought out by me, because there is onl=
+y virtio-gpu with pci support in my environment, so I, as a matter of cours=
+e, improve it from virtio-gpu-pci to a virtio-pci level instead of virtio-m=
+mio.
+> Do you think I need to add freeze_mode for virtio-mmio too?
 
--- 
-MST
+Because the function you describe is to preserve the render resources
+which have nothing specific to PCI. It's a core virtio function.
+
+I'd suggest fixing it at the virtio level instead of PCI level.
+
+> Or improve it to a higher level, like virtio-bus? I am looking forward to=
+ getting your suggestions, thanks.
+
+As pointed out in other thread, reusing the existing status state
+machine is a perfect way for doing this.
+
+We can tweak the state machine to be able to do both migration and S3.
+
+Thanks
+
+>
+> >
+> > Thanks
+> >
+> >>
+> >>>
+> >>> Thanks
+> >>>
+> >>>
+> >>>>
+> >>>> Signed-off-by: Jiqian Chen <Jiqian.Chen@amd.com>
+> >>>> ---
+> >>>>  transport-pci.tex | 7 +++++++
+> >>>>  1 file changed, 7 insertions(+)
+> >>>>
+> >>>> diff --git a/transport-pci.tex b/transport-pci.tex
+> >>>> index a5c6719..2543536 100644
+> >>>> --- a/transport-pci.tex
+> >>>> +++ b/transport-pci.tex
+> >>>> @@ -319,6 +319,7 @@ \subsubsection{Common configuration structure la=
+yout}\label{sec:Virtio Transport
+> >>>>          le64 queue_desc;                /* read-write */
+> >>>>          le64 queue_driver;              /* read-write */
+> >>>>          le64 queue_device;              /* read-write */
+> >>>> +        le16 freeze_mode;               /* read-write */
+> >>>>          le16 queue_notif_config_data;   /* read-only for driver */
+> >>>>          le16 queue_reset;               /* read-write */
+> >>>>
+> >>>> @@ -393,6 +394,12 @@ \subsubsection{Common configuration structure l=
+ayout}\label{sec:Virtio Transport
+> >>>>  \item[\field{queue_device}]
+> >>>>          The driver writes the physical address of Device Area here.=
+  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+> >>>>
+> >>>> +\item[\field{freeze_mode}]
+> >>>> +        The driver writes this to set the freeze mode of virtio pci=
+.
+> >>>> +        VIRTIO_PCI_FREEZE_MODE_UNFREEZE - virtio-pci is running;
+> >>>> +        VIRTIO_PCI_FREEZE_MODE_FREEZE_S3 - guest vm is doing S3, an=
+d virtio-pci enters S3 suspension;
+> >>>> +        Other values are reserved for future use, like S4, etc.
+> >>>> +
+> >>>>  \item[\field{queue_notif_config_data}]
+> >>>>          This field exists only if VIRTIO_F_NOTIF_CONFIG_DATA has be=
+en negotiated.
+> >>>>          The driver will use this value when driver sends available =
+buffer
+> >>>> --
+> >>>> 2.34.1
+> >>>>
+> >>>
+> >>>
+> >>> ---------------------------------------------------------------------
+> >>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> >>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> >>>
+> >>
+> >> --
+> >> Best regards,
+> >> Jiqian Chen.
+> >
+>
+> --
+> Best regards,
+> Jiqian Chen.
 
 
 ---------------------------------------------------------------------
