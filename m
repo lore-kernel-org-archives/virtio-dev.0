@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13950-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13951-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 31AF1E81817
-	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 04:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0DC93E8181D
+	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 04:52:51 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 606FD2A829
-	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 04:37:36 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3C08242A6F
+	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 04:52:51 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3AC8398640F
-	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 04:37:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 16980986422
+	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 04:52:51 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 1C9FE986378; Tue, 26 Sep 2023 04:37:36 +0000 (UTC)
+	id EB7F39863A6; Tue, 26 Sep 2023 04:52:50 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,308 +24,171 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0AE3F98639D
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Sep 2023 04:37:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D754698639D;
+	Tue, 26 Sep 2023 04:52:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 7-rO7X-gP5adzg-sfNUibg-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695703051; x=1696307851;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=r9EX4+8yhuAq3xW3VfbwariqR4yTqRU8oCASQAU62c8=;
-        b=JiRmlPVK5eqR+4rF8YYo7k38uhteJUuLAedGqESQ8FaG6zcleRaIkaaLsNvNovF8lj
-         NNF0w74F64mwmZpgWv1BNWT8mz6bRg5k3HUdBzuyHDloTajG6JhB64xIAB8Gqqrvsb+o
-         a6zUet8eE0YRSf2DDbwXzIj8q1qmzjlJzmfxrkatV6wC+zHBCBdr7ural1C1by6NFoFG
-         SYs0bC99EYq7FwKwWfmwrBa8+xkqjGBX7QYghhalL3zHOwn4HXepjJGjzffVu5LTiNeW
-         bwO28cPDK8AZNftn8aSjvQFfhIb+4RQ0nZbgSztZI16SAU/emuyQrS9pvu6m+eFgWLAt
-         pzkg==
-X-Gm-Message-State: AOJu0YzHgcd18EbXuRvSdr0sHK7qkUhCil1NZUhQbmefYSQ4Uv5kXfPp
-	pDuV9Tyl5KHTr2uOEGwQ9tiZhIBS8jITRyRjAUniRhPp08Y6n2mpfaT3xs9n/UuaEOpaGJ7Uh95
-	a8FJcKomQvHl/uN2222RKJrqo/J6VMD0H3UxRMLDLRHGC
-X-Received: by 2002:a05:6512:2245:b0:500:a66b:b189 with SMTP id i5-20020a056512224500b00500a66bb189mr10083138lfu.51.1695703051358;
-        Mon, 25 Sep 2023 21:37:31 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEhKJ8xt0uHTx3sqSQPczTzalqhFdrHkPqUSudhJzv9nn1D/ufig3LTzqqR5vLSm9huR8RtcHqjtdPfIXmMeZs=
-X-Received: by 2002:a05:6512:2245:b0:500:a66b:b189 with SMTP id
- i5-20020a056512224500b00500a66bb189mr10083116lfu.51.1695703050935; Mon, 25
- Sep 2023 21:37:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eR2BO91VSd8NlML45W+aiI4CwLvk0P1i+BZl/fX9HN6gTQPy+EbRfTN3xUi5IJ6VZVMuJR/V7bQHGuRH9cIjOmWbsoYFmMcKjKCDnkw0YlquH99AoI8EwpGRAYaB/RyH943dg7b4nYm22xjm80/u1ESwx66aHmcLXqSwoFDS+YkpVtS7Bx05xFf8iLp+kc+8uv6GeipxjT5r7EFyGMjkGcsBUS/03iL1PxnPDuxsRQRuvqdTQG1bZc/oRW0x1/Famq2XR/JIwUJ3lfXnjDRn5ks57qwEwrUEbHP8kpWq1kG8zFdR/jyQkLMr0luW6KPhSmp5guhu86hd4JEz25SP2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NEYU5gLncBh4nq15LUnjbvMxBsC92S19jRXSl3ms3AU=;
+ b=hLm/uY58AHzbhsq3MryHJVGCmBq3ufY4QnP1pA+9cqFC5U2fP0Jpn+QDJ0NgBlQTS/E7SOM6cvh3S7NiqNfUgwbw4OBfO0UeFNDriSHwaFgZKf2p1GCVkvgJcjqd0IQyzm9Pp90m7UUws06sV4H5y3Ncn8MJffytWCLn77Pskf5f24HNnyK4Gxubms0cn+AGPdFL/cZxiydgG29ci1OOskhEbOqkkUG/WCaDtHUnqTHe933jNH0FTiVxp7LGIorLwmwvYCcdlgmj+zdwjhslOVcuIh9X6jjIy0OgzvPIFWGVvN0kzBdrDK4bqgjjjCcIJsEVRZTPN/bsMK8oIP10Fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Message-ID: <0f9f60b0-8957-4769-80a6-94a25604144d@amd.com>
+Date: Tue, 26 Sep 2023 10:22:15 +0530
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Parav Pandit <parav@nvidia.com>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+ virtio-comment@lists.oasis-open.org
+Cc: "Mythri.Pandeshwarakrishna@amd.com" <Mythri.Pandeshwarakrishna@amd.com>,
+ "Devaraj.Rangasamy@amd.com" <Devaraj.Rangasamy@amd.com>,
+ "Rijo-john.Thomas@amd.com" <Rijo-john.Thomas@amd.com>,
+ "Nimesh.Easow@amd.com" <Nimesh.Easow@amd.com>,
+ "babulu.ellune@amd.com" <babulu.ellune@amd.com>
+References: <80a2e4337affb043909c348395fb45aeeb693dc7.1695640593.git.JESHWANTHKUMAR.NK@amd.com>
+ <PH0PR12MB54813F8968ABA023D551E05FDCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: "NK, JESHWANTHKUMAR" <jeshwanthkumar.nk@amd.com>
+In-Reply-To: <PH0PR12MB54813F8968ABA023D551E05FDCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN2PR01CA0208.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:e9::16) To DM6PR12MB4564.namprd12.prod.outlook.com
+ (2603:10b6:5:2a9::18)
 MIME-Version: 1.0
-References: <PH0PR12MB5481C41D4F32DA26D5831471DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com> <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
- <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <f1fe513e-d42d-03a6-348c-5e58aac0a759@intel.com> <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com> <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230918144312-mutt-send-email-mst@kernel.org> <bb402c34-ad07-063a-f4f5-d8c6b3a642c7@intel.com>
- <20230920054836-mutt-send-email-mst@kernel.org> <CACGkMEsn+9AqgmurN8-GXkcu8UxAr62_woJn3XZN+oUkTQNPUg@mail.gmail.com>
- <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
- <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com>
- <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvOxraeVB-5g7dJ-KBN=63kpmDfDdqaiQVyDh8egDjsGw@mail.gmail.com> <PH0PR12MB5481C11F6D68A892A091E2AFDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481C11F6D68A892A091E2AFDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 26 Sep 2023 12:37:19 +0800
-Message-ID: <CACGkMEvtyDXKHE4w9uH_9eqbckTGF8fZkNUuKr+mkzP0o31z_w@mail.gmail.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, "Zhu, Lingshan" <lingshan.zhu@intel.com>, 
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq state
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4564:EE_|MN0PR12MB5811:EE_
+X-MS-Office365-Filtering-Correlation-Id: 08969498-e6e0-4257-b2d3-08dbbe4c6ab4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	g8bk95KJgYS3gtAZrbZ3fhtvcgw0ajPR8gUfHYxj/HiwWTLxd09dFiMsDvTtw5oteystzVhw6LZTPUr7MHElz1dvZZd7G+cZwGRllRF0vV45C86fK6EK6JEEuuczFsZq/YjFmgifEhb1To9++X87btjPHfy7ZiM+dyArQf2cEQXlR5fBgvGYnc+ylx25z3V1Zg0EU4LcqPAlxJEadz37ObDBbKIqNvf5nWCVQWprxctM08mLx77ZIESrm4hrcr082SA5317loK2GWfOp41rjN2RwjvfEn99kmgnwScutxYghuz6c4NHOOPxYPv1DVxagJt0pXBYbQRMa5xkjeJp8fGyjOSK+xadWXTM2aHFFpn21AdAy140b+1Kb5BIFXYQJiZzmFTZjdG/IZruV8yyTlcG+RcEnWsUjw68APmSpB0X0xB04aQjmaiqkSssQGzR3ehknIxPOIqOi1os6OmOhR+VSsifX7m11rjeYBFXM454xGND7rjpQMkjZ0hR0Pu0incMR48YmSrfb+c72S5eDJsNoxCOiIZJrhZTtIfl5p/Dx0im1HOAFw/dNkvjNlwJ5GgzOtIJkTe2BOnD2zGxHDYcRISg8Z1FgHlVS518rwXB1nBdBktaxElvit02lw/fEaVhcN1Zwj7wksLXqTpNQdg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4564.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(396003)(346002)(376002)(230922051799003)(186009)(451199024)(1800799009)(66476007)(4326008)(66946007)(54906003)(66556008)(316002)(5660300002)(110136005)(41300700001)(8676002)(31686004)(8936002)(66899024)(83380400001)(2906002)(86362001)(6666004)(53546011)(478600001)(26005)(2616005)(31696002)(6512007)(36756003)(38100700002)(6506007)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cGFhYzIwaTA1TXA2eU9pUndXOTNDMG93UDZvb1d5NnQ5cENzTUZCNzF4RDBW?=
+ =?utf-8?B?VzZRVTZCVWFPVW9hQVcvb3ZKSWJWS1o0N2hhRUJIZ2l4eHR0YytMcmpNZmRr?=
+ =?utf-8?B?VFE1enJEUlhFcmNoNHVBVEZNeXhJSnQ2OGV3QlpOWUVndEtpYWo4TXR6d1la?=
+ =?utf-8?B?YlovNUtaWWRDNWJ6UFNBb1VsZU5KZUFOVk5NVnhYWWQyZlBqR3Rib3lxYldH?=
+ =?utf-8?B?VXlmRGpKSzlQUng2M0E3ZTBiZko1QVBCaHlpbTZVVVNtOGNma2JPZEltSjRX?=
+ =?utf-8?B?ME5ENDFjKzVSNmthanBmNlRLTm83RUZ1NGcwWTg2RWVDN0VmeVdKTG1GR0Zz?=
+ =?utf-8?B?YkRmWTdMaWVQd29aUERVRVB0N24wUTk4dzliYktjQzNRUmxzT3NpRXpNNE9s?=
+ =?utf-8?B?WmoxZFk3cldrV0dsTjVqRlJTM1hxSTl2SjZNcUZlQVhWcXMrTTQ0d25KNzIr?=
+ =?utf-8?B?N1A3bUNrbjU2NkZjbWxrcXVPZllmT2dvM25naURRT1lmUDc3dmFDT01OakdR?=
+ =?utf-8?B?L0s0eEpCNTBXUWdhUGtjZ0xqRUpDMkx5eUc2UnFiRGhRL2RsdnVoa0w4bTdN?=
+ =?utf-8?B?M2VrbUdOQVVZS1ZZUkZ5UmY0bTNXRjZpZWVOT2lObC91cTJMSURvU2hMek5p?=
+ =?utf-8?B?RXJYVEFjMU8rTVV5WXVsZ3AwU3NoNC9CKzIyeVVQU3J2Q3Nob0pORnBmWVBh?=
+ =?utf-8?B?YlpuK0hvSjdYNFk4RnpueHA2VEw3M0F3QzRyUU1SQmhCMFlJZGpnUXIycW1C?=
+ =?utf-8?B?VmFxVXVtZVRJbXoyVVFSUkF2alROWDlOQXNRZm84WkdRcEU0Znh1M0lvM3g2?=
+ =?utf-8?B?OStNM01OeXFxNU9qQkxiaEwvWlNnd0U0MDI0d3lpN1pZZXgveDFRVzZHdW1F?=
+ =?utf-8?B?TjZXSC93RlFXWWRJM0ZSZVB5dzM1dC9ZZVJqRk5NR2t4c3ZsYkJpeVUvMWtY?=
+ =?utf-8?B?SUV2eTRUTXJ1UU1jMko1TStLZDJTbFdPY0F1aXV6TjVGVldqNkdXLy85anB6?=
+ =?utf-8?B?MTROUVFITGw4ejdSeWRoNWt3VDZPUXNOaWt0REJkQ0doUDNEYW5uREZmVTlP?=
+ =?utf-8?B?MGFwaFJtTlVBb3FLbkJXQ3VVR1ZmblpTMEJzRFFHdnJLUXBMRlpaOS9CcWgy?=
+ =?utf-8?B?Vkk0anVMYU1MUkN6YksrY0VRc24zV2pjV01ubVVUNnA0WWR2TDdpODBSdkRG?=
+ =?utf-8?B?a2tDN2Iybi9ndjRoa3doRGt5ekNVZHJpRHAwSnZiYVF5UklnWHhKcUR2V3RE?=
+ =?utf-8?B?YURFbFNONHBZdDM1WDUrcEdkUEk4NWJ2N29GSC9CZHlTM1loYUxpTkI3V1o0?=
+ =?utf-8?B?S0o3aHljbXAvRnpWZ2dvV0dWRXEwcG5xeW9PV25Pa3lTSU9HS21EWC83UWk2?=
+ =?utf-8?B?UlhyVmpDQ05ROVJBNHlTRkd5OVR1YzljbDZLTEN4Z1hLakRUekNUNEFXOWc3?=
+ =?utf-8?B?MFZjR2FoaGlOK1o4VFAvMVhWS1prb1BwMHBRc000c01QM1BEa25KU0xoeTAv?=
+ =?utf-8?B?NXE5elhxL2FVcVlGZWc2dWUyY2RHekFkZTBlNHlnV2Q1UU1iUXBwaVpjN3N1?=
+ =?utf-8?B?VGVpSVZQWjliZXB0SktISmtZWlJrY2VhN2JVVFpoSjhteXBlcDVaL1NkMjEy?=
+ =?utf-8?B?ZjJtWEtJSkxESkp4ai91RWY0N08zZCtPSlhRa1NNNXZ1T3E2OFh4cVpIUi9X?=
+ =?utf-8?B?ZUZML2syWlpaWmtOdnlGZnU0MVFoWWhWdTUreVMzR3FKb0NTRmRLcSt5N3gw?=
+ =?utf-8?B?WjVBMkJRQ25IQzVFUTFjMDlPK0dWRXgrVzNWSjVvWHNqM08wRjdKT21hWkMy?=
+ =?utf-8?B?LzVCbGZCSFJTRHQ5MFlEdWJqSTk4SlQxN3ljRHlPZHBmWDMyMlNBQjRxS2Y1?=
+ =?utf-8?B?Q1M3RzZzMm1DVXlJZE1sQ2FkL1NkcURWdHdsWDFZZ3pDL1ZDTnlFYldUTWJF?=
+ =?utf-8?B?MDJVZDBKbmFQc1Rmbk1YQmhRZVpmd2VrdDFLcnUzOE15K2hkcHUvczJrcXNi?=
+ =?utf-8?B?amtmVDlaSjY5YjM5UGQvQko3MmI4ZGhja0dmKzE0Ri8wWVc2eUJOdDZoVmZ4?=
+ =?utf-8?B?bFYzMnh3Rk4xaytYZE9lV2NKL3VmR0p6UElFNFJKTlpLRytROWRucENENjFz?=
+ =?utf-8?Q?L56v6vMBmf7YLym2WDT4CcWiq?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08969498-e6e0-4257-b2d3-08dbbe4c6ab4
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4564.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2023 04:52:42.4338
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PqEhFeeXrramr4at4nLpt8jkWPkk47OvkXWamvKSsOLaHb/LWTwookZY8NpIPFzZ+P3Hjq5zNUKcscbyw652sw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5811
+Subject: Re: [virtio-dev] [PATCH v2] virtio-tee: Reserve device ID 46 for TEE
+ device
 
-On Tue, Sep 26, 2023 at 11:40=E2=80=AFAM Parav Pandit <parav@nvidia.com> wr=
-ote:
+++virtio-comment
+
+Thanks Parav for the review..
+
+On 25-Sep-23 9:08 PM, Parav Pandit wrote:
+>
+>> From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> On
+>> Behalf Of jeshwank
+>> Sent: Monday, September 25, 2023 4:47 PM
+>> To: virtio-dev@lists.oasis-open.org
+> I notice this repeated occurs error of choosing the mailing list as virtio-dev for spec work.
+> I will fix the OASIS document references.
+>
+> In the meant time, the mailing list should be virtio-comment@lists... For this patch.
 >
 >
+>> In a virtual environment, an application running in guest VM may want to
+>> delegate security sensitive tasks to a Trusted Application (TA) running within a
+>> Trusted Execution Environment (TEE). A TEE is a trusted OS running in some
+>> secure environment, for example, TrustZone on ARM CPUs, or a separate secure
+>> co-processor etc.
+>>
+>> A virtual TEE device emulates a TEE within a guest VM. Such a virtual TEE device
+>> supports multiple operations such as:
+>>
+>> VIRTIO_TEE_CMD_OPEN_DEVICE – Open a communication channel with virtio
+>>                               TEE device.
+>> VIRTIO_TEE_CMD_CLOSE_DEVICE – Close communication channel with virtio
+>>                                TEE device.
+>> VIRTIO_TEE_CMD_GET_VERSION – Get version of virtio TEE.
+>> VIRTIO_TEE_CMD_OPEN_SESSION – Open a session to communicate with
+>>                                trusted application running in TEE.
+>> VIRTIO_TEE_CMD_CLOSE_SESSION – Close a session to end communication
+>>                                 with trusted application running in TEE.
+>> VIRTIO_TEE_CMD_INVOKE_FUNC – Invoke a command or function in trusted
+>>                               application running in TEE.
+>> VIRTIO_TEE_CMD_CANCEL_REQ – Cancel an ongoing command within TEE.
+>>
+>> We would like to reserve device ID 46 for Virtio-TEE device.
+>>
+>> Signed-off-by: Jeshwanth Kumar <jeshwanthkumar.nk@amd.com>
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
 >
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Tuesday, September 26, 2023 8:16 AM
-> >
-> > On Mon, Sep 25, 2023 at 6:41=E2=80=AFPM Parav Pandit <parav@nvidia.com>=
- wrote:
-> > >
-> > >
-> > >
-> > > > From: Jason Wang <jasowang@redhat.com>
-> > > > Sent: Friday, September 22, 2023 8:38 AM
-> > >
-> > > > > Device context has no overlap.
-> > > >
-> > > > I can give you one example, e.g debugging.
-> > > >
-> > > Almost every feature needs debugging. :) So I am omitting it for time
-> > > being.
-> >
-> > Well, I don't think so. We have a lot of handy tools for that (ethtool =
--d?).
-> Sure add something specific for debug and explicitly mention that it is f=
-or debug like -d.
-> Every feature and functionality needs debug, not specifically device cont=
-ext.
-> So add infra for debug.
-
-Why do you think it's an infra? All you need to do is a simple decoupling.
-
-> Device migration series is not the vehicle to piggy back on.
->
-> > > > 1) define virtqueue state, inflight descriptors in the section of
-> > > > basic facility but not under the admin commands
-> > > It will be part of the device context such a way that so that one can=
- only read
-> > the vq state only instead of full device context.
-> > > This will work.
-> >
-> > I'm not sure what it looks like, but I think they are well decoupled in=
- this series.
-> > E.g driver can choose to just read e.g last_avail_idx and report to eth=
-tool or
-> > watchdog.
-> >
-> Once its done it will be visible how it looks like.
-> The key is it needs to cover BOTH use cases.
->
-> > As I replied in other thread, I see several problems:
-> >
-> > 1) layer violation, PCI specific state were mixed into the basic facili=
-ties
->
-> After agreeing to see merged donctext, now you are hinting that you don=
-=E2=80=99t agree to merge two.
-
-It's not a merging, it's about decoupling. I'm fine if you don't do
-coupling and layer violation.
-
-> I disagree if you are leaning towards that direction.
-> I hope my deduction from your above comment is incorrect.
-
-I agree to seek a way to unify but it doesn't mean everything in your
-current proposal is correct. Basic facility part should be transport
-independent.
-
->
-> There is no violation. PCI specific device context will be captured in PC=
-I specific section.
-
-Is that what you've done in your series now?
-
-> Device type contexts will be captured in those device type sections.
->
-> TLVs will cover many of the device context information.
->
-> > 2) I don't see a good definition on "device context"
-> > 3) TLV works fine for queue but not registers
-> >
-> Please definition of device context in [1].
->
-> [1] https://lists.oasis-open.org/archives/virtio-comment/202309/msg00064.=
-html
->
-> > What needs to be done first is to describe what device context means an=
-d what
-> > it contains. Not the actual data structure since it may vary.
-> >
-> Sure, it is already defined in device migration theory of operation secti=
-on in [2].
-
-It's too vague, for example it's not easy to infer if the following
-belong to device context:
-
-1) dirty pages
-2) virtqueue adresses
-
-etc.
-
-> I will try to take it out and put in device management section, so that d=
-evice migration can refer to it and
-> Some other basic facility also can refer to it (which must need to explai=
-n a use case beyond silly debug point).
-
-It's silly to ship a product without any debugging facilities.
-
-And I've given you other examples like hibernation but you ignore them
-again. And what's more important, you ignores my question, let me ask
-you again here:
-
-1) Try to prove your facility can only work for one specific case
-2) Try to prove your facility can work for more than one cases
-
-Which one is easier and more beneficial to virtio?
-
-The decoupling is just a matter of relocating the text, does it block
-any of your proposals? Why do you choose to refuse such a simple
-change with such a huge advantage?
-
->
-> [2] https://lists.oasis-open.org/archives/virtio-comment/202309/msg00062.=
-html
->
-> > >
-> > > > 3) define transport specific interfaces or admin commands to access
-> > > > them
-> > > >
-> > > As you also envisioned, it is done using admin commands to access it.
-> >
-> > That's fine, but it should allow other ways.
-> >
-> For passthrough admin commands fits the design.
-> Sure, you need to draft it how to do other ways..
-
-So, it looks to me you never examine this series carefully.
-
->  > >
-> > > > Does this work? It seems you refused such steps in the past.
-> > > >
-> > > I didn=E2=80=99t.
-> > > There must be some confusion in many emails we both exchanged, becaus=
-e
-> > already posted v0 has it split such as device context.
-> > >
-> > > For dirty page tracking I couldn=E2=80=99t find a solid use case with=
-out device
-> > migration, so I asked which you already replied above.
-> >
-> > First, you never explain why such coupling gives us any benefit.
-> It is not coupled. Device migration uses this facility. So it is matter o=
-f text organization in the spec.
-> Not the design.
->
-> > Second, I've given you sufficient examples but you tend to ignore them.=
- Why
-> > not go through Qemu codes then you will see the answer.
-> You gave example of debug, and profiling. You didn=E2=80=99t explain the =
-use case of how to actually connect and how to profile etc.
-
-How much evidence do you need me to provide? Do I need to give you the
-manpages of ethtool -d? For profiling, is it too hard to think, for
-example, to give non retire hints to IOTLB via a specific IOPTE if we
-found a page is dirty?
-
-Compare the evidence or proof you've provided, how much you have
-provided so far? Or could you please prove the device context can only
-work for migration?
-
->
-> > > > Actually, I would like to leave 2) as it's very complicated which
-> > > > might not converge easily.
-> > > >
-> > > I will split current "device migration" section to two.
-> > > 1. device management
-> > > 2. device migration
-> > >
-> > > Device management covers device mode, device context and dirty page
-> > tracking.
-> >
-> > I don't see any connection between "management" and "device context".
-> >
-> You have better name than device management?
-> May be device operation.
-> May be it is just better to have the device context just the way it is in=
- [1] under basic facility.
-
-I don't understand this.
-
->
-> > > Device migration refers to device management section.
-> > >
-> > > We can omit the dirty page tracking commands for a moment and first c=
-lose
-> > on the device mode and device context as first step.
-> > > Since it is already part of v0 and it is needed, I will keep it in su=
-bsequent v1 but
-> > moved to device management section.
-> >
-> > Could you please answer what's wrong with the first 4 patches in this s=
-eries?
-> >
-
-I'd leave Ling Shan to comment on this.
-
-> 1. cover letter is missing the problem statement and use case
-> 2. why queue suspend and both device suspend are introduced, only one sho=
-uld be there. The design description is missing.
-> 3. Even though it claims under some random basic facility, cover letter c=
-learly states the main use case is "live migration".
-> 4. Patch 4 is not needed at all. When device is suspended, it is _suspend=
-ed_. It does not do any bifurcation.
-> 5. only suspend bit of patch2 is not enough to cover P2P. One needs suspe=
-nd and freeze both covered in series [1].
-> 6. Finally the whole description of 1 to 4 need to be split in the device=
- operation, so that both passthrough and medication can utilize it using ad=
-min cmd and otherwise.
-> Since Zhu, told that dirty tracking and inflight descriptors will be done=
-, I presume he will propose to do over admin q or command interface.
-> And since all can run over the admin commands, the plumbing done in 1 to =
-4 can be made using admin commands.
->
-> Until now we could not establish creating yet another DMA interface that =
-is better than q interface.
-> So ...
-> To me both the methods will start looking more converged to me over admin=
- command and queues.
-
-This is self-contradictory with what you've said before.
-
-We're in an endless circle now. The main reason is that you keep
-ignoring comments.
-
-Another question you keep ignoring is: what prevents this proposal
-from being used in the passthrough setups? I'm pretty sure if you can
-get the right answer, you will understand the big picture.
-
-Thanks
-
-
-
-
->
-> Passthrough will use them over owner device.
-> Mediation somehow need to do over member device.
-> Mediation will not use any device suspend command because it needs to kee=
-p bisecting everything.
-
+>> ---
+>>   content.tex | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/content.tex b/content.tex
+>> index 0a62dce..644aa4a 100644
+>> --- a/content.tex
+>> +++ b/content.tex
+>> @@ -739,6 +739,8 @@ \chapter{Device Types}\label{sec:Device Types}  \hline
+>>   45         &   SPI master \\
+>>   \hline
+>> +46         &   TEE device \\
+>> +\hline
+>>   \end{tabular}
+>>
+>>   Some of the devices above are unspecified by this document,
+>> --
+>> 2.25.1
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
