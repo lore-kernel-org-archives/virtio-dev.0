@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13947-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13948-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17696E81813
-	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 02:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1FB53E81813
+	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 02:51:21 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 50A4E2B00E
-	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 02:46:02 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 419F92CAEB
+	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 02:51:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3FA6898640A
-	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 02:46:02 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 02F6798639D
+	for <virtio-dev@archiver.kernel.org>; Tue, 26 Sep 2023 02:51:20 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 26632986378; Tue, 26 Sep 2023 02:46:02 +0000 (UTC)
+	id CE642986378; Tue, 26 Sep 2023 02:51:19 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,190 +24,256 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 15AB898639D
-	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Sep 2023 02:46:02 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BCAFE9863A6
+	for <virtio-dev@lists.oasis-open.org>; Tue, 26 Sep 2023 02:51:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 42OEWAAxNfWtPvGi7oCHiA-1
+X-MC-Unique: FOBpUP8JOwqZlfl5x7b5yA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695696357; x=1696301157;
+        d=1e100.net; s=20230601; t=1695696675; x=1696301475;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4ZLjjDnswIFyP/Da7wc3Eq3GMCb4f5uWhcEX9o1MmOQ=;
-        b=vdTIEj2LneOXKZKk0bP5N+zmY3/5Zq2tHcINutdqPB1kUtEMu4YKQ8P4Ke8bHWxffU
-         fYsjzS4SAMUnpxCd9XTT7RRTiqUPTeHOwaDhFBukeO4MUkejG8NesDI+xJRbY3oGfOV4
-         QuT/tGBuaDqw9F8OoblQiirR1Ns+d315z6NVuYlnMN/OwEpdpKmkG8WRX9/CtAkhGpps
-         BZSjFB3Ig2oNRdcrJhEdukyLV4jpURVadH3X/raZBbWvxig2FOvEZ/LdML3gEsu0NCNT
-         ic1uqxi/TvVGahsp3WO7mqV4Rx/A9n7MUvbB395H5EX0qVFdmCQOhCVMyyUXXYX8noLW
-         vSyw==
-X-Gm-Message-State: AOJu0Yx6WvBWRmnfNzZF4dc6P/WIbCHr2TX2ex1Zkkz+Bi6Se7kp8fCI
-	3Cs5zHvTCveZXJ24jZgqmhQQ7mUTNUbDV5gFUx0L3/PcE8bUZ89tkuECMDf5vyBqcAAfr7X/A0p
-	lnYlRL3YeKZq9IDZfBS6mMCcoQqbZ50octhzwZg+zsza/
-X-Received: by 2002:a05:6512:39d2:b0:503:2089:d3b8 with SMTP id k18-20020a05651239d200b005032089d3b8mr8877456lfu.8.1695696357235;
-        Mon, 25 Sep 2023 19:45:57 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHQLOzhpVVOtHn1tN0RYvAEYedDJTkpVnDx3JxE4vJrHiGfSTc0P88D8jZzy1LfpO6Ry0XBMurZjeZq5M/CJG8=
-X-Received: by 2002:a05:6512:39d2:b0:503:2089:d3b8 with SMTP id
- k18-20020a05651239d200b005032089d3b8mr8877442lfu.8.1695696356879; Mon, 25 Sep
- 2023 19:45:56 -0700 (PDT)
+        bh=qnicI/mp2Br9l0f6bo39IqFYUc2gsVv1DLI2kf7BTb4=;
+        b=DOdwc9w8fMRLvmzSIXiY4rseCB+br0wOBpKeCNgbNzlkmbCXO2pUv85JkgeaExPTUB
+         VYrOxgRlEsqGmnSRx4S5nqzn+89efZTbPJugiK38jpRXGRm60C+qhbIBDy1FmZZvwYhV
+         i5qQJQLCDwhgWAGzpC7mvoq1oJ+24Ubn16VXpodBS9xcQ840F9N9DyA+TnHZeeqRHDq3
+         kehEyBdlx+A5t1JAT778Yph6N8R7T9sl9M1UCRtc7B8r4T8dVrZ2loazNSXlFjeUC4iu
+         qo5hJsqRvcklGsGGfzdgiFkWJS5g7kXxo9DUGlkc/x0nsM6N2C3XADqd4Vxpkag9bsH0
+         SfeA==
+X-Gm-Message-State: AOJu0YxmSmlnJGuNIAfx4Oyh/Ad9GHShZd20+Qhsudy0Baq2cmX0LV/S
+	/SiSgYgezrrmnjKO11ja76R0nRBO2iLE5jZGPsY+Incq5yp7eYVmruf/rbfRIjXBp29rk3W1yaG
+	De1nPmXnMzOW2OweAYdjaHMICtEH1fLzAFhydk6XZOquA
+X-Received: by 2002:ac2:5e3a:0:b0:503:446:c7b0 with SMTP id o26-20020ac25e3a000000b005030446c7b0mr6077156lfg.32.1695696675094;
+        Mon, 25 Sep 2023 19:51:15 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFAniTdQCTtK9WVCBdAHRvmAcKbBtEYMrfXxX8Mhfpy5mZWP4rJLchVLAhV+nGto1BdWCbHNvUvN8mrqPY38Ns=
+X-Received: by 2002:ac2:5e3a:0:b0:503:446:c7b0 with SMTP id
+ o26-20020ac25e3a000000b005030446c7b0mr6077144lfg.32.1695696674715; Mon, 25
+ Sep 2023 19:51:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <PH0PR12MB5481C41D4F32DA26D5831471DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com> <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
- <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <f1fe513e-d42d-03a6-348c-5e58aac0a759@intel.com> <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com> <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20230918144312-mutt-send-email-mst@kernel.org> <bb402c34-ad07-063a-f4f5-d8c6b3a642c7@intel.com>
- <20230920054836-mutt-send-email-mst@kernel.org> <CACGkMEsn+9AqgmurN8-GXkcu8UxAr62_woJn3XZN+oUkTQNPUg@mail.gmail.com>
- <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
- <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com> <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20230919114242.2283646-1-Jiqian.Chen@amd.com> <20230919114242.2283646-2-Jiqian.Chen@amd.com>
+ <CACGkMEuEXk2UzXU7sFUk-nHEeE7QoB3kbjnHgktY7KWuK71Xrg@mail.gmail.com>
+ <BL1PR12MB58490A484087B2B2C37B6E43E7F8A@BL1PR12MB5849.namprd12.prod.outlook.com>
+ <CACGkMEtx-i_9dgdONFzEmmWYNRhaoJQZX7a5OmLfDvGoUaajPQ@mail.gmail.com>
+ <BL1PR12MB5849E38DE89D80B8A4CB7128E7FFA@BL1PR12MB5849.namprd12.prod.outlook.com>
+ <CACGkMEv0d3frw9KJcC3qDs0p8ZeWg6dowNEHcAHsgaOTm4CAAQ@mail.gmail.com> <BL1PR12MB5849B427B23D1ED269808463E7C3A@BL1PR12MB5849.namprd12.prod.outlook.com>
+In-Reply-To: <BL1PR12MB5849B427B23D1ED269808463E7C3A@BL1PR12MB5849.namprd12.prod.outlook.com>
 From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 26 Sep 2023 10:45:45 +0800
-Message-ID: <CACGkMEvOxraeVB-5g7dJ-KBN=63kpmDfDdqaiQVyDh8egDjsGw@mail.gmail.com>
-To: Parav Pandit <parav@nvidia.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, "Zhu, Lingshan" <lingshan.zhu@intel.com>, 
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Date: Tue, 26 Sep 2023 10:51:03 +0800
+Message-ID: <CACGkMEtuRwAig_AbMA1YFa9YVw2aBQJDhZ06ZiD_QugthPDROQ@mail.gmail.com>
+To: "Chen, Jiqian" <Jiqian.Chen@amd.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>, "Michael S . Tsirkin" <mst@redhat.com>, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, David Airlie <airlied@redhat.com>, 
+	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>, 
+	=?UTF-8?B?TWFyYy1BbmRyw6kgTHVyZWF1?= <marcandre.lureau@gmail.com>, 
+	Robert Beckett <bob.beckett@collabora.com>, 
+	Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>, Parav Pandit <parav@nvidia.com>, 
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, 
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, 
+	Stefano Stabellini <sstabellini@kernel.org>, =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>, 
+	"Deucher, Alexander" <Alexander.Deucher@amd.com>, "Koenig, Christian" <Christian.Koenig@amd.com>, 
+	"Hildebrand, Stewart" <Stewart.Hildebrand@amd.com>, Xenia Ragiadakou <burzalodowa@gmail.com>, 
+	"Huang, Honglei1" <Honglei1.Huang@amd.com>, "Zhang, Julia" <Julia.Zhang@amd.com>, 
+	"Huang, Ray" <Ray.Huang@amd.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq state
+Subject: Re: [virtio-dev] Re: [VIRTIO PCI PATCH v5 1/1] transport-pci: Add
+ freeze_mode to virtio_pci_common_cfg
 
-On Mon, Sep 25, 2023 at 6:41=E2=80=AFPM Parav Pandit <parav@nvidia.com> wro=
-te:
+On Tue, Sep 26, 2023 at 10:24=E2=80=AFAM Chen, Jiqian <Jiqian.Chen@amd.com>=
+ wrote:
 >
->
->
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Friday, September 22, 2023 8:38 AM
->
-> > > Device context has no overlap.
-> >
-> > I can give you one example, e.g debugging.
-> >
-> Almost every feature needs debugging. :)
-> So I am omitting it for time being.
-
-Well, I don't think so. We have a lot of handy tools for that (ethtool -d?)=
+> On 2023/9/25 10:52, Jason Wang wrote:
+> > On Fri, Sep 22, 2023 at 4:07=E2=80=AFPM Chen, Jiqian <Jiqian.Chen@amd.c=
+om> wrote:
+> >>
+> >> Hi Jason,
+> >>
+> >> On 2023/9/22 11:17, Jason Wang wrote:
+> >>> On Thu, Sep 21, 2023 at 2:28=E2=80=AFPM Chen, Jiqian <Jiqian.Chen@amd=
+.com> wrote:
+> >>>>
+> >>>> Hi Jason,
+> >>>>
+> >>>> On 2023/9/21 12:22, Jason Wang wrote:
+> >>>>> On Tue, Sep 19, 2023 at 7:43=E2=80=AFPM Jiqian Chen <Jiqian.Chen@am=
+d.com> wrote:
+> >>>>>>
+> >>>>>> When guest vm does S3, Qemu will reset and clear some things of vi=
+rtio
+> >>>>>> devices, but guest can't aware that, so that may cause some proble=
+ms.
+> >>>>>> For excample, Qemu calls virtio_reset->virtio_gpu_gl_reset when gu=
+est
+> >>>>>> resume, that function will destroy render resources of virtio-gpu.=
+ As
+> >>>>>> a result, after guest resume, the display can't come back and we o=
+nly
+> >>>>>> saw a black screen. Due to guest can't re-create all the resources=
+, so
+> >>>>>> we need to let Qemu not to destroy them when S3.
+> >>>>>>
+> >>>>>> For above purpose, we need a mechanism that allows guests and QEMU=
+ to
+> >>>>>> negotiate their reset behavior. So this patch add a new parameter
+> >>>>>> named freeze_mode to struct virtio_pci_common_cfg. And when guest
+> >>>>>> suspends, it can write freeze_mode to be FREEZE_S3, and then virti=
+o
+> >>>>>> devices can change their reset behavior on Qemu side according to
+> >>>>>> freeze_mode. What's more, freeze_mode can be used for all virtio
+> >>>>>> devices to affect the behavior of Qemu, not just virtio gpu device=
 .
+> >>>>>
+> >>>>> A simple question, why is this issue specific to pci?
+> >>>> I thought you possibly missed the previous version patches. At the b=
+eginning, I just wanted to add a new feature flag VIRTIO_GPU_F_FREEZE_S3 fo=
+r virtio-gpu since I encountered virtio-gpu issue during guest S3, so that =
+the guest and qemu can negotiate and change the reset behavior during S3. B=
+ut Parav and Mikhail hoped me can improve the feature to a pci level, then =
+other virtio devices can also benefit from it. Although I am not sure if ex=
+panding its influence is appropriate, I have not received any feedback from=
+ others, so I change it to the pci level and made this version.
+> >>>> If you are interested, please see the previous version: https://list=
+s.oasis-open.org/archives/virtio-comment/202307/msg00209.html, thank you.
+> >>>
+> >>> This is not a good answer. Let me ask you differently, why don't you
+> >>> see it in other forms of transport like virtio-gpu-mmio?
+> >> Sorry for not understanding your question before. Did you mean why did=
+ I add freeze_mode for virtio-pci type devices instead of virtio-mmio type =
+devices?
+> >
+> > Yes.
+> >
+> >> If that's the case, it isn't well thought out by me, because there is =
+only virtio-gpu with pci support in my environment, so I, as a matter of co=
+urse, improve it from virtio-gpu-pci to a virtio-pci level instead of virti=
+o-mmio.
+> >> Do you think I need to add freeze_mode for virtio-mmio too?
+> >
+> > Because the function you describe is to preserve the render resources
+> > which have nothing specific to PCI. It's a core virtio function.
+> >
+> > I'd suggest fixing it at the virtio level instead of PCI level.
+> Yes, you are right, I will change to describe it to the virtio level in n=
+ext version.
+>
+> >
+> >> Or improve it to a higher level, like virtio-bus? I am looking forward=
+ to getting your suggestions, thanks.
+> >
+> > As pointed out in other thread, reusing the existing status state
+> > machine is a perfect way for doing this.
+> >
+> > We can tweak the state machine to be able to do both migration and S3.
+> I noticed the other thread you said, it will add a SUSPEND status to into=
+ device_status field, but it seems not enough to meet all scenarios, like w=
+e need to set the unfreeze state of guest,
+
+It's just a resume by clearing the suspend bit?
 
 >
+
+> the S3 state of the guest, the S4 state of the guest etc.
+
+Hibernation is different from suspending, it probably requires
+setting/getting device states. And I don't get how this patch can help
+with hibernation.
+
+> So, one bit is not enough to indicate what status the guest is, since the=
+ freeze mode is a series,
+
+We can tweak the existing status state machine, otherwise you need to
+explain the interaction between the two. For example what happens if
+we freeze after reset etc.
+
+And if you do that, it is actually a single state machine.
+
+Thanks
+
+>I think add a new field to describe it is more reasonable.
 >
-> > >
-> > > Dirty page tracking has no overlap. What do you want to profile and m=
-onitor?
-> > In case if you want to profile, it can be used without migration comman=
-d
-> > anyway?
 > >
-> > It works like a dirty bit of PTE. We all know it has a broader use case=
- than
-> > logging. For example, tracking working set and do optimization on
-> > IOMMU/IOTLB or even device IOTLB.
+> > Thanks
 > >
-> > 1) Try to prove your facility can only work for one specific cases
-> > 2) Try to prove your facility can work for more than one cases
+> >>
+> >>>
+> >>> Thanks
+> >>>
+> >>>>
+> >>>>>
+> >>>>> Thanks
+> >>>>>
+> >>>>>
+> >>>>>>
+> >>>>>> Signed-off-by: Jiqian Chen <Jiqian.Chen@amd.com>
+> >>>>>> ---
+> >>>>>>  transport-pci.tex | 7 +++++++
+> >>>>>>  1 file changed, 7 insertions(+)
+> >>>>>>
+> >>>>>> diff --git a/transport-pci.tex b/transport-pci.tex
+> >>>>>> index a5c6719..2543536 100644
+> >>>>>> --- a/transport-pci.tex
+> >>>>>> +++ b/transport-pci.tex
+> >>>>>> @@ -319,6 +319,7 @@ \subsubsection{Common configuration structure =
+layout}\label{sec:Virtio Transport
+> >>>>>>          le64 queue_desc;                /* read-write */
+> >>>>>>          le64 queue_driver;              /* read-write */
+> >>>>>>          le64 queue_device;              /* read-write */
+> >>>>>> +        le16 freeze_mode;               /* read-write */
+> >>>>>>          le16 queue_notif_config_data;   /* read-only for driver *=
+/
+> >>>>>>          le16 queue_reset;               /* read-write */
+> >>>>>>
+> >>>>>> @@ -393,6 +394,12 @@ \subsubsection{Common configuration structure=
+ layout}\label{sec:Virtio Transport
+> >>>>>>  \item[\field{queue_device}]
+> >>>>>>          The driver writes the physical address of Device Area her=
+e.  See section \ref{sec:Basic Facilities of a Virtio Device / Virtqueues}.
+> >>>>>>
+> >>>>>> +\item[\field{freeze_mode}]
+> >>>>>> +        The driver writes this to set the freeze mode of virtio p=
+ci.
+> >>>>>> +        VIRTIO_PCI_FREEZE_MODE_UNFREEZE - virtio-pci is running;
+> >>>>>> +        VIRTIO_PCI_FREEZE_MODE_FREEZE_S3 - guest vm is doing S3, =
+and virtio-pci enters S3 suspension;
+> >>>>>> +        Other values are reserved for future use, like S4, etc.
+> >>>>>> +
+> >>>>>>  \item[\field{queue_notif_config_data}]
+> >>>>>>          This field exists only if VIRTIO_F_NOTIF_CONFIG_DATA has =
+been negotiated.
+> >>>>>>          The driver will use this value when driver sends availabl=
+e buffer
+> >>>>>> --
+> >>>>>> 2.34.1
+> >>>>>>
+> >>>>>
+> >>>>>
+> >>>>> -------------------------------------------------------------------=
+--
+> >>>>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> >>>>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.o=
+rg
+> >>>>>
+> >>>>
+> >>>> --
+> >>>> Best regards,
+> >>>> Jiqian Chen.
+> >>>
+> >>
+> >> --
+> >> Best regards,
+> >> Jiqian Chen.
 > >
-> > Which one is easier and more beneficial to virtio?
 > >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 > >
-> > > If you describe, may be we I can split "device migration" chapter to
-> > > two pieces, Device management and device migration.
-> > >
-> > > Device migration will use these basic facility.
-> > > Would that help you?
-> >
-> > Definitely, but it needs to be done by not making it under the subsecti=
-on of
-> > admin commands, that's it.
-> >
-> > Let me repeat once again here for the possible steps to collaboration:
-> >
-> > 1) define virtqueue state, inflight descriptors in the section of basic=
- facility but
-> > not under the admin commands
-> It will be part of the device context such a way that so that one can onl=
-y read the vq state only instead of full device context.
-> This will work.
-
-I'm not sure what it looks like, but I think they are well decoupled
-in this series. E.g driver can choose to just read e.g last_avail_idx
-and report to ethtool or watchdog.
-
 >
-> > 2) define the dirty page tracking, device context/states in the section=
- of basic
-> > facility but not under the admin commands
-> Great.
-> Device context is already defined in the basic facility outside of the ad=
-min commands in [1].
-> Current text is around device migration and spec evolves it can adopt mor=
-e generic text without device migration.
->
-> [1] https://lists.oasis-open.org/archives/virtio-comment/202309/msg00064.=
-html
-
-As I replied in other thread, I see several problems:
-
-1) layer violation, PCI specific state were mixed into the basic facilities
-2) I don't see a good definition on "device context"
-3) TLV works fine for queue but not registers
-
-What needs to be done first is to describe what device context means
-and what it contains. Not the actual data structure since it may vary.
-
->
-> > 3) define transport specific interfaces or admin commands to access the=
-m
-> >
-> As you also envisioned, it is done using admin commands to access it.
-
-That's fine, but it should allow other ways.
-
->
-> > Does this work? It seems you refused such steps in the past.
-> >
-> I didn=E2=80=99t.
-> There must be some confusion in many emails we both exchanged, because al=
-ready posted v0 has it split such as device context.
->
-> For dirty page tracking I couldn=E2=80=99t find a solid use case without =
-device migration, so I asked which you already replied above.
-
-First, you never explain why such coupling gives us any benefit.
-Second, I've given you sufficient examples but you tend to ignore
-them. Why not go through Qemu codes then you will see the answer.
-
->
-> > Actually, I would like to leave 2) as it's very complicated which might=
- not
-> > converge easily.
-> >
-> I will split current "device migration" section to two.
-> 1. device management
-> 2. device migration
->
-> Device management covers device mode, device context and dirty page track=
-ing.
-
-I don't see any connection between "management" and "device context".
-
-> Device migration refers to device management section.
->
-> We can omit the dirty page tracking commands for a moment and first close=
- on the device mode and device context as first step.
-> Since it is already part of v0 and it is needed, I will keep it in subseq=
-uent v1 but moved to device management section.
-
-Could you please answer what's wrong with the first 4 patches in this serie=
-s?
-
-Thakns
-
->
-> Michael,
-> Are you ok with this approach to step forward?
+> --
+> Best regards,
+> Jiqian Chen.
 
 
 ---------------------------------------------------------------------
