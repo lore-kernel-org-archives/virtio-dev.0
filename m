@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13978-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13979-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E815AE82CA5
-	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 15:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83070E7109E
+	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 21:44:02 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 363CA70FEE
-	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 15:55:29 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id BB2F5613CF
+	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 21:44:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 079859866B1
-	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 15:55:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8FDA9986511
+	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 21:44:01 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id DC9FB9864C6; Wed, 27 Sep 2023 15:55:28 +0000 (UTC)
+	id 72AA7983FE2; Wed, 27 Sep 2023 21:44:01 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,79 +24,141 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id CC6199864C1
-	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Sep 2023 15:55:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5B6669862F5
+	for <virtio-dev@lists.oasis-open.org>; Wed, 27 Sep 2023 21:44:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: Bra5UO7VNWuzNUL_bCdQQA-1
+X-MC-Unique: wj1CCfiRMX29LOOm5sNIbw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695830125; x=1696434925;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1695851036; x=1696455836;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MXze5GTv1c99MGeDMPMpMArTuehJWNWg5PNwz6HOSaE=;
-        b=I8QdAu53Y5SmmB8TGaS0XencRUL0V4Za0slRDavTfZ3KLoXY8XXveYQ4+Har7zlk/W
-         Z6B4GiJX/6Qbp4jHbbu7X08F/k8O+9Ne/5SGMex4Z3hRvuXrsgV0gUEwtAI9mFxIB+n2
-         FK6dWf0Q1LhVJIQalSBV/4yyC36+RuQ+QPl3tFR3nlpTqe3VyrurfsRxr4D4W41OACvN
-         Ule+Dslwo/4naW8UMQFbyDOZFqMkpNgP5YtGuKluUV6mBpw4B8zdrn/eTm1vKjO/s48v
-         dHiYoVA8m7EKlCDrti+QapJcMENT/8MJ/TWMmD6KupI4mweTxIrubpY9DjhRRxSQ5GE+
-         ODoQ==
-X-Gm-Message-State: AOJu0Yz/xVX6XwYmmkc9uRLl14TKeF7LuZA2XRT6UU5zYmBysZNz3BTP
-	uBFJnVvpKSzDdw1qdxGvG70OqgOO9wkWSQOVv2k4UrRrpCqlc1CFNTAdrdd32p+5ZYXBl/DfCp6
-	m3VkCNhWs/UOdRj2foNm7SjbdMzSkIcnloHoB
-X-Received: by 2002:a5d:568e:0:b0:323:2038:944 with SMTP id f14-20020a5d568e000000b0032320380944mr2132828wrv.58.1695830124977;
-        Wed, 27 Sep 2023 08:55:24 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFFhJ2DEyBP/JopeGoVmGB9/7tOFfubT2PSzqeT/AXh9Ye5qs105I9+ZqB533PtZax6SxRzTg==
-X-Received: by 2002:a5d:568e:0:b0:323:2038:944 with SMTP id f14-20020a5d568e000000b0032320380944mr2132815wrv.58.1695830124608;
-        Wed, 27 Sep 2023 08:55:24 -0700 (PDT)
-Date: Wed, 27 Sep 2023 11:55:21 -0400
+        bh=SW+uFED85GiHwNzDD3A2v8vk0SEOM3fROn/d6oEzLC4=;
+        b=Xy4kKR/MggHXDyLVRJt7qCuHIVaXqD1zgEykHNo9h0b+TMIES3tE68M9Unaf2w/WfK
+         e9PcAkLs005ysV0z5M3afZ4qO4DJufqGb4/TBy5OwZVSPwQYCpTT/5ykRK5HZSCXp+Bg
+         RgsaXQprkLkiloIC9BmvyvWYuSMcofgqp7KUBtZn9Y6RKGhpZIqlIn/QqH60O/BtYHDQ
+         eQzRbHOmsSC1nONpQtExiEIF3FazHuTd7g1SEO3qJzBt9dxd86CA9SvooAIz4kJVlkbC
+         8PEms9nai6B5H6xrHjmw4UOcOs5aJbVjr9d/clr0X5iTc+lqlRzJuwpXhOzLDOPiC739
+         f2tQ==
+X-Gm-Message-State: AOJu0YzXZHlYW+6PirvGahqoxp5yj7peja3cONUJdCPRktxLEwlc6uow
+	ykl3unbL6+xz0qkQqfORrmVzH41arA1ooKo9NINdvJiXdRRxjeiY6z4qHDlYoJX5FArkK1gu1vn
+	kHbZgTeOiiYDphttqoxl6zeEJexZu
+X-Received: by 2002:a05:600c:229a:b0:405:358c:ba74 with SMTP id 26-20020a05600c229a00b00405358cba74mr5893541wmf.0.1695851036670;
+        Wed, 27 Sep 2023 14:43:56 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHCQYj2ManDW9LGEjIvbjygXYnmf4gMHt8x9K9MyKE3lZUMoApHUa0j/l1JdZ3aFKT2a/PZfg==
+X-Received: by 2002:a05:600c:229a:b0:405:358c:ba74 with SMTP id 26-20020a05600c229a00b00405358cba74mr5893535wmf.0.1695851036326;
+        Wed, 27 Sep 2023 14:43:56 -0700 (PDT)
+Date: Wed, 27 Sep 2023 17:43:52 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Cc: virtio@lists.oasis-open.org
-Message-ID: <f58da8a0fd3a40b24c9643499a2592d3ad38b73c.1695830118.git.mst@redhat.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: Jason Wang <jasowang@redhat.com>,
+	"Zhu, Lingshan" <lingshan.zhu@intel.com>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Message-ID: <20230927174152-mutt-send-email-mst@kernel.org>
+References: <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230918144312-mutt-send-email-mst@kernel.org>
+ <bb402c34-ad07-063a-f4f5-d8c6b3a642c7@intel.com>
+ <20230920054836-mutt-send-email-mst@kernel.org>
+ <CACGkMEsn+9AqgmurN8-GXkcu8UxAr62_woJn3XZN+oUkTQNPUg@mail.gmail.com>
+ <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
+ <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com>
+ <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+In-Reply-To: <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Subject: [virtio-dev] [PATCH] html: add missing enumitem package
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
+ vq state
 
-makediffhtml.sh currently fails with:
+On Mon, Sep 25, 2023 at 10:41:12AM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Friday, September 22, 2023 8:38 AM
+> 
+> > > Device context has no overlap.
+> > 
+> > I can give you one example, e.g debugging.
+> >
+> Almost every feature needs debugging. :)
+> So I am omitting it for time being.
+> 
+>  
+> > >
+> > > Dirty page tracking has no overlap. What do you want to profile and monitor?
+> > In case if you want to profile, it can be used without migration command
+> > anyway?
+> > 
+> > It works like a dirty bit of PTE. We all know it has a broader use case than
+> > logging. For example, tracking working set and do optimization on
+> > IOMMU/IOTLB or even device IOTLB.
+> > 
+> > 1) Try to prove your facility can only work for one specific cases
+> > 2) Try to prove your facility can work for more than one cases
+> > 
+> > Which one is easier and more beneficial to virtio?
+> > 
+> > 
+> > > If you describe, may be we I can split "device migration" chapter to
+> > > two pieces, Device management and device migration.
+> > >
+> > > Device migration will use these basic facility.
+> > > Would that help you?
+> > 
+> > Definitely, but it needs to be done by not making it under the subsection of
+> > admin commands, that's it.
+> > 
+> > Let me repeat once again here for the possible steps to collaboration:
+> > 
+> > 1) define virtqueue state, inflight descriptors in the section of basic facility but
+> > not under the admin commands
+> It will be part of the device context such a way that so that one can only read the vq state only instead of full device context.
+> This will work.
+> 
+> > 2) define the dirty page tracking, device context/states in the section of basic
+> > facility but not under the admin commands
+> Great.
+> Device context is already defined in the basic facility outside of the admin commands in [1].
+> Current text is around device migration and spec evolves it can adopt more generic text without device migration.
+> 
+> [1] https://lists.oasis-open.org/archives/virtio-comment/202309/msg00064.html
+> 
+> > 3) define transport specific interfaces or admin commands to access them
+> >
+> As you also envisioned, it is done using admin commands to access it.
+> 
+> > Does this work? It seems you refused such steps in the past.
+> > 
+> I didn’t.
+> There must be some confusion in many emails we both exchanged, because already posted v0 has it split such as device context.
+> 
+> For dirty page tracking I couldn’t find a solid use case without device migration, so I asked which you already replied above.
+> 
+> > Actually, I would like to leave 2) as it's very complicated which might not
+> > converge easily.
+> >
+> I will split current "device migration" section to two.
+> 1. device management
+> 2. device migration
+> 
+> Device management covers device mode, device context and dirty page tracking.
+> Device migration refers to device management section.
+> 
+> We can omit the dirty page tracking commands for a moment and first close on the device mode and device context as first step.
+> Since it is already part of v0 and it is needed, I will keep it in subsequent v1 but moved to device management section.
+> 
+> Michael,
+> Are you ok with this approach to step forward?
 
-! Missing number, treated as zero.
-<to be read again>
-                   \c@*
-l.25850 \begin{enumerate}[label=\alph*
-                                      .]
-?
-! Emergency stop.
-<to be read again>
-                   \c@*
-l.25850 \begin{enumerate}[label=\alph*
-                                      .]
+I actually like it that your current series is more or less complete.
+I would rather you did not drop parts of functionality, for me at least
+it's hard to see how things will work otherwise.
 
-Some web searches turned up suggestions to use enumitem and in fact,
-virtio.tex already does this - but virtio-html.tex doesn't.
-
-Adding \usepackage{enumitem} in virtio-html.tex too fixes the issue.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- virtio-html.tex | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/virtio-html.tex b/virtio-html.tex
-index c822a99..48c633d 100644
---- a/virtio-html.tex
-+++ b/virtio-html.tex
-@@ -31,6 +31,7 @@
- \usepackage{tabularx}
- \usepackage{underscore}
- \usepackage{xstring}
-+\usepackage{enumitem}
- \usepackage{chngcntr}
- \counterwithout{footnote}{chapter}
- 
 -- 
 MST
 
