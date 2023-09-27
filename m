@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13974-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13975-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1F453E810C3
-	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 10:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2DE8E810C2
+	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 10:43:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 578357A093
-	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 10:39:51 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 55010C6238
+	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 10:43:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4640A9866C4
-	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 10:39:51 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2C7409864D3
+	for <virtio-dev@archiver.kernel.org>; Wed, 27 Sep 2023 10:43:37 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 34569986420; Wed, 27 Sep 2023 10:39:51 +0000 (UTC)
+	id 0D96C986420; Wed, 27 Sep 2023 10:43:37 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,142 +24,207 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 200D4986413;
-	Wed, 27 Sep 2023 10:39:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EEA09986413;
+	Wed, 27 Sep 2023 10:43:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UD4NrX6drF6V2R+FMbhUqIKyO/JvafLOcpw6nyhoT0Bk/diMMmNdtEYL6Vohq0MYDfsyKJbHAeqgXhSQBhkLnjQ+ptgBIa86OHUhC3ZnaPt/tdzjGVGnIiqZbrUOOeH1i89wE1HaiVkOW/QtbZsVpw1pzHGhQys16WiA8F3ueSoUck/L7QrWWDv6gtJIWpmkQP8jqq9x6EQ9eIpkMXz4reqLRsODEq1nGAoZpk4z+Ag3SpP3qsyKZsOQAdH1QSJOOpSYzpNjyl0DSU+c28FWsCnP6ux+vliMdtjcRbNX6Ob+QDgM9kg74bgiZQrXszM+dXg4UymNY9WxkR+ug3G7yQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/rryV/T7OpBis2YfjuJKEGY+QzKdyDEO2DFzcHPSHW4=;
- b=jtGpT6JfsSA5x6Ypjf2FuXlT7mbnENXWN1BCvu3TE84OC1rZpjRI9+TwPTAjY4mhKFu+/Sv8FmzpdXf6jkC6OuZn0mVrR1w7SvRZdJpcvuy75YLxp+XOjgqTb3VHSuDu9UYiErldZXXv/2zNPk7NbaKjkXoY5dWD7zp4BojGB/26ccMQPbv6IJLmhsghjKExcLrEIxUxxTEtWl6L4b/EFIr7QK6D/Z8Pva3NPiLBo/wJWgwhZdQoDXdMO1RVN1NpVVnxVv+dZFNrOwsZOQYtErLNxxD9CPeoMh1lklPzBeyknQy6/QOWZUuFDB8mVuV0Bs36cSxzo1IKvZnb8kMUEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Zhu, Lingshan" <lingshan.zhu@intel.com>, "Michael S. Tsirkin"
-	<mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>
-CC: Jason Wang <jasowang@redhat.com>, "eperezma@redhat.com"
-	<eperezma@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Thread-Topic: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
- vq state
-Thread-Index:
- AQHZ540fvvI9R/h+mUufqKbomRy5frAegLUwgAFrbQCAABUsgIAAD5cAgAAA+ACAABKeIIAABNaAgAAAXmCAAC3dgIAAl98QgAADDoCAAk+KgIAAS2wAgAEX5ACAAAnDsIAABJcAgAAA3ECAAYB3gIAFKIMAgAEae4CAAAfOcIAAKAeAgAADn6CAADxKAIAAF0QAgAFot4CAACROoA==
-Date: Wed, 27 Sep 2023 10:39:42 +0000
-Message-ID:
- <PH0PR12MB54816B064AD08754C7D86AD8DCC2A@PH0PR12MB5481.namprd12.prod.outlook.com>
-References:
- <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
- <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com>
- <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvOxraeVB-5g7dJ-KBN=63kpmDfDdqaiQVyDh8egDjsGw@mail.gmail.com>
- <PH0PR12MB5481C11F6D68A892A091E2AFDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <e9c482d5-1441-fec5-b55b-f1ac6e81f85b@intel.com>
- <PH0PR12MB5481C57B255B0D5EA6FB109DDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <ddbd47c8-6985-2d08-bf98-0e7516f0c3c4@intel.com>
- <20230926064201-mutt-send-email-mst@kernel.org>
- <305d9907-9668-d362-1ff2-49a5e9f90e42@intel.com>
-In-Reply-To: <305d9907-9668-d362-1ff2-49a5e9f90e42@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BL3PR12MB6569:EE_
-x-ms-office365-filtering-correlation-id: be064b23-40f3-4d11-28e6-08dbbf460f42
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- V8HfKirDxjmVClmCRDfhoxHJFDfQ4jj+XTjPtGGl1TGOlKxMvwiOPZrg2ztuZFiLUeHqFCZAzl+UdUlzEEVFDx8c4ltPeFVxl0EB7OaCDe70iYRF+WzSuZF5+j0GEuPAOlIFekm3edwhoNfwE85h7u9/ZBhTJrVudpVIIzezCm84oHndR2KY048QnCwa1OafKDqLywce8jX5HxbxdjToJLbF5qeVkTTzLRQBBaFb+AQWLiwPisJ6QzAseNdnseohG5R8Be3JyEC5gyqBKTLFW7EJDhhwCN2LGU5wneylKiRjWM8HE9AL/u9ErABAsMcEy62tkBFzjasoTdXlRSDUFURvP9Rle5Ol5nIlgwPoEUN5IZ7Ov18A77zu+NwlUCOdO8RCfQP3kbxZSvm4cqRMVxITMN1q5mcza0CbmHFjDQJs0XqSJM7RO7g9ISGC0Kn4zo1/SjiEwib8dfnAfGSMIanehR7fv6ul8SKDwtjFO6/3/fn2AU9FpFIdkuymgcKiFmm6BGi+PRVQuf4Z6w/hGAXAUUAGbTug3FoaQF3F3JOjZEhd4d3uYN1fnAbDWlN2kAYKmGs5Gj1mI2t/wxtpgXVP9z5Rv91EslEryC37P83B3PGxjnwyoTU9IYg3pLHL
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(396003)(376002)(366004)(136003)(230922051799003)(1800799009)(451199024)(186009)(110136005)(38070700005)(71200400001)(38100700002)(86362001)(66446008)(41300700001)(66946007)(9686003)(316002)(54906003)(6506007)(76116006)(478600001)(66476007)(64756008)(7696005)(122000001)(66556008)(33656002)(8936002)(8676002)(4326008)(26005)(52536014)(5660300002)(15650500001)(55016003)(2906002)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?T214bEcwUlhMSGVjaCtlSldUNDlJU2w5MllvN3ZhcnNtUlJaS3JZcmNQY2tj?=
- =?utf-8?B?V1QwbUYrRGF6d3piaG1OVGY4NXVpaWpnc0VPS1NCWGcyN3hNa0MvU01hT1hl?=
- =?utf-8?B?dGpLOGk2cys2VW93Qy9iTUZtblpiVWJkZ1FlQXB2QUJERGZhWDhXWUVkNVNq?=
- =?utf-8?B?QnhvNHl6elRoR1VBK1hZTGtJc2QrUTVpUG9TeTM1WlkzakZqQ3dkNlVyOWNL?=
- =?utf-8?B?Vlk2Z1d5a2ZhcUgyWStWdVFJMUlRZTlWcEEzcHZuZHIzcTVUUTBVNjJJbFNN?=
- =?utf-8?B?OEQwUnNPR0Y5WWdGYkF2ZDhsV3l4QWZDWmh5YlgvNXpHd3dTdXk4K1ZIc1VR?=
- =?utf-8?B?QW9MSEQxOFRZOXBoV05TdlNEenNZU3VETWkwYzkvMFl4dEhFNG1LeDN4U3dk?=
- =?utf-8?B?LytabmxiR2I0aytsakNGV0pBN1RIYytjS1JqNUJ4NFZlTjI3TU5HWEpaaXpC?=
- =?utf-8?B?MHNKWnE3RTN5T29BRGdxVS90Zmh1dEYvUHZqVzF2ZzNlNGFnY3ZnZ05nVGpN?=
- =?utf-8?B?c0pTUG1NQTN5MzJoR3pGL25KQUhJTGJRK1NLbXZRL3dUR2cvaXFMUjd5dnJJ?=
- =?utf-8?B?MWJ1ZlhkM1QwUnNxNnpOWXdLVlRxRWFEN1BLZnlPUUo1SXlNWU1SUmZ1eTFm?=
- =?utf-8?B?emgwK0JDOXp4SDhhN0Q1UDFjRFgvN1ZLVlFteFpsQnljWTF5ZWhDZ3RYVndU?=
- =?utf-8?B?MHMxblVsV1lQTS8wbXIzNVo1aVAraFg5K2NJamllN3hlcFNDV013d3J2dnh6?=
- =?utf-8?B?bklYZk54WHBRL3crYjZjWTVyRER0aVQvSWtud3V5dzQ3alR3QUluNnlPYzZv?=
- =?utf-8?B?alpkdFU0TWFIYjRVWm5McEJ3Y0dpS1RnQ0lnT1F1L3FBc2NOS2hSbTlKVzZG?=
- =?utf-8?B?bkFINjVZVzRqa2RMalVEdDdWaWVjOEZYQlhnTzBiZVJ5MWxOazNaL2Fia3ZE?=
- =?utf-8?B?cUI1LzMxd1NNRkF3QmFlN3F5Tk9FaENEM3Fxam4xeVJNa3hGQ2JjVEtCMUps?=
- =?utf-8?B?YS9BWEpETmJ2Zi9xYkY5WGE0OWIrRkNkRkQ4SklkNXNCRDNXYk9TeHNYWHBz?=
- =?utf-8?B?SzE5VFBBNXN1bEhjM0tmTVoya2VMVkVZRG5HbHF2YU45dXpOUVlUM3o3WUQx?=
- =?utf-8?B?OG14dnY4NmRMNkdBV09pMk0wZkpyOFZ1T0UvTllhWit1SFMxeEFqQ0lIMktR?=
- =?utf-8?B?TDFrWGx3TGxETVFEVzRYR0hHdHJ1dHREaGsvU1Nab0VHek9vMGpEWUhlWG9o?=
- =?utf-8?B?YW0wZ3krczVISVJkSFQ0UXF3K2JrNVpFdlZyVzdIZmNlb1RjUkJ1ZE10aTBi?=
- =?utf-8?B?ZHMyMzR2UFJqM0lBVWhkY2JtT0U1Z3lsaWtIS2d0U2VuLys1eHIrdWxySG8w?=
- =?utf-8?B?WVVXVlhXOThpNm02K2UrMGdKVzVsTHJ4b2lZRHdTNzliVFpXZTl0QkRudWhY?=
- =?utf-8?B?TnRBamU1TXQ3eklIell2REt3R0U5cGpMV1hrc2hFWTVpTmNNK3RuM01JUU1M?=
- =?utf-8?B?eEtaTmJodUtRVG5jUFpUTTZucG0zbVYvcld6YlIwekYzcHJOZDFhQi9BdlpR?=
- =?utf-8?B?a01Fd1NEQjVNckI4c3A0bkZqdzFKa0pLTC9hN2d3Nkx0Z3pRQ2tZMW81TTJs?=
- =?utf-8?B?V3pTMy8yM1Mxam05UGJYV1RkcjFGa1BkYm1WQUVLVXFwOUVrMTQzMkdhSzlx?=
- =?utf-8?B?SmNxaUs0YktqMlpyaVA1dXhselFOVTBPWkF6YklmWWhIdi83bmZrSlhHSVNY?=
- =?utf-8?B?UlNOeUNWeUxXdk5Sd3ZJTVgzNWJWYlljTzcrQk85SmVoRjRqVnVoRHYwL3ha?=
- =?utf-8?B?dmdNWlJUR1ZKWEYySXcya3hSZmU5VHdGand4V2dMK2VQYlk4OGlqKzZtUzFF?=
- =?utf-8?B?Rjd5dWIwa2dmeWpBbnVJemVnQzRjUEdoeWgwMkw2ZTlldTZvNmRoeW9uWlI5?=
- =?utf-8?B?VVBUQ29vRmFUM1pHblhkZ0UyVGpNNVFCNkFudjJ3cjJVbjJkMWNPMmQ5ODdW?=
- =?utf-8?B?eEIrK3ZwQmt0ZmFmSTlkZm9ITDlNbmVCT2Y1QTlpR0pNeStoVlQ2SUxZZnBM?=
- =?utf-8?B?aHFvRUZrRURnTS9mT2s5bFBnSzROcncwcnJwcFNQTjV4L0JURy8vUVhHLzMr?=
- =?utf-8?Q?/WLY=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+X-IronPort-AV: E=Sophos;i="6.03,179,1694736000"; 
+   d="scan'208";a="360942958"
+Message-ID: <19967fde-8893-4fe8-9f9a-7ce49bf38772@amazon.es>
+Date: Wed, 27 Sep 2023 12:43:20 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be064b23-40f3-4d11-28e6-08dbbf460f42
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Sep 2023 10:39:42.7389
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8SqmPhX6qXullPoXUs3paq97v3MqKZ/5xM+R8X35UAXV2HjZBApdUldRkzphzOeqitTaDE7Xo4WhHg9HydXanQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6569
-Subject: RE: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
- state
+User-Agent: Mozilla Thunderbird
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: <virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
+	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
+	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>
+References: <e75d9667-2ea0-44d0-a26f-fa3d5fe05651@amazon.es>
+ <20230918091506-mutt-send-email-mst@kernel.org>
+ <a22ba2cb-9b03-481a-b66e-0b78fbfb21f0@amazon.es>
+ <20230918100355-mutt-send-email-mst@kernel.org>
+ <4ab1b10e-4524-4b6c-a3df-863360fd225d@amazon.es>
+ <c2e7076b-b07e-43cd-a912-9314d742a678@amazon.es>
+ <20230919055811-mutt-send-email-mst@kernel.org>
+ <4c6d6710-43c8-402b-9ae6-d2f4cafbe9a7@amazon.es>
+ <20230922110329-mutt-send-email-mst@kernel.org>
+ <c0c5b159-997f-4ddf-ab3e-1c749ad93e10@amazon.es>
+ <20230922115920-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+From: Babis Chalios <bchalios@amazon.es>
+Autocrypt: addr=bchalios@amazon.es; keydata=
+ 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
+In-Reply-To: <20230922115920-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.1.212.5]
+X-ClientProxiedBy: EX19D044UWA004.ant.amazon.com (10.13.139.7) To
+ EX19D037EUB003.ant.amazon.com (10.252.61.119)
+Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
 
-DQoNCj4gRnJvbTogWmh1LCBMaW5nc2hhbiA8bGluZ3NoYW4uemh1QGludGVsLmNvbT4NCj4gU2Vu
-dDogV2VkbmVzZGF5LCBTZXB0ZW1iZXIgMjcsIDIwMjMgMTo1MCBQTQ0KDQo+IEkgc2VlIGhpcyBw
-cm9wb3NhbCBjYW46DQo+IDEpIG1lZXQgc29tZSBjdXN0b21lcnMgcmVxdWlyZW1lbnRzIHdpdGhv
-dXQgbmVzdGVkIGFuZCBiYXJlLW1ldGFsDQo+IDIpIGFsaWduIHdpdGggTnZpZGlhIHByb2R1Y3Rp
-b24NClNsaWdodGx5IGluYWNjdXJhdGUuDQpUaGUgd29yayBwcm9kdWNlZCBpcyBmb3IgdGhlIHZp
-cnRpbyBzcGVjIHVwZGF0ZSBmb3IgdGhlIHVzZXJzLg0KDQpJIGhhdmUgbWlzc2VkIGFkZGluZyBv
-dGhlciBjb250cmlidXRvcnMgU2lnbi1vZmYgd2hvIGFsc28gc2hhcmUgc2ltaWxhciB1c2UgY2Fz
-ZXMsIHdoaWNoIEkgd2lsbCBhZGQgaW4gdjEuDQoNCj4gMykgZWFzaWVyIHRvIGVtdWxhdGUgYnkg
-b25ib2FyZCBTT0MNCj4gDQo+IFRoZSBnZW5lcmFsIHB1cnBvc2Ugb2YgaGlzIHByb3Bvc2FsIGFu
-ZCBtaW5lIGFyZSBhbGlnbmVkOiBtaWdyYXRlIHZpcnRpbwkNCj4gZGV2aWNlcy4NCj4gDQpHcmVh
-dC4NCg0KPiBKYXNvbiBoYXMgZXZlciBwcm9wb3NlZCB0byBjb2xsYWJvcmF0ZSwgcGxlYXNlIGFs
-bG93IG1lIHF1b3RlIGhpcyBwcm9wb3NhbDoNCj4gDQo+ICINCj4gTGV0IG1lIHJlcGVhdCBvbmNl
-IGFnYWluIGhlcmUgZm9yIHRoZSBwb3NzaWJsZSBzdGVwcyB0byBjb2xsYWJvcmF0aW9uOg0KPiAN
-Cj4gMSkgZGVmaW5lIHZpcnRxdWV1ZSBzdGF0ZSwgaW5mbGlnaHQgZGVzY3JpcHRvcnMgaW4gdGhl
-IHNlY3Rpb24gb2YNCj4gYmFzaWMgZmFjaWxpdHkgYnV0IG5vdCB1bmRlciB0aGUgYWRtaW4gY29t
-bWFuZHMNCj4gMikgZGVmaW5lIHRoZSBkaXJ0eSBwYWdlIHRyYWNraW5nLCBkZXZpY2UgY29udGV4
-dC9zdGF0ZXMgaW4gdGhlDQo+IHNlY3Rpb24gb2YgYmFzaWMgZmFjaWxpdHkgYnV0IG5vdCB1bmRl
-ciB0aGUgYWRtaW4gY29tbWFuZHMNCj4gMykgZGVmaW5lIHRyYW5zcG9ydCBzcGVjaWZpYyBpbnRl
-cmZhY2VzIG9yIGFkbWluIGNvbW1hbmRzIHRvIGFjY2VzcyB0aGVtDQo+ICINCj4gDQo+IEkgdG90
-YWxseSBhZ3JlZSB3aXRoIGhpcyBwcm9wb3NhbC4NCg0KV2Ugc3RhcnRlZCBkaXNjdXNzaW5nIHNv
-bWUgb2YgdGhlIGl0Lg0KSWYgSSBkcmF3IHBhcmFsbGVscywgb25lIHNob3VsZCBub3Qgc2F5ICJk
-ZXRhY2ggZGVzY3JpcHRvcnMgZnJvbSB2aXJ0cXVldWUiIGZvciB0aGUgaW5mcmFzdHJ1Y3R1cmUg
-dGhhdCBleGlzdHMgaW4gdGhlIGJhc2ljIGZhY2lsaXRpZXMuDQpJZiBzbywgb25lIHNob3VsZCBl
-eHBsYWluIHRoZSB0ZWNobmljYWwgZGVzaWduIHJlYXNvbiBhbmQgaXQgd291bGQgbWFrZSBzZW5z
-ZS4NCg0KU28gbGV0J3MgZGlzY3VzcyBpdC4NCkkgbGlrZSB0byBiZXR0ZXIgdW5kZXJzdGFuZCB0
-aGUgX3JlYWxfIHRlY2huaWNhbCByZWFzb24gZm9yIGRldGFjaGluZyBpdC4NCg==
+On 22/9/23 18:01, Michael S. Tsirkin wrote:
+> On Fri, Sep 22, 2023 at 05:40:50PM +0200, Babis Chalios wrote:
+>>
+>> On 22/9/23 17:06, Michael S. Tsirkin wrote:
+>>> On Tue, Sep 19, 2023 at 12:11:37PM +0200, Babis Chalios wrote:
+>>>> On 19/9/23 12:01, Michael S. Tsirkin wrote:
+>>>>> On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
+>>>>>> Resending to fix e-mail formatting issues (sorry for the spam)
+>>>>>>
+>>>>>> On 18/9/23 18:30, Babis Chalios wrote:
+>>>>>>>>>>> Yes, that's what the driver does now in the RFC patch.
+>>>>>>>>>>> However, this just
+>>>>>>>>>>> decreases
+>>>>>>>>>>> the race window, it doesn't eliminate it. If a third
+>>>>>>>>>>> leak event happens it
+>>>>>>>>>>> might not
+>>>>>>>>>>> find any buffers to use:
+>>>>>>>>>>>
+>>>>>>>>>>> 1. available buffers to queue 1-X
+>>>>>>>>>>> 2. available buffers to queue X
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> 3. poll queue X
+>>>>>>>>>>> 4. used buffers in queue X       <- leak event 1 will
+>>>>>>>>>>> use buffers in X
+>>>>>>>>>>> 5. avail buffers in queue X
+>>>>>>>>>>> 6. poll queue 1-X                <- leak event 2 will
+>>>>>>>>>>> use buffers in 1-X
+>>>>>>>>>>> 7. used buffers in queue 1-X
+>>>>>>>>>>> 8. avail buffers in queue 1-X
+>>>>>>>>>>>                                       <- leak event 3 (it
+>>>>>>>>>>> needs buffers in X, race with step 5)
+>>>>>>>>>>> 9. goto 3
+>>>>>>>>>> I don't get it. we added buffers in step 5.
+>>>>>>>>> What if the leak event 3 arrives before step 5 had time to
+>>>>>>>>> actually add the
+>>>>>>>>> buffers in X and make
+>>>>>>>>> them visible to the device?
+>>>>>>>> Then it will see a single event in 1-X instead of two events.  A leak is
+>>>>>>>> a leak though, I don't see does it matter how many triggered.
+>>>>>>>>
+>>>>>> So the scenario I have in mind is the following:
+>>>>>>
+>>>>>> (Epoch here is terminology that I used in the Linux RFC. It is a value
+>>>>>> maintained by random.c
+>>>>>> that changes every time a leak event happens).
+>>>>>>
+>>>>>> 1. add buffers to 1-X
+>>>>>> 2. add buffers to X
+>>>>>> 3. poll queue X
+>>>>>> 4. vcpu 0: get getrandom() entropy and cache epoch value
+>>>>>> 5. Device: First snapshot, uses buffers in X
+>>>>>> 6. vcpu 1: sees used buffers
+>>>>>> 7. Device: Second snapshot, uses buffers in 1-X
+>>>>>> 8. vcpu 0: getrandom() observes new  epoch value & caches it
+>>>>>> 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
+>>>>>> has not yet finished adding new buffers).
+>>>>>> 10. vcpu 1 adds new buffer in X
+>>>>>> 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
+>>>>>>
+>>>>>>
+>>>>>> In this succession of events, when the third snapshot will happen, the
+>>>>>> device won't find
+>>>>>> any buffers in either queue, so it won't increase the RNG epoch value. So,
+>>>>>> any entropy
+>>>>>> gathered after step 8 will be the same across all snapshots. Am I missing
+>>>>>> something?
+>>>>>>
+>>>>>> Cheers,
+>>>>>> Babis
+>>>>>>
+>>>>> Yes but notice how this is followed by:
+>>>>>
+>>>>> 12. vcpu 1: sees used buffers in 1-X
+>>>>>
+>>>>> Driver can notify getrandom I guess?
+>>>> It could, but then we have the exact race condition that VMGENID had,
+>>>> userspace has already consumed stale entropy and there's nothing we
+>>>> can do about that.
+>>>>
+>>>> Although this is indeed a corner case, it feels like it beats the purpose
+>>>> of having the hardware update directly userspace (via copy on leak).
+>>>>
+>>>> How do you feel about the proposal a couple of emails back? It looks to
+>>>> me that it avoids completely the race condition.
+>>>>
+>>>> Cheers,
+>>>> Babis
+>>> It does. The problem of course is that this means that e.g.
+>>> taking a snapshot of a guest that is stuck won't work well.
+>> That is true, but does it matter? The intention of the proposal
+>> is that if it is not safe to take snapshots (i.e. no buffers in the
+>> queue) don't take snapshots.
+>>
+>>> I have been thinking of adding MAP/UNMAP descriptors for
+>>> a while now. Thus it will be possible to modify
+>>> userspace memory without consuming buffers.
+>>> Would something like this solve the problem?
+>> I am not familiar with MAP/UNMAP descriptors. Is there
+>> a link where I can read about them?
+>>
+>> Cheers,
+>> Babis
+>
+> Heh no I just came up with the name. Will write up in a couple
+> of days, but the idea is that driver does get_user_pages,
+> adds buffer to queue, and device will remember the address
+> and change that memory on a snapshot. If there are buffers
+> in the queue it will also use these to tell driver,
+> but if there are no buffers then it won't.
+
+That sounds like a nice mechanism. However in our case the page
+holding the counter that gets increased by the hardware is a kernel
+page.
+
+The reason for that is that things other than us (virtio-rng) might
+want to notify for leak events. For example, I think that Jason
+intended to use this mechanism to periodically notify user-space
+PRNGs that they need to reseed.
+
+Cheers,
+Babis
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
