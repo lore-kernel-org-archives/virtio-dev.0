@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13987-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13988-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1B5FE81E19
-	for <virtio-dev@archiver.kernel.org>; Fri,  6 Oct 2023 16:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68F51E95A91
+	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 08:50:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1F9E745B2B
-	for <virtio-dev@archiver.kernel.org>; Fri,  6 Oct 2023 16:17:09 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9E5D23E56C
+	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 08:50:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 14CAE98682E
-	for <virtio-dev@archiver.kernel.org>; Fri,  6 Oct 2023 16:17:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 63D6F98654A
+	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 08:50:37 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0637E986820; Fri,  6 Oct 2023 16:17:09 +0000 (UTC)
+	id 3B4ED9864CE; Mon,  9 Oct 2023 08:50:37 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,460 +24,536 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E6E7298681C;
-	Fri,  6 Oct 2023 16:17:05 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 67B549864F0
+	for <virtio-dev@lists.oasis-open.org>; Mon,  9 Oct 2023 08:49:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1696609022.869000
-X-TM-MAIL-UUID: f10f70f2-4149-4fef-a8bd-89586a911767
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m+ybTtsb3Xri67brZaiOZOizFXKHvAvsbj5pLWyPzb/sK/oE4CvuXu8/7hIkqhURVm3X8IdUnVpprY/hrN0oRBmzqAiInGsCeB2zpqhMWpusYJr1ZkekYfwSpSeHzYsERXOQAj1DqZ7bX2eUEeNJG8PPeYnoDuhUESNLwDmM12tS2SNvq61E4RGwDv4GX3YSpz+pEgd3hXmLwkZf5PT7/Fpt+XL5WGYJx2ypuZGvw9D2GbogO7O96crZHBjw1a7vqNHeNd65nDAPhQ25rt6Z8H4SOpn+qBBzAibIYpeEoiXRgigU99jbKoy2oPnpa5aguxR3/0tOIOpiLsWyG7Ljlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rBDcfoR2cCm0ECKPQmzBZWvx+yARHlVbmmhNnqdaHnk=;
- b=DdAOCqjTvkjLhzabD0B+NmLkSNkOoIIi4+NDyXFDuUOGmOijSXt6oZ2Ynb207dcdT+fBcHhp7pJeSZYjoeoaRRnolIx+MmiM81XLjQWUzINCacV7j+lIMzjikfMXXPSiJtuJGE5v6ib6KaGrwUbyLdi2EpWPR1h2QKiJhi75rLBZdYiuLdgjKXqwhrIEqxDsYEO4I/YoXm/PYqwJ4oiwhvlUUA0QOU8djNc7BzLKRB9foFtxUyLCUaFhOA5eAiOdAD882Mh/z5QhAmS9u/3Yb8Q5wgRXWMmohq8Kq7U9n1Ri3NZHtehQ4WZfXuNWJunOh7w3lZldeuGoVLQhJJzhRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <0c514678-d71f-4d73-bb43-b30fde320a27@opensynergy.com>
-Date: Fri, 6 Oct 2023 18:17:17 +0200
-Content-Language: en-US
-To: Enrico Granata <egranata@google.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
- luiz.dentz@gmail.com, mst@redhat.com, marcel@holtmann.org,
- johan.hedberg@gmail.com, jasowang@redhat.com,
- Hao Chen <chenhaosjtuacm@google.com>, Sal Savage <salsavage@google.com>
-References: <20230310062613.109867-1-Igor.Skalkin@opensynergy.com>
- <20230310062613.109867-2-Igor.Skalkin@opensynergy.com>
- <CAPR809u5AehjXzjn4QcsVUybL=pW9mWGDJHXfcXRZCXvTcEiLw@mail.gmail.com>
-From: Igor Skalkin <igor.skalkin@opensynergy.com>
-In-Reply-To: <CAPR809u5AehjXzjn4QcsVUybL=pW9mWGDJHXfcXRZCXvTcEiLw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0165.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ba::20) To BEZP281MB3157.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:2e::14)
+X-MC-Unique: Si_mN5eLOKmGQP0AGhf3BA-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696841385; x=1697446185;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9mtx/C1KnmzAX4E30FkVXLS1Q6Oc1Gzr0YvsrEXNgYA=;
+        b=MphHgHV7UP4AR3+rQWXUEagyXACC+acuTs7TcZf/bi63OygBIz6vpFlLTnJ/lhy/bd
+         tVxXHYP3PDyg1DmSgdZ/9P/GwMiqnxrjEWkkIgvvAtYl71LqLbhLuF1zcwbfiF+1LQ42
+         wJ2w9PYEHyrgCnFCiYAADW+Jm2itJE5/FVqq9kznZswSrKbZRoIMaahUC0rLb7fCUHVe
+         LrqxtKJF/ZrZGO811VmcG7fFqQLYL+xvCB1rkVFhnjgO9IEWdzhFy/P7pLvLfGyj5wsj
+         2qZFUN0grVUsmdNbgckI9tuX4mPhNpKGOf3kh9pBh/Rr9dexflVfAUtrzN7On4+g9TBQ
+         01eg==
+X-Gm-Message-State: AOJu0YyMx/m8HMyudF7jBDvGfBuSC0P0edcCzgwgmJAr1grFlFcGhE6r
+	k0G/TpTZaGiE7OZI1a8sl/k5EfjgHyCc8Y1A2tLWkw1RQwHaq486U8c+lyoWCpcAWxhuE+qFTSg
+	2aMS0isM8ChUhDLiQoaueMjLcbhEYTV8P4tDBF5jG7jdLaCYaCqFxTgM=
+X-Received: by 2002:a05:6512:1115:b0:500:b42f:1830 with SMTP id l21-20020a056512111500b00500b42f1830mr15996055lfg.63.1696841385251;
+        Mon, 09 Oct 2023 01:49:45 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGiToGYqM+wQkhWP1gl/lhL97cLSsgiT1bSIuWt69LpmHZILxNd9QyoaCMnOjMxcxbbwtMu+97oJ0rlLg5aFXE=
+X-Received: by 2002:a05:6512:1115:b0:500:b42f:1830 with SMTP id
+ l21-20020a056512111500b00500b42f1830mr15996037lfg.63.1696841384741; Mon, 09
+ Oct 2023 01:49:44 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BEZP281MB3157:EE_|FR3P281MB2236:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ca988e3-57fe-4293-b845-08dbc687ac0d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	TkiG+8DFN7greDBa74y8eLzZwg1tWBWUDUxyh1Pm00XpCY2yljOXi368Nv+XPTZBM6D+rmIpD3zev62rTAGB3xlmfFQlC2L2a7Gf5NLsmpf8xUBXCyDxlC8nM5ErOlh3j3UGSMUeRqpusho43xQsiluDcFlWPIIzFoUPe1g61dPSvEPvhIHFx9wOeGheujSuS5+paaBaVU2mS/WYNWlo0kK6AyTh+5+SGStExVQBroYh7wbaHw+TbCBT+OriXtA/nKCpTMlH1I2H25f1pIXU4cwKeOi1NH3hgOt2dTtJaxXLVL56J+niH72GkIVUlYhiMFTakk/8eBSws1h/om0NJWo9QUxQK/+iN3XN60X4zSYjLGjeoSYJPmU5sWwYgTKgHAosfrAtxzUMewCrnmKrR7BTpsjd+HWc6rLA7u4lBPgBAWQOH+SRzcSbrXFYlkbfcSiNpboI1pfXu24fVhxLUZQLlqV8K9GwqZnoQBcbxOj1kbeHfPl3RXfuj5dlsntSUY8l4jahxe3WoN3++fa4ALzevAE3uL3LufcFwqKqmYMKZ2egJSjfgsWwV8Etz1ezIG39VKb2DU/dr0RasixIKA4Pa49rrmjgvBsXNMwtz2s=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEZP281MB3157.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(39840400004)(396003)(346002)(366004)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(7416002)(31686004)(44832011)(4326008)(8936002)(8676002)(5660300002)(30864003)(2906002)(38100700002)(41300700001)(316002)(6916009)(42186006)(54906003)(2616005)(26005)(66899024)(66476007)(66946007)(66556008)(478600001)(31696002)(53546011)(86362001)(36756003)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?L1p1MndEUUNoSHJvQ05BUzdmYWdGbCtndTZ1cytZSXAwYnNhaWN6MkY2T2xm?=
- =?utf-8?B?Tm5Ua3VEZE0wUjJxblhFTUk5UDJGbVdRL1daT3oxMW9mUWpaNmdVNWpIYTU5?=
- =?utf-8?B?cktWWUcvQ0l1S0xoRUNRK1RGTGFsZzR4TEh0UDNodDVTdmpzaEZvMFpJbG9J?=
- =?utf-8?B?eEtBVGJ1SnBpbHVtRy9YaEQzYnZBVjMwRGhhZkxnOGJtTzlsdGVoRGJJQ1JK?=
- =?utf-8?B?eEJZTlNIaGRvbCtyd1o0VWtOVVVpeXBIZCtMRmZ3cmJTbllTRHpFTHRRd3RQ?=
- =?utf-8?B?MDFEQXZ4Q2cySzN4cUtjekV2TkFsSkJQcDNMTUp5UzRoMjBPVytHQ0prY3BN?=
- =?utf-8?B?UDFWbHJhVkI4a2hOcHNjODRQc0Y4eXhuK01YekdoY0Z5TDNKY1lYMzF4anl1?=
- =?utf-8?B?QjM4MXlETmVGbGVJOTZGQUlQSkUrNFhLMVdjTExsa0MwYjE2TENNUTlCSzF6?=
- =?utf-8?B?L253T05sZmdBOWZEaHhyQTZNN1YrMHl2NlIyOUVzOGNWOHc3SmFCV0puR3d1?=
- =?utf-8?B?aDB2MEJKcWJXZjFzZ0liYmpnTXVwc0xtWHI4VE9sY21Ydk1UdXF5bnVobWN3?=
- =?utf-8?B?SERGZk1yMnhGbVlmMnAwV0tqQ3htS2VhOVJJbHdRNk9qWE1PbC9oenVmNXBK?=
- =?utf-8?B?bGdxM0xZL2JuVVJOQzB1NFVxK1VLcGdaZ3RGMDhGcGVaaHRJSU9LVE4rSWh3?=
- =?utf-8?B?czBzOVZQbDRaYzFkb2M4eDg4MUVpSkpMQndadTJxVVJ2dVpBZGVSU1hWdHIv?=
- =?utf-8?B?blR4alRhVXNnNk82aTVsaE9SMkhmN1N0Sy9zVUhQU1AzZnlNNUdCYklvWFJI?=
- =?utf-8?B?UzVtNjBFclF1TUtMbU5ZQmppUVdsdE1qdm8vUEZ2Q2JkS1ZnSVQ3a05LK2Rn?=
- =?utf-8?B?SCszeVpNTE42U0hBUC9JM3cxTnV4Rlg2dE5BV1NDaDk1dWRYQmoxczMzYjFl?=
- =?utf-8?B?bmRhZzhsa2FmRlFwVE9VSmZUWjRjdVNVTG1NZXpGNUJVZGNXMUxVWC9ncUhT?=
- =?utf-8?B?VmsxVUZ0WXBSUUNBdjZPdGVrbUZjcHNDVkZKYWFsYitDUXlhMFVtVkViTngy?=
- =?utf-8?B?THVSMklxeW1sbWdROXpVbXNsbDJGZlg2MFNmN1hJRHcyMUpmL0t2NkxCdWkr?=
- =?utf-8?B?bGsrNDNySVQwbEJydzBwSjhybU4wcGFybEpnOXVMV3hZYjgrOHhCYlpoeTlH?=
- =?utf-8?B?ZjJvVnAwYmlUQi9LbFd5UEFZeUNTckpXc3Q2Uk04NS9QbGhwOHEyL2xhYkdF?=
- =?utf-8?B?Uk0wM1A5V3ppcWJ3U2hsK1RtL2tTVEJkbTVWdk1EVGV2MEVyZ3Btd2JSb2cy?=
- =?utf-8?B?eDZkUytiK21JdzF4Z1FiWnFaRFZpTXlVaHd3TFlWdTY3cnBNQTBNWHZEekgv?=
- =?utf-8?B?bllsS2JFcmhtbGt5NG1kN3JvUlVyMW1JUE10Sy9BaG5TVFNhZ0U2KzB0NGlw?=
- =?utf-8?B?cUdyZTAxWkVqaVJtSFFGMEd6VmFlRlRIVlh2c1I5cENYNzVOeXJhVHZveWd0?=
- =?utf-8?B?YW9kZ0RRNTRVcFVSZnAzdWJGdGlweGF3TWpQTGU1RzYxdk16ODhLM3lEZko2?=
- =?utf-8?B?ZGMwWXEvTmZMODBUek81QTVPcjhidzRIZ0RHWDNFa2FHK3RqZW5YajZ4MmdX?=
- =?utf-8?B?RmFmejhtZGQ2ZTZKWGR0dUtkZHdyUjZ3M25YQU9yclB0NzZqK2J1L1NyRXNr?=
- =?utf-8?B?RFI1bUxvNTFqYmhhWVlYY3BGMTZXbDFzYXZKdzRBd0ttejRxa2RZcVlBNTMv?=
- =?utf-8?B?cU5hK2ltMFIrWjd3cmNzTzNnWDRjODBlbEVQenZ0ZHNrMG5RYW1aUHkyWExi?=
- =?utf-8?B?eFZod1NHRW85WjVnR0RKOFZhZ2w0N3NNNnJMSnNmTS9WWENPRklkRmx6VVhx?=
- =?utf-8?B?N3c2K3FhbzkrTnVteHNLb1ZtWC9OaXhvbU1wYnJYTnNyMlNrczNjQndKVUwy?=
- =?utf-8?B?N3RtRWU1WjcxVzEwUDNoQXl5QzFIUFAvcnVEQXhWKytrVzU0YnE4LzArQjlB?=
- =?utf-8?B?S21MYlFGbFRYQmIvdjhLSHNneWx3eDlkRm4vUStoTGpMbG8wRk02WVVkelFi?=
- =?utf-8?B?aEFxYUFkc09OMEFreUR6MmRaRERRUW8wMW96MzF6TG5hYzFpbWp2Umg5QlBs?=
- =?utf-8?Q?lTdxya9gdPhJpBeT3ji26nTaX?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ca988e3-57fe-4293-b845-08dbc687ac0d
-X-MS-Exchange-CrossTenant-AuthSource: BEZP281MB3157.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2023 16:17:01.3629
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kIZkE1oz0QhjFENYc1S4W6ed2g7ndplKVBwhreM5tX+IV6EhRdPNoFV7okPxXHutbULquRVo911ZKEi/SYdLVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR3P281MB2236
-X-TM-AS-ERS: 104.47.11.169-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1015-27920.000
-X-TMASE-Result: 10--35.150700-4.000000
-X-TMASE-MatchedRID: CxmI61mtwh/5ETspAEX/non73EnA6dC3AH+xhFp7E0R83mXuKlGTiM80
-	ePfi+8z9dUYlcySF7KeBKiDPq08OQsZHwxLpmDPhu/wZEqxodZYKfUYWORZ3hbdQknz6f/hFODZ
-	lhXUN3XWUVkUQf589ZxBM+f8NEYY4ncgHVDE4JqvPEeDcxvUDjMngJstbsoC51McWg5VNQo8YBM
-	zz3cgh19moJDKaV79JeXJXJj1uXPK0FwM6kYXI1lZB3ebKuqDZN0X64jGy2dapaB8gxaWhLLgAq
-	6sLXqe6Ir/i04LJ5SvutOqlmhRwLwRADDTxusaksjKXwoAhxb/cHWFKCmADc4vmY1hE2VDU+3DG
-	ARmE5RAeFzrg+xNuermAt1c2rBY8rddi2w4fb9Ds+7E98/tcIHKa5XrXQyxS1V1wEPpYvg+HMYC
-	9kIQAFltzIOiRIwELhU3SHT8rOPtlf38Z0pSQ61o/1P3BDpl/X9IqjVqUsLihUVgvBwisdinSIU
-	gKVwzaKrSui2WP+XagNjRpi+9xy8GZlIhcRMmQ7yR/hLt1y2iUiGLkY8AZ4ze8kfZmKg2trgdeA
-	A2yA+ohsuitEcCrFEaj20VUrpT7m5NwnYNFEjsn3oRlBssjXHSk8VaCrUo2utQM5jga8o5e9lbU
-	N3myksnl8iynZhELylozWYipf9sQP61cTTVQFfe+18RAuG2TlZroRtOiCG3/C1BBkjM4dkfd+cH
-	Ep3N3vnHi8YbTNkd4rCWGPtw61Gh636Fc0o9vCzp4ZDpFqX0VJPUqXnrQdaIcpU3/gcCMFuq4UF
-	iMsTpWs61KweL/rBPvf+2VkMIRPLD4sNzZECLFTQGAKRxj5No+48giqZwn6eHzLh/npgivngkjH
-	jojpAP5R/zL3aImJpK4F9wnIiaQZS2ujCtcuA==
-X-TMASE-XGENCLOUD: 2030c533-8932-4ebe-971b-2a24377ab1e5-0-0-200-0
-X-TM-Deliver-Signature: 65C1843CA062A85DE135C4E56ED67CD7
-X-TM-Addin-Auth: x29JDgnrt7ZTiIRuunByUzcOQutPv4k27R1pfuEIYxY+fzp5SQJlohD2xf1
-	vRl459+TSwMItSplmcfTcFK8AqSnDG1QnRfvKjos+bdkbGLWYT7TpCTR+NGJflKaehRRBAcmKIf
-	8QjcE7rcBu5wsoviogb5NIJf+hzOe6crcm8B+L/JjRplwRV9NvG3DgfkzRlBA/XncexGWuU8nUU
-	PHqxHaEFokhSoiohn1qRDoR+/WLwusoyQY/qDgRBCmZH9fulXhRDDSU/LA0aN2NEguEXETnPx2+
-	0PqflLRjYy4wf9I=.oegQ82fcoNSnVz08cLt9zK0EF8btwEhtCxr8W/KMrMxN0TOPTBBBudUoCq
-	JWfrWb1XeO/0nKi7cbkmhGwN/o5eTzo5k4bkQZgfKO0SisU/BbUu/npKJBYg5lcynRFdnoRNnnl
-	Kfc8BHdpys8/67+0GY+OKR4rCzGd0mliOWAkcNEsZTZVQBxKJB5Unl1VyitDZOXYibsrsI+x4DD
-	Kn8GkONFN6MNa0XaRKnY8KR/gkpFH8HVWyyXrVWW4IXcD8/bcnT8PPEJMlpY/ytymfII0OL0L1T
-	mi7hBsYwRxunYD/yHrTXwXkLe/HuA1TOYqLL/8lrcFQAaXKtma6ULotAIUg==
-X-TM-Addin-ProductCode: EMS
-Subject: Re: [virtio-dev] [PATCH 1/1] RFC: virtio-bt: add virtio BT device
- specification
+References: <PH0PR12MB5481C41D4F32DA26D5831471DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <67680965-b115-32c7-dfdf-c56ab37bdd81@intel.com> <213a0f94-cee2-d8c5-3c5d-d2d7fc920e75@intel.com>
+ <PH0PR12MB5481AE8C6E5EAFE9A4ADA6F6DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <f1fe513e-d42d-03a6-348c-5e58aac0a759@intel.com> <PH0PR12MB5481323A3B4D67EB66328476DCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <5f01772f-eb27-bfe0-7f69-b83fbd90dda0@intel.com> <PH0PR12MB5481ABF4B9BC2082BC54AB1DDCFBA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20230918144312-mutt-send-email-mst@kernel.org> <bb402c34-ad07-063a-f4f5-d8c6b3a642c7@intel.com>
+ <20230920054836-mutt-send-email-mst@kernel.org> <CACGkMEsn+9AqgmurN8-GXkcu8UxAr62_woJn3XZN+oUkTQNPUg@mail.gmail.com>
+ <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
+ <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com>
+ <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEvOxraeVB-5g7dJ-KBN=63kpmDfDdqaiQVyDh8egDjsGw@mail.gmail.com>
+ <PH0PR12MB5481C11F6D68A892A091E2AFDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEvtyDXKHE4w9uH_9eqbckTGF8fZkNUuKr+mkzP0o31z_w@mail.gmail.com> <PH0PR12MB548182A6DC73C850462B546EDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB548182A6DC73C850462B546EDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Mon, 9 Oct 2023 16:49:33 +0800
+Message-ID: <CACGkMEvLjV4Q8ETHCfVEiqnN1awLiogR79t3VEHTNXZk5qsQdw@mail.gmail.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, "Zhu, Lingshan" <lingshan.zhu@intel.com>, 
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq state
 
-Hello all, sorry for a delay.
+On Tue, Sep 26, 2023 at 1:21=E2=80=AFPM Parav Pandit <parav@nvidia.com> wro=
+te:
+>
+>
+>
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Tuesday, September 26, 2023 10:07 AM
+> >
+> > On Tue, Sep 26, 2023 at 11:40=E2=80=AFAM Parav Pandit <parav@nvidia.com=
+> wrote:
+> > >
+> > >
+> > >
+> > > > From: Jason Wang <jasowang@redhat.com>
+> > > > Sent: Tuesday, September 26, 2023 8:16 AM
+> > > >
+> > > > On Mon, Sep 25, 2023 at 6:41=E2=80=AFPM Parav Pandit <parav@nvidia.=
+com> wrote:
+> > > > >
+> > > > >
+> > > > >
+> > > > > > From: Jason Wang <jasowang@redhat.com>
+> > > > > > Sent: Friday, September 22, 2023 8:38 AM
+> > > > >
+> > > > > > > Device context has no overlap.
+> > > > > >
+> > > > > > I can give you one example, e.g debugging.
+> > > > > >
+> > > > > Almost every feature needs debugging. :) So I am omitting it for
+> > > > > time being.
+> > > >
+> > > > Well, I don't think so. We have a lot of handy tools for that (etht=
+ool -d?).
+> > > Sure add something specific for debug and explicitly mention that it =
+is for
+> > debug like -d.
+> > > Every feature and functionality needs debug, not specifically device =
+context.
+> > > So add infra for debug.
+> >
+> > Why do you think it's an infra? All you need to do is a simple decoupli=
+ng.
+> >
+> It is too vague comment for me.
+> Everything you need to debug can be queried from the device if needed.
+> So please add the debug infrastructure for it.
+>
+> It may be useful outside of debug too.
+>
+> Practically any query interface added, can be used by the member driver f=
+or debug purposes.
+>
+> > > Device migration series is not the vehicle to piggy back on.
+> > >
+> > > > > > 1) define virtqueue state, inflight descriptors in the section
+> > > > > > of basic facility but not under the admin commands
+> > > > > It will be part of the device context such a way that so that one
+> > > > > can only read
+> > > > the vq state only instead of full device context.
+> > > > > This will work.
+> > > >
+> > > > I'm not sure what it looks like, but I think they are well decouple=
+d in this
+> > series.
+> > > > E.g driver can choose to just read e.g last_avail_idx and report to
+> > > > ethtool or watchdog.
+> > > >
+> > > Once its done it will be visible how it looks like.
+> > > The key is it needs to cover BOTH use cases.
+> > >
+> > > > As I replied in other thread, I see several problems:
+> > > >
+> > > > 1) layer violation, PCI specific state were mixed into the basic
+> > > > facilities
+> > >
+> > > After agreeing to see merged donctext, now you are hinting that you d=
+on=E2=80=99t
+> > agree to merge two.
+> >
+> > It's not a merging, it's about decoupling. I'm fine if you don't do cou=
+pling and
+> > layer violation.
+> >
+> Admin command is decoupled from admin virtqueue already.
+> Device context is decoupled from admin command already.
+> Dirty page tracking is decpupled from admin command already.
+> Device mode is decoupled from admin command already.
 
-Almost all of you questions relate to the structure of the configuration 
-space, in which I simple described the current virtio-bt driver 
-implementation in the Linux kernel.
+Again, this is not what I read from your series.
 
-Brief history of this draft specification:
-   - Suddenly the virtio-bt Linux kernel driver was merged in the mainline.
-   - We started using it in our projects - for this we wrote a host 
-virtio Bluetooth device.
-   - This device could not be merged because the structure of the 
-configuration space is not aligned, which violates the virtio 
-specification (and our virtio MMIO middle layer asserts such accesses).
-   - The corrected version of the configuration with the corresponding 
-feature bit was also merged into the mainline.
-   - But fixing the configuration requires fixing the specification.
-   - There is no specification - that means someone need to write it.
-   - Well, for the first draft version I think it is possible to simply 
-describe the existing Linux implementation and see what can be done with 
-all this.
-   - we are here.
+>
+>
+> > > I disagree if you are leaning towards that direction.
+> > > I hope my deduction from your above comment is incorrect.
+> >
+> > I agree to seek a way to unify but it doesn't mean everything in your c=
+urrent
+> > proposal is correct. Basic facility part should be transport independen=
+t.
+> >
+> Can you please comment in my series what is incorrect? I would like to di=
+scuss there, similar to your ask here.
+>
+>
+> > >
+> > > There is no violation. PCI specific device context will be captured i=
+n PCI
+> > specific section.
+> >
+> > Is that what you've done in your series now?
+> >
+> It will be added in the v1 of my series.
+>
+> > > Device type contexts will be captured in those device type sections.
+> > >
+> > > TLVs will cover many of the device context information.
+> > >
+> > > > 2) I don't see a good definition on "device context"
+> > > > 3) TLV works fine for queue but not registers
+> > > >
+> > > Please definition of device context in [1].
+> > >
+> > > [1]
+> > > https://lists.oasis-open.org/archives/virtio-comment/202309/msg00064.=
+h
+> > > tml
+> > >
+> > > > What needs to be done first is to describe what device context mean=
+s
+> > > > and what it contains. Not the actual data structure since it may va=
+ry.
+> > > >
+> > > Sure, it is already defined in device migration theory of operation s=
+ection in
+> > [2].
+> >
+> > It's too vague, for example it's not easy to infer if the following bel=
+ong to device
+> > context:
+> >
+> I am 100% confident and challenge you that theory of operation explained =
+in my series is sigficantly better than commit log of Lingshan saying "main=
+ use case is live migration".
+>
+> > 1) dirty pages
+>
+> Above does not. Once you read each patch it should be clear, because dirt=
+y pages in not part of the device context.
 
-The main question is whether there are already existing devices that use 
-this configuration structure.
-I do not know, may be the authors of the Linux kernel driver know the 
-answer to this question, and they are in this message CC.
+This is not what I read from your series.
 
-About the use of the second version of the configuration by new devices 
-- can, should or must they use it. It seems to me that they must, since 
-the old one violates the virtio specification.
-[q]
-4.2.2.2 Driver Requirements: MMIO Device Register Layout
-...
-For the device-specific configuration space, the driver MUST use 8 bit 
-wide accesses for 8 bit wide fields, 16 bit wide and aligned accesses 
-for 16 bit wide fields and 32 bit wide and aligned accesses for 32 and 
-64 bit wide fields.
-[/q]
+>
+> > 2) virtqueue adresses
+> >
+> It is part of the device context is listed in the patch.
+>
+> > etc.
+> >
+> > > I will try to take it out and put in device management section, so
+> > > that device migration can refer to it and Some other basic facility a=
+lso can
+> > refer to it (which must need to explain a use case beyond silly debug p=
+oint).
+> >
+> > It's silly to ship a product without any debugging facilities.
+> >
+> :)
+> How come until now no one debug virtio last_avail_index in the device?
 
-On 3/22/23 00:24, Enrico Granata wrote:
-> On Thu, Mar 9, 2023 at 11:27 PM Igor Skalkin
-> <Igor.Skalkin@opensynergy.com> wrote:
->>
->> This PR is aimed as review for comments(RFC) purpose.
->>
->> * Initial draft version.
->>
->> Signed-off-by: Igor Skalkin <Igor.Skalkin@opensynergy.com>
->> ---
->>   conformance.tex                        |  12 ++-
->>   content.tex                            |   1 +
->>   device-types/bt/description.tex        | 112 +++++++++++++++++++++++++
->>   device-types/bt/device-conformance.tex |   8 ++
->>   device-types/bt/driver-conformance.tex |   8 ++
->>   5 files changed, 137 insertions(+), 4 deletions(-)
->>   create mode 100644 device-types/bt/description.tex
->>   create mode 100644 device-types/bt/device-conformance.tex
->>   create mode 100644 device-types/bt/driver-conformance.tex
->>
->> diff --git a/conformance.tex b/conformance.tex
->> index 01ccd69..a69eb47 100644
->> --- a/conformance.tex
->> +++ b/conformance.tex
->> @@ -32,8 +32,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->>   \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
->>   \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
->>   \ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
->> -\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance} or
->> -\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
->> +\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance},
->> +\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance} or
->> +\ref{sec:Conformance / Driver Conformance / BT Driver Conformance}
->>
->>       \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
->>     \end{itemize}
->> @@ -59,8 +60,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->>   \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
->>   \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance},
->>   \ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
->> -\ref{sec:Conformance / Device Conformance / GPIO Device Conformance} or
->> -\ref{sec:Conformance / Device Conformance / PMEM Device Conformance}.
->> +\ref{sec:Conformance / Device Conformance / GPIO Device Conformance},
->> +\ref{sec:Conformance / Device Conformance / PMEM Device Conformance} or
->> +\ref{sec:Conformance / Device Conformance / BT Device Conformance}
->>
->>       \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
->>     \end{itemize}
->> @@ -152,6 +154,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->>   \input{device-types/scmi/driver-conformance.tex}
->>   \input{device-types/gpio/driver-conformance.tex}
->>   \input{device-types/pmem/driver-conformance.tex}
->> +\input{device-types/bt/driver-conformance.tex}
->>
->>   \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
->>
->> @@ -238,6 +241,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
->>   \input{device-types/scmi/device-conformance.tex}
->>   \input{device-types/gpio/device-conformance.tex}
->>   \input{device-types/pmem/device-conformance.tex}
->> +\input{device-types/bt/device-conformance.tex}
->>
->>   \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
->>   A conformant implementation MUST be either transitional or
->> diff --git a/content.tex b/content.tex
->> index 0c7cdf8..3723ec8 100644
->> --- a/content.tex
->> +++ b/content.tex
->> @@ -3022,6 +3022,7 @@ \chapter{Device Types}\label{sec:Device Types}
->>   \input{device-types/scmi/description.tex}
->>   \input{device-types/gpio/description.tex}
->>   \input{device-types/pmem/description.tex}
->> +\input{device-types/bt/description.tex}
->>
->>   \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->>
->> diff --git a/device-types/bt/description.tex b/device-types/bt/description.tex
->> new file mode 100644
->> index 0000000..3ce265d
->> --- /dev/null
->> +++ b/device-types/bt/description.tex
->> @@ -0,0 +1,112 @@
->> +\section{BT Device}\label{sec:Device Types / BT Device}
->> +
->> +The virtio-bt device provides an HCI (Host Control Interface) over VirtIO
->> +link between the guest HCI device and the host HCI backend.
->> +Also, the device can inform the guest driver which vendor-specific command
->> +set it supports.
->> +Host Control Interface is described in Bluetooth Core Specification:
->> +\newline\url{https://www.bluetooth.com/specifications/specs/core-specification-5-4/}\\
-> 
-> Are you giving any thought to out of band communication (e.g. A2DP and HFP)?
-> 
-A2DP works on top of HCI, with HFP everything is more complicated.
-There is already a working project with the transmission of additional 
-commands to the host to control the switching of audio streams on host.
-But, it was necessary, because BT chip on board in this project do not 
-support SCO over HCI, but has hardware connection to PCM.
-In common case (BT USB dongle, for example) SCO data should be 
-transmitted via HCI connection.
-A project with the transmission of SCO data via HCI will be started 
-soon, that is, work is underway but has not yet reached the 
-specification phase.
->> +
->> +\subsection{Device ID}\label{sec:Device Types / BT Device / Device ID}
->> +
->> +40
->> +
->> +\subsection{Virtqueues}\label{sec:Device Types / BT Device / Virtqueues}
->> +
->> +\begin{description}
->> +\item[0] transmitq
->> +\item[1] receiveq
->> +\end{description}
->> +
->> +\subsection{Feature bits}\label{sec:Device Types / BT Device / Feature bits}
->> +
->> +\begin{description}
->> +\item[VIRTIO_BT_F_VND_HCI (0)]  Indicates vendor command support.
->> +\item[VIRTIO_BT_F_MSFT_EXT (1)] Indicates MSFT vendor support.
->> +\item[VIRTIO_BT_F_AOSP_EXT (2)] Indicates AOSP vendor support.
->> +\item[VIRTIO_BT_F_CONFIG_V2 (3)] The device uses the second version of the
->> +configuration space structure.
->> +\end{description}
->> +
-> 
-> How are these different from the vendor fields discussed elsewhere in the spec?
-> Is it the idea that any vendor could support AOSP or MSFT specific
-> command sets, and so you need two separate flags?
-> 
-> If so, maybe calling them "guest OS support" instead of "vendor" might
-> be a better choice to avoid confusion
-> Also, we should probably document somewhere what commands those
-> extensions entail
-> 
-Thank you, will be fixed in next version.
+ethtool -d is more than just indices, no?
 
->> +\devicenormative{\subsubsection}{Feature bits}{Device Types / BT Device / Feature bits}
->> +
->> +The device MUST require the driver to accept the VIRTIO_BT_F_CONFIG_V2 feature
->> +bit, i.e. not set FEATURES_OK without it, and use the second version
->> +(struct virtio_bt_config_v2) of the configuration layout, because the
->> +first one (struct virtio_bt_config) is unaligned, which violates the
->> +specification.
->> +
->> +The device should offer VIRTIO_BT_F_MSFT_EXT or VIRTIO_BT_F_AOSP_EXT feature bit
->> +if it supports correspondingly MSFT or AOSP extension command sets. In case of
->> +VIRTIO_BT_F_MSFT_EXT, device should also set configuration \field{msft_opcode}.
->> +
->> +The device should offer VIRTIO_BT_F_VND_HCI feature bit and set \field{vendor}
->> +to the VIRTIO_BT_CONFIG_VENDOR_ZEPHYR, VIRTIO_BT_CONFIG_VENDOR_INTEL or
->> +VIRTIO_BT_CONFIG_VENDOR_REALTEK, if it supports corresponding vendor extensions.
->> +
->> +\drivernormative{\subsubsection}{Feature bits}{Device Types / BT Device / Feature bits}
->> +
->> +The driver MUST accept VIRTIO_BT_F_CONFIG_V2 feature bit if offered by the device.
->> +
->> +The driver SHOULD accept any of the  VIRTIO_BT_F_VND_HCI, VIRTIO_BT_F_MSFT_EXT
->> +or VIRTIO_BT_F_AOSP_EXT feature bits if offered by the device.
->> +
->> +\subsection{Device configuration layout}\label{sec:Device Types / BT Device / Device configuration layout}
->> +
->> +
->> +The first version:
->> +\begin{lstlisting}
->> +struct virtio_bt_config {
->> +       u8 type;
->> +       le16 vendor;
->> +       le16 msft_opcode;
->> +} __attribute__((packed));
->> +\end{lstlisting}
->> +
->> +is deprecated, new devices must use the second one:
->> +\begin{lstlisting}
->> +struct virtio_bt_config_v2 {
->> +       u8 type;
->> +       u8 alignment;
->> +       le16 vendor;
->> +       le16 msft_opcode;
->> +};
->> +\end{lstlisting}
->> +
->> +\devicenormative{\subsubsection}{Device configuration layout}{Device Types / BT Device / Device configuration layout}
->> +The device MUST NOT present a value different than
->> +\begin{lstlisting}
->> +       VIRTIO_BT_CONFIG_TYPE_PRIMARY = 0,
->> +       VIRTIO_BT_CONFIG_TYPE_AMP = 1,
->> +\end{lstlisting}
->> +in \field{type}.
-> 
-> What do these values mean?
-> 
-Bluetooth controllers can be one of two types - HCI_PRIMARY or HCI_AMP 
-(Alternate MAC/PHY (AMP) secondary controllers).
-The description can be found in the Bluetooth Core Specification up to 
-version 4.2; starting from version 4.3, HCI_AMP was removed from the 
-specification due to the fact that no one uses it.
-Also, this field is not used at all in the current version of the Linux 
-kernel driver. So maybe, this field should be marked unused in the 
-specification.
->> +
->> +The values 1..3 of the \field{vendor} are already reserved for vendor extensions listed below:
->> +\begin{lstlisting}
->> +       VIRTIO_BT_CONFIG_VENDOR_NONE = 0
->> +       VIRTIO_BT_CONFIG_VENDOR_ZEPHYR = 1
->> +       VIRTIO_BT_CONFIG_VENDOR_INTEL = 2
->> +       VIRTIO_BT_CONFIG_VENDOR_REALTEK = 3
->> +\end{lstlisting}
->> +
-> 
-> How would any other vendor add their extensions to this list?
-> For example, say I start my own Bluetooth adapter company tomorrow,
-> how do I add VENDOR_ENRICO to the list?
-> 
-Please, do not do that))
-Sorry, I actually don't know the answer to this question.
-But there is one idea, it is necessary to consult the driver author:
+People can easily instrument the Qemu kernel via a lot of mature
+debugging facilities. Or are you saying those facilities can be used
+across the PCI interfaces? If not, how?
 
-differences between specific vendors include:
-a) During setup, the command "Read build info/version" with vendor 
-specific opcode is executed and does nothing with the result.
-b) The set_bdaddr() function is replaced using a non-standard opcode.
-c) The vendor-specific set of the HCI_QUIRK_* bits in the hdev->quirks 
-field is set.
+> Please really stop such arguments.
+>
+> If something is needed for debug please proceed to add such debug interfa=
+ce.
 
-So, to make the configuration more flexible, it is possible to remove 
-the "vendor" field and add some new configuration fields:
+Most debugging is simply the dumping of device states so I don't know
+what you want to say here. We all know we can't easily add things like
+dynamic debugging to a hardware.
 
-а) opcode for set_bdaddr command (if non-standard)
-b) opcode for "Read Build Information"/"Read Version"
-c) HCI_QUIRK_* bit mask which necessary to be set to hdev->quirks.
+>
+> > And I've given you other examples like hibernation but you ignore them =
+again.
+> No. I didn=E2=80=99t ignore. In fact I asked AMD expert to extend his pro=
+posal beyond GPU and more.
+>
+> > And what's more important, you ignores my question, let me ask you agai=
+n
+> > here:
+> >
+> > 1) Try to prove your facility can only work for one specific case
+> > 2) Try to prove your facility can work for more than one cases
+> >
+> > Which one is easier and more beneficial to virtio?
+> >
+> #1 is easier than #2 as it needs only solve specific case.
+> #2 may be more useful when one establishes two cases _really_ exists.
+>
+> > The decoupling is just a matter of relocating the text, does it block a=
+ny of your
+> > proposals? Why do you choose to refuse such a simple change with such a=
+ huge
+> > advantage?
+>
+> I repeat, I didn=E2=80=99t refuse. I just don=E2=80=99t see a point of wr=
+iting something without a solid use case defined.
+> If debug is a use case, one must write "debug" there..
 
->> +If value of the \field{vendor} is not VIRTIO_BT_CONFIG_VENDOR_NONE, device MUST
->> +offer VIRTIO_BT_F_VND_HCI feature bit.
->> +
->> +\drivernormative{\subsubsection}{Driver configuration layout}{Device Types / BT Device / Driver configuration layout}
->> +All configuration fields are read-only for the driver.
->> +
->> +\subsection{Device initialization}\label{sec:Device Types / BT Device / Device initialization}
->> +
->> +The virtqueues are initialized.
->> +
->> +\subsection{Device operations}\label{sec:Device Types / BT Device / Device operations}
->> +
->> +The driver SHOULD populate the receive queue with at least one buffer of at
->> +least 258 bytes to contain 1 byte "packet type" and HCI event packet (2 bytes
->> +of HCI event packet header and up to 255 bytes payload).
->> +Synchronous and asynchronous data packets that are longer than the provided
->> +buffer will be fragmented.
->> +
->> +The driver sends to the transmit queue all (command and data) packets, received
->> +from the guest HCI device, and transfers to the guest HCI device all (event and
->> +data) HCI packets, received from the receive queue.
->> diff --git a/device-types/bt/device-conformance.tex b/device-types/bt/device-conformance.tex
->> new file mode 100644
->> index 0000000..7b73f4a
->> --- /dev/null
->> +++ b/device-types/bt/device-conformance.tex
->> @@ -0,0 +1,8 @@
->> +\conformance{\subsection}{Bluetooth Device Conformance}\label{sec:Conformance / Device Conformance / Bluetooth Device Conformance}
->> +
->> +A BT device MUST conform to the following normative statements:
->> +
->> +\begin{itemize}
->> +\item \ref{devicenormative:Device Types / BT Device / Feature bits}
->> +\item \ref{devicenormative:Device Types / BT Device / Device configuration layout}
->> +\end{itemize}
->> diff --git a/device-types/bt/driver-conformance.tex b/device-types/bt/driver-conformance.tex
->> new file mode 100644
->> index 0000000..2264a79
->> --- /dev/null
->> +++ b/device-types/bt/driver-conformance.tex
->> @@ -0,0 +1,8 @@
->> +\conformance{\subsection}{BT Driver Conformance}\label{sec:Conformance / Driver Conformance / BT Driver Conformance}
->> +
->> +A BT driver MUST conform to the following normative statements:
->> +
->> +\begin{itemize}
->> +\item \ref{drivernormative:Device Types / BT Device / Feature bits}
->> +\item \ref{drivernormative:Device Types / BT Device / Driver configuration layout}
->> +\end{itemize}
->> --
->> 2.37.2
->>
->>
->> ---------------------------------------------------------------------
->> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->>
+Why? For example ethtool -d just dump registers. But from the view of
+device, those registers is not necessarily named wtih "debug".
+
+Again, the debugging is just a dump of device states. We are not
+inventing debugging facilities for e.g SoC.
+
+>
+> >
+> > >
+> > > [2]
+> > > https://lists.oasis-open.org/archives/virtio-comment/202309/msg00062.=
+h
+> > > tml
+> > >
+> > > > >
+> > > > > > 3) define transport specific interfaces or admin commands to
+> > > > > > access them
+> > > > > >
+> > > > > As you also envisioned, it is done using admin commands to access=
+ it.
+> > > >
+> > > > That's fine, but it should allow other ways.
+> > > >
+> > > For passthrough admin commands fits the design.
+> > > Sure, you need to draft it how to do other ways..
+> >
+> > So, it looks to me you never examine this series carefully.
+> >
+> Please stay to technical discussions.
+> I examined and there is zero description beyond "main use case is live mi=
+gration".
+
+Virtio spec is not a suitable place to repeat the definition of live
+migration since it's a well-known technology.
+
+>
+> I don=E2=80=99t see the way how your proposals fits the passthrough case.
+
+Please explain why.
+
+>
+> > >  > >
+> > > > > > Does this work? It seems you refused such steps in the past.
+> > > > > >
+> > > > > I didn=E2=80=99t.
+> > > > > There must be some confusion in many emails we both exchanged,
+> > > > > because
+> > > > already posted v0 has it split such as device context.
+> > > > >
+> > > > > For dirty page tracking I couldn=E2=80=99t find a solid use case =
+without
+> > > > > device
+> > > > migration, so I asked which you already replied above.
+> > > >
+> > > > First, you never explain why such coupling gives us any benefit.
+> > > It is not coupled. Device migration uses this facility. So it is matt=
+er of text
+> > organization in the spec.
+> > > Not the design.
+> > >
+> > > > Second, I've given you sufficient examples but you tend to ignore
+> > > > them. Why not go through Qemu codes then you will see the answer.
+> > > You gave example of debug, and profiling. You didn=E2=80=99t explain =
+the use case of
+> > how to actually connect and how to profile etc.
+> >
+> > How much evidence do you need me to provide? Do I need to give you the
+> > manpages of ethtool -d? For profiling, is it too hard to think, for exa=
+mple, to give
+> > non retire hints to IOTLB via a specific IOPTE if we found a page is di=
+rty?
+> >
+> Sounds useful, but this is a very different use case than live migration.
+> If I think further, this interface may be useful in the data path side, w=
+hen mapping/unmapping is done.
+> So it can actually use the existing interface.
+> A side interface may not be useful as it may be coming slightly less as o=
+pposed to existing hint of DMA interface.
+>
+> > Compare the evidence or proof you've provided, how much you have provid=
+ed
+> > so far? Or could you please prove the device context can only work for
+> > migration?
+> >
+> Virtio spec development is not proof based method.
+
+It's you that wants the reviewers to use a proof based method. For
+example, I'm saying logging has more use cases than migration and then
+you want me to give proofs.
+
+I'm saying it has more use cases, you want me to prove. I prove and
+then I want you to prove it can't be used outside live migration,
+you're saying you don't want to be proof based. Self contradictary,
+no?
+
+> I wont go this route.
+
+Then let's don't use double standard.
+
+> Please review the patches and comment.
+>
+> Device context works well for the device migration use case.
+
+You're sending patches for comments not for parse.
+
+> If you don=E2=80=99t understand specific text in the patches, please comm=
+ent there to proceed.
+
+I will but you never give any concrete comments to this series.
+
+>
+> > >
+> > > > > > Actually, I would like to leave 2) as it's very complicated
+> > > > > > which might not converge easily.
+> > > > > >
+> > > > > I will split current "device migration" section to two.
+> > > > > 1. device management
+> > > > > 2. device migration
+> > > > >
+> > > > > Device management covers device mode, device context and dirty
+> > > > > page
+> > > > tracking.
+> > > >
+> > > > I don't see any connection between "management" and "device context=
+".
+> > > >
+> > > You have better name than device management?
+> > > May be device operation.
+> > > May be it is just better to have the device context just the way it i=
+s in [1] under
+> > basic facility.
+> >
+> > I don't understand this.
+> >
+> Device context is defined in "basic facility" section.
+> I will just keep it there.
+>
+> > >
+> > > > > Device migration refers to device management section.
+> > > > >
+> > > > > We can omit the dirty page tracking commands for a moment and
+> > > > > first close
+> > > > on the device mode and device context as first step.
+> > > > > Since it is already part of v0 and it is needed, I will keep it i=
+n
+> > > > > subsequent v1 but
+> > > > moved to device management section.
+> > > >
+> > > > Could you please answer what's wrong with the first 4 patches in th=
+is series?
+> > > >
+> >
+> > I'd leave Ling Shan to comment on this.
+> >
+> > > 1. cover letter is missing the problem statement and use case 2. why
+> > > queue suspend and both device suspend are introduced, only one should=
+ be
+> > there. The design description is missing.
+> > > 3. Even though it claims under some random basic facility, cover lett=
+er clearly
+> > states the main use case is "live migration".
+> > > 4. Patch 4 is not needed at all. When device is suspended, it is _sus=
+pended_. It
+> > does not do any bifurcation.
+> > > 5. only suspend bit of patch2 is not enough to cover P2P. One needs s=
+uspend
+> > and freeze both covered in series [1].
+> > > 6. Finally the whole description of 1 to 4 need to be split in the de=
+vice
+> > operation, so that both passthrough and medication can utilize it using=
+ admin
+> > cmd and otherwise.
+> > > Since Zhu, told that dirty tracking and inflight descriptors will be =
+done, I
+> > presume he will propose to do over admin q or command interface.
+> > > And since all can run over the admin commands, the plumbing done in 1=
+ to 4
+> > can be made using admin commands.
+> > >
+> > > Until now we could not establish creating yet another DMA interface t=
+hat is
+> > better than q interface.
+> > > So ...
+> > > To me both the methods will start looking more converged to me over a=
+dmin
+> > command and queues.
+> >
+> > This is self-contradictory with what you've said before.
+> >
+> > We're in an endless circle now. The main reason is that you keep ignori=
+ng
+> > comments.
+> >
+> You didn=E2=80=99t comment in the series that should be reviewed.
+>
+> We can start back as following.
+> 1. We have two use cases, first agree that both use cases exist.
+> If disagree, discuss...
+> 2. Agree to improve device migration framework for both
+> If disagree, discuss...
+> 3. How to implement such functionality, discuss if both can use common fr=
+amework.
+> a. Discuss what are the technical touch points, which differs between two=
+ use cases. What different framework is needed for each case.
+> b. Discuss which are the common points that both can leverage.
+>
+> > Another question you keep ignoring is: what prevents this proposal from=
+ being
+> > used in the passthrough setups? I'm pretty sure if you can get the righ=
+t answer,
+> > you will understand the big picture.
+> I answered this already.
+> In passthrough mode, the passthrough device do not have access to any of =
+the following facility.
+
+What's wrong if they have? I had given sufficient proofs to
+demonstrate that they are useful for guests.
+
+> These facility must reside on the owner device.
+> a. dirty page tracking
+> b. incremental device context read/write
+> c. device mode setting
+>
+> Your comment is, some of this useful for debug and IOTLB optimization, so=
+ one can also avail this facility in the member device too.
+
+Not only the member device but the use cases beyond migration, that's the p=
+oint.
+
+> This is fine, both can have it.
+> In such use case one will have two AQs, one on owner device, one on the m=
+ember device.
+
+AQ on the member device for live migration requires PASID. And once we
+have PASID why do we still bother with owner?
+
+> Both operates at their own domain.
+>
+> For debug purpose you wanted to use non incremental device context.
+> This is a different use case, and one should build it when it is _really_=
+ needed.
+
+The debugging is just a piggybacking if you don't couple context with
+migration, isn't it?
+
+> Putting that in the debug umbrella to use it for mediation use case is no=
+t the right way to proceed.
+
+I never say debugging has any relationship with mediation. Let me
+repeat once again, try not couple dirty pages, device context with
+migration. We can benefit from those decoupling.
+
+> One should say, mediation requires non incremental device context and the=
+ interface may look different, this is also fine.
+
+This is not my point.
+
+Thanks
+
+
+>
+> Please don=E2=80=99t try to contradict two series, and it will be really =
+easy to work forward.
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
