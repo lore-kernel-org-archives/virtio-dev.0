@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13989-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-13990-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12F39E95A91
-	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 10:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7DDCEE95A91
+	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 10:06:05 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 56C3774138
-	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 10:01:52 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CDD837C3F6
+	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 10:06:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 48E6C98654B
-	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 10:01:52 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C34AA98654B
+	for <virtio-dev@archiver.kernel.org>; Mon,  9 Oct 2023 10:06:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 3CCD89864F3; Mon,  9 Oct 2023 10:01:52 +0000 (UTC)
+	id B5E2F9864CE; Mon,  9 Oct 2023 10:06:04 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,29 +24,32 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2BC579864D3;
-	Mon,  9 Oct 2023 10:01:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A647F9864D3;
+	Mon,  9 Oct 2023 10:06:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364399660"
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="381373172"
 X-IronPort-AV: E=Sophos;i="6.03,210,1694761200"; 
-   d="scan'208";a="364399660"
+   d="scan'208";a="381373172"
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="876744963"
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="818804039"
 X-IronPort-AV: E=Sophos;i="6.03,210,1694761200"; 
-   d="scan'208";a="876744963"
-Message-ID: <558fe3d6-0b81-4def-7256-52ac3cbffa8f@intel.com>
-Date: Mon, 9 Oct 2023 18:01:42 +0800
+   d="scan'208";a="818804039"
+Message-ID: <3539f99f-2770-428f-2b44-b7ac5a1a0407@intel.com>
+Date: Mon, 9 Oct 2023 18:05:52 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Firefox/102.0 Thunderbird/102.15.1
 Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, Parav Pandit <parav@nvidia.com>,
- Jason Wang <jasowang@redhat.com>, "eperezma@redhat.com"
- <eperezma@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
+To: Parav Pandit <parav@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>,
+ "eperezma@redhat.com" <eperezma@redhat.com>,
+ Stefan Hajnoczi <stefanha@redhat.com>,
  "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
  "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-References: <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
+ <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com>
  <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
  <CACGkMEvOxraeVB-5g7dJ-KBN=63kpmDfDdqaiQVyDh8egDjsGw@mail.gmail.com>
@@ -56,66 +59,35 @@ References: <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.
  <ddbd47c8-6985-2d08-bf98-0e7516f0c3c4@intel.com>
  <20230926064201-mutt-send-email-mst@kernel.org>
  <305d9907-9668-d362-1ff2-49a5e9f90e42@intel.com>
- <20230927113510-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54816B064AD08754C7D86AD8DCC2A@PH0PR12MB5481.namprd12.prod.outlook.com>
 From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <20230927113510-mutt-send-email-mst@kernel.org>
+In-Reply-To: <PH0PR12MB54816B064AD08754C7D86AD8DCC2A@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and vq
  state
 
 
 
-On 9/27/2023 11:40 PM, Michael S. Tsirkin wrote:
-> On Wed, Sep 27, 2023 at 04:20:01PM +0800, Zhu, Lingshan wrote:
->>
->> On 9/26/2023 6:48 PM, Michael S. Tsirkin wrote:
->>> On Tue, Sep 26, 2023 at 05:25:42PM +0800, Zhu, Lingshan wrote:
->>>> We don't want to repeat the discussions, it looks like endless circle with
->>>> no direction.
->>> OK let me try to direct this discussion.
->>> You guys were speaking past each other, no dialog is happening.
->>> And as long as it goes on no progress will be made and you
->>> will keep going in circles.
->>>
->>> Parav here made an effort and attempted to summarize
->>> use-cases addressed by your proposal but not his.
->>> He couldn't resist adding "a yes but" in there oh well.
->>> But now I hope you know he knows about your use-cases?
->>>
->>> So please do the same. Do you see any advantages to Parav's
->>> proposal as compared to yours? Try to list them and
->>> if possible try not to accompany the list with "yes but"
->>> (put it in a separate mail if you must ;) ).
->>> If you won't be able to see any, let me know and I'll try to help.
->>>
->>> Once each of you and Parav have finally heard the other and
->>> the other also knows he's been heard, that's when we can
->>> try to make progress by looking for something that addresses
->>> all use-cases as opposed to endlessly repeating same arguments.
->> Sure Michael, I will not say "yes but" here.
->>
->>  From Parav's proposal, he intends to migrate a member device by its owner
->> device through the admin vq,
->> thus necessary admin vq commands are introduced in his series.
->>
->>
+On 9/27/2023 6:39 PM, Parav Pandit wrote:
+>
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Wednesday, September 27, 2023 1:50 PM
 >> I see his proposal can:
 >> 1) meet some customers requirements without nested and bare-metal
 >> 2) align with Nvidia production
+> Slightly inaccurate.
+> The work produced is for the virtio spec update for the users.
+>
+> I have missed adding other contributors Sign-off who also share similar use cases, which I will add in v1.
+>
 >> 3) easier to emulate by onboard SOC
-> Is that all you can see?
->
-> Hint: there's more.
-please help provide more.
->
->
->
->
->
->> The general purpose of his proposal and mine are aligned: migrate virtio
+>>
+>> The general purpose of his proposal and mine are aligned: migrate virtio	
 >> devices.
 >>
+> Great.
+>
 >> Jason has ever proposed to collaborate, please allow me quote his proposal:
 >>
 >> "
@@ -129,24 +101,15 @@ please help provide more.
 >> "
 >>
 >> I totally agree with his proposal.
->>
->> Does this work for you Michael?
->>
->> Thanks
->> Zhu Lingshan
-> I just doubt very much this will work.  What will "define" mean then -
-> not an interface, just a description in english? I think you
-> underestimate the difficulty of creating such definitions that
-> are robust and precise.
-I think we can review the patch to correct the words.
+> We started discussing some of the it.
+> If I draw parallels, one should not say "detach descriptors from virtqueue" for the infrastructure that exists in the basic facilities.
+> If so, one should explain the technical design reason and it would make sense.
+not sure what is  "detach descriptors from virtqueue", but admin vq 
+carries commands anyway.
 >
->
-> Instead I suggest you define a way to submit admin commands that works
-> for nested and bare-metal (i.e. not admin vq, and not with sriov group
-> type). And work with Parav to make live migration admin commands work
-> reasonably will through this interface and with this type.
-why admin commands are better than registers?
->
+> So let's discuss it.
+> I like to better understand the _real_ technical reason for detaching it.
+so please to or cc me in your series.
 
 
 ---------------------------------------------------------------------
