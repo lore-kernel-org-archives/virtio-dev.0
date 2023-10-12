@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-13999-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14000-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D9441CDB482
-	for <virtio-dev@archiver.kernel.org>; Thu, 12 Oct 2023 10:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 57831CDB482
+	for <virtio-dev@archiver.kernel.org>; Thu, 12 Oct 2023 10:50:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 45CBA7BAF1
-	for <virtio-dev@archiver.kernel.org>; Thu, 12 Oct 2023 10:03:26 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8809A192317
+	for <virtio-dev@archiver.kernel.org>; Thu, 12 Oct 2023 10:50:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 240D198683A
-	for <virtio-dev@archiver.kernel.org>; Thu, 12 Oct 2023 10:03:26 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 3DE3F98684A
+	for <virtio-dev@archiver.kernel.org>; Thu, 12 Oct 2023 10:50:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0352A986474; Thu, 12 Oct 2023 10:03:26 +0000 (UTC)
+	id 24114986474; Thu, 12 Oct 2023 10:50:31 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,66 +24,247 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E79DB98660E
-	for <virtio-dev@lists.oasis-open.org>; Thu, 12 Oct 2023 10:03:25 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0041798660E;
+	Thu, 12 Oct 2023 10:50:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: SCtfBNd0M9GmFFmw0CGoIw-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697105003; x=1697709803;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=M62v0Gq8hQyDKYn0ak83r88Nch9qHOT1pYlWXgZLzlo=;
-        b=RNHAOxMDHWI0R4hXVNGlh+dEZ5ASeXckroj/2lQHi3n/fQUBzcTQLhCWPa1yAbU/qX
-         VlvUU2ZG9lvrlK0pIUyHf56CRP/vkvDGZhggy0bXekFIERbzHlThUGIGr079zkOMC6dg
-         LP/AX1R6XzhMwu/ZinOqtz/3O6j0ExN22VcmbvrzqI/Gq/9BD+8XQx1lOYoVLkmv8aR8
-         8vBlUXt+9H9CpaD9HwBJ69dW/HlLP7mW7+aQqA8Slte/rjNjobJrVmeaxdjA09yEWDlI
-         hI2VmI+Kg3WNn5iW3ZXC9doLedKUX9b2rKZT81IKk+tD+RzAZgI7IMvh0I9U8tHcIPr4
-         S6+g==
-X-Gm-Message-State: AOJu0Yx7icgHA6q1ZsbSr0aj6MDgr+PwdUzyROtfffzxk6cgIMiF+f6j
-	wmNv8ANY6Jbs54YawNEVYsxHQxOWtHZyugolu1b3266S7TqoXdSboMcXmg9Ra5RTND0cyRwXp3c
-	Dd8bKyuu/x7eYBuKAGkU4+6fWCnqp
-X-Received: by 2002:a05:600c:2154:b0:401:519:c9 with SMTP id v20-20020a05600c215400b00401051900c9mr20707677wml.13.1697105002920;
-        Thu, 12 Oct 2023 03:03:22 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHbCAhhBSZTgGCvg5bYcEy0aVlDFx5WjIaQrxj+zLp3RARAIfgqr+JQwQw4u53F9Fd+0BMuxg==
-X-Received: by 2002:a05:600c:2154:b0:401:519:c9 with SMTP id v20-20020a05600c215400b00401051900c9mr20707660wml.13.1697105002543;
-        Thu, 12 Oct 2023 03:03:22 -0700 (PDT)
-Date: Thu, 12 Oct 2023 06:03:19 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: Parav Pandit <parav@nvidia.com>,
-	"Zhu, Lingshan" <lingshan.zhu@intel.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Message-ID: <20231012060042-mutt-send-email-mst@kernel.org>
-References: <PH0PR12MB5481830365A80EF4583A3FFADCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEshxAU3Mjo7vczBNRb=P=FnenO4mPb9HJL0Ma3ZRbe-oA@mail.gmail.com>
- <PH0PR12MB548172996D62E37714A9776BDCF8A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEtW88zJkDQL58NqLzzudq=f+SmzJ8bha55Dd2fd=FRGBQ@mail.gmail.com>
- <PH0PR12MB5481573D6EE3BE03FB7C3D70DCFCA@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvOxraeVB-5g7dJ-KBN=63kpmDfDdqaiQVyDh8egDjsGw@mail.gmail.com>
- <PH0PR12MB5481C11F6D68A892A091E2AFDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvtyDXKHE4w9uH_9eqbckTGF8fZkNUuKr+mkzP0o31z_w@mail.gmail.com>
- <PH0PR12MB548182A6DC73C850462B546EDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEvLjV4Q8ETHCfVEiqnN1awLiogR79t3VEHTNXZk5qsQdw@mail.gmail.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="449078222"
+X-IronPort-AV: E=Sophos;i="6.03,218,1694761200"; 
+   d="scan'208";a="449078222"
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="824556208"
+X-IronPort-AV: E=Sophos;i="6.03,218,1694761200"; 
+   d="scan'208";a="824556208"
+Message-ID: <ce8a8000-8ed8-66fc-71f9-db560975c100@intel.com>
+Date: Thu, 12 Oct 2023 18:49:51 +0800
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEvLjV4Q8ETHCfVEiqnN1awLiogR79t3VEHTNXZk5qsQdw@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [virtio-dev] Re: [PATCH 0/5] virtio: introduce SUSPEND bit and
- vq state
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Content-Language: en-US
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, Parav Pandit <parav@nvidia.com>,
+ Jason Wang <jasowang@redhat.com>, "eperezma@redhat.com"
+ <eperezma@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+References: <PH0PR12MB5481C11F6D68A892A091E2AFDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <e9c482d5-1441-fec5-b55b-f1ac6e81f85b@intel.com>
+ <PH0PR12MB5481C57B255B0D5EA6FB109DDCC3A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <ddbd47c8-6985-2d08-bf98-0e7516f0c3c4@intel.com>
+ <20230926064201-mutt-send-email-mst@kernel.org>
+ <305d9907-9668-d362-1ff2-49a5e9f90e42@intel.com>
+ <20230927113510-mutt-send-email-mst@kernel.org>
+ <558fe3d6-0b81-4def-7256-52ac3cbffa8f@intel.com>
+ <20231011061508-mutt-send-email-mst@kernel.org>
+ <373821b2-1a1e-3bf3-51dc-8af54db85d00@intel.com>
+ <20231012054804-mutt-send-email-mst@kernel.org>
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20231012054804-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [PATCH 0/5] virtio:
+ introduce SUSPEND bit and vq state
 
-On Mon, Oct 09, 2023 at 04:49:33PM +0800, Jason Wang wrote:
-> > If something is needed for debug please proceed to add such debug interface.
-> 
-> Most debugging is simply the dumping of device states so I don't know
-> what you want to say here.
 
-Donnu about Parav but I want to say that I'd like to see driver
-support for the debugging interface before we add it to
-spec. General "may be useful" doesn't cut it  - too easy to
-justify anything by "debugging".
+
+On 10/12/2023 5:59 PM, Michael S. Tsirkin wrote:
+> On Wed, Oct 11, 2023 at 06:38:32PM +0800, Zhu, Lingshan wrote:
+>>
+>> On 10/11/2023 6:20 PM, Michael S. Tsirkin wrote:
+>>> On Mon, Oct 09, 2023 at 06:01:42PM +0800, Zhu, Lingshan wrote:
+>>>> On 9/27/2023 11:40 PM, Michael S. Tsirkin wrote:
+>>>>> On Wed, Sep 27, 2023 at 04:20:01PM +0800, Zhu, Lingshan wrote:
+>>>>>> On 9/26/2023 6:48 PM, Michael S. Tsirkin wrote:
+>>>>>>> On Tue, Sep 26, 2023 at 05:25:42PM +0800, Zhu, Lingshan wrote:
+>>>>>>>> We don't want to repeat the discussions, it looks like endless circle with
+>>>>>>>> no direction.
+>>>>>>> OK let me try to direct this discussion.
+>>>>>>> You guys were speaking past each other, no dialog is happening.
+>>>>>>> And as long as it goes on no progress will be made and you
+>>>>>>> will keep going in circles.
+>>>>>>>
+>>>>>>> Parav here made an effort and attempted to summarize
+>>>>>>> use-cases addressed by your proposal but not his.
+>>>>>>> He couldn't resist adding "a yes but" in there oh well.
+>>>>>>> But now I hope you know he knows about your use-cases?
+>>>>>>>
+>>>>>>> So please do the same. Do you see any advantages to Parav's
+>>>>>>> proposal as compared to yours? Try to list them and
+>>>>>>> if possible try not to accompany the list with "yes but"
+>>>>>>> (put it in a separate mail if you must ;) ).
+>>>>>>> If you won't be able to see any, let me know and I'll try to help.
+>>>>>>>
+>>>>>>> Once each of you and Parav have finally heard the other and
+>>>>>>> the other also knows he's been heard, that's when we can
+>>>>>>> try to make progress by looking for something that addresses
+>>>>>>> all use-cases as opposed to endlessly repeating same arguments.
+>>>>>> Sure Michael, I will not say "yes but" here.
+>>>>>>
+>>>>>>    From Parav's proposal, he intends to migrate a member device by its owner
+>>>>>> device through the admin vq,
+>>>>>> thus necessary admin vq commands are introduced in his series.
+>>>>>>
+>>>>>>
+>>>>>> I see his proposal can:
+>>>>>> 1) meet some customers requirements without nested and bare-metal
+>>>>>> 2) align with Nvidia production
+>>>>>> 3) easier to emulate by onboard SOC
+>>>>> Is that all you can see?
+>>>>>
+>>>>> Hint: there's more.
+>>>> please help provide more.
+>>> Just a small subset off the top of my head:
+>>> Error handling.
+>> handle failed live migration? how?
+> For example you can try restarting VM on source.
+> Or at least report an error to hypervisor.
+I am not sure resetting a VM due to failed live migration is
+a good idea, should we resume the VM instead? Then try other
+convergence algorithm?
+
+And I think current live migration solution already implements error
+detector, like sees a time out?
+>
+>
+>> and for other errors, we have mature error handling solutions
+>> in virtio for years, like re-read, NEEDS_RESET.
+> facepalm
+>
+> Are you aware of the fact that Linux still doesn't support
+> it since it turned out to be an extremely awkward interface
+> to use?
+I think we have implemented this in virtio driver,
+like re-read to check FEATURES.
+>
+>> If that is not good enough, then the corollary is:
+>> admin vq is better than config space,
+>
+> You keep confusing admin vq with admin commands.
+OK, so are admin commands better than registers?
+>
+>
+>> then the further corollary could be:
+>> we should refactor virito-pci interfaces to admin vq commands,
+>> like how we handle features
+>>
+>> Is that true?
+>>> Extendable to other group types such as SIOV.
+>> For SIOV, the admin vq is a transport, but for SR-IOV
+>> the admin vq is a control channel, that is different,
+>> and admin vq can be a side channel.
+>>
+>> For example, for SIOV, we config and migrate MSIX through
+>> admin vq. For SRIOV, they are in config space.
+> And that's a mess. FYI we already got feedback from Linux devs
+> who are wondering why we can't come up with a consistent
+> interface that does everything.
+I believe config space is a consistent interface for PCI.
+For SIOV, we need a new transport layer anyway.
+>
+>
+>>> Batching of commands
+>>> less pci transactioons
+>> so this can still be a QOS issue.
+>> If batching, others to starve?
+> And if you block CPU since you are not accepting
+> a posted write this is better?
+I don't get it, block guest CPU?
+>
+>>> Support for keeping some data off-device
+>> I don't get it, what is off-device?
+>> The live migration facilities need to fetch data from the device anyway
+> Heh this is what was driving nvidia to use DMA so heavily all this time.
+> no - if data is not in registers, device can fetch the data from
+> across pci express link, presumably with a local cache.
+For PCI based configuration, like MSI, we need to fetch from config 
+space anyway.
+For others like dirty page, we can store the bitmap in host memory, and use
+PASID for isolation.
+>
+>
+>>> which does not mean it's better unconditionally.
+>>> are above points clear?
+>> The thing is, what blocks the config space solution?
+>> Why admin vq is a must for live migration?
+>> What's wrong in config space solution?
+> Whan you say what's wrong do you mean you still see no
+> advantages to doing DMA at all? config space is just better
+> with no drawbacks?
+still, if admin vq or admin commands are better than config space,
+we should refactor the whole virtio-pci interfaces to admin vq.
+
+And Jason has ever proposed to build admin vq LM on our basic
+facilities, but I see this has been rejected.
+>
+>> Shall we refactor everything in virtio-pci to use admin vq?
+>>> as long as you guys keep not hearing each other we will keep
+>>> seeing these flame wars. if you expect everyone on virtio-comment
+>>> to follow a 300 message thread you are imo very much mistaken.
+>> I am sure I have not ignored any questions.
+>> I am saying admin vq is problematic for live migration,
+>> at least it doesn't work for nested, so why admin vq is a must for live
+>> migration?
+>
+> My suggestion for you was to add admin command support to
+> VF memory, as an alternative to admin vq. It looks like that
+> will address the nested virt usecase.
+If you mean carrying some big bulk of data like dirty page information,
+we implemented a facility in host memory which is isolated by PASID.
+
+I should send a new series soon, so we can work on the patch.
+
+Thanks for your suggestions and efforts anyway.
+>
+>>>>>
+>>>>>
+>>>>>
+>>>>>> The general purpose of his proposal and mine are aligned: migrate virtio
+>>>>>> devices.
+>>>>>>
+>>>>>> Jason has ever proposed to collaborate, please allow me quote his proposal:
+>>>>>>
+>>>>>> "
+>>>>>> Let me repeat once again here for the possible steps to collaboration:
+>>>>>>
+>>>>>> 1) define virtqueue state, inflight descriptors in the section of
+>>>>>> basic facility but not under the admin commands
+>>>>>> 2) define the dirty page tracking, device context/states in the
+>>>>>> section of basic facility but not under the admin commands
+>>>>>> 3) define transport specific interfaces or admin commands to access them
+>>>>>> "
+>>>>>>
+>>>>>> I totally agree with his proposal.
+>>>>>>
+>>>>>> Does this work for you Michael?
+>>>>>>
+>>>>>> Thanks
+>>>>>> Zhu Lingshan
+>>>>> I just doubt very much this will work.  What will "define" mean then -
+>>>>> not an interface, just a description in english? I think you
+>>>>> underestimate the difficulty of creating such definitions that
+>>>>> are robust and precise.
+>>>> I think we can review the patch to correct the words.
+>>>>> Instead I suggest you define a way to submit admin commands that works
+>>>>> for nested and bare-metal (i.e. not admin vq, and not with sriov group
+>>>>> type). And work with Parav to make live migration admin commands work
+>>>>> reasonably will through this interface and with this type.
+>>>> why admin commands are better than registers?
+>>>>
+>>>> This publicly archived list offers a means to provide input to the
+>>>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>>>
+>>>> In order to verify user consent to the Feedback License terms and
+>>>> to minimize spam in the list archive, subscription is required
+>>>> before posting.
+>>>>
+>>>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>>>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>>>> List help: virtio-comment-help@lists.oasis-open.org
+>>>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>>>> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+>>>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>>>> Committee: https://www.oasis-open.org/committees/virtio/
+>>>> Join OASIS: https://www.oasis-open.org/join/
+>>>>
 
 
 ---------------------------------------------------------------------
