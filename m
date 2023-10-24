@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14019-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14020-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2C810C25B48
-	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 12:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32F6CC25B48
+	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 12:54:07 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7F86671C93
-	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 12:50:28 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2A9787BAF3
+	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 12:54:04 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4B7359869AF
-	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 12:50:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 01E239869B4
+	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 12:54:04 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 2B0F49869A2; Tue, 24 Oct 2023 12:50:28 +0000 (UTC)
+	id E23F39869A2; Tue, 24 Oct 2023 12:54:03 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,34 +24,34 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A1CC59869A3;
-	Tue, 24 Oct 2023 12:49:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D1B429869A3;
+	Tue, 24 Oct 2023 12:54:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 From: Haixu Cui <quic_haixcui@quicinc.com>
 To: <virtio-dev@lists.oasis-open.org>, <virtio-comment@lists.oasis-open.org>,
         <harald.mommer@opensynergy.com>, <cohuck@redhat.com>
 CC: <quic_ztu@quicinc.com>, Haixu Cui <quic_haixcui@quicinc.com>
-Date: Tue, 24 Oct 2023 20:48:52 +0800
-Message-ID: <20231024124852.23412-1-quic_haixcui@quicinc.com>
+Date: Tue, 24 Oct 2023 20:53:46 +0800
+Message-ID: <20231024125346.23546-1-quic_haixcui@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: W24xN6L7HricpLaS5OrlyTOpUiML3Ctc
-X-Proofpoint-ORIG-GUID: W24xN6L7HricpLaS5OrlyTOpUiML3Ctc
+X-Proofpoint-GUID: yRlpwO5TOiIEetsEQ0x4g53sz8YB_Lr4
+X-Proofpoint-ORIG-GUID: yRlpwO5TOiIEetsEQ0x4g53sz8YB_Lr4
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-24_11,2023-10-24_01,2023-05-22_02
+ definitions=2023-10-24_13,2023-10-24_01,2023-05-22_02
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
  lowpriorityscore=0 bulkscore=0 impostorscore=0 malwarescore=0
- clxscore=1011 spamscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0
+ clxscore=1015 spamscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0
  mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2310170001 definitions=main-2310240108
-Subject: [virtio-dev] [PATCH] [PATCH v3] virtio-spi: add the device specification
+Subject: [virtio-dev] [PATCH v4] virtio-spi: add the device specification
 
 virtio-spi is a virtual SPI master and it allows a guest to operate and
 use the physical SPI master controlled by the host.
@@ -142,7 +142,7 @@ index 0000000..5dbceaf
 +        u8 cs_change;
 +        u8 tx_nbits;
 +        u8 rx_nbits;
-+	u8 reserved[3];
++	 u8 reserved[3];
 +        le32 mode;
 +        le32 freq;
 +        le32 word_delay_ns;
