@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14015-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14016-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 827BCC07545
-	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 10:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20021C00A8F
+	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 10:35:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B58CC613DA
-	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 10:18:24 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 52FA8780FE
+	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 10:35:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9A0829869AC
-	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 10:18:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 39BD99869AE
+	for <virtio-dev@archiver.kernel.org>; Tue, 24 Oct 2023 10:35:54 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 7F07298699F; Tue, 24 Oct 2023 10:18:24 +0000 (UTC)
+	id 27EF698699F; Tue, 24 Oct 2023 10:35:54 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,198 +24,181 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A6179869A1
-	for <virtio-dev@lists.oasis-open.org>; Tue, 24 Oct 2023 10:18:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1706D9869A0;
+	Tue, 24 Oct 2023 10:35:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: lbOCHalEOM-9jedh-Z2lbg-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698142701; x=1698747501;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xzN50NopadfX2PtaVpeWi7LfapJHtHKLFLLL7j1Ta+I=;
-        b=Bos3pka6WPw7XQdUeZ/I+es2v0n55jm9Fg9OE5Ya6Lq77ba1Eta2G8Gd/00LGmPI71
-         X9xdV7kt70dullSr8ewCVkguh29LXilN8WsI8UOHSD+aPhKzFB0mfUCaS+jbKL3iNY22
-         H8AqxwK1GazA83cHKpBRf6kH/CUTEXlrXu2Z2NmdrNjSbJ2ko/tFeQhcXpAqiyyBXaoX
-         JwfDk5s2UCudgDpmnRAf3+n0zf77qFtQbpFdlucb4QQGJaICpbRu6GmJqTjA/sBYQ1f0
-         wMJWGpzR6ZhJc3KUhHxFbbKM3Qh62bS6aueje9c0o/HHk3uo1GauN3H0ZCuHRA7fPlEu
-         TU2w==
-X-Gm-Message-State: AOJu0YzG9/zorZ4TChmTlAI4l8r7AYV3PJMH/TBpi1wg5TZWyZr5skzU
-	ExAoRSjlxHQ8QRUzU6KLp3sM2IOcvG72MKQmV7iqYiaLKbZfutQ4tFTyTBWz2N3bH+sYe69MMHS
-	R68WO+QWCWSKyu0xE26H7J/yMqlbw
-X-Received: by 2002:a05:6808:1395:b0:3b2:ee69:800b with SMTP id c21-20020a056808139500b003b2ee69800bmr15257791oiw.55.1698142700935;
-        Tue, 24 Oct 2023 03:18:20 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEE45sVDPwadtbC19Yk1dX90YX3zm95cAdBhowFxCoW/go9ttTjide7gJtAAiQ2MJ3V9aqNXw==
-X-Received: by 2002:a05:6808:1395:b0:3b2:ee69:800b with SMTP id c21-20020a056808139500b003b2ee69800bmr15257780oiw.55.1698142700639;
-        Tue, 24 Oct 2023 03:18:20 -0700 (PDT)
-Date: Tue, 24 Oct 2023 12:18:17 +0200
-From: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
-To: Radu Ocica <rocica@blackberry.com>
-Cc: "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	virtio-dev@lists.oasis-open.org, anton.yakovlev@opensynergy.com
-Message-ID: <ZTeZ6YjyR0BJOylw@fedora>
-References: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FDIkri2f8QsAbZjqHb1NEDUs24MtlIdKu5Dw+OQGujhDSe/9/idiEhDKXJcllpgD2Xw/o0lkjx4pPfS7YRI9jeLTQcEKotuy8jkSkGVNWMBtZlUKzf13LhKYRSryWIoZK2iPgVfjQp0FH66yHB3OnkXnvkXXujfKf/p8FX8e0jCTdK7cpj6MypKwFbtvvU/7v9HjPyNSmpaKWQvrh53KFOw8ieun8Kn0Iafo9CzSGsyvq44Tj+LJcMYN24qGtlT7oWL7hFzhrrWDeBPkEVmSWoiQm3/D0JbNmyiQt542MQtG51Tum2kmZ3SpZ5MNaSRG/3a90+smvedaOHnfhQm7UQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rhoHIe47XEWW3sfTltx5xDgl1jLZh4956KgR8hj9egI=;
+ b=kBUKfBfv3SuAd8+nAKKKFxtqtGrFGmTlzytzQKn3JbBJyF1EZMz0pwaO6RDv/UvGy7o8yDnLvv97tuOG3xzVyGyBwXDx3bzKSCSVmRCdctofddpT9BEScrj1oa8n9L1luYCWpx/BfRcTVloH58Y5fqCUW3NmQSU8mpYutVisbHb3IilQRfQ0tiC6TdoTkFTjfRxQ2UtLFpac/zdWcTjj3WjZWJvQSNEVqDBocN81863UxkA2lGwb/I9MY9DEuoSAIDCCrRTaLkOI9Lh222ZDQE8pKavrfjq0ZdwYQuPDaeeaJ+xwMWgZsr8XhcDxmXrbXq4JlLeC3pZia2pKUBk4QA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+From: "Chen, Jiqian" <Jiqian.Chen@amd.com>
+To: Parav Pandit <parav@nvidia.com>
+CC: "Michael S . Tsirkin" <mst@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
+	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	David Airlie <airlied@redhat.com>, Gurchetan Singh
+	<gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
+	=?utf-8?B?TWFyYy1BbmRyw6kgTHVyZWF1?= <marcandre.lureau@gmail.com>, Robert
+ Beckett <bob.beckett@collabora.com>, Mikhail Golubev-Ciuchea
+	<Mikhail.Golubev-Ciuchea@opensynergy.com>,
+	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Huang,
+ Honglei1" <Honglei1.Huang@amd.com>, "Zhang, Julia" <Julia.Zhang@amd.com>,
+	"Huang, Ray" <Ray.Huang@amd.com>, "Chen, Jiqian" <Jiqian.Chen@amd.com>
+Thread-Topic: [PATCH v6 1/1] content: Add new feature
+ VIRTIO_F_PRESERVE_RESOURCES
+Thread-Index: AQHaA9HvmHelxVzMEkK9DIiJvUqDjbBW5OUAgAC5UoD//8WsgIAB4oYA
+Date: Tue, 24 Oct 2023 10:35:49 +0000
+Message-ID:
+ <BL1PR12MB584959DE2A88F4968ECC6740E7DFA@BL1PR12MB5849.namprd12.prod.outlook.com>
+References: <20231021035111.650248-1-Jiqian.Chen@amd.com>
+ <20231021035111.650248-2-Jiqian.Chen@amd.com>
+ <PH0PR12MB548182FF345FE7D1DE0D89C1DCD8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <BL1PR12MB584997339FBFF8E8DF007755E7D8A@BL1PR12MB5849.namprd12.prod.outlook.com>
+ <PH0PR12MB5481DBD22233808AA9497ADBDCD8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To:
+ <PH0PR12MB5481DBD22233808AA9497ADBDCD8A@PH0PR12MB5481.namprd12.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-exchange-imapappendstamp: BL1PR12MB5849.namprd12.prod.outlook.com
+ (15.20.6886.034)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BL1PR12MB5849:EE_|DS0PR12MB6582:EE_
+x-ms-office365-filtering-correlation-id: ade9ad25-284f-4618-d212-08dbd47cfd1e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ jR6DRYvTe4y/BS4bCjv8MkVd3+LXePNU/mt/do2XBM6xQuJ/G7JI4Dkc+Qq5sJHBiBe7I+t2JYF8yy/eAf+xSIoZZO5+nWPKVo1SP0wYo645fHmFjIaks1FLW2PIEsAtXf7sw37kgemP2H4mQ8/SoRmBoqOndY06gQ+S1uD08rxARCwMzjwhT1uTX29vYsMFupDQ4VkQElP84vgq+Tl690uFytyL0nmp2TLMG9kc6zO/1nf4NeKnHcJcXgCETlj4WlH/UbFgYjQ9bzvjs+y4owH/6OCSPIhqpY7nkyE2WCNPDu7+HdZ3Otx7ai+GUypqm08pHvgc0H1NpxL+CXmuwMuSX+TAscrKGUyhqzCF/yjH1DQhjbt7KnFllfcfBX/c8KpdtxZzOkCnBnUYWsKsuA2y4DiRzlp8z4WJjp5JttPP2Z7C2TKK4GanHwFplpztukWgOUdWVAMI08pbxOAh9CWWVC2Fi8e7q0NuMh/JsnkomLloSUECuIdp+u3btHjV5aFg2RCcZPTun7GkdXdtVuKJ5d/z3hyBHup3IRdLEbulkbakyU+t88sFJwosWty2JNq4FRZw4hLmTr5oglDVjdgj3HRhLAc9SIVcwTFmv+Ycyy7bLzXOkkZH5+uF/bjk
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39860400002)(136003)(396003)(376002)(366004)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(55016003)(83380400001)(66556008)(8936002)(316002)(122000001)(6916009)(66946007)(76116006)(66476007)(478600001)(66446008)(54906003)(64756008)(33656002)(8676002)(41300700001)(52536014)(7416002)(2906002)(4326008)(5660300002)(38100700002)(71200400001)(9686003)(53546011)(26005)(6506007)(7696005)(38070700009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?WnZRTHZvUC9tSlVCNE1jeFcvVitLUjFTVXZrY25YN1doQVVJcjQ0S1JyODlS?=
+ =?utf-8?B?NlZBNEI2MUVraWpOcDJDeklaOU54TTlXTHhnQ1oxV1EzY0RqcDJrWUlJSGU1?=
+ =?utf-8?B?bHhERlMrUjdtd2syenozVjZnSlZyY0xHSHhrR1lWaXdLNHZRTTZBQjJtUERZ?=
+ =?utf-8?B?V2wzVzhWUlNBYlJHSnJYb1dHcS80N2ZaQWt6NCs3Vkt3Y3UySVBuTmdyc040?=
+ =?utf-8?B?UEg3bGFaa3BQQ2g1Snk2QkFOV2lNc00vM05Uak9qaXJScDhkd3BvK0FVWjR4?=
+ =?utf-8?B?NXJmWFMwdXhaOG42T3E2NUR5QWdYR3NRaEpDWnlSd1hWd2E0WTU5cU8rWllr?=
+ =?utf-8?B?ZGkvTnk0WGt1SkphSnJ6YmNlNXl6Qyt2TmVDM1NhVHp1RW9xVjNVYTkyeTlG?=
+ =?utf-8?B?Q1J5SmJRMlhscERZWlVVVk50eUhySXRWSG12cTY2dWhGVmdybUR3b1BEelZM?=
+ =?utf-8?B?M1QvZWUyNlpZUVhZUU4rR3lNT1ZZRDF5MTNna3Fxb3RESjlwUG8zODloeWF3?=
+ =?utf-8?B?dTQ5VENEdGpWc203ZEw4K29IdytNKzVMaUJIRU8xOHp6clNzOXVPeHV6aGlq?=
+ =?utf-8?B?TXdBVFc2MG5VTjdzbG9Tc0c1cWlFdUFXSnJXeTM1YXNEU1FPblM2dTFXNDJ2?=
+ =?utf-8?B?aTh4aDFwL1ZSUlg3U3phWTFhcHRYcFowbXlEMlhkQmxHNk5LcjdtOVJGVjN0?=
+ =?utf-8?B?Q2dUM1ExMklXTWhOM3BydzNpZ3lINmlqWmFOdGJCZG9KWFVXRzRNdHpqSUU4?=
+ =?utf-8?B?cjhDOGVhenZWaGd5RGxzNm9IWkFhWW1GRTVMLzRqKzNFTEtrTzV6MWV0R3BE?=
+ =?utf-8?B?QkxQMURETDJ5SmRoYXlWSzdLckZldzJKWUgxVkpMVm4zUGpzWVFrMHlxR0pa?=
+ =?utf-8?B?WkR3UVdUMVlJNlcyOS95d281bFRyOGEvclp1KzZtVStTbUhBQXBDNThaK1hC?=
+ =?utf-8?B?amtxU0pra2QvNDFIRkFsOE9Ta0Z5Zlk3UmZTVHdhWUFIZ29rZE9KRTFwOGd4?=
+ =?utf-8?B?U3gvTE5IMUx1MVZXTjhvM1dKMGZkZDRsb3c5Nmt1NFlmc1ZLc3BJcVBxMnAw?=
+ =?utf-8?B?MTJXdTlONmVlYUVXVllWWHlmSlJPTjNjcnEvak5DcUxJeFgwVGhaQmlYemVt?=
+ =?utf-8?B?OG1ieUIzT21yUm5VaG5WTnl1UlpwbzRxcmM5Q3E2RlRnYVpNaDY2YS9CcUIr?=
+ =?utf-8?B?Ri9EQ0ZYaHhMTm5SaVhuVjdvMTBjQ2VnaWNtQmc5ZHUzZmNCWWY1WFhxeWhL?=
+ =?utf-8?B?bjR1cnhEaElSNlh1MnBDMWc2OVNJMEVWTDVFdjd4RXpvWnFKQ3R3NEs1NG5n?=
+ =?utf-8?B?R0trYjNHSFdLT0sxMWRjWFBhWHQxajV3Q2FuQjhqWE5yazA4NVB2NEhweUFD?=
+ =?utf-8?B?TTlRMmRoMWswTnQ2bFZZbmpxZmE5bUJiOWVaaTBQUytpemhTbk1KeHd3dkF0?=
+ =?utf-8?B?OUF3YUV3SkZHZVNtdWN3aHFQVWhXR3hlT1JoejM3anhPaVFOQ28xd1hxNXFS?=
+ =?utf-8?B?NVFPMFhQMmJvU0ZDQklaYkxKZGE1NEdQVkI0dDNQeGR6YjVaRy9mOWdpSFc0?=
+ =?utf-8?B?ckpRK253YlYwaExOWlk4QVdiWkZ6N2trRU80NXp4RHljNXVveTRmallEbEdi?=
+ =?utf-8?B?Uk5kbnJ6dnNUYlFlaU5sVnRBR1BpSC9wOVZreXNuMlE4VFRSYUFSYm90SlA0?=
+ =?utf-8?B?ZlcybUV1WTlYZXYvNHFJUDk0eEJFaWVKQWZOQTNoQXJoTGMzcEZRZk5BNElk?=
+ =?utf-8?B?UTdaQTRhR2U1NHBqd2E4bHg2U21LRUxVbUlHR1JWdXVJbWVVZ0dTODlLTXlJ?=
+ =?utf-8?B?bG9MZGJBbll2ODVQQnF5bk91WG90Y1hWZ0NWS0IxeUF4SlUwS3ZjR2NabnBy?=
+ =?utf-8?B?WUdUQTBQTXR4V3dyNzNHd3YzbFZWU0wzZUFqaVBkeDRJNWRTM2pNM3JseHlj?=
+ =?utf-8?B?T1I5b09zSjNWODlKZVZCc1JJYUNDTUFCR3JwZEZRUGwzM24xWGNkbGNjSjZD?=
+ =?utf-8?B?QmthaXVNQ1FIWTlMU21WZVpuNXR2MlkzQkRVRTNMa2wzcVZDaHg1WFhmYmtV?=
+ =?utf-8?B?aHhLTXh2bE14QUJuZXFkYWJiSGZydmxjaERSM21pbHFURXhpb2Ryb1lPZnVo?=
+ =?utf-8?Q?lpik=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <25B682384116AF42AC64BD6B0AE701BC@amdcloud.onmicrosoft.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] virtio-snd comments/questions
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ade9ad25-284f-4618-d212-08dbd47cfd1e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2023 10:35:49.0607
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: z/90lUzMOGzN5obnuNP/joHFl1Z347Tuepvcn5ZVbbWPrNBbkAOsiHEW9MjQhtYaspwUZX7P7z4wRaghQnp4Dg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6582
+Subject: [virtio-dev] Re: [PATCH v6 1/1] content: Add new feature
+ VIRTIO_F_PRESERVE_RESOURCES
 
-Hello Radu,=20
-
-I CC Anton too. This email responds part of the questions.
-
-On Wed, Oct 18, 2023 at 03:32:21PM +0000, Radu Ocica wrote:
-> Hi,
-> I am working on implementing a virtio-snd vdev. During my work on differe=
-nt aspects of the implementation I stumbled across the following issues wit=
-h the virtio sound device specification (that is part of the virtio 1.3 dra=
-ft). In some cases additional clarifications might be enough to address the=
- issue, in others additional features might be required. Below is a list of=
- the issues, with some suggestions on how the issues could be addressed.
-> PCM playback and capture
-> Unclear semantics of PCM_STOP/PCM_START operations
-> The virtio-snd specification is not clear on the expectations on how the =
-PCM_STOP control request is to be handled by the vdev, in terms of whether =
-to:
->=20
->   *   drop the remaining buffered audio in the host pcm stream and return=
- pending io messages to the guest driver
->   *   drop the remaining buffered audio in the host pcm stream and keep p=
-ending io messages in order to be able to prime the host pcm stream in case=
- PCM_STOP is followed by PCM_START; return pending io messages only when re=
-ceiving PCM_RELEASE
->   *   drain the remaining buffered audio in the host pcm stream and send =
-a PCM_STOP response upon drain completion, return pending io messages to th=
-e guest driver as they are completed (before PCM_STOP response); drain capa=
-bility might or might not be available for the host pcm stream
->   *   start draining the remaining buffered audio in the host pcm stream =
-and send a PCM_STOP response immediately, return pending io messages to the=
- guest driver as they are completed (after PCM_STOP response); if receiving=
- PCM_RELEASE before drain completion hold off the response until all pendin=
-g io messages are completed and returned to the guest driver; drain capabil=
-ity might or might not be available for the host pcm stream
->   *   pause the host pcm stream and maintain buffered audio / pending io =
-messages as is; pause capability might or might not be available for the ho=
-st pcm stream
->=20
-
-I agree that the STOP command could be better explain it. In our
-implementation[1], we implemented as your last point defines it, i.e.,
-stop host's pcm stream and keep messages in tx/rx. The STOP control
-command is marked as completed immediately. The virtio spec does not
-indicate that STOP requires to mark pending io messages as completed
-thus we do not do that. A note about this in the spec would help.
-
-> If the thinking is that the vdev on the host can decide on how to impleme=
-nt PCM_STOP based on the host stream capabilities, the guest driver has no =
-information about the choice made by the vdev. In our opinion the choice ma=
-de by the vdev in implementing PCM_STOP dictates what the possible transiti=
-ons after PCM_STOP can be (if PCM_STOP is implemented as pause, PCM_START a=
-nd PCM_RELEASE are possible transitions, but if PCM_STOP is implemented as =
-drain, the only valid transition is PCM_RELEASE and if PCM_STOP is implemen=
-ted as drop and all pending io messages have been returned to the guest dri=
-ver, again the only valid transition seems to be PCM_RELEASE), but the gues=
-t driver is the one issuing the next request and it might at the best be ab=
-le to make an educated guess how the vdev implemented PCM_STOP based on whe=
-ther all the pending io messages are returned or not to the guest driver. T=
-o make such a guess possible, more clarifications would be required in the =
-spec to identify which of the scenarios listed above are considered by the =
-spec.
-
-Checking the Linux kernel driver, the STOP cmd is issued when getting
-SNDRV_PCM_TRIGGER_PAUSE_PUSH. Documentation does not indicate when this
-msg is sent though. The RELEASE cmd is issued only during
-virtsnd_pcm_sync_stop(). In this sense, I would guess that STOP behaves
-like a PAUSE whereas RELEASE behaves like a STOP and dropping all
-pending IO messages. The spec left for the implementation if device
-would still playback those buffer or just drop them. I think you may
-find interesting the discussion we started at this thread[2] regarding
-the RELEASE control cmd semantics.
-
-> Note 1:  The reference virtio-snd linux/android guest driver explicitly d=
-oesn't support the ALSA SNDRV_PCM_INFO_DRAIN_TRIGGER feature flag, which mi=
-ght indicate there was no intent to support drain semantics.
-> Note 2: The reference virtio-snd linux/android guest driver explicitly do=
-es support the ALSA SNDRV_PCM_INFO_PAUSE feature flag, which seems to indic=
-ate intent to support pause semantics, along with drop semantics.
-> Note 3: The Android Audio HAL and tinyalsa/tinyplay don't have any notion=
- of drain or pause. At the end of a playback session there is a wait for pr=
-eviously buffered data to complete playing using the tinyalsa pcm_wait() fu=
-nction, and then a PCM_STOP request is issued after the buffered audio has =
-completed playing. Drop semantics are assumed for PCM_STOP in this context.
-> Information on period alignment and max audio buffer size
-> No information about period alignment and min/max audio buffer/period siz=
-e is currently available in struct virtio_snd_pcm_info. Ideally the period =
-size used for io messages should match the period size used on the host. Th=
-at will guarantee consistency in timing, precise accounting of available ro=
-om to write more data or available data to read, across host and guest. A w=
-orkaround is possible, where the device will fail a PCM_SET_PARAMETERS requ=
-est that specifies an unsupported period alignment or audio buffer/period s=
-ize and the guest is forced to use a period and buffer size that is known t=
-o be supported by the host device (this can be done in an Android guest, by=
- hard coding the android audio HAL period size and the number of periods an=
-d thus effectively the audio buffer size that is used for the virtio sound =
-devices in the guest; in android and linux guests it can be done also by se=
-tting the virtio_snd module parameters, to the effect of locking down the p=
-eriod and buffer size).
-> General Issues
->=20
->   *   There is no statement regarding the endianness of PCM data exchange=
-d via txq and rxq queues and the virtio sound PCM format definitions do not=
- include endianness.
->   *   There is currently no requirement for the guest driver to enqueue a=
-n io message only after it has completed writing data to it (playback) or r=
-eading data from it (capture). The linux/android guest driver currently enq=
-ueues an io message for playback immediately after calling snd_pcm_period_e=
-lapsed(). snd_pcm_period_elapsed() makes it possible for the guest client a=
-pp to write new data, but upon the return of this function there is no guar=
-antee that the guest client app has already written new data. If the vdev d=
-equeues the io message immediately and copies the PCM data for that io requ=
-est before the guest client app has actually written new data to it, it res=
-ults in out-of-sequence/stale data being played back.
-
-Right, we discussed about this issue at [3]. I've recently proposed the
-following patch to fix that: '[PATCH v3] ALSA: virtio: use ack callback'
-
->   *   There is no statement how the guest driver should react to a contro=
-l request failing.
->=20
->      *   For PCM control requests the spec details what the "possible tra=
-nsitions" are after each control request. It doesn't specify whether this a=
-pplies only to successful control requests, or irrespective of the success =
-of the control requests. For instance for PCM_START only PCM_STOP is listed=
- as a valid transition. What happens if PCM_START fails though? Is PCM_STOP=
- still a valid transition? Is a repeat of PCM_START valid, since the previo=
-us PCM_START failed? Is a PCM_RELEASE required in order for the guest drive=
-r to recover the io request descriptors that were sent to the vdev before P=
-CM_START? Is a PCM_STOP required in this case, in order to be able to send =
-PCM_RELEASE (because of valid sequences considerations)? It was seen that t=
-he reference linux/android guest driver ignores a PCM_START failure and sti=
-ll sends io requests after the failed PCM_START.
-
-We've also spotted that the spec does not specify what to do with
-invalid transitions. I think in those cases the transition cannot be
-taken and thus spec only refers to successful transitions. IIUC, in
-Crosvm, for example, if a cmd is executed in a invalid state, the device
-returns error to the guest but the transition does not happen.=20
-
-I will send a second email to address the remainder points.
-
-Thanks, Matias.
-
-[1] https://github.com/rust-vmm/vhost-device/tree/main/staging/vhost-device=
--sound
-[2] https://lore.kernel.org/all/1a54feab-5de9-4b39-a4ce-7ff22e23cf52@opensy=
-nergy.com/T/
-[3] https://lore.kernel.org/all/f28d4604-b169-4583-b9ab-d53e6d08ce63@opensy=
-nergy.com/T/.
-
-
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+T24gMjAyMy8xMC8yMyAyMTozNSwgUGFyYXYgUGFuZGl0IHdyb3RlOg0KPiANCj4+IEZyb206IENo
+ZW4sIEppcWlhbiA8SmlxaWFuLkNoZW5AYW1kLmNvbT4NCj4+IFNlbnQ6IE1vbmRheSwgT2N0b2Jl
+ciAyMywgMjAyMyA0OjA5IFBNDQo+IA0KPj4+IEkgdGhpbmsgdGhpcyBjYW4gYmUgZG9uZSB3aXRo
+b3V0IGludHJvZHVjaW5nIHRoZSBuZXcgcmVnaXN0ZXIuDQo+Pj4gQ2FuIHlvdSBwbGVhc2UgY2hl
+Y2sgaWYgdGhlIFBNIHJlZ2lzdGVyIGl0c2VsZiBjYW4gc2VydmUgdGhlIHB1cnBvc2UgaW5zdGVh
+ZA0KPj4gb2YgbmV3IHZpcnRpbyBsZXZlbCByZWdpc3Rlcj8NCj4+IERvIHlvdSBtZWFuIHRoZSBz
+eXN0ZW0gUE0gcmVnaXN0ZXI/IA0KPiBObywgdGhlIGRldmljZSdzIFBNIHJlZ2lzdGVyIGF0IHRy
+YW5zcG9ydCBsZXZlbC4NCkkgdHJpZWQgdG8gZmluZCB0aGlzIHJlZ2lzdGVyKHBjaSBsZXZlbCBv
+ciB2aXJ0aW8gcGNpIGxldmVsIG9yIHZpcnRpbyBkcml2ZXIgbGV2ZWwpLCBidXQgSSBkaWRuJ3Qg
+ZmluZCBpdCBpbiBMaW51eCBrZXJuZWwgb3IgUWVtdSBjb2Rlcy4NCk1heSBJIGtub3cgd2hpY2gg
+cmVnaXN0ZXIgeW91IGFyZSByZWZlcnJpbmcgdG8gc3BlY2lmaWNhbGx5PyBPciB3aGljaCBQTSBz
+dGF0ZSBiaXQgeW91IG1lbnRpb25lZCBiZWxvdz8NCg0KPiANCj4+IEkgdGhpbmsgaXQgaXMgdW5y
+ZWFzb25hYmxlIHRvIGxldCB2aXJ0aW8tDQo+PiBkZXZpY2UgbGlzdGVuIHRoZSBQTSBzdGF0ZSBv
+ZiBHdWVzdCBzeXN0ZW0uIA0KPiBHdWVzdCBkcml2ZXIgcGVyZm9ybXMgYW55IHdvcmsgb24gdGhl
+IGd1ZXN0IHN5c3RlbXMgUE0gY2FsbGJhY2sgZXZlbnRzIGluIHRoZSB2aXJ0aW8gZHJpdmVyLg0K
+SSBkaWRuJ3QgZmluZCBhbnkgUE0gc3RhdGUgY2FsbGJhY2sgaW4gdGhlIHZpcnRpbyBkcml2ZXIu
+DQoNCj4gDQo+PiBJdCdzIG1vcmUgc3VpdGFibGUgdGhhdCBlYWNoIGRldmljZQ0KPj4gZ2V0cyBu
+b3RpZmljYXRpb25zIGZyb20gZHJpdmVyLCBhbmQgdGhlbiBkbyBwcmVzZXJ2aW5nIHJlc291cmNl
+cyBvcGVyYXRpb24uDQo+IEkgYWdyZWUgdGhhdCBlYWNoIGRldmljZSBnZXRzIHRoZSBub3RpZmlj
+YXRpb24gZnJvbSBkcml2ZXIuDQo+IFRoZSBxdWVzdGlvbiBpcywgc2hvdWxkIGl0IGJlIHZpcnRp
+byBkcml2ZXIsIG9yIGV4aXN0aW5nIHBjaSBkcml2ZXIgd2hpY2ggdHJhbnNpdGlvbnMgdGhlIHN0
+YXRlIGZyb20gZDAtPmQzIGFuZCBkMy0+ZDAgaXMgZW5vdWdoLg0KSXQgc2VlbXMgdGhlcmUgaXNu
+J3QgZXhpc3RpbmcgcGNpIGRyaXZlciB0byB0cmFuc2l0aW9ucyBkMCBvciBkMyBzdGF0ZS4gQ291
+bGQgeW91IHBsZWFzZSB0ZWxsIG1lIHdoaWNoIG9uZSBpdCBpcyBzcGVjaWZpY2FsbHk/IEkgYW0g
+dmVyeSB3aWxsaW5nIHRvIGdpdmUgYSB0cnkuDQoNCj4gQ2FuIHlvdSBwbGVhc2UgY2hlY2sgdGhh
+dD8NCj4gDQo+Pj4+IC0tLSBhL3RyYW5zcG9ydC1wY2kudGV4DQo+Pj4+ICsrKyBiL3RyYW5zcG9y
+dC1wY2kudGV4DQo+Pj4+IEBAIC0zMjUsNiArMzI1LDcgQEAgXHN1YnN1YnNlY3Rpb257Q29tbW9u
+IGNvbmZpZ3VyYXRpb24gc3RydWN0dXJlDQo+Pj4+IGxheW91dH1cbGFiZWx7c2VjOlZpcnRpbyBU
+cmFuc3BvcnQNCj4+Pj4gICAgICAgICAgLyogQWJvdXQgdGhlIGFkbWluaXN0cmF0aW9uIHZpcnRx
+dWV1ZS4gKi8NCj4+Pj4gICAgICAgICAgbGUxNiBhZG1pbl9xdWV1ZV9pbmRleDsgICAgICAgICAv
+KiByZWFkLW9ubHkgZm9yIGRyaXZlciAqLw0KPj4+PiAgICAgICAgICBsZTE2IGFkbWluX3F1ZXVl
+X251bTsgICAgICAgICAvKiByZWFkLW9ubHkgZm9yIGRyaXZlciAqLw0KPj4+PiArICAgICAgICBs
+ZTE2IHByZXNlcnZlX3Jlc291cmNlczsgICAgICAgIC8qIHJlYWQtd3JpdGUgKi8NCj4+PiBQcmVz
+ZXJ2aW5nIHRoZXNlIHJlc291cmNlcyBpbiB0aGUgZGV2aWNlIGltcGxlbWVudGF0aW9uIHRha2Vz
+IGZpbml0ZSBhbW91bnQNCj4+IG9mIHRpbWUuDQo+Pj4gUG9zc2libHkgbW9yZSB0aGFuIDQwbnNl
+YyAodGltZSBvZiBQQ0llIHdyaXRlIFRMUCkuDQo+Pj4gSGVuY2UgdGhpcyByZWdpc3RlciBtdXN0
+IGJlIGEgcG9sbGluZyByZWdpc3RlciB0byBpbmRpY2F0ZSB0aGF0DQo+PiBwcmVzZXJ2YXRpb25f
+ZG9uZS4NCj4+PiBUaGlzIHdpbGwgdGVsbCB0aGUgZ3Vlc3Qgd2hlbiB0aGUgcHJlc2VydmF0aW9u
+IGlzIGRvbmUsIGFuZCB3aGVuIHJlc3RvcmF0aW9uIGlzDQo+PiBkb25lLCBzbyB0aGF0IGl0IGNh
+biByZXN1bWUgdXBwZXIgbGF5ZXJzLg0KPj4+DQo+Pj4gUGxlYXNlIHJlZmVyIHRvIHF1ZXVlX3Jl
+c2V0IGRlZmluaXRpb24gdG8gbGVhcm4gbW9yZSBhYm91dCBzdWNoIHJlZ2lzdGVyDQo+PiBkZWZp
+bml0aW9uLg0KPj4gVGhhbmtzLCBJIHdpbGwgcmVmZXIgdG8gInF1ZXVlX3Jlc2V0Ii4gU28sIEkg
+bmVlZCB0aHJlZSB2YWx1ZXMsIGRyaXZlciB3cml0ZSAxIHRvDQo+PiBsZXQgZGV2aWNlIGRvIHBy
+ZXNlcnZpbmcgcmVzb3VyY2VzLCBkcml2ZXIgd3JpdGUgMiB0byBsZXQgZGV2aWNlIGRvIHJlc3Rv
+cmluZw0KPj4gcmVzb3VyY2VzLCBkZXZpY2Ugd3JpdGUgMCB0byB0ZWxsIGRyaXZlciB0aGF0IHBy
+ZXNlcnZpbmcgb3IgcmVzdG9yaW5nIGRvbmUsIGFtIEkNCj4+IHJpZ2h0Pw0KPj4NCj4gUmlnaHQu
+DQo+IA0KPiBBbmQgaWYgdGhlIGV4aXN0aW5nIHBjaWUgcG0gc3RhdGUgYml0cyBjYW4gZG8sIHdl
+IGNhbiBsZXZlcmFnZSB0aGF0Lg0KPiBJZiBpdCBjYW5ub3QgYmUgdXNlZCwgbGV0cyBhZGQgdGhh
+dCByZWFzb25pbmcgaW4gdGhlIGNvbW1pdCBsb2cgdG8gZGVzY3JpYmUgdGhpcyByZWdpc3Rlci4N
+Cj4gDQo+Pj4NCj4+PiBMZXRzIHBsZWFzZSBtYWtlIHN1cmUgdGhhdCBQQ0llIFBNIGxldmVsIHJl
+Z2lzdGVycyBhcmUgc3VmZmljaWVudC9ub3Qtc3VmZmljaWVudA0KPj4gdG8gZGVjaWRlIHRoZSBh
+ZGRpdGlvbiBvZiB0aGlzIHJlZ2lzdGVyLg0KPj4gQnV0IGlmIHRoZSBkZXZpY2UgaXMgbm90IGEg
+UENJZSBkZXZpY2UsIGl0IGRvZXNuJ3QgaGF2ZSBQTSBjYXBhYmlsaXR5LCB0aGVuIHRoaXMNCj4+
+IHdpbGwgbm90IHdvcmsuIEFjdHVhbGx5IGluIG15IGxvY2FsIGVudmlyb25tZW50LCBwY2lfaXNf
+ZXhwcmVzcygpIHJldHVybiBmYWxzZSBpbg0KPj4gUWVtdSwgdGhleSBhcmUgbm90IFBDSWUgZGV2
+aWNlLg0KPiBJdCBpcyByZWFzb25hYmxlIHRvIGFzayB0byBwbHVnIGluIGFzIFBDSWUgZGV2aWNl
+IGluIDIwMjMgdG8gZ2V0IG5ldyBmdW5jdGlvbmFsaXR5IHRoYXQgdG9vIHlvdSBtZW50aW9uZWQg
+YSBncHUgZGV2aWNlLiDwn5iKDQo+IFdoaWNoIGRvZXMgbm90IGhhdmUgdmVyeSBsb25nIGhpc3Rv
+cnkgb2YgYW55IGJhY2t3YXJkIGNvbXBhdGliaWxpdHkuDQpEbyB5b3Ugc3VnZ2VzdCBtZSB0byBh
+ZGQgUE0gY2FwYWJpbGl0eSBmb3IgdmlydGlvLWdwdSBvciBjaGFuZ2UgdmlydGlvLWdwdSB0byBh
+IFBDSWUgZGV2aWNlPw0KDQo+IFBsZWFzZSBleHBsb3JlIHRoZSBkMDwtPmQzIFBNIHN0YXRlIGJp
+dCBpZiBjYW4gYmUgdXNlZC4NCj4gDQo+IFRoYW5rcyBhIGxvdC4NCg0KLS0gDQpCZXN0IHJlZ2Fy
+ZHMsDQpKaXFpYW4gQ2hlbi4NCg==
 
