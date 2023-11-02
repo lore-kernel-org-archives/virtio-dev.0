@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14035-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14036-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A3FA6C4332F
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 11:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 88B62C4332F
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 11:51:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id B4F8D2AC63
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 11:38:49 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id CBC572AC61
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 11:51:47 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8DBCA986C03
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 11:38:49 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id AAD03986C01
+	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 11:51:47 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 707A6986BF7; Thu,  2 Nov 2023 11:38:49 +0000 (UTC)
+	id 8E3B7986BF7; Thu,  2 Nov 2023 11:51:47 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,32 +24,32 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5E6F3986BF6;
-	Thu,  2 Nov 2023 11:38:44 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7CAB3986BF8;
+	Thu,  2 Nov 2023 11:51:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 X-IronPort-AV: E=Sophos;i="6.03,271,1694736000"; 
-   d="scan'208";a="40445541"
-X-Farcaster-Flow-ID: 4d510503-e2fa-43b7-ba39-a5308323e58d
-Message-ID: <23ca2091-efd8-498d-8ed6-9ac4fb905f1d@amazon.es>
-Date: Thu, 2 Nov 2023 12:38:28 +0100
+   d="scan'208";a="681768091"
+X-Farcaster-Flow-ID: 09551e37-a6d7-4e6d-b0db-5bb0c4dc2648
+Message-ID: <17c33421-998b-4948-b994-95b29de4c49d@amazon.es>
+Date: Thu, 2 Nov 2023 12:51:27 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+Content-Language: en-US
 To: "Michael S. Tsirkin" <mst@redhat.com>
 CC: <virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
 	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
 	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>
-References: <4ab1b10e-4524-4b6c-a3df-863360fd225d@amazon.es>
+References: <e75d9667-2ea0-44d0-a26f-fa3d5fe05651@amazon.es>
+ <20230918091506-mutt-send-email-mst@kernel.org>
+ <a22ba2cb-9b03-481a-b66e-0b78fbfb21f0@amazon.es>
+ <20230918100355-mutt-send-email-mst@kernel.org>
+ <4ab1b10e-4524-4b6c-a3df-863360fd225d@amazon.es>
  <c2e7076b-b07e-43cd-a912-9314d742a678@amazon.es>
  <20230919055811-mutt-send-email-mst@kernel.org>
  <4c6d6710-43c8-402b-9ae6-d2f4cafbe9a7@amazon.es>
  <20230922110329-mutt-send-email-mst@kernel.org>
  <c0c5b159-997f-4ddf-ab3e-1c749ad93e10@amazon.es>
- <20230922115920-mutt-send-email-mst@kernel.org>
- <19967fde-8893-4fe8-9f9a-7ce49bf38772@amazon.es>
- <20230927174611-mutt-send-email-mst@kernel.org>
- <4d22d699-b9f3-4d67-940a-8f11bcd29819@amazon.es>
- <20231102071934-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
+ <20231102072055-mutt-send-email-mst@kernel.org>
 From: Babis Chalios <bchalios@amazon.es>
 Autocrypt: addr=bchalios@amazon.es; keydata=
  xsFNBGIonY4BEACl1/Qf/fYoDawcFfvjckR5H2yDxlBvKoFT4m5KYiRUivcf5nwCijrM3Fij
@@ -94,182 +94,151 @@ Autocrypt: addr=bchalios@amazon.es; keydata=
  LbSF+KYpZYewC8Wx5gTr4Glj+9+RcDWzdkGBd+Kthh0VIOdalbjbnv2jmt5gvLoeLDNpIZRQ
  AQ+HulTHw5frK1j8+AHIKQYXIE8xXzVkssNuX0Hc7ecC5jm/XlGr5IuQkJpFyVtiXfjkd6tq
  9CfKbXmQEUz/yWPkXerBltQSv7ePqJHPFMwJrFAqFftGK6t9nvzGjQB91RM=
-In-Reply-To: <20231102071934-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20231102072055-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.1.213.6]
-X-ClientProxiedBy: EX19D038UWB002.ant.amazon.com (10.13.139.185) To
+X-ClientProxiedBy: EX19D039UWA002.ant.amazon.com (10.13.139.32) To
  EX19D037EUB003.ant.amazon.com (10.252.61.119)
 Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
 
 
-On 2/11/23 12:20, Michael S. Tsirkin wrote:
+
+On 2/11/23 12:25, Michael S. Tsirkin wrote:
 >
-> On Thu, Sep 28, 2023 at 08:16:11PM +0200, Babis Chalios wrote:
+>
+> On Fri, Sep 22, 2023 at 05:40:50PM +0200, Babis Chalios wrote:
 >>
->> On 27/9/23 23:47, Michael S. Tsirkin wrote:
->>> On Wed, Sep 27, 2023 at 12:43:20PM +0200, Babis Chalios wrote:
->>>> On 22/9/23 18:01, Michael S. Tsirkin wrote:
->>>>> On Fri, Sep 22, 2023 at 05:40:50PM +0200, Babis Chalios wrote:
->>>>>> On 22/9/23 17:06, Michael S. Tsirkin wrote:
->>>>>>> On Tue, Sep 19, 2023 at 12:11:37PM +0200, Babis Chalios wrote:
->>>>>>>> On 19/9/23 12:01, Michael S. Tsirkin wrote:
->>>>>>>>> On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
->>>>>>>>>> Resending to fix e-mail formatting issues (sorry for the spam)
->>>>>>>>>>
->>>>>>>>>> On 18/9/23 18:30, Babis Chalios wrote:
->>>>>>>>>>>>>>> Yes, that's what the driver does now in the RFC patch.
->>>>>>>>>>>>>>> However, this just
->>>>>>>>>>>>>>> decreases
->>>>>>>>>>>>>>> the race window, it doesn't eliminate it. If a third
->>>>>>>>>>>>>>> leak event happens it
->>>>>>>>>>>>>>> might not
->>>>>>>>>>>>>>> find any buffers to use:
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> 1. available buffers to queue 1-X
->>>>>>>>>>>>>>> 2. available buffers to queue X
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> 3. poll queue X
->>>>>>>>>>>>>>> 4. used buffers in queue X       <- leak event 1 will
->>>>>>>>>>>>>>> use buffers in X
->>>>>>>>>>>>>>> 5. avail buffers in queue X
->>>>>>>>>>>>>>> 6. poll queue 1-X                <- leak event 2 will
->>>>>>>>>>>>>>> use buffers in 1-X
->>>>>>>>>>>>>>> 7. used buffers in queue 1-X
->>>>>>>>>>>>>>> 8. avail buffers in queue 1-X
->>>>>>>>>>>>>>>                                         <- leak event 3 (it
->>>>>>>>>>>>>>> needs buffers in X, race with step 5)
->>>>>>>>>>>>>>> 9. goto 3
->>>>>>>>>>>>>> I don't get it. we added buffers in step 5.
->>>>>>>>>>>>> What if the leak event 3 arrives before step 5 had time to
->>>>>>>>>>>>> actually add the
->>>>>>>>>>>>> buffers in X and make
->>>>>>>>>>>>> them visible to the device?
->>>>>>>>>>>> Then it will see a single event in 1-X instead of two events.  A leak is
->>>>>>>>>>>> a leak though, I don't see does it matter how many triggered.
->>>>>>>>>>>>
->>>>>>>>>> So the scenario I have in mind is the following:
->>>>>>>>>>
->>>>>>>>>> (Epoch here is terminology that I used in the Linux RFC. It is a value
->>>>>>>>>> maintained by random.c
->>>>>>>>>> that changes every time a leak event happens).
->>>>>>>>>>
->>>>>>>>>> 1. add buffers to 1-X
->>>>>>>>>> 2. add buffers to X
->>>>>>>>>> 3. poll queue X
->>>>>>>>>> 4. vcpu 0: get getrandom() entropy and cache epoch value
->>>>>>>>>> 5. Device: First snapshot, uses buffers in X
->>>>>>>>>> 6. vcpu 1: sees used buffers
->>>>>>>>>> 7. Device: Second snapshot, uses buffers in 1-X
->>>>>>>>>> 8. vcpu 0: getrandom() observes new  epoch value & caches it
->>>>>>>>>> 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
->>>>>>>>>> has not yet finished adding new buffers).
->>>>>>>>>> 10. vcpu 1 adds new buffer in X
->>>>>>>>>> 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> In this succession of events, when the third snapshot will happen, the
->>>>>>>>>> device won't find
->>>>>>>>>> any buffers in either queue, so it won't increase the RNG epoch value. So,
->>>>>>>>>> any entropy
->>>>>>>>>> gathered after step 8 will be the same across all snapshots. Am I missing
->>>>>>>>>> something?
->>>>>>>>>>
->>>>>>>>>> Cheers,
->>>>>>>>>> Babis
->>>>>>>>>>
->>>>>>>>> Yes but notice how this is followed by:
->>>>>>>>>
->>>>>>>>> 12. vcpu 1: sees used buffers in 1-X
->>>>>>>>>
->>>>>>>>> Driver can notify getrandom I guess?
->>>>>>>> It could, but then we have the exact race condition that VMGENID had,
->>>>>>>> userspace has already consumed stale entropy and there's nothing we
->>>>>>>> can do about that.
->>>>>>>>
->>>>>>>> Although this is indeed a corner case, it feels like it beats the purpose
->>>>>>>> of having the hardware update directly userspace (via copy on leak).
->>>>>>>>
->>>>>>>> How do you feel about the proposal a couple of emails back? It looks to
->>>>>>>> me that it avoids completely the race condition.
->>>>>>>>
->>>>>>>> Cheers,
->>>>>>>> Babis
->>>>>>> It does. The problem of course is that this means that e.g.
->>>>>>> taking a snapshot of a guest that is stuck won't work well.
->>>>>> That is true, but does it matter? The intention of the proposal
->>>>>> is that if it is not safe to take snapshots (i.e. no buffers in the
->>>>>> queue) don't take snapshots.
+>> On 22/9/23 17:06, Michael S. Tsirkin wrote:
+>>> On Tue, Sep 19, 2023 at 12:11:37PM +0200, Babis Chalios wrote:
+>>>> On 19/9/23 12:01, Michael S. Tsirkin wrote:
+>>>>> On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
+>>>>>> Resending to fix e-mail formatting issues (sorry for the spam)
 >>>>>>
->>>>>>> I have been thinking of adding MAP/UNMAP descriptors for
->>>>>>> a while now. Thus it will be possible to modify
->>>>>>> userspace memory without consuming buffers.
->>>>>>> Would something like this solve the problem?
->>>>>> I am not familiar with MAP/UNMAP descriptors. Is there
->>>>>> a link where I can read about them?
+>>>>>> On 18/9/23 18:30, Babis Chalios wrote:
+>>>>>>>>>>> Yes, that's what the driver does now in the RFC patch.
+>>>>>>>>>>> However, this just
+>>>>>>>>>>> decreases
+>>>>>>>>>>> the race window, it doesn't eliminate it. If a third
+>>>>>>>>>>> leak event happens it
+>>>>>>>>>>> might not
+>>>>>>>>>>> find any buffers to use:
+>>>>>>>>>>>
+>>>>>>>>>>> 1. available buffers to queue 1-X
+>>>>>>>>>>> 2. available buffers to queue X
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> 3. poll queue X
+>>>>>>>>>>> 4. used buffers in queue X       <- leak event 1 will
+>>>>>>>>>>> use buffers in X
+>>>>>>>>>>> 5. avail buffers in queue X
+>>>>>>>>>>> 6. poll queue 1-X                <- leak event 2 will
+>>>>>>>>>>> use buffers in 1-X
+>>>>>>>>>>> 7. used buffers in queue 1-X
+>>>>>>>>>>> 8. avail buffers in queue 1-X
+>>>>>>>>>>>                                       <- leak event 3 (it
+>>>>>>>>>>> needs buffers in X, race with step 5)
+>>>>>>>>>>> 9. goto 3
+>>>>>>>>>> I don't get it. we added buffers in step 5.
+>>>>>>>>> What if the leak event 3 arrives before step 5 had time to
+>>>>>>>>> actually add the
+>>>>>>>>> buffers in X and make
+>>>>>>>>> them visible to the device?
+>>>>>>>> Then it will see a single event in 1-X instead of two events.  A leak is
+>>>>>>>> a leak though, I don't see does it matter how many triggered.
+>>>>>>>>
+>>>>>> So the scenario I have in mind is the following:
+>>>>>>
+>>>>>> (Epoch here is terminology that I used in the Linux RFC. It is a value
+>>>>>> maintained by random.c
+>>>>>> that changes every time a leak event happens).
+>>>>>>
+>>>>>> 1. add buffers to 1-X
+>>>>>> 2. add buffers to X
+>>>>>> 3. poll queue X
+>>>>>> 4. vcpu 0: get getrandom() entropy and cache epoch value
+>>>>>> 5. Device: First snapshot, uses buffers in X
+>>>>>> 6. vcpu 1: sees used buffers
+>>>>>> 7. Device: Second snapshot, uses buffers in 1-X
+>>>>>> 8. vcpu 0: getrandom() observes new  epoch value & caches it
+>>>>>> 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
+>>>>>> has not yet finished adding new buffers).
+>>>>>> 10. vcpu 1 adds new buffer in X
+>>>>>> 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
+>>>>>>
+>>>>>>
+>>>>>> In this succession of events, when the third snapshot will happen, the
+>>>>>> device won't find
+>>>>>> any buffers in either queue, so it won't increase the RNG epoch value. So,
+>>>>>> any entropy
+>>>>>> gathered after step 8 will be the same across all snapshots. Am I missing
+>>>>>> something?
 >>>>>>
 >>>>>> Cheers,
 >>>>>> Babis
->>>>> Heh no I just came up with the name. Will write up in a couple
->>>>> of days, but the idea is that driver does get_user_pages,
->>>>> adds buffer to queue, and device will remember the address
->>>>> and change that memory on a snapshot. If there are buffers
->>>>> in the queue it will also use these to tell driver,
->>>>> but if there are no buffers then it won't.
->>>> That sounds like a nice mechanism. However in our case the page
->>>> holding the counter that gets increased by the hardware is a kernel
->>>> page.
+>>>>>>
+>>>>> Yes but notice how this is followed by:
+>>>>>
+>>>>> 12. vcpu 1: sees used buffers in 1-X
+>>>>>
+>>>>> Driver can notify getrandom I guess?
+>>>> It could, but then we have the exact race condition that VMGENID had,
+>>>> userspace has already consumed stale entropy and there's nothing we
+>>>> can do about that.
 >>>>
->>>> The reason for that is that things other than us (virtio-rng) might
->>>> want to notify for leak events. For example, I think that Jason
->>>> intended to use this mechanism to periodically notify user-space
->>>> PRNGs that they need to reseed.
+>>>> Although this is indeed a corner case, it feels like it beats the purpose
+>>>> of having the hardware update directly userspace (via copy on leak).
+>>>>
+>>>> How do you feel about the proposal a couple of emails back? It looks to
+>>>> me that it avoids completely the race condition.
 >>>>
 >>>> Cheers,
 >>>> Babis
->>> Now I'm lost.
->>> when you write, e.g.:
->>> 4. vcpu 0: get getrandom() entropy and cache epoch value
->>> how does vcpu access the epoch?
->> The kernel provides a user space API to map a pointer to the epoch
->> value. User space then caches its value and checks it every time it
->> needs to make sure that no entropy leak has happened before using
->> cached kernel entropy.
->>
->> virtio-rng driver adds a copy on leak command to the queue for
->> increasing this value (that's what we are speaking about in this thread).
->> But other systems might want to report "leaks", such as random.c
->> itself.
->>
->> Cheers,
->> Babis
+>>> It does. The problem of course is that this means that e.g.
+>>> taking a snapshot of a guest that is stuck won't work well.
+>> That is true, but does it matter? The intention of the proposal
+>> is that if it is not safe to take snapshots (i.e. no buffers in the
+>> queue) don't take snapshots.
+> OK. Basically I think if there's a way for device to detect that
+> guest is stuck and not refilling the queue in a timely
+> manner, then we are ok - host will make its own decisions
+> on whether to snapshot or not.
 >
-> This idea would be fine but I don't see how it's so different
-> from VMGENID. Care to explain?
+> However, I feel in that case we need a way to create a big
+> backlog of buffers for guest to fill such that this
+> ring empty condition is very unlikely.
+> One or even 2 queues does not seem enough then.
 >
-It is different in that the memory is owned by the guest kernel, not
-the hardware. In this case, random.c maintains it. This allows, systems
-other than the hardware, e.g. virtio-rng to notify about entropy leak
-events. For example, random.c itself can periodically do that (I think
-Jason had that use-case in mind).
+> For example, I can see a "stop" command that will
+> tell device: "stop consuming buffers" and device
+> will stop consuming buffers until the next leak event.
+>
+Yup, that seems reasonable to me. In that case, we could
+have a single queue, where the driver will fill up with multiple
+batches of commands where the last one is "stop" command, and
+then back-fill as needed.
 
-The fact that we as well mmap that memory to the user-space is just
-for giving user space a mechanism that allows it to know when it needs
-to reseed its PRNGs. We _could_ have done the same with VMGENID,
-but the fact that, in this case, the underlying physical memory is owned
-by the ACPI device blocks us from letting other systems sending 
-notifications
-as well.
-
-Maybe it makes sense to have this discussion in the patch we sent for
-Linux on LKML [1]?
+That should make it very unlikely for a well-behaving guest to
+run out of entropy leak commands in the queue. However, even
+with that design, I think there is value in putting something in the
+spec about the fact that the host might want to consider if it should,
+or not, take a snapshot when it finds the leak queue empty.
 
 Cheers,
 Babis
 
-[1] 
-https://lore.kernel.org/lkml/20230823090107.65749-3-bchalios@amazon.es/T/#mb1242999d8296169d9a4ee1a0805005633ec146a
+>
+>
+>>> I have been thinking of adding MAP/UNMAP descriptors for
+>>> a while now. Thus it will be possible to modify
+>>> userspace memory without consuming buffers.
+>>> Would something like this solve the problem?
+>> I am not familiar with MAP/UNMAP descriptors. Is there
+>> a link where I can read about them?
+>>
+>> Cheers,
+>> Babis
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
