@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14038-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14039-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C1A6C4167D
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 13:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35165C4167D
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 66AF42AC6C
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 13:42:38 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4E7E72A820
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 449B1986C0C
-	for <virtio-dev@archiver.kernel.org>; Thu,  2 Nov 2023 13:42:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 320E9986C50
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 28312986C02; Thu,  2 Nov 2023 13:42:38 +0000 (UTC)
+	id 160B1986C46; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,289 +24,386 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1217D986C01;
-	Thu,  2 Nov 2023 13:42:37 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id F35AC986C45;
+	Fri,  3 Nov 2023 18:17:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=Sophos;i="6.03,271,1694736000"; 
-   d="scan'208";a="163836221"
-X-Farcaster-Flow-ID: bcd7ff1a-49db-4283-9a13-7644a2a9afd3
-Message-ID: <54a8f8ea-d876-48f7-a39f-ee2daeddee19@amazon.es>
-Date: Thu, 2 Nov 2023 14:42:23 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+From: Radu Ocica <rocica@blackberry.com>
+To: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+        "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+        "anton.yakovlev@opensynergy.com" <anton.yakovlev@opensynergy.com>
+Thread-Topic: [virtio-dev] virtio-snd comments/questions
+Thread-Index: AQHaAdgPGZsaTwL9FEiOAsMZLVwCl7BZO+6AgA+1CEk=
+Date: Fri, 3 Nov 2023 18:17:17 +0000
+Message-ID: <134bb8dbb49643e6b3d6e9b65239b6a8@blackberry.com>
+References: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>,<ZTfHAQxns6j8gmEL@fedora>
+In-Reply-To: <ZTfHAQxns6j8gmEL@fedora>
+Accept-Language: en-US
 Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-CC: <virtio-comment@lists.oasis-open.org>, <virtio-dev@lists.oasis-open.org>,
-	"Cali, Marco" <xmarcalx@amazon.co.uk>, "Graf (AWS), Alexander"
-	<graf@amazon.de>, "Jason A. Donenfeld" <Jason@zx2c4.com>, <aams@amazon.de>
-References: <20230919055811-mutt-send-email-mst@kernel.org>
- <4c6d6710-43c8-402b-9ae6-d2f4cafbe9a7@amazon.es>
- <20230922110329-mutt-send-email-mst@kernel.org>
- <c0c5b159-997f-4ddf-ab3e-1c749ad93e10@amazon.es>
- <20230922115920-mutt-send-email-mst@kernel.org>
- <19967fde-8893-4fe8-9f9a-7ce49bf38772@amazon.es>
- <20230927174611-mutt-send-email-mst@kernel.org>
- <4d22d699-b9f3-4d67-940a-8f11bcd29819@amazon.es>
- <20231102071934-mutt-send-email-mst@kernel.org>
- <23ca2091-efd8-498d-8ed6-9ac4fb905f1d@amazon.es>
- <20231102074645-mutt-send-email-mst@kernel.org>
-From: Babis Chalios <bchalios@amazon.es>
-Autocrypt: addr=bchalios@amazon.es; keydata=
- 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
-In-Reply-To: <20231102074645-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.1.213.6]
-X-ClientProxiedBy: EX19D033UWA003.ant.amazon.com (10.13.139.42) To
- EX19D037EUB003.ant.amazon.com (10.252.61.119)
-Subject: Re: [virtio-dev] [PATCH RFC 3/3] rng: leak detection support
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [100.64.197.67]
+Content-Type: multipart/alternative;
+	boundary="_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_"
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-03_17,2023-11-02_03,2023-05-22_02
+Subject: Re: [virtio-dev] virtio-snd comments/questions
 
-On 2/11/23 12:51, Michael S. Tsirkin wrote:
+--_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+I also think that the driver should not send a STOP command after a failed =
+START command. There is no explicit description of any states in the virtio=
+ sound device specification. We have both adopted an interpretation that th=
+e state is determined by the last successful pcm control request and the tr=
+ansitions specified for pcm control requests assume success of these contro=
+l requests. I wish this was clarified explicitly in the spec, to not allow =
+room for interpretation.
+
+
+Regards,
+
+Radu
+
+________________________________
+From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> on =
+behalf of Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+Sent: Tuesday, October 24, 2023 9:30:41 AM
+To: Radu Ocica
+Cc: virtio-dev@lists.oasis-open.org; virtio-comment@lists.oasis-open.org; a=
+nton.yakovlev@opensynergy.com
+Subject: Re: [virtio-dev] virtio-snd comments/questions
+
+CAUTION - This email is from an external source. Please be cautious with li=
+nks and attachments. (go/taginfo)
+
+On Wed, Oct 18, 2023 at 03:32:21PM +0000, Radu Ocica wrote:
+> Hi,
+> I am working on implementing a virtio-snd vdev. During my work on differe=
+nt aspects of the implementation I stumbled across the following issues wit=
+h the virtio sound device specification (that is part of the virtio 1.3 dra=
+ft). In some cases additional clarifications might be enough to address the=
+ issue, in others additional features might be required. Below is a list of=
+ the issues, with some suggestions on how the issues could be addressed.
+> PCM playback and capture
+> Unclear semantics of PCM_STOP/PCM_START operations
+> The virtio-snd specification is not clear on the expectations on how the =
+PCM_STOP control request is to be handled by the vdev, in terms of whether =
+to:
 >
-> On Thu, Nov 02, 2023 at 12:38:28PM +0100, Babis Chalios wrote:
->> On 2/11/23 12:20, Michael S. Tsirkin wrote:
->>> On Thu, Sep 28, 2023 at 08:16:11PM +0200, Babis Chalios wrote:
->>>> On 27/9/23 23:47, Michael S. Tsirkin wrote:
->>>>> On Wed, Sep 27, 2023 at 12:43:20PM +0200, Babis Chalios wrote:
->>>>>> On 22/9/23 18:01, Michael S. Tsirkin wrote:
->>>>>>> On Fri, Sep 22, 2023 at 05:40:50PM +0200, Babis Chalios wrote:
->>>>>>>> On 22/9/23 17:06, Michael S. Tsirkin wrote:
->>>>>>>>> On Tue, Sep 19, 2023 at 12:11:37PM +0200, Babis Chalios wrote:
->>>>>>>>>> On 19/9/23 12:01, Michael S. Tsirkin wrote:
->>>>>>>>>>> On Tue, Sep 19, 2023 at 09:32:08AM +0200, Babis Chalios wrote:
->>>>>>>>>>>> Resending to fix e-mail formatting issues (sorry for the spam)
->>>>>>>>>>>>
->>>>>>>>>>>> On 18/9/23 18:30, Babis Chalios wrote:
->>>>>>>>>>>>>>>>> Yes, that's what the driver does now in the RFC patch.
->>>>>>>>>>>>>>>>> However, this just
->>>>>>>>>>>>>>>>> decreases
->>>>>>>>>>>>>>>>> the race window, it doesn't eliminate it. If a third
->>>>>>>>>>>>>>>>> leak event happens it
->>>>>>>>>>>>>>>>> might not
->>>>>>>>>>>>>>>>> find any buffers to use:
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> 1. available buffers to queue 1-X
->>>>>>>>>>>>>>>>> 2. available buffers to queue X
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> 3. poll queue X
->>>>>>>>>>>>>>>>> 4. used buffers in queue X       <- leak event 1 will
->>>>>>>>>>>>>>>>> use buffers in X
->>>>>>>>>>>>>>>>> 5. avail buffers in queue X
->>>>>>>>>>>>>>>>> 6. poll queue 1-X                <- leak event 2 will
->>>>>>>>>>>>>>>>> use buffers in 1-X
->>>>>>>>>>>>>>>>> 7. used buffers in queue 1-X
->>>>>>>>>>>>>>>>> 8. avail buffers in queue 1-X
->>>>>>>>>>>>>>>>>                                          <- leak event 3 (it
->>>>>>>>>>>>>>>>> needs buffers in X, race with step 5)
->>>>>>>>>>>>>>>>> 9. goto 3
->>>>>>>>>>>>>>>> I don't get it. we added buffers in step 5.
->>>>>>>>>>>>>>> What if the leak event 3 arrives before step 5 had time to
->>>>>>>>>>>>>>> actually add the
->>>>>>>>>>>>>>> buffers in X and make
->>>>>>>>>>>>>>> them visible to the device?
->>>>>>>>>>>>>> Then it will see a single event in 1-X instead of two events.  A leak is
->>>>>>>>>>>>>> a leak though, I don't see does it matter how many triggered.
->>>>>>>>>>>>>>
->>>>>>>>>>>> So the scenario I have in mind is the following:
->>>>>>>>>>>>
->>>>>>>>>>>> (Epoch here is terminology that I used in the Linux RFC. It is a value
->>>>>>>>>>>> maintained by random.c
->>>>>>>>>>>> that changes every time a leak event happens).
->>>>>>>>>>>>
->>>>>>>>>>>> 1. add buffers to 1-X
->>>>>>>>>>>> 2. add buffers to X
->>>>>>>>>>>> 3. poll queue X
->>>>>>>>>>>> 4. vcpu 0: get getrandom() entropy and cache epoch value
->>>>>>>>>>>> 5. Device: First snapshot, uses buffers in X
->>>>>>>>>>>> 6. vcpu 1: sees used buffers
->>>>>>>>>>>> 7. Device: Second snapshot, uses buffers in 1-X
->>>>>>>>>>>> 8. vcpu 0: getrandom() observes new  epoch value & caches it
->>>>>>>>>>>> 9. Device: Third snapshot, no buffers in either queue, (vcpu 1 from step 6
->>>>>>>>>>>> has not yet finished adding new buffers).
->>>>>>>>>>>> 10. vcpu 1 adds new buffer in X
->>>>>>>>>>>> 11. vcpu 0: getrandom() will not see new epoch and gets stale entropy.
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> In this succession of events, when the third snapshot will happen, the
->>>>>>>>>>>> device won't find
->>>>>>>>>>>> any buffers in either queue, so it won't increase the RNG epoch value. So,
->>>>>>>>>>>> any entropy
->>>>>>>>>>>> gathered after step 8 will be the same across all snapshots. Am I missing
->>>>>>>>>>>> something?
->>>>>>>>>>>>
->>>>>>>>>>>> Cheers,
->>>>>>>>>>>> Babis
->>>>>>>>>>>>
->>>>>>>>>>> Yes but notice how this is followed by:
->>>>>>>>>>>
->>>>>>>>>>> 12. vcpu 1: sees used buffers in 1-X
->>>>>>>>>>>
->>>>>>>>>>> Driver can notify getrandom I guess?
->>>>>>>>>> It could, but then we have the exact race condition that VMGENID had,
->>>>>>>>>> userspace has already consumed stale entropy and there's nothing we
->>>>>>>>>> can do about that.
->>>>>>>>>>
->>>>>>>>>> Although this is indeed a corner case, it feels like it beats the purpose
->>>>>>>>>> of having the hardware update directly userspace (via copy on leak).
->>>>>>>>>>
->>>>>>>>>> How do you feel about the proposal a couple of emails back? It looks to
->>>>>>>>>> me that it avoids completely the race condition.
->>>>>>>>>>
->>>>>>>>>> Cheers,
->>>>>>>>>> Babis
->>>>>>>>> It does. The problem of course is that this means that e.g.
->>>>>>>>> taking a snapshot of a guest that is stuck won't work well.
->>>>>>>> That is true, but does it matter? The intention of the proposal
->>>>>>>> is that if it is not safe to take snapshots (i.e. no buffers in the
->>>>>>>> queue) don't take snapshots.
->>>>>>>>
->>>>>>>>> I have been thinking of adding MAP/UNMAP descriptors for
->>>>>>>>> a while now. Thus it will be possible to modify
->>>>>>>>> userspace memory without consuming buffers.
->>>>>>>>> Would something like this solve the problem?
->>>>>>>> I am not familiar with MAP/UNMAP descriptors. Is there
->>>>>>>> a link where I can read about them?
->>>>>>>>
->>>>>>>> Cheers,
->>>>>>>> Babis
->>>>>>> Heh no I just came up with the name. Will write up in a couple
->>>>>>> of days, but the idea is that driver does get_user_pages,
->>>>>>> adds buffer to queue, and device will remember the address
->>>>>>> and change that memory on a snapshot. If there are buffers
->>>>>>> in the queue it will also use these to tell driver,
->>>>>>> but if there are no buffers then it won't.
->>>>>> That sounds like a nice mechanism. However in our case the page
->>>>>> holding the counter that gets increased by the hardware is a kernel
->>>>>> page.
->>>>>>
->>>>>> The reason for that is that things other than us (virtio-rng) might
->>>>>> want to notify for leak events. For example, I think that Jason
->>>>>> intended to use this mechanism to periodically notify user-space
->>>>>> PRNGs that they need to reseed.
->>>>>>
->>>>>> Cheers,
->>>>>> Babis
->>>>> Now I'm lost.
->>>>> when you write, e.g.:
->>>>> 4. vcpu 0: get getrandom() entropy and cache epoch value
->>>>> how does vcpu access the epoch?
->>>> The kernel provides a user space API to map a pointer to the epoch
->>>> value. User space then caches its value and checks it every time it
->>>> needs to make sure that no entropy leak has happened before using
->>>> cached kernel entropy.
->>>>
->>>> virtio-rng driver adds a copy on leak command to the queue for
->>>> increasing this value (that's what we are speaking about in this thread).
->>>> But other systems might want to report "leaks", such as random.c
->>>> itself.
->>>>
->>>> Cheers,
->>>> Babis
->>> This idea would be fine but I don't see how it's so different
->>> from VMGENID. Care to explain?
->>>
->> It is different in that the memory is owned by the guest kernel, not
->> the hardware. In this case, random.c maintains it. This allows, systems
->> other than the hardware, e.g. virtio-rng to notify about entropy leak
->> events. For example, random.c itself can periodically do that (I think
->> Jason had that use-case in mind).
-> No sure I understand. Example?
-
-Sure!
-
-Take for example a user-space PRNG that uses getrandom() for seeding.
-We would like that this PRNG knows when it is not safe any more to return
-new random bits, because the initial seed is not unique any more.
-In the Linux patch, we use the copy-on-leak command to do that. What the
-copy command does in this case, is increase the value of a memory location.
-That memory location is maintained by random.c. random.c allows user
-space to mmap the page that stores this value. A user-space PRNG would
-then mmap this value and observe it for changes.
-
-Now, there is no reason why only virtio-rng should inform user space PRNGs
-about entropy leak events. For example, the kernel PRNG (which is handling
-out seeds for the user-space PRNG) might want to mark randomness that it
-returned earlier as no longer valid (for reasons unrelated to VMs). With 
-VMGENID
-this would not be possible. However, now that random.c owns that piece of
-memory, more than one entities can use it to notify user space about stale
-entropy. And they can work together (details on how we do that are in 
-the cover
-letter of the LKML patch), we can have both the virtio-rng and the random.c
-updating that value.
-
-I hope that makes sense and I am really happy to discuss all this, but 
-do you
-think it is related with the VirtIO protocol?
-
-Cheers,
-Babis
-
->> The fact that we as well mmap that memory to the user-space is just
->> for giving user space a mechanism that allows it to know when it needs
->> to reseed its PRNGs. We _could_ have done the same with VMGENID,
->> but the fact that, in this case, the underlying physical memory is owned
->> by the ACPI device blocks us from letting other systems sending
->> notifications
->> as well.
->>
->> Maybe it makes sense to have this discussion in the patch we sent for
->> Linux on LKML [1]?
->>
->> Cheers,
->> Babis
->>
->> [1] https://lore.kernel.org/lkml/20230823090107.65749-3-bchalios@amazon.es/T/#mb1242999d8296169d9a4ee1a0805005633ec146a
+>   *   drop the remaining buffered audio in the host pcm stream and return=
+ pending io messages to the guest driver
+>   *   drop the remaining buffered audio in the host pcm stream and keep p=
+ending io messages in order to be able to prime the host pcm stream in case=
+ PCM_STOP is followed by PCM_START; return pending io messages only when re=
+ceiving PCM_RELEASE
+>   *   drain the remaining buffered audio in the host pcm stream and send =
+a PCM_STOP response upon drain completion, return pending io messages to th=
+e guest driver as they are completed (before PCM_STOP response); drain capa=
+bility might or might not be available for the host pcm stream
+>   *   start draining the remaining buffered audio in the host pcm stream =
+and send a PCM_STOP response immediately, return pending io messages to the=
+ guest driver as they are completed (after PCM_STOP response); if receiving=
+ PCM_RELEASE before drain completion hold off the response until all pendin=
+g io messages are completed and returned to the guest driver; drain capabil=
+ity might or might not be available for the host pcm stream
+>   *   pause the host pcm stream and maintain buffered audio / pending io =
+messages as is; pause capability might or might not be available for the ho=
+st pcm stream
 >
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> If the thinking is that the vdev on the host can decide on how to impleme=
+nt PCM_STOP based on the host stream capabilities, the guest driver has no =
+information about the choice made by the vdev. In our opinion the choice ma=
+de by the vdev in implementing PCM_STOP dictates what the possible transiti=
+ons after PCM_STOP can be (if PCM_STOP is implemented as pause, PCM_START a=
+nd PCM_RELEASE are possible transitions, but if PCM_STOP is implemented as =
+drain, the only valid transition is PCM_RELEASE and if PCM_STOP is implemen=
+ted as drop and all pending io messages have been returned to the guest dri=
+ver, again the only valid transition seems to be PCM_RELEASE), but the gues=
+t driver is the one issuing the next request and it might at the best be ab=
+le to make an educated guess how the vdev implemented PCM_STOP based on whe=
+ther all the pending io messages are returned or not to the guest driver. T=
+o make such a guess possible, more clarifications would be required in the =
+spec to identify which of the scenarios listed above are considered by the =
+spec.
+> Note 1:  The reference virtio-snd linux/android guest driver explicitly d=
+oesn't support the ALSA SNDRV_PCM_INFO_DRAIN_TRIGGER feature flag, which mi=
+ght indicate there was no intent to support drain semantics.
+> Note 2: The reference virtio-snd linux/android guest driver explicitly do=
+es support the ALSA SNDRV_PCM_INFO_PAUSE feature flag, which seems to indic=
+ate intent to support pause semantics, along with drop semantics.
+> Note 3: The Android Audio HAL and tinyalsa/tinyplay don't have any notion=
+ of drain or pause. At the end of a playback session there is a wait for pr=
+eviously buffered data to complete playing using the tinyalsa pcm_wait() fu=
+nction, and then a PCM_STOP request is issued after the buffered audio has =
+completed playing. Drop semantics are assumed for PCM_STOP in this context.
+> Information on period alignment and max audio buffer size
+> No information about period alignment and min/max audio buffer/period siz=
+e is currently available in struct virtio_snd_pcm_info. Ideally the period =
+size used for io messages should match the period size used on the host. Th=
+at will guarantee consistency in timing, precise accounting of available ro=
+om to write more data or available data to read, across host and guest. A w=
+orkaround is possible, where the device will fail a PCM_SET_PARAMETERS requ=
+est that specifies an unsupported period alignment or audio buffer/period s=
+ize and the guest is forced to use a period and buffer size that is known t=
+o be supported by the host device (this can be done in an Android guest, by=
+ hard coding the android audio HAL period size and the number of periods an=
+d thus effectively the audio buffer size that is used for the virtio sound =
+devices in the guest; in android and linux guests it can be done also by se=
+tting the virtio_snd module parameters, to the effect of locking down the p=
+eriod and buffer size).
+> General Issues
 >
+>   *   There is no statement regarding the endianness of PCM data exchange=
+d via txq and rxq queues and the virtio sound PCM format definitions do not=
+ include endianness.
+>   *   There is currently no requirement for the guest driver to enqueue a=
+n io message only after it has completed writing data to it (playback) or r=
+eading data from it (capture). The linux/android guest driver currently enq=
+ueues an io message for playback immediately after calling snd_pcm_period_e=
+lapsed(). snd_pcm_period_elapsed() makes it possible for the guest client a=
+pp to write new data, but upon the return of this function there is no guar=
+antee that the guest client app has already written new data. If the vdev d=
+equeues the io message immediately and copies the PCM data for that io requ=
+est before the guest client app has actually written new data to it, it res=
+ults in out-of-sequence/stale data being played back.
+>   *   There is no statement how the guest driver should react to a contro=
+l request failing.
+>
+>      *   For PCM control requests the spec details what the "possible tra=
+nsitions" are after each control request. It doesn't specify whether this a=
+pplies only to successful control requests, or irrespective of the success =
+of the control requests. For instance for PCM_START only PCM_STOP is listed=
+ as a valid transition. What happens if PCM_START fails though? Is PCM_STOP=
+ still a valid transition? Is a repeat of PCM_START valid, since the previo=
+us PCM_START failed? Is a PCM_RELEASE required in order for the guest drive=
+r to recover the io request descriptors that were sent to the vdev before P=
+CM_START? Is a PCM_STOP required in this case, in order to be able to send =
+PCM_RELEASE (because of valid sequences considerations)? It was seen that t=
+he reference linux/android guest driver ignores a PCM_START failure and sti=
+ll sends io requests after the failed PCM_START.
+
+I tested this and I observed that when START fails, the guest still
+sends the STOP cmd. This cmd is only valid if the stream has transited
+to the START state, i.e., the spec only allows STOP in the START state.
+I did not obser that the RELEASE cmd is issued. I think the driver shall
+not send the STOP msg in that situation. What do you think?
+
+Regards, Matias.
 
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
 For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
+----------------------------------------------------------------------
+This transmission (including any attachments) may contain confidential info=
+rmation, privileged material (including material protected by the solicitor=
+-client or other applicable privileges), or constitute non-public informati=
+on. Any use of this information by anyone other than the intended recipient=
+ is prohibited. If you have received this transmission in error, please imm=
+ediately reply to the sender and delete this information from your system. =
+Use, dissemination, distribution, or reproduction of this transmission by u=
+nintended recipients is not authorized and may be unlawful.
+
+--_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
+<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
+ding-left: 4pt; border-left: #800000 2px solid; } --></style>
+</head>
+<body>
+<meta content=3D"text/html; charset=3DUTF-8">
+<style type=3D"text/css" style=3D"">
+<!--
+p
+	{margin-top:0;
+	margin-bottom:0}
+-->
+</style>
+<div dir=3D"ltr">
+<div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
+or:#000000; font-family:Calibri,Helvetica,sans-serif">
+<p>I also think that the driver should not send a STOP command after a fail=
+ed START command. There is no explicit description of any states in the vir=
+tio sound device specification. We have both adopted an interpretation that=
+ the state is determined by the
+ last successful pcm control request and the transitions specified for pcm =
+control requests assume success of these control requests. I wish this was =
+clarified explicitly in the spec, to not allow room for interpretation.</p>
+<p><br>
+</p>
+<p>Regards,</p>
+<p>Radu<br>
+</p>
+</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
+color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> virtio-dev@lists.oa=
+sis-open.org &lt;virtio-dev@lists.oasis-open.org&gt; on behalf of Matias Ez=
+equiel Vara Larsen &lt;mvaralar@redhat.com&gt;<br>
+<b>Sent:</b> Tuesday, October 24, 2023 9:30:41 AM<br>
+<b>To:</b> Radu Ocica<br>
+<b>Cc:</b> virtio-dev@lists.oasis-open.org; virtio-comment@lists.oasis-open=
+.org; anton.yakovlev@opensynergy.com<br>
+<b>Subject:</b> Re: [virtio-dev] virtio-snd comments/questions</font>
+<div>&nbsp;</div>
+</div>
+</div>
+<font size=3D"2"><span style=3D"font-size:10pt;">
+<div class=3D"PlainText">CAUTION - This email is from an external source. P=
+lease be cautious with links and attachments. (go/taginfo)<br>
+<br>
+On Wed, Oct 18, 2023 at 03:32:21PM &#43;0000, Radu Ocica wrote:<br>
+&gt; Hi,<br>
+&gt; I am working on implementing a virtio-snd vdev. During my work on diff=
+erent aspects of the implementation I stumbled across the following issues =
+with the virtio sound device specification (that is part of the virtio 1.3 =
+draft). In some cases additional clarifications
+ might be enough to address the issue, in others additional features might =
+be required. Below is a list of the issues, with some suggestions on how th=
+e issues could be addressed.<br>
+&gt; PCM playback and capture<br>
+&gt; Unclear semantics of PCM_STOP/PCM_START operations<br>
+&gt; The virtio-snd specification is not clear on the expectations on how t=
+he PCM_STOP control request is to be handled by the vdev, in terms of wheth=
+er to:<br>
+&gt; <br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; drop the remaining buffered audio in the hos=
+t pcm stream and return pending io messages to the guest driver<br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; drop the remaining buffered audio in the hos=
+t pcm stream and keep pending io messages in order to be able to prime the =
+host pcm stream in case PCM_STOP is followed by PCM_START; return pending i=
+o messages only when receiving PCM_RELEASE<br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; drain the remaining buffered audio in the ho=
+st pcm stream and send a PCM_STOP response upon drain completion, return pe=
+nding io messages to the guest driver as they are completed (before PCM_STO=
+P response); drain capability might or might not be available
+ for the host pcm stream<br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; start draining the remaining buffered audio =
+in the host pcm stream and send a PCM_STOP response immediately, return pen=
+ding io messages to the guest driver as they are completed (after PCM_STOP =
+response); if receiving PCM_RELEASE before drain completion
+ hold off the response until all pending io messages are completed and retu=
+rned to the guest driver; drain capability might or might not be available =
+for the host pcm stream<br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; pause the host pcm stream and maintain buffe=
+red audio / pending io messages as is; pause capability might or might not =
+be available for the host pcm stream<br>
+&gt; <br>
+&gt; If the thinking is that the vdev on the host can decide on how to impl=
+ement PCM_STOP based on the host stream capabilities, the guest driver has =
+no information about the choice made by the vdev. In our opinion the choice=
+ made by the vdev in implementing PCM_STOP
+ dictates what the possible transitions after PCM_STOP can be (if PCM_STOP =
+is implemented as pause, PCM_START and PCM_RELEASE are possible transitions=
+, but if PCM_STOP is implemented as drain, the only valid transition is PCM=
+_RELEASE and if PCM_STOP is implemented
+ as drop and all pending io messages have been returned to the guest driver=
+, again the only valid transition seems to be PCM_RELEASE), but the guest d=
+river is the one issuing the next request and it might at the best be able =
+to make an educated guess how the
+ vdev implemented PCM_STOP based on whether all the pending io messages are=
+ returned or not to the guest driver. To make such a guess possible, more c=
+larifications would be required in the spec to identify which of the scenar=
+ios listed above are considered
+ by the spec.<br>
+&gt; Note 1:&nbsp; The reference virtio-snd linux/android guest driver expl=
+icitly doesn't support the ALSA SNDRV_PCM_INFO_DRAIN_TRIGGER feature flag, =
+which might indicate there was no intent to support drain semantics.<br>
+&gt; Note 2: The reference virtio-snd linux/android guest driver explicitly=
+ does support the ALSA SNDRV_PCM_INFO_PAUSE feature flag, which seems to in=
+dicate intent to support pause semantics, along with drop semantics.<br>
+&gt; Note 3: The Android Audio HAL and tinyalsa/tinyplay don't have any not=
+ion of drain or pause. At the end of a playback session there is a wait for=
+ previously buffered data to complete playing using the tinyalsa pcm_wait()=
+ function, and then a PCM_STOP request
+ is issued after the buffered audio has completed playing. Drop semantics a=
+re assumed for PCM_STOP in this context.<br>
+&gt; Information on period alignment and max audio buffer size<br>
+&gt; No information about period alignment and min/max audio buffer/period =
+size is currently available in struct virtio_snd_pcm_info. Ideally the peri=
+od size used for io messages should match the period size used on the host.=
+ That will guarantee consistency in
+ timing, precise accounting of available room to write more data or availab=
+le data to read, across host and guest. A workaround is possible, where the=
+ device will fail a PCM_SET_PARAMETERS request that specifies an unsupporte=
+d period alignment or audio buffer/period
+ size and the guest is forced to use a period and buffer size that is known=
+ to be supported by the host device (this can be done in an Android guest, =
+by hard coding the android audio HAL period size and the number of periods =
+and thus effectively the audio buffer
+ size that is used for the virtio sound devices in the guest; in android an=
+d linux guests it can be done also by setting the virtio_snd module paramet=
+ers, to the effect of locking down the period and buffer size).<br>
+&gt; General Issues<br>
+&gt; <br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; There is no statement regarding the endianne=
+ss of PCM data exchanged via txq and rxq queues and the virtio sound PCM fo=
+rmat definitions do not include endianness.<br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; There is currently no requirement for the gu=
+est driver to enqueue an io message only after it has completed writing dat=
+a to it (playback) or reading data from it (capture). The linux/android gue=
+st driver currently enqueues an io message for playback
+ immediately after calling snd_pcm_period_elapsed(). snd_pcm_period_elapsed=
+() makes it possible for the guest client app to write new data, but upon t=
+he return of this function there is no guarantee that the guest client app =
+has already written new data. If
+ the vdev dequeues the io message immediately and copies the PCM data for t=
+hat io request before the guest client app has actually written new data to=
+ it, it results in out-of-sequence/stale data being played back.<br>
+&gt;&nbsp;&nbsp; *&nbsp;&nbsp; There is no statement how the guest driver s=
+hould react to a control request failing.<br>
+&gt; <br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp; For PCM control requests t=
+he spec details what the &quot;possible transitions&quot; are after each co=
+ntrol request. It doesn't specify whether this applies only to successful c=
+ontrol requests, or irrespective of the success of the control requests. Fo=
+r instance
+ for PCM_START only PCM_STOP is listed as a valid transition. What happens =
+if PCM_START fails though? Is PCM_STOP still a valid transition? Is a repea=
+t of PCM_START valid, since the previous PCM_START failed? Is a PCM_RELEASE=
+ required in order for the guest
+ driver to recover the io request descriptors that were sent to the vdev be=
+fore PCM_START? Is a PCM_STOP required in this case, in order to be able to=
+ send PCM_RELEASE (because of valid sequences considerations)? It was seen =
+that the reference linux/android
+ guest driver ignores a PCM_START failure and still sends io requests after=
+ the failed PCM_START.<br>
+<br>
+I tested this and I observed that when START fails, the guest still<br>
+sends the STOP cmd. This cmd is only valid if the stream has transited<br>
+to the START state, i.e., the spec only allows STOP in the START state.<br>
+I did not obser that the RELEASE cmd is issued. I think the driver shall<br>
+not send the STOP msg in that situation. What do you think?<br>
+<br>
+Regards, Matias.<br>
+<br>
+<br>
+---------------------------------------------------------------------<br>
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org<br>
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org<br>
+<br>
+</div>
+</span></font>
+
+<HR>This transmission (including any attachments) may contain confidential =
+information, privileged material (including material protected by the solic=
+itor-client or other applicable privileges), or constitute non-public infor=
+mation. Any use of this information by anyone other than the intended recip=
+ient is prohibited. If you have received this transmission in error, please=
+ immediately reply to the sender and delete this information from your syst=
+em. Use, dissemination, distribution, or reproduction of this transmission =
+by unintended recipients is not authorized and may be unlawful.<BR>
+</body>
+</html>
+
+--_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_--
