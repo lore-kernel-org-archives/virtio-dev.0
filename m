@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14039-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14040-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35165C4167D
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 62E96C4332F
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 19:05:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4E7E72A820
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AAEDA2A824
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 19:05:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 320E9986C50
-	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 87A2D986C4E
+	for <virtio-dev@archiver.kernel.org>; Fri,  3 Nov 2023 19:05:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 160B1986C46; Fri,  3 Nov 2023 18:17:21 +0000 (UTC)
+	id 6C1F4986C46; Fri,  3 Nov 2023 19:05:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,44 +24,113 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F35AC986C45;
-	Fri,  3 Nov 2023 18:17:19 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5A7CF986C45;
+	Fri,  3 Nov 2023 19:05:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 From: Radu Ocica <rocica@blackberry.com>
 To: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
-CC: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-        "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-        "anton.yakovlev@opensynergy.com" <anton.yakovlev@opensynergy.com>
+CC: "virtio-comment@lists.oasis-open.org"
+	<virtio-comment@lists.oasis-open.org>,
+        "virtio-dev@lists.oasis-open.org"
+	<virtio-dev@lists.oasis-open.org>,
+        "anton.yakovlev@opensynergy.com"
+	<anton.yakovlev@opensynergy.com>
 Thread-Topic: [virtio-dev] virtio-snd comments/questions
-Thread-Index: AQHaAdgPGZsaTwL9FEiOAsMZLVwCl7BZO+6AgA+1CEk=
-Date: Fri, 3 Nov 2023 18:17:17 +0000
-Message-ID: <134bb8dbb49643e6b3d6e9b65239b6a8@blackberry.com>
-References: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>,<ZTfHAQxns6j8gmEL@fedora>
-In-Reply-To: <ZTfHAQxns6j8gmEL@fedora>
+Thread-Index: AQHaAdgPGZsaTwL9FEiOAsMZLVwCl7BZBi2AgA/8Oms=
+Date: Fri, 3 Nov 2023 19:05:30 +0000
+Message-ID: <6df30c7945ca4ac2bb1c170b1c028719@blackberry.com>
+References: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>,<ZTeZ6YjyR0BJOylw@fedora>
+In-Reply-To: <ZTeZ6YjyR0BJOylw@fedora>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-originating-ip: [100.64.197.67]
 Content-Type: multipart/alternative;
-	boundary="_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_"
+	boundary="_000_6df30c7945ca4ac2bb1c170b1c028719blackberrycom_"
 MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-03_17,2023-11-02_03,2023-05-22_02
+ definitions=2023-11-03_18,2023-11-02_03,2023-05-22_02
 Subject: Re: [virtio-dev] virtio-snd comments/questions
 
---_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_
+--_000_6df30c7945ca4ac2bb1c170b1c028719blackberrycom_
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-I also think that the driver should not send a STOP command after a failed =
-START command. There is no explicit description of any states in the virtio=
- sound device specification. We have both adopted an interpretation that th=
-e state is determined by the last successful pcm control request and the tr=
-ansitions specified for pcm control requests assume success of these contro=
-l requests. I wish this was clarified explicitly in the spec, to not allow =
-room for interpretation.
+Hi Matias,
+
+
+I will answer to your comments:
+
+
+> I agree that the STOP command could be better explain it. In our
+implementation[1], we implemented as your last point defines it, i.e.,
+stop host's pcm stream and keep messages in tx/rx. The STOP control
+command is marked as completed immediately. The virtio spec does not
+indicate that STOP requires to mark pending io messages as completed
+thus we do not do that. A note about this in the spec would help.
+
+
+In our implementation we made the assumption that STOP is meant to be imple=
+mented as pause, thus if the host stream supports the pause operation we pa=
+use it and keep io messages in tx/rx queue; the host stream is stopped (via=
+ the drop operation) and io messages are marked in this case as completed a=
+nd returned to the guest driver only when receiving the RELEASE control req=
+uest.
+
+However, if the host stream does not support pause the only option left is =
+to perform a drop operation on the host stream and in this case all pending=
+ messages in the tx/rx queue need to be returned to the guest as completed,=
+ because at the next start possibly all messages will be needed to prime th=
+e host stream (in the case of playback). A host stream prepare will also be=
+ needed to be issued internally by the device if a START is issued by the g=
+uest right after the STOP. And there is some uncertainty whether a guest dr=
+iver will send new io messages before or after the START control request.
+
+I think the difficulty of describing a clear behavior for STOP stems from a=
+ttempting a minimal spec, with a minimal number of control requests. If ded=
+icated STOP vs PAUSE requests were used, it would be more straightforward t=
+o specify an unambiguous behavior for each.
+
+
+> Checking the Linux kernel driver, the STOP cmd is issued when getting
+SNDRV_PCM_TRIGGER_PAUSE_PUSH. Documentation does not indicate when this
+msg is sent though. The RELEASE cmd is issued only during
+virtsnd_pcm_sync_stop(). In this sense, I would guess that STOP behaves
+like a PAUSE whereas RELEASE behaves like a STOP and dropping all
+pending IO messages. The spec left for the implementation if device
+would still playback those buffer or just drop them. I think you may
+find interesting the discussion we started at this thread[2] regarding
+the RELEASE control cmd semantics.
+
+
+We have made the call to never have the device drain the host pcm stream. I=
+f the host pcm stream supports pause, then STOP pauses it and RELEASE perfo=
+rms a drop and returns immediately all io messages as completed to the gues=
+t driver. If the host pcm stream does not support pause, then STOP results =
+in a drop operation and return of all io messages as completed to the guest=
+ driver, and the RELEASE is a no-op. A drain like behavior for playback can=
+ be obtained if the guest driver stops writing new data and waits to underr=
+un, time at which it sends STOP and RELEASE. This seems to work fine with t=
+he existing reference linux/android guest driver for success path handling.=
+ There are questions regarding failure path handling (failure of control or=
+ io requests) and what variability can/should be expected in terms of guest=
+ driver behavior.
+
+
+> Right, we discussed about this issue at [3]. I've recently proposed the
+following patch to fix that: '[PATCH v3] ALSA: virtio: use ack callback'
+
+
+This looks promising. I found it already at https://github.com/torvalds/lin=
+ux/blob/master/sound/virtio/ and will give it a try. Is there a repository =
+for this driver code where both this fix and the audio control support is a=
+vailable?
+
+
+Thank you for your comments and the very valuable information on the ack ca=
+llback patch.
 
 
 Regards,
@@ -69,16 +138,19 @@ Regards,
 Radu
 
 ________________________________
-From: virtio-dev@lists.oasis-open.org <virtio-dev@lists.oasis-open.org> on =
-behalf of Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
-Sent: Tuesday, October 24, 2023 9:30:41 AM
+From: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+Sent: Tuesday, October 24, 2023 6:18:17 AM
 To: Radu Ocica
-Cc: virtio-dev@lists.oasis-open.org; virtio-comment@lists.oasis-open.org; a=
+Cc: virtio-comment@lists.oasis-open.org; virtio-dev@lists.oasis-open.org; a=
 nton.yakovlev@opensynergy.com
 Subject: Re: [virtio-dev] virtio-snd comments/questions
 
 CAUTION - This email is from an external source. Please be cautious with li=
 nks and attachments. (go/taginfo)
+
+Hello Radu,
+
+I CC Anton too. This email responds part of the questions.
 
 On Wed, Oct 18, 2023 at 03:32:21PM +0000, Radu Ocica wrote:
 > Hi,
@@ -114,6 +186,14 @@ ity might or might not be available for the host pcm stream
 messages as is; pause capability might or might not be available for the ho=
 st pcm stream
 >
+
+I agree that the STOP command could be better explain it. In our
+implementation[1], we implemented as your last point defines it, i.e.,
+stop host's pcm stream and keep messages in tx/rx. The STOP control
+command is marked as completed immediately. The virtio spec does not
+indicate that STOP requires to mark pending io messages as completed
+thus we do not do that. A note about this in the spec would help.
+
 > If the thinking is that the vdev on the host can decide on how to impleme=
 nt PCM_STOP based on the host stream capabilities, the guest driver has no =
 information about the choice made by the vdev. In our opinion the choice ma=
@@ -129,6 +209,17 @@ ther all the pending io messages are returned or not to the guest driver. T=
 o make such a guess possible, more clarifications would be required in the =
 spec to identify which of the scenarios listed above are considered by the =
 spec.
+
+Checking the Linux kernel driver, the STOP cmd is issued when getting
+SNDRV_PCM_TRIGGER_PAUSE_PUSH. Documentation does not indicate when this
+msg is sent though. The RELEASE cmd is issued only during
+virtsnd_pcm_sync_stop(). In this sense, I would guess that STOP behaves
+like a PAUSE whereas RELEASE behaves like a STOP and dropping all
+pending IO messages. The spec left for the implementation if device
+would still playback those buffer or just drop them. I think you may
+find interesting the discussion we started at this thread[2] regarding
+the RELEASE control cmd semantics.
+
 > Note 1:  The reference virtio-snd linux/android guest driver explicitly d=
 oesn't support the ALSA SNDRV_PCM_INFO_DRAIN_TRIGGER feature flag, which mi=
 ght indicate there was no intent to support drain semantics.
@@ -170,6 +261,10 @@ antee that the guest client app has already written new data. If the vdev d=
 equeues the io message immediately and copies the PCM data for that io requ=
 est before the guest client app has actually written new data to it, it res=
 ults in out-of-sequence/stale data being played back.
+
+Right, we discussed about this issue at [3]. I've recently proposed the
+following patch to fix that: '[PATCH v3] ALSA: virtio: use ack callback'
+
 >   *   There is no statement how the guest driver should react to a contro=
 l request failing.
 >
@@ -186,18 +281,25 @@ PCM_RELEASE (because of valid sequences considerations)? It was seen that t=
 he reference linux/android guest driver ignores a PCM_START failure and sti=
 ll sends io requests after the failed PCM_START.
 
-I tested this and I observed that when START fails, the guest still
-sends the STOP cmd. This cmd is only valid if the stream has transited
-to the START state, i.e., the spec only allows STOP in the START state.
-I did not obser that the RELEASE cmd is issued. I think the driver shall
-not send the STOP msg in that situation. What do you think?
+We've also spotted that the spec does not specify what to do with
+invalid transitions. I think in those cases the transition cannot be
+taken and thus spec only refers to successful transitions. IIUC, in
+Crosvm, for example, if a cmd is executed in a invalid state, the device
+returns error to the guest but the transition does not happen.
 
-Regards, Matias.
+I will send a second email to address the remainder points.
 
+Thanks, Matias.
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+[1] https://urldefense.com/v3/__https://github.com/rust-vmm/vhost-device/tr=
+ee/main/staging/vhost-device-sound__;!!JoeW-IhCUkS0Jg!bYrKkBHywrzvbKqKlnT9s=
+d2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdvUzFVHM$
+[2] https://urldefense.com/v3/__https://lore.kernel.org/all/1a54feab-5de9-4=
+b39-a4ce-7ff22e23cf52@opensynergy.com/T/__;!!JoeW-IhCUkS0Jg!bYrKkBHywrzvbKq=
+KlnT9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdg5pM9y4$
+[3] https://urldefense.com/v3/__https://lore.kernel.org/all/f28d4604-b169-4=
+583-b9ab-d53e6d08ce63@opensynergy.com/T/__;!!JoeW-IhCUkS0Jg!bYrKkBHywrzvbKq=
+KlnT9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdHbWqCWs$ .
 
 ----------------------------------------------------------------------
 This transmission (including any attachments) may contain confidential info=
@@ -209,7 +311,7 @@ ediately reply to the sender and delete this information from your system. =
 Use, dissemination, distribution, or reproduction of this transmission by u=
 nintended recipients is not authorized and may be unlawful.
 
---_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_
+--_000_6df30c7945ca4ac2bb1c170b1c028719blackberrycom_
 Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
@@ -232,27 +334,115 @@ p
 <div dir=3D"ltr">
 <div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
 or:#000000; font-family:Calibri,Helvetica,sans-serif">
-<p>I also think that the driver should not send a STOP command after a fail=
-ed START command. There is no explicit description of any states in the vir=
-tio sound device specification. We have both adopted an interpretation that=
- the state is determined by the
- last successful pcm control request and the transitions specified for pcm =
-control requests assume success of these control requests. I wish this was =
-clarified explicitly in the spec, to not allow room for interpretation.</p>
+<p>Hi Matias,</p>
 <p><br>
 </p>
-<p>Regards,</p>
-<p>Radu<br>
+<p>I will answer to your comments:</p>
+<p><br>
 </p>
+<p>&gt; <font size=3D"2"><span style=3D"font-size:10pt">I agree that the ST=
+OP command could be better explain it. In our<br>
+implementation[1], we implemented as your last point defines it, i.e.,<br>
+stop host's pcm stream and keep messages in tx/rx. The STOP control<br>
+command is marked as completed immediately. The virtio spec does not<br>
+indicate that STOP requires to mark pending io messages as completed<br>
+thus we do not do that. A note about this in the spec would help.</span></f=
+ont></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">In our implementation we=
+ made the assumption that STOP is meant to be implemented as pause, thus if=
+ the host stream supports the pause operation we pause it and keep io messa=
+ges in tx/rx queue; the host stream
+ is stopped (via the drop operation) and io messages are marked in this cas=
+e as completed and returned to the guest driver only when receiving the REL=
+EASE control request.</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">However, if the host str=
+eam does not support pause the only option left is to perform a drop operat=
+ion on the host stream and in this case all pending messages in the tx/rx q=
+ueue need to be returned to the guest
+ as completed, because at the next start possibly all messages will be need=
+ed to prime the host stream (in the case of playback). A host stream prepar=
+e will also be needed to be issued internally by the device if a START is i=
+ssued by the guest right after the
+ STOP. And there is some uncertainty whether a guest driver will send new i=
+o messages before or after the START control request.
+<br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">I think the difficulty o=
+f describing a clear behavior for STOP stems from attempting a minimal spec=
+, with a minimal number of control requests. If dedicated STOP vs PAUSE req=
+uests were used, it would be more straightforward
+ to specify an unambiguous behavior for each.&nbsp; <br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">&gt; <font size=3D"2"><s=
+pan style=3D"font-size:10pt">Checking the Linux kernel driver, the STOP cmd=
+ is issued when getting<br>
+SNDRV_PCM_TRIGGER_PAUSE_PUSH. Documentation does not indicate when this<br>
+msg is sent though. The RELEASE cmd is issued only during<br>
+virtsnd_pcm_sync_stop(). In this sense, I would guess that STOP behaves<br>
+like a PAUSE whereas RELEASE behaves like a STOP and dropping all<br>
+pending IO messages. The spec left for the implementation if device<br>
+would still playback those buffer or just drop them. I think you may<br>
+find interesting the discussion we started at this thread[2] regarding<br>
+the RELEASE control cmd semantics.</span></font><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">We have made the call to=
+ never have the device drain the host pcm stream. If the host pcm stream su=
+pports pause, then STOP pauses it and RELEASE performs a drop and returns i=
+mmediately all io messages as completed
+ to the guest driver. If the host pcm stream does not support pause, then S=
+TOP results in a drop operation and return of
+<font size=3D"2"><span style=3D"font-size:10pt">all io messages as complete=
+d to the guest driver</span></font>, and the RELEASE is a no-op. A drain li=
+ke behavior for playback can be obtained if the guest driver stops writing =
+new data and waits to underrun, time
+ at which it sends STOP and RELEASE. This seems to work fine with the exist=
+ing reference linux/android guest driver for success path handling. There a=
+re questions regarding failure path handling (failure of control or io requ=
+ests) and what variability can/should
+ be expected in terms of guest driver behavior.</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">&gt; <font size=3D"2"><s=
+pan style=3D"font-size:10pt">Right, we discussed about this issue at [3]. I=
+'ve recently proposed the<br>
+following patch to fix that: '[PATCH v3] ALSA: virtio: use ack callback'</s=
+pan></font><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">This looks promising. I =
+found it already at
+<a href=3D"https://github.com/torvalds/linux/blob/master/sound/virtio/" cla=
+ss=3D"x_OWAAutoLink">
+https://github.com/torvalds/linux/blob/master/sound/virtio/</a> and will gi=
+ve it a try. Is there a repository for this driver code where both this fix=
+ and the audio control support is available?<br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">Thank you for your comme=
+nts and the very valuable information on the ack callback patch.</span></fo=
+nt></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt"><br>
+</span></font></p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">Regards,</span></font></=
+p>
+<p><font size=3D"2"><span style=3D"font-size:10pt">Radu<br>
+</span></font></p>
 </div>
 <hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
 <div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
-color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> virtio-dev@lists.oa=
-sis-open.org &lt;virtio-dev@lists.oasis-open.org&gt; on behalf of Matias Ez=
-equiel Vara Larsen &lt;mvaralar@redhat.com&gt;<br>
-<b>Sent:</b> Tuesday, October 24, 2023 9:30:41 AM<br>
+color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> Matias Ezequiel Var=
+a Larsen &lt;mvaralar@redhat.com&gt;<br>
+<b>Sent:</b> Tuesday, October 24, 2023 6:18:17 AM<br>
 <b>To:</b> Radu Ocica<br>
-<b>Cc:</b> virtio-dev@lists.oasis-open.org; virtio-comment@lists.oasis-open=
+<b>Cc:</b> virtio-comment@lists.oasis-open.org; virtio-dev@lists.oasis-open=
 .org; anton.yakovlev@opensynergy.com<br>
 <b>Subject:</b> Re: [virtio-dev] virtio-snd comments/questions</font>
 <div>&nbsp;</div>
@@ -261,6 +451,10 @@ equiel Vara Larsen &lt;mvaralar@redhat.com&gt;<br>
 <font size=3D"2"><span style=3D"font-size:10pt;">
 <div class=3D"PlainText">CAUTION - This email is from an external source. P=
 lease be cautious with links and attachments. (go/taginfo)<br>
+<br>
+Hello Radu, <br>
+<br>
+I CC Anton too. This email responds part of the questions.<br>
 <br>
 On Wed, Oct 18, 2023 at 03:32:21PM &#43;0000, Radu Ocica wrote:<br>
 &gt; Hi,<br>
@@ -299,6 +493,14 @@ for the host pcm stream<br>
 red audio / pending io messages as is; pause capability might or might not =
 be available for the host pcm stream<br>
 &gt; <br>
+<br>
+I agree that the STOP command could be better explain it. In our<br>
+implementation[1], we implemented as your last point defines it, i.e.,<br>
+stop host's pcm stream and keep messages in tx/rx. The STOP control<br>
+command is marked as completed immediately. The virtio spec does not<br>
+indicate that STOP requires to mark pending io messages as completed<br>
+thus we do not do that. A note about this in the spec would help.<br>
+<br>
 &gt; If the thinking is that the vdev on the host can decide on how to impl=
 ement PCM_STOP based on the host stream capabilities, the guest driver has =
 no information about the choice made by the vdev. In our opinion the choice=
@@ -316,6 +518,17 @@ to make an educated guess how the
 larifications would be required in the spec to identify which of the scenar=
 ios listed above are considered
  by the spec.<br>
+<br>
+Checking the Linux kernel driver, the STOP cmd is issued when getting<br>
+SNDRV_PCM_TRIGGER_PAUSE_PUSH. Documentation does not indicate when this<br>
+msg is sent though. The RELEASE cmd is issued only during<br>
+virtsnd_pcm_sync_stop(). In this sense, I would guess that STOP behaves<br>
+like a PAUSE whereas RELEASE behaves like a STOP and dropping all<br>
+pending IO messages. The spec left for the implementation if device<br>
+would still playback those buffer or just drop them. I think you may<br>
+find interesting the discussion we started at this thread[2] regarding<br>
+the RELEASE control cmd semantics.<br>
+<br>
 &gt; Note 1:&nbsp; The reference virtio-snd linux/android guest driver expl=
 icitly doesn't support the ALSA SNDRV_PCM_INFO_DRAIN_TRIGGER feature flag, =
 which might indicate there was no intent to support drain semantics.<br>
@@ -360,6 +573,10 @@ has already written new data. If
  the vdev dequeues the io message immediately and copies the PCM data for t=
 hat io request before the guest client app has actually written new data to=
  it, it results in out-of-sequence/stale data being played back.<br>
+<br>
+Right, we discussed about this issue at [3]. I've recently proposed the<br>
+following patch to fix that: '[PATCH v3] ALSA: virtio: use ack callback'<br>
+<br>
 &gt;&nbsp;&nbsp; *&nbsp;&nbsp; There is no statement how the guest driver s=
 hould react to a control request failing.<br>
 &gt; <br>
@@ -379,18 +596,38 @@ that the reference linux/android
  guest driver ignores a PCM_START failure and still sends io requests after=
  the failed PCM_START.<br>
 <br>
-I tested this and I observed that when START fails, the guest still<br>
-sends the STOP cmd. This cmd is only valid if the stream has transited<br>
-to the START state, i.e., the spec only allows STOP in the START state.<br>
-I did not obser that the RELEASE cmd is issued. I think the driver shall<br>
-not send the STOP msg in that situation. What do you think?<br>
+We've also spotted that the spec does not specify what to do with<br>
+invalid transitions. I think in those cases the transition cannot be<br>
+taken and thus spec only refers to successful transitions. IIUC, in<br>
+Crosvm, for example, if a cmd is executed in a invalid state, the device<br>
+returns error to the guest but the transition does not happen. <br>
 <br>
-Regards, Matias.<br>
+I will send a second email to address the remainder points.<br>
 <br>
+Thanks, Matias.<br>
 <br>
----------------------------------------------------------------------<br>
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org<br>
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org<br>
+[1] <a href=3D"https://urldefense.com/v3/__https://github.com/rust-vmm/vhos=
+t-device/tree/main/staging/vhost-device-sound__;!!JoeW-IhCUkS0Jg!bYrKkBHywr=
+zvbKqKlnT9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdvUzFVHM$">
+https://urldefense.com/v3/__https://github.com/rust-vmm/vhost-device/tree/m=
+ain/staging/vhost-device-sound__;!!JoeW-IhCUkS0Jg!bYrKkBHywrzvbKqKlnT9sd2r8=
+yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdvUzFVHM$</a>
+<br>
+[2] <a href=3D"https://urldefense.com/v3/__https://lore.kernel.org/all/1a54=
+feab-5de9-4b39-a4ce-7ff22e23cf52@opensynergy.com/T/__;!!JoeW-IhCUkS0Jg!bYrK=
+kBHywrzvbKqKlnT9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdg5p=
+M9y4$">
+https://urldefense.com/v3/__https://lore.kernel.org/all/1a54feab-5de9-4b39-=
+a4ce-7ff22e23cf52@opensynergy.com/T/__;!!JoeW-IhCUkS0Jg!bYrKkBHywrzvbKqKlnT=
+9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdg5pM9y4$</a>
+<br>
+[3] <a href=3D"https://urldefense.com/v3/__https://lore.kernel.org/all/f28d=
+4604-b169-4583-b9ab-d53e6d08ce63@opensynergy.com/T/__;!!JoeW-IhCUkS0Jg!bYrK=
+kBHywrzvbKqKlnT9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdHbW=
+qCWs$">
+https://urldefense.com/v3/__https://lore.kernel.org/all/f28d4604-b169-4583-=
+b9ab-d53e6d08ce63@opensynergy.com/T/__;!!JoeW-IhCUkS0Jg!bYrKkBHywrzvbKqKlnT=
+9sd2r8yt3hdxcPMpipjtExqsI3lIusGdbwOM5n1sT_BE1-GB4xdvBalxdHbWqCWs$</a> .<br>
 <br>
 </div>
 </span></font>
@@ -406,4 +643,4 @@ by unintended recipients is not authorized and may be unlawful.<BR>
 </body>
 </html>
 
---_000_134bb8dbb49643e6b3d6e9b65239b6a8blackberrycom_--
+--_000_6df30c7945ca4ac2bb1c170b1c028719blackberrycom_--
