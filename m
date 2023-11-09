@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14046-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14047-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 840CBC4332F
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Nov 2023 18:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59ACCC4167D
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Nov 2023 02:52:20 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id AC7CB2A835
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Nov 2023 18:37:23 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A3D4D3E57F
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Nov 2023 02:52:19 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 806AE986CB0
-	for <virtio-dev@archiver.kernel.org>; Wed,  8 Nov 2023 18:37:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 98197986CCB
+	for <virtio-dev@archiver.kernel.org>; Thu,  9 Nov 2023 02:52:19 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 59DBB986CAB; Wed,  8 Nov 2023 18:37:23 +0000 (UTC)
+	id 8AD62986CBD; Thu,  9 Nov 2023 02:52:19 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,163 +24,335 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 49508986CAC
-	for <virtio-dev@lists.oasis-open.org>; Wed,  8 Nov 2023 18:37:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 74D73986CBA;
+	Thu,  9 Nov 2023 02:52:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1699468641.053000
-X-TM-MAIL-UUID: ec4e90c5-ec92-4d13-84d5-53fd1c03a333
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GTofLBVAiT4jiKaS2NMxWTf4PF7HFx6159lXD3kf1HTWAdUFlxihgcfxkhxMZIWJ1Px8gKMSENEnRQS8G3mv86lDeAGVrDRJRspohN4WL1ce3Mifb89h6M8JQ69sin4J8wS5d9gN8qGS8SdxV/DFG2Ad//nQ1TCtp7m7d9PFlYtf/7qQifKYS03GlFmv79wkd5tmg0N4Oh5zNQf/dA2lTf+oO84jfbPrnUNtelRinP4uIrAr7915C0EFnhay7VWoGTYmsSfMG2N9ikSI9MDMBJADckjbqYUVHZxkh/JQvcLLPul+bH8X9hok1u4rC/8u/1/jqhGMFxGw3OLp7bGwpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=seybNV6AgblQmR5oLT4HC2gMbS5YOQ9EO7EkbEFKce0=;
- b=OPJeC/a1P+3c7dT+6Xii2aqMSMVV/FEqbYh0eX+EMZEy5GUU8UgFAmj8cMbtg/bDvn9fsO3lQ9+eokd5hIVFrM2GnIzXxAsvyysXYsbIHM32Cot4fQBQrXD4BZ/0FSSMxbWix/8+2ikVD3EeO4G9cHstqGcknj9pha7VO6Wmsf/zERYyWE2GHGOA0yTw+legWfxVURiPM/IBf/pVhCdTXvIiDvWoa5FJW1w54S3zO7YVaD7Uma/hCD7CuJdtrBADBB428Bu/KAdaYaTckO+Y1mQ/0Yh0nXpYiS9nP7vkWS5mPfqWhJCG7gaOOVYcuIqByvtfq1czfJ1YO/QN8eyaug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <59a014d3-5027-4a5c-836c-3a433dfad994@opensynergy.com>
-Date: Wed, 8 Nov 2023 19:37:18 +0100
-To: Mark Brown <broonie@kernel.org>, Haixu Cui <quic_haixcui@quicinc.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
- cohuck@redhat.com, quic_ztu@quicinc.com
-References: <20231024125346.23546-1-quic_haixcui@quicinc.com>
- <ZUjrDjHpFVReDSgk@finisterre.sirena.org.uk>
- <c08f1b37-51e8-4126-9e1c-40530f468df4@quicinc.com>
- <ZUuxfbkSboAFQIQF@finisterre.sirena.org.uk>
-Content-Language: en-US
-From: Harald Mommer <harald.mommer@opensynergy.com>
-In-Reply-To: <ZUuxfbkSboAFQIQF@finisterre.sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0136.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:96::10) To BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:4a::9)
+Message-ID: <f4f1013c-a474-4a82-bd7c-e0304d0e37ae@quicinc.com>
+Date: Thu, 9 Nov 2023 10:52:06 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BE1P281MB3400:EE_|FR2P281MB3375:EE_
-X-MS-Office365-Filtering-Correlation-Id: b912f233-cf8a-439d-d063-08dbe089bd87
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CqS3ojD3VgzWe10TMeT3AoiIaHu9jgNjg8mHgCUqclvBlBjzOf3wuLr+ZmIxRAR/RwF949v49wlveijV5P0YYeuwx/ME9t4M3oC1mLSVLyPeP5v0MHu8OHQ9PaPQtXHoT/KdlHJlyQTMD8nmvoi0mmm8SdMMhMC73ZBTjMKcx5CjFvPIHI55D1ZzxcVBrvdTmELGGQTvsVjH2oxZ6iTiRVK4GHQWwVi+9I057G2mZ5pwQoHn3VPjiKRljsRxBAPUp5zvkHTGQ4cCZEBpYBGwkrB6sW34ykc8eOa9ErGN0sVGFUW7V2XERVGhqopOrRnS36zBl7vzBCUdq1LMQLUe4ZWTgiGAXYvKc6Ewgq6bxQkgoUoRyu6P+/KTyohXsvo3aK0rfRjcQLYe9gHL3eTOAi4+hyOFR9d2ummv6sMJ8Xfqz50ojsae3KHEIlOMRL4zUbtiATNzlanPpM8U71P8GN+P/4ymZuMZbed27GXqDHMClYngmbo6GSCtEkoALOxYVZzR8J5ukaaBu8JAlfcJOOaoXngmfhe+ohPquhz13aY/ghnGDMQXrviTf2b9hoZnV2eSazg+m7vVpQFoXhhe4VXlrLXVReztPNcyZ4iCqmU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(366004)(376002)(136003)(39830400003)(230922051799003)(186009)(1800799009)(451199024)(64100799003)(44832011)(41300700001)(86362001)(31696002)(5660300002)(66946007)(2906002)(66476007)(66556008)(316002)(110136005)(8676002)(8936002)(4326008)(36756003)(42186006)(478600001)(2616005)(53546011)(38100700002)(83380400001)(31686004)(26005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RitVS0djYVJTR2llWHNGVmlCMkt1SkpkeVlIUTBzb2R3ZmVSR3J3V09kUzdF?=
- =?utf-8?B?dlQwbzNQU1ZSWEpHdStKSDYwVldhamVKT1dBK1JqeC9kcVltSUQwNmdYWERj?=
- =?utf-8?B?ZnprR1JmK2lWclA0SWtCaUFxT0R1QlZuOXBsMWZmMTBkMjR5UFl6cCtkNFp1?=
- =?utf-8?B?dzRPL2R4bVp2ZU1IUWdHckhrY0pnRnJqUHFqdzU1WWd1d04rbmd0Mi9CbHMy?=
- =?utf-8?B?K0tDUnhWc0JpYjNpNGdXUG81QWo3T05WREJIYTd2MlZLSFZXeTZLeWo2UjdM?=
- =?utf-8?B?TzQ2MUpqVEpCRmoxVHQvUnd1RnJuMDJRNmVib25BU2hoU3ZNdk53anJVeEJ6?=
- =?utf-8?B?eUtjUHorTElRYmVId0pmWTlzMU1jNlFuTjFBaG4yMU0xL2VhZ0tQaC92eFRQ?=
- =?utf-8?B?aExXUi8rOHFiTHdraTlQbDhQN0Q1U05IZ1VhY042RTV5eGNoREhBWTFvUXlX?=
- =?utf-8?B?SkkrRk1HMGllL1YyZlVjK0JTb0JBVXhmYzBiVnNheEhKV21yOEtSOWl6Qmpo?=
- =?utf-8?B?QzIzeWJ2TCt1ZzBXVHpWNXpQcEVyckdMb2ZYUE9KTjZESDhJU01QeERaeGRQ?=
- =?utf-8?B?Znh2VFl3V1FQdjNtbFZwU3FaZ2laaUpFd3RIT1NHQ1RQYnU1Zzdmd2xhNUc1?=
- =?utf-8?B?ckh6OTk2ak1ZS2ROelZyTit5c0cvTk90T1VMZ0FCZUU2VEswMk8yaThFd0VS?=
- =?utf-8?B?cGJhK1BqemdsVmp0ZDZKRmVydkplKzVZbmdlc01ndDZaemNYNEtEZGxoWlpi?=
- =?utf-8?B?NWtjU2szVDVYY21GNW1aNlhsZ2ZocmlPUVF2OFF5eFN2cG91WTZmN3hDU2tV?=
- =?utf-8?B?TDZNZDlyRE9hRkEyMHVwTGVpZzZ0SEdJUTJMemJHYlZyMzJnczFTbWdaN0la?=
- =?utf-8?B?TFIvSVhvVnVEMTRFSHNOZnBNVjdja1h4VnZWVFNuRVd3aTUrYVhkY0g5ejRX?=
- =?utf-8?B?bFdaSXRleVgveENYQzdYZE1iamMySVNBVDVzaUNSd1BOVDZSUmZaUnJVYXdz?=
- =?utf-8?B?SjJGczBUalo4blNuUGhtMFo5a2NNSzA4c09TV05FVjQ4allvcFJZS1RscG1x?=
- =?utf-8?B?bU1UcGg3VlhDVWJ5QkdwZVhtWmVuUHdETEpBNWhMR01LWktLSmZuQlo2ZzdZ?=
- =?utf-8?B?anhtUkhMM0llUEs2djFSdVJ1THVqWkxReURPR2FsNW1tbW1JSWZnUmw5RTNI?=
- =?utf-8?B?UjZ0V2laMHoyL0FNRzc0QTRwWHhUS0RySDJCQkkxeVUzUFFaV25RWlJwbTIv?=
- =?utf-8?B?cE84cnZvV1JvT1JhM3phZXBpWU1xdStRMmFPNDJmQjNTajRiWndkendNYXlT?=
- =?utf-8?B?anU4cE5tcTl0MlNTTThTYmRVbWRzemVQRHZpM25tUTJGdHNnTkhheitrTFFu?=
- =?utf-8?B?djB5T1RxSkUxL1J6UGRnTHBCVmNrNEZLM1dQRWEvRE8rcWNyV1JLMmhEbTcy?=
- =?utf-8?B?K2w1UHI1MWRSZFhEUFpJUWMxSlY2dm1GSGdqd1F1NGNsSVR2TjJCOVVRTE45?=
- =?utf-8?B?REVHOTE2SGNZL0V2a2hZUTlBRUF3cW5IOHpPRm5lWTAvdmhzVG9CSThJMkFR?=
- =?utf-8?B?ejhkenl1OFhtYTliMmUveUR1Y3ZUbTZzNzlJOXUvTDZjbi8xWUx5eEdNT0lx?=
- =?utf-8?B?cHlMcHE3MTdvN1JpRzVWQXZraTM5VGVTWFRFU0xOZFN6TWNXcW1OWE14S2xQ?=
- =?utf-8?B?WkM1cFJnTDF5ckV5dGVVVUtyQmtyS0xpQVdjZ0J5am00Q0tOZkVvUGN0TmYz?=
- =?utf-8?B?d1Fnc1JJcTZ2ZDdZWmZLVXNrZWQ3enRKUCswOXRzT1hwZmMvaW8rV2pCdVJk?=
- =?utf-8?B?VjlZVVlkZVk2V1lRQ3hNcFE0T0xJMng2RjdCUk4zeVRXaEV5MC85WlVFQ05V?=
- =?utf-8?B?eVkxTjhCU01oSFlLZVJqbTZhdytVd25FU2hSTDRCZzRnOXZaRmhLOUhjZUs2?=
- =?utf-8?B?YU1aNitjUEIzaTdvOEpTQ0RoZmNQbjg2VFVNcXVsaEsyNDIwM0ZZcForUEhp?=
- =?utf-8?B?WXNScDlNZ2w5N2JZTzZKSmkwY2QvVThmNmlydFdGTEQ4TnNhOVRMdTZPV29n?=
- =?utf-8?B?OExFUmRuS1RLNy91NHpuaTVjMW5LOS9HUExBZVY5Ty9aQVdMcDM3dkxsR0t3?=
- =?utf-8?Q?zlrAODWKc7cu0k7DF9kvld5EY?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b912f233-cf8a-439d-d063-08dbe089bd87
-X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2023 18:37:19.9109
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fWr5vdn91FEjPzSpWTZzdONV4fxO5mzXY3KTmFyWPOr+AbRrUogXux03wkk0wMPiFAlaIL3qrrIXU1EFYpNG9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB3375
-X-TM-AS-ERS: 104.47.7.169-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1015-27986.001
-X-TMASE-Result: 10--1.838400-4.000000
-X-TMASE-MatchedRID: L8tZF6zWW2r5ETspAEX/non73EnA6dC3lR7tN56aWVW0sdSrJZyyxuEj
-	oSIzkyAfmFXyOSJV59cJKnveCf4VKUUYpGrxdWcJRYNhzuZZjRDyQ6dAmPdzEid215hBfPs441j
-	+2o0U8UFlO3VzrWrwQBqLh06qdvlxNlZlVlqsTSQKKqGMl1rHbDdF+uIxstnWYll6E/wPyC/jEt
-	1EiGuYH1znfwhOc7kT3JNhpEek5UX/vMMOhcmhDTvQG0xdFpDCcnxszfxH2Ckmx8kl1Wnd+q+eC
-	SMeOiOkrlXFGRYMxXC59u66wM4v4jTMjv56Jlnw98LoxdSuPzOUbZ46ZsZ1f4rKwnKf3vNUGQE3
-	kpRzZ/ShZyGOQxGUMw==
-X-TMASE-XGENCLOUD: 21017da3-bdb8-4c0f-8675-aa60e02ac6d9-0-0-200-0
-X-TM-Deliver-Signature: 00421642DD7E36AB63BB37B5B2C524FD
-X-TM-Addin-Auth: F39QHoRxIgZpsQGG800XxUQuGpSMwqzQW+9Zicxqbz060xkHWZM+m/v3fLE
-	IOjSy2mwjtWor+FusIKorE93O5NIaLUi94giJQgOsKUmnxZ7XBDjWvghwy6S1885jIiVjbzuYqj
-	cMcYGsPRt/wb0KLKzRlEicm13UWm64DLfx9M3e1+ThxRvfXRXrs1V7XrAzl/CzjjDeI/vH5MSAg
-	O7jTlPvB/SU/+b6fdTh5IFUoSmYbtmo5HC6o/uJ6xxNzQsjEddaB3SQJEtzEsdy6INiPcdoMWRF
-	WhKTDIPzgzr/TZ4=.PK/OiTcG+YVI8m55L/WtlYmvqF2WCHqiRYSlPtyfoue1jcW/ZkzJg4y8wt
-	ivxteSLnyU1Az1hgthvC9lsr8iASW6koJNjhG6fn/xOUkdoeGyuCdV4HQDg9H0FOJOUStfQ0Vg8
-	UIzwmYpbXMYgCQINHazpqTgFO22UXrxncbWJyk9g5SUkjlOE40njtWrX5qkQLLjnaXXzffPtU6O
-	DzL0kSKjrrSVim2C5BEa/yjkwWvCOEta/kO0z9faJdwoZkHE+NEDB12h0uKm4bD706t4yuyfKAv
-	++TCDohXgnWh5CN7gcaElaS3LqM9XpGknoLbQkPLIDfkt3MyUtK/R2kaSig==
-X-TM-Addin-ProductCode: EMS
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Qiang Zhang <qiang4.zhang@linux.intel.com>
+CC: <virtio-dev@lists.oasis-open.org>, <virtio-comment@lists.oasis-open.org>,
+        <harald.mommer@opensynergy.com>, <cohuck@redhat.com>,
+        <quic_ztu@quicinc.com>
+References: <20231024125346.23546-1-quic_haixcui@quicinc.com>
+ <ZUnpqRj4c2BbhaLI@qzhang4-desk.sh.intel.com>
+From: Haixu Cui <quic_haixcui@quicinc.com>
+In-Reply-To: <ZUnpqRj4c2BbhaLI@qzhang4-desk.sh.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: q3T2RwaXYLJ3PsIKtBdgtdcgtr2s9Lrv
+X-Proofpoint-ORIG-GUID: q3T2RwaXYLJ3PsIKtBdgtdcgtr2s9Lrv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-09_01,2023-11-08_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ lowpriorityscore=0 priorityscore=1501 impostorscore=0 adultscore=0
+ clxscore=1011 mlxlogscore=999 mlxscore=0 suspectscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311090021
 Subject: Re: [virtio-dev] [PATCH v4] virtio-spi: add the device specification
 
-On 08.11.23 17:04, Mark Brown wrote:
-> On Wed, Nov 08, 2023 at 11:42:40PM +0800, Haixu Cui wrote:
->> On 11/6/2023 9:33 PM, Mark Brown wrote:
->>> On Tue, Oct 24, 2023 at 08:53:46PM +0800, Haixu Cui wrote:
->>>> +	le16 bus_num;
->>>> +	le16 chip_select_max_number;
->>> That's a *lot* of potential buses and chip selects...
->> Here you mean the types of bus_num and chip_select_max_number are "le16"?
->> Here I use 16 bits because bus_num and num_chipselect in spi_controller
->> structure are both 16 bits.
-> Yeah, I think that's more for padding/alignment reasons than anything
-> else.  TBH I wondered if just going for a standard int might be better,
-> it's the combination of picking a smaller type but one that's relatively
-> large for the domain.
 
-We cannot use int at interfaces between device and driver in the virtio 
-world:
 
-- "int" is machine dependent, sizeof may be 2, 4 or 8.
+On 11/7/2023 3:40 PM, Qiang Zhang wrote:
+> On Tue, Oct 24, 2023 at 08:53:46PM +0800, Haixu Cui wrote:
+>> virtio-spi is a virtual SPI master and it allows a guest to operate and
+>> use the physical SPI master controlled by the host.
+>>
+>> This patch adds the specification for virtio-spi.
+>>
+>> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
+>> ---
+>> device-types/spi/description.tex        | 206 ++++++++++++++++++++++++
+>> device-types/spi/device-conformance.tex |   7 +
+>> device-types/spi/driver-conformance.tex |   7 +
+>> 3 files changed, 220 insertions(+)
+>> create mode 100644 device-types/spi/description.tex
+>> create mode 100644 device-types/spi/device-conformance.tex
+>> create mode 100644 device-types/spi/driver-conformance.tex
+>>
+>> diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
+>> new file mode 100644
+>> index 0000000..5dbceaf
+>> --- /dev/null
+>> +++ b/device-types/spi/description.tex
+>> @@ -0,0 +1,206 @@
+>> +\section{SPI Master Device}\label{sec:Device Types / SPI Master Device}
+>> +
+>> +virtio-spi is a virtual SPI (Serial Peripheral Interface) master and it allows
+>> +a guest to operate and use the physical SPI master controlled by the host.
+>> +
+>> +virtio-spi has a single virtqueue. SPI transfer requests are placed into
+>> +the virtqueue, and serviced by the physical SPI master.
+>> +
+>> +In a typical host and guest architecture with virtio-spi, Virtio SPI driver is
+>> +the front-end existing in the guest kernel, and Virtio SPI device acts as the
+>> +back-end in the host platform.
+>> +
+>> +\subsection{Device ID}\label{sec:Device Types / SPI Master Device / Device ID}
+>> +45
+>> +
+>> +\subsection{Virtqueues}\label{sec:Device Types / SPI Master Device / Virtqueues}
+>> +
+>> +\begin{description}
+>> +\item[0] requestq
+>> +\end{description}
+>> +
+>> +\subsection{Feature bits}\label{sec:Device Types / SPI Master Device / Feature bits}
+>> +
+>> +None
+>> +
+>> +\subsection{Device configuration layout}\label{sec:Device Types / SPI Master Device / Device configuration layout}
+>> +
+>> +All fields of this configuration are always available and read-only for Virtio SPI driver.
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_config {
+>> +	le16 bus_num;
+>> +	le16 chip_select_max_number;
+>> +	le8 cs_timing_setting_enable;
+>> +	le8 reserved[3];
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The \field{bus_num} indicates the physical SPI master assigned to guest.
+> 
+> Does this assume that a Virtio SPI controller always corresponds to a physical
+> SPI controller?
+> What if the backend SPI controller and SPI devices are fully emulated or the
+> SPI devices under the Virtio SPI controller come from multiple physical SPI
+> controllers?
+> 
+> Regards,
+> Qiang
+> 
 
-- It is signed which would be new for the virtio specification. Not done 
-for other devices.
+Hi Qiang,
 
-- How are signs represented? 2s complement? Strange machines do not use 
-2s complement. Good is that most of those strange machines have still 
-tubes and are by now obsolete.
+     It's quite possible the host SPI controller is not physical, but 
+virtualized controller. In next patch, I will use "host SPI controller" 
+to replace "physical SPI controller", "host SPI controller" represents 
+all kinds of controller controlled by the host, which is more appropriate.
 
-- The endianess is machine dependent and device and driver may use 
-internally a different native byte ordering. Strange but this is imaginable.
+     A Virtio SPI controller corresponds with a host SPI controller, and 
+the guest can only access the devices under this host SPI controller, 
+with the assigned cs. For devices under other host controllers, the 
+guest cannot access.
 
-le16 is a well defined unsigned type with sizeof 2 bytes and endianess 
-defined as "little endian".
+     Thank you for your findings and comments.
 
-> What byte ordering are the multi-byte words in - CPU native or a
-> particular endianness (eg, wire native)?
+Best Regards
+Haixu Cui
 
-Virtio uses little endian. (Some data structures in the RPMB device use 
-big endian. But this is an exception and there this was done for a good 
-reason.)
 
+>> +
+>> +The \field{chip_select_max_number} is the maximum number of chipselect the physical SPI master supports.
+>> +
+>> +The \field{cs_timing_setting_enable} indicates if the physical SPI master supporting cs timing setting:
+>> +	0: physical SPI master doesn't support cs timing setting;
+>> +	1: physical SPI master supports cs timing setting.
+>> +
+>> +The \field{reserved} is for alignment purpose, also for future extension.
+>> +
+>> +\subsection{Device Initialization}\label{sec:Device Types / SPI Master Device / Device Initialization}
+>> +
+>> +\begin{enumerate}
+>> +\item The Virtio SPI driver configures and initializes the virtqueue.
+>> +\end{enumerate}
+>> +
+>> +\subsection{Device Operation}\label{sec:Device Types / SPI Master Device / Device Operation}
+>> +
+>> +\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / SPI Master Device / Device Operation: Request Queue}
+>> +
+>> +Virtio SPI driver enqueues requests to the virtqueue, and they are used by
+>> +Virtio SPI device. Each request represents one SPI tranfer and is of the form:
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_transfer_head {
+>> +        u8 slave_id;
+>> +        u8 bits_per_word;
+>> +        u8 cs_change;
+>> +        u8 tx_nbits;
+>> +        u8 rx_nbits;
+>> +	 u8 reserved[3];
+>> +        le32 mode;
+>> +        le32 freq;
+>> +        le32 word_delay_ns;
+>> +        le32 cs_setup_ns;
+>> +        le32 cs_delay_hold_ns;
+>> +        le32 cs_change_delay_inactive_ns;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_transfer_result {
+>> +        u8 result;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_spi_transfer_req {
+>> +        struct virtio_spi_transfer_head head;
+>> +        u8 tx_buf[];
+>> +        u8 rx_buf[];
+>> +        struct virtio_spi_transfer_result result;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The \field{slave_id} indicates the chipselect index the SPI transfer used.
+>> +
+>> +The \field{bits_per_word} indicates the number of bits in each SPI transfer word.
+>> +
+>> +The \field{cs_change} indicates whether to deselect device before starting the
+>> +next SPI transfer, 0 means chipselect keep asserted and 1 means chipselect deasserted
+>> +then asserted again.
+>> +
+>> +The \field{tx_nbits} indicates bus width for write transfer:
+>> +        0,1: bus width is 1, also known as SINGLE;
+>> +	2  : bus width is 2, also known as DUAL;
+>> +	4  : bus width is 4, also known as QUAD;
+>> +	8  : bus width is 8, also known as OCTAL;
+>> +	other values are invalid.
+>> +
+>> +The \field{rx_nbits} indicates bus width for read transfer:
+>> +        0,1: bus width is 1, also known as SINGLE;
+>> +	2  : bus width is 2, also known as DUAL;
+>> +	4  : bus width is 4, also known as QUAD;
+>> +	8  : bus width is 8, also known as OCTAL;
+>> +	other values are invalid.
+>> +
+>> +The \field{reserved} is for alignement, also for further extension.
+>> +
+>> +The \field{mode} indicates how data is clocked out and in. Bit definitions as follows:
+>> +        bit 0: CPHA, determines the timing (i.e. phase) of the data bits
+>> +	       relative to the clock pulses.
+>> +        bit 1: CPOL, determines the polarity of the clock.
+>> +        bit 2: CS_HIGH, if 1, chipselect active high, else active low.
+>> +	bit 3: LSB_FIRST, determines per-word bits-on-wire, if 0, MSB
+>> +	       first, else LSB first.
+>> +	bit 4: LOOP, if 1, device is in loopback mode, else normal mode.
+>> +
+>> +The \field{freq} indicates the SPI transfer speed in Hz.
+>> +
+>> +The \field{word_delay_ns} indicates delay to be inserted between consecutive
+>> +words of a transfer, in ns unit.
+>> +
+>> +The \field{cs_setup_ns} indicates delay to be introduced after chipselect
+>> +is asserted, in ns unit.
+>> +
+>> +The \field{cs_delay_hold_ns} indicates delay to be introduced before chipselect
+>> +is deasserted, in ns unit.
+>> +
+>> +The \field{cs_change_delay_inactive_ns} indicates delay to be introduced after
+>> +chipselect is deasserted and before next asserted, in ns unit.
+>> +
+>> +The \field{tx_buf} is the buffer for data sent to the device.
+>> +
+>> +The \field{rx_buf} is the buffer for data received to the device.
+>> +
+>> +The final \field{result} is the transfer result, either VIRTIO_SPI_TRANS_OK for success
+>> +or VIRTIO_SPI_TRANS_ERR for error.
+>> +
+>> +\begin{lstlisting}
+>> +#define VIRTIO_SPI_TRANS_OK     0
+>> +#define VIRTIO_SPI_TRANS_ERR    1
+>> +\end{lstlisting}
+>> +
+>> +\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / SPI Master Device / Device Operation: Operation Status}
+>> +
+>> +Fields in structure \field{virtio_spi_transfer_head} are written by Virtio SPI driver, while
+>> +\field{result} in structure \field{virtio_spi_transfer_result} is written by Virtio SPI device.
+>> +
+>> +virtio-spi supports three transfer types:
+>> +        1) half-duplex read;
+>> +        2) half-duplex write;
+>> +        3) full-duplex read and write.
+>> +
+>> +For half-duplex read transfer, \field{rx_buf} is filled by Virtio SPI device and consumed
+>> +by Virtio SPI driver. For half-duplex write transfer, \field{tx_buf} is filled by Virtio
+>> +SPI driver and consumed by Virtio SPI device. And for full-duplex read and write transfer,
+>> +both \field{tx_buf} and \field{rx_buf} are used.
+>> +
+>> +\drivernormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
+>> +
+>> +The Virtio SPI driver MUST send transfer requests on the requestq virtqueue.
+>> +
+>> +Fields in structure \field{virtio_spi_transfer_head} MUST be filled by Virtio SPI driver
+>> +and MUST be readable for Virtio SPI device.
+>> +
+>> +Structure \field{virtio_spi_transfer_result} MUST be filled by Virtio SPI device
+>> +and MUST be writable for Virtio SPI device.
+>> +
+>> +For half-duplex read, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
+>> +\field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
+>> +
+>> +For half-duplex write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
+>> +\field{tx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
+>> +
+>> +For full-duplex read and write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
+>> +\field{tx_buf}, \field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
+>> +
+>> +For half-duplex write or full-duplex read and write transfer, Virtio SPI driver MUST not use \field{rx_buf}
+>> +if the \field{result} returned from Virtio SPI device is VIRTIO_SPI_TRANS_ERR.
+>> +
+>> +If \field{cs_timing_setting_enable} in structure \field{virtio_spi_config} is 0, while \field{cs_setup_ns},
+>> +\field{cs_setup_ns} and \field{cs_change_delay_inactive_ns} of the transfer are not all zero, Virtio
+>> +SPI driver MUST print a warning log to alert that the cs timing won't be set as expected.
+>> +
+>> +\devicenormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
+>> +
+>> +Virtio SPI device MUST set all the fields of the structure \field{virtio_spi_config} before
+>> +they are read by Virtio SPI driver.
+>> +
+>> +Virtio SPI device MUST set the structure \field{virtio_spi_transfer_result} before sending
+>> +it back to Virtio SPI driver.
+>> +
+>> +Virtio SPI device MUST be able to identify the transfer type according to the received
+>> +virtqueue descriptors.
+>> +
+>> +Virtio SPI device MUST NOT change the data in \field{tx_buf} if transfer type is half-duplex write
+>> +or full-duplex read and write.
+>> diff --git a/device-types/spi/device-conformance.tex b/device-types/spi/device-conformance.tex
+>> new file mode 100644
+>> index 0000000..3e771bc
+>> --- /dev/null
+>> +++ b/device-types/spi/device-conformance.tex
+>> @@ -0,0 +1,7 @@
+>> +\conformance{\subsection}{SPI Master Device Conformance}\label{sec:Conformance / Device Conformance / SPI Master Device Conformance}
+>> +
+>> +An SPI Master device MUST conform to the following normative statements:
+>> +
+>> +\begin{itemize}
+>> +\item \ref{devicenormative:Device Types / SPI Master Device / Device Operation}
+>> +\end{itemize}
+>> diff --git a/device-types/spi/driver-conformance.tex b/device-types/spi/driver-conformance.tex
+>> new file mode 100644
+>> index 0000000..3c965ef
+>> --- /dev/null
+>> +++ b/device-types/spi/driver-conformance.tex
+>> @@ -0,0 +1,7 @@
+>> +\conformance{\subsection}{SPI Master Driver Conformance}\label{sec:Conformance / Driver Conformance / SPI Master Driver Conformance}
+>> +
+>> +An SPI Master driver MUST conform to the following normative statements:
+>> +
+>> +\begin{itemize}
+>> +\item \ref{drivernormative:Device Types / SPI Master Device / Device Operation}
+>> +\end{itemize}
+>> -- 
+>> 2.17.1
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+>> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
