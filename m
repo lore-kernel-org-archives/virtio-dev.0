@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14053-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14054-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99DE9C4332F
-	for <virtio-dev@archiver.kernel.org>; Fri, 10 Nov 2023 02:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5136C4332F
+	for <virtio-dev@archiver.kernel.org>; Fri, 10 Nov 2023 08:24:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DFE3E44552
-	for <virtio-dev@archiver.kernel.org>; Fri, 10 Nov 2023 02:37:46 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id DA6022168F
+	for <virtio-dev@archiver.kernel.org>; Fri, 10 Nov 2023 08:24:00 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DAFE0986D03
-	for <virtio-dev@archiver.kernel.org>; Fri, 10 Nov 2023 02:37:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C0B9E986D02
+	for <virtio-dev@archiver.kernel.org>; Fri, 10 Nov 2023 08:24:00 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CEA2B986CF2; Fri, 10 Nov 2023 02:37:46 +0000 (UTC)
+	id A8820986CFA; Fri, 10 Nov 2023 08:24:00 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,85 +24,83 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BA053986CF3;
-	Fri, 10 Nov 2023 02:37:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 939E3986CFB
+	for <virtio-dev@lists.oasis-open.org>; Fri, 10 Nov 2023 08:24:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <cda9cfc8-1897-4fcf-9b30-1ad9c81185e6@quicinc.com>
-Date: Fri, 10 Nov 2023 10:37:29 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699604636; x=1700209436;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1FfMPDMojOW98lWRGbi3Y0gvscQ84thvM99O+jTf37U=;
+        b=HnVlEXr6xn6S8Scx5VJ+Gu939WIutVAAlvuns3P7lgad2w1VOYWtMjF2zrHtaJcU5A
+         5DhDx4q+p1UDsVQJOysAaAEuq8EmkZzfO0I6g7OwzEc8gWunUV5DsJPyErUmCkoWeamp
+         XKKqj0s7aZe8NoAgcOkvCbdvaA9JUIBk1IYMjE3aDNi14VLP/AkXSIkUOzs2sIUppWCB
+         OXyzHkmivqDpX0LzL3R0X/4hIiIkDKnKQo/bkQ8rXHEJLMNWieLvrEJxg2260+SQHPTG
+         lr8bnuhOXekJ55vV7Z5QmmpN5RT8MVe5eQETeb33JVj+L3fnxO27bcm3Oc44kOO5GT7T
+         CNVw==
+X-Gm-Message-State: AOJu0Yy9G/ZPAsexmTsuesn985+R3/BAABJwOU7i+cOMeWXuYfwr0Fiw
+	3zRq6sFbBLw9Oyjxy/jk54v4P53FivXQrsOJygSijerY24NAl2u0CTY=
+X-Google-Smtp-Source: AGHT+IFMethhvVw8bSiASuVhFoXgFHYU4XB4B9nPAB3EKH/twdsHkF3qlt3rVQRop1XnJQH6A6inxJZVVKQNES8ARhc=
+X-Received: by 2002:a50:ab5b:0:b0:540:ee1e:c3f with SMTP id
+ t27-20020a50ab5b000000b00540ee1e0c3fmr6808086edc.28.1699603074203; Thu, 09
+ Nov 2023 23:57:54 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: Mark Brown <broonie@kernel.org>
-CC: Harald Mommer <harald.mommer@opensynergy.com>,
-        <virtio-dev@lists.oasis-open.org>,
-        <virtio-comment@lists.oasis-open.org>, <cohuck@redhat.com>,
-        <quic_ztu@quicinc.com>
-References: <20231024125346.23546-1-quic_haixcui@quicinc.com>
- <ZUjrDjHpFVReDSgk@finisterre.sirena.org.uk>
- <c08f1b37-51e8-4126-9e1c-40530f468df4@quicinc.com>
- <ZUuxfbkSboAFQIQF@finisterre.sirena.org.uk>
- <ab11fb3c-296f-41a3-92c7-2e8dddb4369f@quicinc.com>
- <ZUzaZt4flHQgsBzu@finisterre.sirena.org.uk>
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <ZUzaZt4flHQgsBzu@finisterre.sirena.org.uk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: gFYCy36jNg9uVGVl9i1BV4MpAd0eigYw
-X-Proofpoint-GUID: gFYCy36jNg9uVGVl9i1BV4MpAd0eigYw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-09_17,2023-11-09_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
- priorityscore=1501 lowpriorityscore=0 bulkscore=0 adultscore=0
- malwarescore=0 mlxlogscore=711 suspectscore=0 spamscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311100020
-Subject: Re: [virtio-dev] [PATCH v4] virtio-spi: add the device specification
+References: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>
+ <ZTeZ6YjyR0BJOylw@fedora> <6df30c7945ca4ac2bb1c170b1c028719@blackberry.com>
+ <CAHYGQ0yXPY2NU25N3jh=MH7=PUjkWy5R-SmtaMOVP-VCPPuq3w@mail.gmail.com> <37eaf0dc2bdb4a7b936618b48dd00ac2@blackberry.com>
+In-Reply-To: <37eaf0dc2bdb4a7b936618b48dd00ac2@blackberry.com>
+From: Manos Pitsidianakis <manos.pitsidianakis@linaro.org>
+Date: Fri, 10 Nov 2023 09:57:38 +0200
+Message-ID: <CAAjaMXYaNmKuGjTzO+fiAYveBXaVNonNnaUmoBH46b41U94YKQ@mail.gmail.com>
+To: Radu Ocica <rocica@blackberry.com>, 
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>, 
+	"anton.yakovlev@opensynergy.com" <anton.yakovlev@opensynergy.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] virtio-snd comments/questions
+
+On Thu, 9 Nov 2023 at 18:46, Radu Ocica <rocica@blackberry.com> wrote:
+> >> This looks promising. I found it already at https://urldefense.com/v3/=
+__https://github.com/torvalds/linux/blob/master/sound/virtio/__;!!JoeW-IhCU=
+kS0Jg!bBq1USPrJoN1_CBJkW-XBknkCSEOUP40V1ctr_OU0tsYyEr9pXjSEu7n5ibc5BL4fKT3U=
+tk-cpGw6FiWxDY$  and will give it a try. Is there a repository for this dri=
+ver code where both this fix and the audio control support is available?
+
+The patch will most likely be part of the next kernel release, 6.7. As
+for the control support, read on:
+
+> > What do you mean with audio control support? Are you talking about the
+> > device? The device implementation is at
+> https://urldefense.com/v3/__https://github.com/rust-vmm/vhost-device/tree=
+/main/staging__;!!JoeW-IhCUkS0Jg!bBq1USPrJoN1_CBJkW-XBknkCSEOUP40V1ctr_OU0t=
+sYyEr9pXjSEu7n5ibc5BL4fKT3Utk-cpGw1sNq6IY$ .
+>
+> I meant the support for feature VIRTIO_SND_F_CTLS in the virtio_snd guest=
+ driver. A patch to add this support is available here: https://lists.oasis=
+-open.org/archives/virtio-comment/202104/msg00013.html. However this patch =
+is not present in the virtio_snd guest driver version here: https://urldefe=
+nse.com/v3/__https://github.com/torvalds/linux/blob/master/sound/virtio/__;=
+!!JoeW-IhCUkS0Jg!bBq1USPrJoN1_CBJkW-XBknkCSEOUP40V1ctr_OU0tsYyEr9pXjSEu7n5i=
+bc5BL4fKT3Utk-cpGw6FiWxDY$ . I was wondering whether there is a repository =
+where the virtio_snd driver has both the VIRTIO_SND_F_CTLS support and the =
+ack callback patch.
 
 
+The feature is part of the 1.3 version of the VIRTIO spec which is
+still in a Committee Specification Draft phase. You can find that the
+latest version of the VIRTIO spec is 1.2 here:
+https://www.oasis-open.org/committees/tc_home.php
 
-On 11/9/2023 9:11 PM, Mark Brown wrote:
-> On Thu, Nov 09, 2023 at 07:21:57PM +0800, Haixu Cui wrote:
-> 
->>     For checking the parameters above in virtio_spi_transfer_head, I'd like
->> to add these field in config space:
-> 
->>      5. freq_max_speed: if non-zero, maximum clock rate support, in Hz
->>                  unit. if 0, no limitation.
->>
->>      6. max_word_delay_ns: if non-zero, the maximum word delay supported.
->>                  if 0, word delay is not supported to introduce.
->>
->>      7. max_delay_after_cs_asserted: if non-zero, the maximum cs setup
->>                  delay supported.if 0, cs setup delay is not supported to
->>                  introduce
->>
->>      8. max_delay_before_cs_deassert: if non-zero, the maximum
->>                  cs_delay_hold_ns delay supported.if 0, cs setup delay is
->>                  not supported to introduce
->>
->>      9. max_delay_after_cs_deassert: if non-zero, the maximum
->>                  cs_change_delay_inactive_ns delay supported.if 0, cs
->>                  setup delay is not supported to introduce
-> 
-> I think this all makes sense - for the above we probably also need to
-> say that if the value requested by the client can't be met exactly we
-> either treat it as a minimum or maximum depending on the delays and
-> choose the next value (probably a maximum for the clock and minimum for
-> the rest).  So for example if the client requests 21MHz and the
-> controller can only select 20MHz or 25MHz then it should pick 20MHz.
+I believe it will take some time for both 1.3 to be approved and
+afterwards patches for the kernel must be published and reviewed,
+which will take some cycles as well. So I'd suggest you not to count
+on control capabilities at the moment, unfortunately.
 
-Sure, I will update to make it more flexible.
-
-Thanks a lot.
-
-Best Regards
-Haixu Cui
+--=20
+Manos Pitsidianakis
+Emulation and Virtualization Engineer at Linaro Ltd
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
