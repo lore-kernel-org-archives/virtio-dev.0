@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14057-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14058-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A0C4BC4167B
-	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 06:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB706C4332F
+	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 11:16:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id AA70660D2D
-	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 06:20:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 072082B07F
+	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 11:16:43 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9ADDC9867EC
-	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 06:20:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D604E98680E
+	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 11:16:42 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 8B87F9865E0; Mon, 13 Nov 2023 06:20:34 +0000 (UTC)
+	id B67249867EC; Mon, 13 Nov 2023 11:16:42 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,72 +24,81 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 7036B986602
-	for <virtio-dev@lists.oasis-open.org>; Mon, 13 Nov 2023 06:20:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A626298680B
+	for <virtio-dev@lists.oasis-open.org>; Mon, 13 Nov 2023 11:16:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
+X-MC-Unique: PemsT-LyOeCFGoHioCVLXw-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699856403; x=1700461203;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=40AnNMTnTA5JbfUmtrf6+OxPtYqdB23qjRlhAiosjOY=;
-        b=uTlbmKEvpNgabDYrVofQZ6GScT6QPU9bkmyD++UppylElMEfqG8MPNZipYBkpnYRQT
-         54CuBRuVZPHPNhIWGTiHMnwnXVv2mC9kErFOlNT0t3xdXtKzZjLvTtK3B+030GaQM9m9
-         lJW7XI5mu1ml7rBqGFc5Ja3b+iXMYMiW08Tvj4dM3nEpuuY6/z83ZqfZX4NBwZeiaAt6
-         HrgzZ7a4SkKwiPnBladoIKZYdLe+WCOngzwJ81EzEYO2M/7KMdP4l8MONQsSUZZIUCWU
-         aoT2DI2llCrS4l/+jvSLd2irUGxooxxWKgsJtJCqfyIrqgQeRd3iZIUU6afpGmRUPgK4
-         MG0A==
-X-Gm-Message-State: AOJu0YydQugvOBsgPyZlSH2nDlKd6S1ns7UWVLVzN5c9cxEriL5I+Twj
-	2ZcZCAzZ75klp7ZpycyXouGCrQ==
-X-Google-Smtp-Source: AGHT+IHlesSrSlmMAd1ftZsjf/KL7ghDnrOyNKQB+bYvggaRRlH84Bu6koiwR2GphIkoOQXXsaFGKA==
-X-Received: by 2002:a05:6358:6f1d:b0:169:a9d4:3faf with SMTP id r29-20020a0563586f1d00b00169a9d43fafmr6164780rwn.11.1699856402953;
-        Sun, 12 Nov 2023 22:20:02 -0800 (PST)
-From: David Stevens <stevensd@chromium.org>
-To: virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org
-Cc: David Stevens <stevensd@chromium.org>
-Date: Mon, 13 Nov 2023 15:19:49 +0900
-Message-ID: <20231113061950.122683-1-stevensd@chromium.org>
-X-Mailer: git-send-email 2.42.0.869.gea05f2083d-goog
+        d=1e100.net; s=20230601; t=1699874199; x=1700478999;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IuDtzn0d2hjt+A4kJ45X0WzTQrdIg0GheKqfMXN9XEw=;
+        b=IbkDvu92TKKq4zcGvQsJT5VBa7asrSKUVlgbPmrKFgHivVMwJHVsvmaUPxFVWvHaPL
+         9PHrSEfrbAyetjQ403eTzSfz/xTQnIsDSGam5gE/J21TIaHjIYcsfnrjblT1iFc1h/+b
+         idkuNaghH3x5fhVNJOkIGvjLV9910Nvw+CwTV1xW95u4XgwBmjDI3mF+6EOTxNQoUx35
+         Lk8avjO7Ar6qiNVKkNKLn+lCWQRAQcksKVCz8CUnYI7+Pfk0uoTTLPaEKzW7Zs24gVNd
+         zqB+/jdbMsB1GKMUSdTuDifmenCQubhcezyq9QLJZ2d2hOheyVoCIq3aTrmaP/VygiTS
+         Uo8g==
+X-Gm-Message-State: AOJu0YxiXnNVUUl3+xddaSGCRu85D3TBTCk+sE62bRnYvRy/CLaR5sOQ
+	Ph8OCvHFarRGIgxQqF5Z9MmYxt2Am/Uim3A2HUfW7VU8Yx9sziLgj43JD2zd3R8xkX81m3uGcoJ
+	6toTIh0RaHzF93cRyLSU7iDhUfN2A
+X-Received: by 2002:a05:600c:3d9a:b0:406:8494:f684 with SMTP id bi26-20020a05600c3d9a00b004068494f684mr4475139wmb.23.1699874199338;
+        Mon, 13 Nov 2023 03:16:39 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEWfiJVCYENmKe12qH7fA+cT8nJhD5faerbGD+wsxXEUsEZ0aQRD60rKu61Xop9XhMO7/1T9A==
+X-Received: by 2002:a05:600c:3d9a:b0:406:8494:f684 with SMTP id bi26-20020a05600c3d9a00b004068494f684mr4475126wmb.23.1699874198953;
+        Mon, 13 Nov 2023 03:16:38 -0800 (PST)
+Date: Mon, 13 Nov 2023 12:16:36 +0100
+From: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+To: Radu Ocica <rocica@blackberry.com>
+Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"anton.yakovlev@opensynergy.com" <anton.yakovlev@opensynergy.com>
+Message-ID: <ZVIFlIcOjW5+jgaH@fedora>
+References: <02725a6508584ed2aa8b31c9e9f4264a@blackberry.com>
+ <ZTeZ6YjyR0BJOylw@fedora>
+ <6df30c7945ca4ac2bb1c170b1c028719@blackberry.com>
+ <CAHYGQ0yXPY2NU25N3jh=MH7=PUjkWy5R-SmtaMOVP-VCPPuq3w@mail.gmail.com>
+ <37eaf0dc2bdb4a7b936618b48dd00ac2@blackberry.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v2 0/1] Define low power mode for devices
+In-Reply-To: <37eaf0dc2bdb4a7b936618b48dd00ac2@blackberry.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [virtio-dev] virtio-snd comments/questions
 
-The virtio spec currently does not include the concept of device power
-management. The lack means that there is no good action drivers can take
-when they are requested to put the device into a low power state (e.g.
-when a guest is entering a system-wide low power state like S0ix/S3).
-Stateless devices can be handled - albeit inefficiently - by resetting
-and reinitialzing the device. However, stateful devices cannot support
-this situation. This patch defines a low power mode for devices that can
-be used in this situation.
+Hello, 
 
-Low power mode is mostly defined at the transport layer, and all
-device-side power optimizations are optional. This avoids the need for
-invasive device-by-device definitions. It also pushes the requirement
-onto the device side, to simplify what driver side changes are
-necessary to just [1].
+On Thu, Nov 09, 2023 at 04:46:45PM +0000, Radu Ocica wrote:
+> 
+> > Could you elaborate on this? Which audio backend would not support
+> > PAUSE? I am not very familiar with audio engines.
+> 
+> For instance in linux, alsa-lib has a flag that specifies pause support by a PCM stream:
+> #define SNDRV_PCM_INFO_PAUSE                       (1UL<<19)  /* pause ioctl is supported */
+> The snd_pcm_pause API can only be used successfully if the PCM stream has this bit set in its PCM info.
+> A similar concept exists in QNX sound.
+> 
 
-I believe this patch may address the virtio-gpu issue which [2] is
-trying to address by avoiding the reset altogether when the guest enters
-S3.
+Oh, I see. I was unaware of this flag. Not supporting PAUSE in the host
+sound card may not be a problem. In our case, the pw backend in the host
+stops playing when a guest sends STOP immediately. As soon as START is
+sent again, pw begins consuming from the tx queue. Tx buffers are only
+signaled as complete after START is reissued. In the meantime, the msgs
+are in the available ring of the tx queue.
 
-[1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd@chromium.org/
-[2] https://lore.kernel.org/lkml/20230919114242.2283646-1-Jiqian.Chen@amd.com/
+> However, if the host stream does not support pause the only option
+> left is to perform a drop operation on the host stream and in this
+> case all pending messages in the tx/rx queue need to be returned to
+> the guest as completed, because at the next start possibly all
+> messages will be needed to prime the host stream (in the case of
+> playback).
 
-v1 -> v2:
- - Define virtio-pci support on top of PCI power management.
- - Add more conformance requirements.
+If STOP is sent and there is still msgs in the TX queue, can't the
+device just stop playing until START is issued again? Why does the
+device require to drop the msgs in this case?
 
-David Stevens (1):
-  Define a low power mode for devices
-
- content.tex       | 45 +++++++++++++++++++++++++++++++++++++++++++++
- transport-pci.tex |  7 +++++++
- 2 files changed, 52 insertions(+)
-
--- 
-2.42.0.869.gea05f2083d-goog
+Thanks, Matias.
 
 
 ---------------------------------------------------------------------
