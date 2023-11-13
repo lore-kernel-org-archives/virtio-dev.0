@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14055-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14056-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 66527C4332F
-	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 01:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A9A66C4167B
+	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 06:20:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7D23F2B07C
-	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 01:30:12 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 10AA42A839
+	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 06:20:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 58E309867C2
-	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 01:30:12 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id F1CD298680E
+	for <virtio-dev@archiver.kernel.org>; Mon, 13 Nov 2023 06:20:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 306689865BD; Mon, 13 Nov 2023 01:30:12 +0000 (UTC)
+	id E06089865E0; Mon, 13 Nov 2023 06:20:31 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,383 +24,130 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 179DF9865BA;
-	Mon, 13 Nov 2023 01:30:10 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C4859986675
+	for <virtio-dev@lists.oasis-open.org>; Mon, 13 Nov 2023 06:20:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10892"; a="394262948"
-X-IronPort-AV: E=Sophos;i="6.03,298,1694761200"; 
-   d="scan'208";a="394262948"
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10892"; a="767772368"
-X-IronPort-AV: E=Sophos;i="6.03,298,1694761200"; 
-   d="scan'208";a="767772368"
-Date: Mon, 13 Nov 2023 09:37:43 +0800
-From: Qiang Zhang <qiang4.zhang@linux.intel.com>
-To: Haixu Cui <quic_haixcui@quicinc.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
-	harald.mommer@opensynergy.com, cohuck@redhat.com,
-	quic_ztu@quicinc.com
-Message-ID: <ZVF95+wRE0nhvRRf@qzhang4-desk.sh.intel.com>
-References: <20231024125346.23546-1-quic_haixcui@quicinc.com>
- <ZUnpqRj4c2BbhaLI@qzhang4-desk.sh.intel.com>
- <f4f1013c-a474-4a82-bd7c-e0304d0e37ae@quicinc.com>
- <ZUxUa+5510GLrKQh@qzhang4-desk.sh.intel.com>
- <3cc0521f-7cf0-48ac-b872-8717043fcb2f@quicinc.com>
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699856408; x=1700461208;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lUjklFKSOnUusYvRpeq6KaOQ/4IfHLZPfwfFhGfaHNY=;
+        b=R8Wes3XAWoBcgNgKUwg5OK4gfxWLuNy0yU/LzzFYJm9BF7T3McWIf/45vZfjQ75BHG
+         nvOQwKYanlXwBeKvxKGSsOn46/K9dadiS9T55hLqjvPRlzt/8tJm47MyW/jBvhdLZWlz
+         JKtrW4H+v1cqpARWrQXI2SqOpeA7v5VapA7rC5UqZiQYEtIX3BnwINvM491YfiGohpBA
+         4f2HJHU92KF4Z32AAE4+Sgr9pNK1QCXUThl91TVbenD3rXi8DQzx9Qx6G0Zn6m7rb1Qv
+         g9Ai+xFge4YLqjHzupDxP662NduaLLbeT66OyGvcA3khSCwqpq9gOe0tf8C4+Edf06NN
+         yo/w==
+X-Gm-Message-State: AOJu0YwW5+ELbeqcQwe/rvz+GgXR+rLCHrxkyPfbovm8I2I8h/UlGslw
+	wI4CVh8AXbm+OM5XZ2tNQ/8qvg==
+X-Google-Smtp-Source: AGHT+IGP+P5SIY11qzeMNA70gpGGcRBBbHKPpcX/4bR+xuiexgy2Or1OG5jCbjv5jFpY9kUuh/8yqw==
+X-Received: by 2002:a17:90b:1d11:b0:27d:5946:5e2c with SMTP id on17-20020a17090b1d1100b0027d59465e2cmr3506870pjb.12.1699856408434;
+        Sun, 12 Nov 2023 22:20:08 -0800 (PST)
+From: David Stevens <stevensd@chromium.org>
+To: virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org
+Cc: David Stevens <stevensd@chromium.org>
+Date: Mon, 13 Nov 2023 15:19:50 +0900
+Message-ID: <20231113061950.122683-2-stevensd@chromium.org>
+X-Mailer: git-send-email 2.42.0.869.gea05f2083d-goog
+In-Reply-To: <20231113061950.122683-1-stevensd@chromium.org>
+References: <20231113061950.122683-1-stevensd@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3cc0521f-7cf0-48ac-b872-8717043fcb2f@quicinc.com>
-Subject: Re: [virtio-dev] [PATCH v4] virtio-spi: add the device specification
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v2 1/1] Define a low power mode for devices
 
-On Thu, Nov 09, 2023 at 06:21:49PM +0800, Haixu Cui wrote:
->
->
->On 11/9/2023 11:39 AM, Qiang Zhang wrote:
->> On Thu, Nov 09, 2023 at 10:52:06AM +0800, Haixu Cui wrote:
->> > 
->> > 
->> > On 11/7/2023 3:40 PM, Qiang Zhang wrote:
->> > > On Tue, Oct 24, 2023 at 08:53:46PM +0800, Haixu Cui wrote:
->> > > > virtio-spi is a virtual SPI master and it allows a guest to operate and
->> > > > use the physical SPI master controlled by the host.
->> > > > 
->> > > > This patch adds the specification for virtio-spi.
->> > > > 
->> > > > Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
->> > > > ---
->> > > > device-types/spi/description.tex        | 206 ++++++++++++++++++++++++
->> > > > device-types/spi/device-conformance.tex |   7 +
->> > > > device-types/spi/driver-conformance.tex |   7 +
->> > > > 3 files changed, 220 insertions(+)
->> > > > create mode 100644 device-types/spi/description.tex
->> > > > create mode 100644 device-types/spi/device-conformance.tex
->> > > > create mode 100644 device-types/spi/driver-conformance.tex
->> > > > 
->> > > > diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
->> > > > new file mode 100644
->> > > > index 0000000..5dbceaf
->> > > > --- /dev/null
->> > > > +++ b/device-types/spi/description.tex
->> > > > @@ -0,0 +1,206 @@
->> > > > +\section{SPI Master Device}\label{sec:Device Types / SPI Master Device}
->> > > > +
->> > > > +virtio-spi is a virtual SPI (Serial Peripheral Interface) master and it allows
->> > > > +a guest to operate and use the physical SPI master controlled by the host.
->> > > > +
->> > > > +virtio-spi has a single virtqueue. SPI transfer requests are placed into
->> > > > +the virtqueue, and serviced by the physical SPI master.
->> > > > +
->> > > > +In a typical host and guest architecture with virtio-spi, Virtio SPI driver is
->> > > > +the front-end existing in the guest kernel, and Virtio SPI device acts as the
->> > > > +back-end in the host platform.
->> > > > +
->> > > > +\subsection{Device ID}\label{sec:Device Types / SPI Master Device / Device ID}
->> > > > +45
->> > > > +
->> > > > +\subsection{Virtqueues}\label{sec:Device Types / SPI Master Device / Virtqueues}
->> > > > +
->> > > > +\begin{description}
->> > > > +\item[0] requestq
->> > > > +\end{description}
->> > > > +
->> > > > +\subsection{Feature bits}\label{sec:Device Types / SPI Master Device / Feature bits}
->> > > > +
->> > > > +None
->> > > > +
->> > > > +\subsection{Device configuration layout}\label{sec:Device Types / SPI Master Device / Device configuration layout}
->> > > > +
->> > > > +All fields of this configuration are always available and read-only for Virtio SPI driver.
->> > > > +
->> > > > +\begin{lstlisting}
->> > > > +struct virtio_spi_config {
->> > > > +	le16 bus_num;
->> > > > +	le16 chip_select_max_number;
->> > > > +	le8 cs_timing_setting_enable;
->> > > > +	le8 reserved[3];
->> > > > +};
->> > > > +\end{lstlisting}
->> > > > +
->> > > > +The \field{bus_num} indicates the physical SPI master assigned to guest.
->> > > 
->> > > Does this assume that a Virtio SPI controller always corresponds to a physical
->> > > SPI controller?
->> > > What if the backend SPI controller and SPI devices are fully emulated or the
->> > > SPI devices under the Virtio SPI controller come from multiple physical SPI
->> > > controllers?
->> > > 
->> > > Regards,
->> > > Qiang
->> > > 
->> > 
->> > Hi Qiang,
->> > 
->> >     It's quite possible the host SPI controller is not physical, but
->> > virtualized controller. In next patch, I will use "host SPI controller" to
->> > replace "physical SPI controller", "host SPI controller" represents all kinds
->> > of controller controlled by the host, which is more appropriate.
->> 
->> I think the meaning of "Host Controller" is a little bit opaque and is not
->> really necessary.
->> 
->> Hypervisor doesn't need to give guest an "id" of the Virtio SPI controller,
->> since this can be achieved by ACPI/DT in guest.
->> 
->> If guest needs to aware the topology of the backend, it's better to use
->> other mechanisms becuase it is board or configuration specific.
->
->Hi Qiang,
->
->Yes, bus_num is not necessary, hypervisor can maintain the mapping
->relationship between the frontend and backend without bus_num parameter. I
->will remove it in next patch.
->> 
->> > 
->> >     A Virtio SPI controller corresponds with a host SPI controller, and the
->> > guest can only access the devices under this host SPI controller, with the
->> > assigned cs. For devices under other host controllers, the guest cannot
->> > access.
->> 
->> We should allow the backend to emulate a SPI controller attached with physical
->> SPI devices from multiple physical SPI controllers. Anyway, this depends on
->> the backend implementation. We just give enough flexibility.
->> 
->
->Here I'd like to use term "host SPI controller" to indicates the SPI
->controller controlled by the host and binded with the virtio SPI controller
->meanwhile. It may be a actual physical controller or may be an emulated one.
->
->Do you think this term is appropriate, with the explanation above added in
->the spec? Or the statement "host SPI controlled devices" just like virtio-i2c
->used is more acceptable? Looking forware to your advice.
+Define a low power mode for virtio devices where the devices are
+expected to maintain their state. This gives drivers an option for power
+management besides simply resetting their device. In the virtualization
+use case, this allows the guest to be suspended even with stateful
+virtio devices like gpu and fs.
 
-Fine with me.
+Low power mode is primarily defined at the transport layer. The only
+part that depends on device-type specific details is whether a given
+virtqueue is device driven or driver driven.
 
-Regards,
-Qiang
+This change only defines the transport-specific implementation for
+Virtio over PCI.
+---
+ content.tex       | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ transport-pci.tex |  7 +++++++
+ 2 files changed, 52 insertions(+)
 
->
->Thank you so much.
->
->Best Regards
->Haixu Cui
->
->> 
->> Regards,
->> Qiang
->> 
->> > 
->> >     Thank you for your findings and comments.
->> > 
->> > Best Regards
->> > Haixu Cui
->> > 
->> > 
->> > > > +
->> > > > +The \field{chip_select_max_number} is the maximum number of chipselect the physical SPI master supports.
->> > > > +
->> > > > +The \field{cs_timing_setting_enable} indicates if the physical SPI master supporting cs timing setting:
->> > > > +	0: physical SPI master doesn't support cs timing setting;
->> > > > +	1: physical SPI master supports cs timing setting.
->> > > > +
->> > > > +The \field{reserved} is for alignment purpose, also for future extension.
->> > > > +
->> > > > +\subsection{Device Initialization}\label{sec:Device Types / SPI Master Device / Device Initialization}
->> > > > +
->> > > > +\begin{enumerate}
->> > > > +\item The Virtio SPI driver configures and initializes the virtqueue.
->> > > > +\end{enumerate}
->> > > > +
->> > > > +\subsection{Device Operation}\label{sec:Device Types / SPI Master Device / Device Operation}
->> > > > +
->> > > > +\subsubsection{Device Operation: Request Queue}\label{sec:Device Types / SPI Master Device / Device Operation: Request Queue}
->> > > > +
->> > > > +Virtio SPI driver enqueues requests to the virtqueue, and they are used by
->> > > > +Virtio SPI device. Each request represents one SPI tranfer and is of the form:
->> > > > +
->> > > > +\begin{lstlisting}
->> > > > +struct virtio_spi_transfer_head {
->> > > > +        u8 slave_id;
->> > > > +        u8 bits_per_word;
->> > > > +        u8 cs_change;
->> > > > +        u8 tx_nbits;
->> > > > +        u8 rx_nbits;
->> > > > +	 u8 reserved[3];
->> > > > +        le32 mode;
->> > > > +        le32 freq;
->> > > > +        le32 word_delay_ns;
->> > > > +        le32 cs_setup_ns;
->> > > > +        le32 cs_delay_hold_ns;
->> > > > +        le32 cs_change_delay_inactive_ns;
->> > > > +};
->> > > > +\end{lstlisting}
->> > > > +
->> > > > +\begin{lstlisting}
->> > > > +struct virtio_spi_transfer_result {
->> > > > +        u8 result;
->> > > > +};
->> > > > +\end{lstlisting}
->> > > > +
->> > > > +\begin{lstlisting}
->> > > > +struct virtio_spi_transfer_req {
->> > > > +        struct virtio_spi_transfer_head head;
->> > > > +        u8 tx_buf[];
->> > > > +        u8 rx_buf[];
->> > > > +        struct virtio_spi_transfer_result result;
->> > > > +};
->> > > > +\end{lstlisting}
->> > > > +
->> > > > +The \field{slave_id} indicates the chipselect index the SPI transfer used.
->> > > > +
->> > > > +The \field{bits_per_word} indicates the number of bits in each SPI transfer word.
->> > > > +
->> > > > +The \field{cs_change} indicates whether to deselect device before starting the
->> > > > +next SPI transfer, 0 means chipselect keep asserted and 1 means chipselect deasserted
->> > > > +then asserted again.
->> > > > +
->> > > > +The \field{tx_nbits} indicates bus width for write transfer:
->> > > > +        0,1: bus width is 1, also known as SINGLE;
->> > > > +	2  : bus width is 2, also known as DUAL;
->> > > > +	4  : bus width is 4, also known as QUAD;
->> > > > +	8  : bus width is 8, also known as OCTAL;
->> > > > +	other values are invalid.
->> > > > +
->> > > > +The \field{rx_nbits} indicates bus width for read transfer:
->> > > > +        0,1: bus width is 1, also known as SINGLE;
->> > > > +	2  : bus width is 2, also known as DUAL;
->> > > > +	4  : bus width is 4, also known as QUAD;
->> > > > +	8  : bus width is 8, also known as OCTAL;
->> > > > +	other values are invalid.
->> > > > +
->> > > > +The \field{reserved} is for alignement, also for further extension.
->> > > > +
->> > > > +The \field{mode} indicates how data is clocked out and in. Bit definitions as follows:
->> > > > +        bit 0: CPHA, determines the timing (i.e. phase) of the data bits
->> > > > +	       relative to the clock pulses.
->> > > > +        bit 1: CPOL, determines the polarity of the clock.
->> > > > +        bit 2: CS_HIGH, if 1, chipselect active high, else active low.
->> > > > +	bit 3: LSB_FIRST, determines per-word bits-on-wire, if 0, MSB
->> > > > +	       first, else LSB first.
->> > > > +	bit 4: LOOP, if 1, device is in loopback mode, else normal mode.
->> > > > +
->> > > > +The \field{freq} indicates the SPI transfer speed in Hz.
->> > > > +
->> > > > +The \field{word_delay_ns} indicates delay to be inserted between consecutive
->> > > > +words of a transfer, in ns unit.
->> > > > +
->> > > > +The \field{cs_setup_ns} indicates delay to be introduced after chipselect
->> > > > +is asserted, in ns unit.
->> > > > +
->> > > > +The \field{cs_delay_hold_ns} indicates delay to be introduced before chipselect
->> > > > +is deasserted, in ns unit.
->> > > > +
->> > > > +The \field{cs_change_delay_inactive_ns} indicates delay to be introduced after
->> > > > +chipselect is deasserted and before next asserted, in ns unit.
->> > > > +
->> > > > +The \field{tx_buf} is the buffer for data sent to the device.
->> > > > +
->> > > > +The \field{rx_buf} is the buffer for data received to the device.
->> > > > +
->> > > > +The final \field{result} is the transfer result, either VIRTIO_SPI_TRANS_OK for success
->> > > > +or VIRTIO_SPI_TRANS_ERR for error.
->> > > > +
->> > > > +\begin{lstlisting}
->> > > > +#define VIRTIO_SPI_TRANS_OK     0
->> > > > +#define VIRTIO_SPI_TRANS_ERR    1
->> > > > +\end{lstlisting}
->> > > > +
->> > > > +\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / SPI Master Device / Device Operation: Operation Status}
->> > > > +
->> > > > +Fields in structure \field{virtio_spi_transfer_head} are written by Virtio SPI driver, while
->> > > > +\field{result} in structure \field{virtio_spi_transfer_result} is written by Virtio SPI device.
->> > > > +
->> > > > +virtio-spi supports three transfer types:
->> > > > +        1) half-duplex read;
->> > > > +        2) half-duplex write;
->> > > > +        3) full-duplex read and write.
->> > > > +
->> > > > +For half-duplex read transfer, \field{rx_buf} is filled by Virtio SPI device and consumed
->> > > > +by Virtio SPI driver. For half-duplex write transfer, \field{tx_buf} is filled by Virtio
->> > > > +SPI driver and consumed by Virtio SPI device. And for full-duplex read and write transfer,
->> > > > +both \field{tx_buf} and \field{rx_buf} are used.
->> > > > +
->> > > > +\drivernormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
->> > > > +
->> > > > +The Virtio SPI driver MUST send transfer requests on the requestq virtqueue.
->> > > > +
->> > > > +Fields in structure \field{virtio_spi_transfer_head} MUST be filled by Virtio SPI driver
->> > > > +and MUST be readable for Virtio SPI device.
->> > > > +
->> > > > +Structure \field{virtio_spi_transfer_result} MUST be filled by Virtio SPI device
->> > > > +and MUST be writable for Virtio SPI device.
->> > > > +
->> > > > +For half-duplex read, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
->> > > > +\field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
->> > > > +
->> > > > +For half-duplex write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
->> > > > +\field{tx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
->> > > > +
->> > > > +For full-duplex read and write, Virtio SPI driver MUST send structure \field{virtio_spi_transfer_head},
->> > > > +\field{tx_buf}, \field{rx_buf} and structure \field{virtio_spi_transfer_result} to SPI Virtio Device in order.
->> > > > +
->> > > > +For half-duplex write or full-duplex read and write transfer, Virtio SPI driver MUST not use \field{rx_buf}
->> > > > +if the \field{result} returned from Virtio SPI device is VIRTIO_SPI_TRANS_ERR.
->> > > > +
->> > > > +If \field{cs_timing_setting_enable} in structure \field{virtio_spi_config} is 0, while \field{cs_setup_ns},
->> > > > +\field{cs_setup_ns} and \field{cs_change_delay_inactive_ns} of the transfer are not all zero, Virtio
->> > > > +SPI driver MUST print a warning log to alert that the cs timing won't be set as expected.
->> > > > +
->> > > > +\devicenormative{\subsubsection}{Device Operation}{Device Types / SPI Master Device / Device Operation}
->> > > > +
->> > > > +Virtio SPI device MUST set all the fields of the structure \field{virtio_spi_config} before
->> > > > +they are read by Virtio SPI driver.
->> > > > +
->> > > > +Virtio SPI device MUST set the structure \field{virtio_spi_transfer_result} before sending
->> > > > +it back to Virtio SPI driver.
->> > > > +
->> > > > +Virtio SPI device MUST be able to identify the transfer type according to the received
->> > > > +virtqueue descriptors.
->> > > > +
->> > > > +Virtio SPI device MUST NOT change the data in \field{tx_buf} if transfer type is half-duplex write
->> > > > +or full-duplex read and write.
->> > > > diff --git a/device-types/spi/device-conformance.tex b/device-types/spi/device-conformance.tex
->> > > > new file mode 100644
->> > > > index 0000000..3e771bc
->> > > > --- /dev/null
->> > > > +++ b/device-types/spi/device-conformance.tex
->> > > > @@ -0,0 +1,7 @@
->> > > > +\conformance{\subsection}{SPI Master Device Conformance}\label{sec:Conformance / Device Conformance / SPI Master Device Conformance}
->> > > > +
->> > > > +An SPI Master device MUST conform to the following normative statements:
->> > > > +
->> > > > +\begin{itemize}
->> > > > +\item \ref{devicenormative:Device Types / SPI Master Device / Device Operation}
->> > > > +\end{itemize}
->> > > > diff --git a/device-types/spi/driver-conformance.tex b/device-types/spi/driver-conformance.tex
->> > > > new file mode 100644
->> > > > index 0000000..3c965ef
->> > > > --- /dev/null
->> > > > +++ b/device-types/spi/driver-conformance.tex
->> > > > @@ -0,0 +1,7 @@
->> > > > +\conformance{\subsection}{SPI Master Driver Conformance}\label{sec:Conformance / Driver Conformance / SPI Master Driver Conformance}
->> > > > +
->> > > > +An SPI Master driver MUST conform to the following normative statements:
->> > > > +
->> > > > +\begin{itemize}
->> > > > +\item \ref{drivernormative:Device Types / SPI Master Device / Device Operation}
->> > > > +\end{itemize}
->> > > > -- 
->> > > > 2.17.1
->> > > > 
->> > > > 
->> > > > ---------------------------------------------------------------------
->> > > > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->> > > > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->> > > > 
->
->---------------------------------------------------------------------
->To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
->For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+diff --git a/content.tex b/content.tex
+index 0a62dce5f65f..7016778c38d6 100644
+--- a/content.tex
++++ b/content.tex
+@@ -502,6 +502,51 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+ types. It is RECOMMENDED that devices generate version 4
+ UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+ 
++\section{Low Power Mode}\label{sec:Basic Facilities of a Virtio Device / Low Power Mode}
++
++Low power mode is a state a driver can put its device into to try to
++reduce the resource consumption of the device. While in low power
++mode, a device can generate wakeup events to inform its driver about
++device driven events. How a device is put into and taken out of low
++power mode is transport specific, as is how wakeup events are
++implemented.
++
++\devicenormative{\subsection}{Low Power Mode}{Basic Facilities of a Virtio
++Device / Low Power Mode}
++
++A device in low power mode MUST maintain its state such that all
++driver visible state after exiting low power mode exactly matches
++driver visible state before entering low power mode.
++
++A device in low power mode MUST continue to operate device driven
++queues. Device driven queues are queues where the driver provides
++buffers to the device that the device holds onto for an indeterminate
++time until some device-side event occurs (e.g. event queues, rx
++queues). When sending a used buffer notification for such a queue, the
++device MUST generate a wakeup event.
++
++A device in low power mode MUST continue to send configuration change
++notifications. When sending a configuration change notification, the
++device MUST generate a wakeup event.
++
++A device in low power mode SHOULD NOT generate wakeup events for
++driver driven queues. A device SHOULD stop sending used buffer
++notifications for such queues until after exiting the low power state.
++
++A device in low power mode SHOULD minimize its resource usage,
++although what steps to take are specific to a particular device
++implementation.
++
++\drivernormative{\subsection}{Low Power Mode}{Basic Facilities of a Virtio
++Device / Low Power Mode}
++
++A driver MUST not interact with a device in low power mode except
++to take the device out of low power mode or to handle wakeup events
++generated by the device.
++
++A driver MAY use wakeup events as a trigger to take the device out of
++low power mode, but it MAY also ignore wakeup events.
++
+ \input{admin.tex}
+ 
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+diff --git a/transport-pci.tex b/transport-pci.tex
+index a5c6719ea871..6694e0f72d46 100644
+--- a/transport-pci.tex
++++ b/transport-pci.tex
+@@ -1212,3 +1212,10 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
+         re-examine the configuration space to see what changed.
+     \end{itemize}
+ \end{itemize}
++
++\subsubsection{Low Power Mode}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Low Power Mode}
++
++Low power mode corresponds to the device power management state
++D3\textsubscript{Hot}. A device advertises support for low power mode
++by presenting the PCI Power Management Capability. Wakeup events are
++implemented as PCI Power Management Events (PMEs).
+-- 
+2.42.0.869.gea05f2083d-goog
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
