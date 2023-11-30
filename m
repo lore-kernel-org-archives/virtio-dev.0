@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14093-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14094-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F2B22C10DC1
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 11:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F0751C4167B
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 11:38:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 25F6FC6126
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 11:20:39 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3764B1465CF
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 11:38:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9CF20986925
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 11:20:38 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1396798668C
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 11:38:38 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D6F15986676; Thu, 30 Nov 2023 11:20:37 +0000 (UTC)
+	id EEE69986671; Thu, 30 Nov 2023 11:38:37 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,50 +24,43 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6FE03986674
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Nov 2023 11:19:06 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E058B986674
+	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Nov 2023 11:38:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701343144; x=1701947944;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mtKUNnHSmKhAL7AZmJa+00969kwDC9KD1fKFUGVrOLw=;
-        b=p3de75ODksRxXaQ7VaTeZoFSxdX8nDMK1eHZOBy/8hZ7L2XQd2Bw35n5WxVWpbn4sH
-         ekFCAWAP7m8nxlTbLxDbP3wQMDlIMcrB/9VISpLvfVoMlCfB6aP+Pnjjj6CLo/DYV6v1
-         Q2T537xxgEGhrEEIWAIr4A/+S+pG+pNMI7P8J2b4rCG+rSP/sXIXiZ1Ip+pBkgN1I7EL
-         cNuRxNNke+2O/1VlVP37erJsW/og2trCMTofL/jCou5dmaIOqpEXnVBfYsNOLZJpEsu/
-         JphO6cuqAro8tJSmSA38REIR/glTFL+PSdXlTf1fNy+ZDCqwvyaN9kDf/KbkIRxajokA
-         nOtA==
-X-Gm-Message-State: AOJu0YyZiI2uBqoK8ol+IwSu4OrgTwgCS3Y36Bsj5Yi+8dnJ36MJekHS
-	ww59y3PWn2A0B8WocuYSS3605A==
-X-Google-Smtp-Source: AGHT+IEIyLMUxeSUhZUjAZmAwGdbf2noHXHZLwgvfFBn0pFsn6aRlesF8KYfgioViZ9PMNSJgUqC3w==
-X-Received: by 2002:a17:903:1205:b0:1cc:5589:7dba with SMTP id l5-20020a170903120500b001cc55897dbamr24137206plh.43.1701343143987;
-        Thu, 30 Nov 2023 03:19:03 -0800 (PST)
-Date: Thu, 30 Nov 2023 16:49:00 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Haixu Cui <quic_haixcui@quicinc.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
-	cohuck@redhat.com, harald.mommer@opensynergy.com,
-	broonie@kernel.org, qiang4.zhang@linux.intel.com,
-	quic_ztu@quicinc.com
-Message-ID: <20231130111900.ix3cfsxlns2blp4r@vireshk-i7>
+X-MC-Unique: imNHY_6NNzON-28CCVzZrA-1
+From: Cornelia Huck <cohuck@redhat.com>
+To: Haixu Cui <quic_haixcui@quicinc.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org, harald.mommer@opensynergy.com,
+ broonie@kernel.org, qiang4.zhang@linux.intel.com, viresh.kumar@linaro.org
+Cc: quic_ztu@quicinc.com, Haixu Cui <quic_haixcui@quicinc.com>
+In-Reply-To: <20231130092242.17303-3-quic_haixcui@quicinc.com>
+Organization: "Red Hat GmbH, Sitz: Werner-von-Siemens-Ring 12, D-85630
+ Grasbrunn, Handelsregister: Amtsgericht =?utf-8?Q?M=C3=BCnchen=2C?= HRB
+ 153243,
+ =?utf-8?Q?Gesch=C3=A4ftsf=C3=BChrer=3A?= Ryan Barnhart, Charles Cachera,
+ Michael O'Neill, Amy
+ Ross"
 References: <20231130092242.17303-1-quic_haixcui@quicinc.com>
  <20231130092242.17303-3-quic_haixcui@quicinc.com>
+User-Agent: Notmuch/0.37 (https://notmuchmail.org)
+Date: Thu, 30 Nov 2023 12:38:33 +0100
+Message-ID: <87r0k7lbd2.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231130092242.17303-3-quic_haixcui@quicinc.com>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain
 Subject: Re: [virtio-dev] [PATCH V6 2/2] virtio-spi: add the device
  specification
 
-On 30-11-23, 17:22, Haixu Cui wrote:
+On Thu, Nov 30 2023, Haixu Cui <quic_haixcui@quicinc.com> wrote:
+
 > The Virtio SPI (Serial Peripheral Interface) device is a virtual
 > SPI controller that allows the driver to operate and use the SPI
 > controller under the control of the device.
-> 
+>
 > This patch adds the specification for virtio-spi.
-> 
+>
 > Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
 > ---
 >  device-types/spi/description.tex        | 288 ++++++++++++++++++++++++
@@ -77,7 +70,7 @@ On 30-11-23, 17:22, Haixu Cui wrote:
 >  create mode 100644 device-types/spi/description.tex
 >  create mode 100644 device-types/spi/device-conformance.tex
 >  create mode 100644 device-types/spi/driver-conformance.tex
-> 
+>
 > diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
 > new file mode 100644
 > index 0000000..c4816a6
@@ -88,19 +81,15 @@ On 30-11-23, 17:22, Haixu Cui wrote:
 > +
 > +The Virtio SPI (Serial Peripheral Interface) device is a virtual SPI controller that
 > +allows the driver to operate and use the SPI controller under the control of the device,
-
-s/control of the device/control of the host/
-
-The host emulates and provides the guest with a device. 'device' is not really a
-replacement for the word 'host`, but should be used to refer to the entity
-emulated by the host.
-
 > +either a physical SPI controller, or an emulated one.
 > +
 > +The Virtio SPI device has a single virtqueue. SPI transfer requests are placed into
 > +the virtqueue, and serviced by the device.
 
-s/the virtqueue, and /the virtqueue by the driver, and are /
+I think it would still make sense to keep the host/guest example you
+included in the last version; while we have to talk about device/driver
+in the specification, giving host/guest as an example is completely
+fine.
 
 > +
 > +\subsection{Device ID}\label{sec:Device Types / SPI Controller Device / Device ID}
@@ -120,9 +109,9 @@ s/the virtqueue, and /the virtqueue by the driver, and are /
 > +
 > +All fields of this configuration are always available and read-only for Virtio SPI driver.
 
-s/always available/mandatory/
+s/for Virtio SPI driver/for the driver/
 
-and "the Virtio SPI driver", everywhere else too..
+(matches what is said for other device types)
 
 > +The config space shows the features and settings supported by the device.
 > +
@@ -147,20 +136,14 @@ and "the Virtio SPI driver", everywhere else too..
 > +Note: chipselect is an electrical signal controlled by the SPI controller, used to select the
 > +SPI slaves connected to the controller.
 
-It isn't mandatory for the CS to be controlled by the controller. It can also be
-a GPIO pin too which is controlled by the host driver.
+I wonder whether another term is now more commonly used... the Wikipedia
+article uses main/sub, is there a term that is usually used together
+with "controller"?
 
-Suggest rewriting as:
-
-Note: chipselect is an electrical signal, which is used to select the SPI slaves
-connected to the controller.
-
+> +
 > +\field{cs_change_supported} indicates if the device supports to toggle chipselect
 > +after each transfer in one message:
 > +        0: unsupported, means chipselect will keep active when executing the message transaction;
-
-        0: unsupported, chipselect will be kept in active state throughout the transaction;
-
 > +        1: supported.
 > +
 > +Note: Message here contains a sequence of SPI transfers.
@@ -172,9 +155,6 @@ connected to the controller.
 > +        bit 2: OCTAL;
 > +        other bits are reserved and must be set to 0 by the device.
 > +
-
-Not sure if the below Note and the item list is required at all.
-
 > +Note: Transfer bit options are commonly used in SPI:
 > +\begin{itemize}
 > +\item SINGLE: 1-bit transfer
@@ -190,24 +170,11 @@ Not sure if the below Note and the item list is required at all.
 > +        bit 2: OCTAL;
 > +        other bits are reserved and must be set to 0 by the device.
 > +
-
-There is still some duplication left here in tx and rx bits supported fields.
-Maybe rewrite the whole thing as:
-
-"
-\field{tx_nbits_supported} and \field{rx_nbits_supported} indicate the different
-n-bit transfer modes supported by the device. The 1-bit transfer mode is always
-supported. A set bit here indicates that the corresponding mode is supported,
-otherwise not:
-
-        bit 0: DUAL;
-        bit 1: QUAD;
-        bit 2: OCTAL;
-        other bits are reserved and must be set to 0 by the device.
-"
-
 > +\field{bits_per_word_mask} is a mask indicating which values of bits_per_word are supported.
 > +If not set, no limitation for bits_per_word.
+
+s/no limitation/there is no limitation/
+
 > +
 > +Note: bits_per_word corresponds to \field{bits_per_word} in \field{struct virtio_spi_transfer_head}.
 > +
@@ -234,10 +201,19 @@ otherwise not:
 > +            must always be supported.
 > +
 > +Note: CPOL is clock polarity and CPHA is clock phase. If CPOL is 0, clock idles at the logical
+
+s/clock idles/the clock idles/
+
 > +low voltage, otherwise idles at the logical high voltage. CPHA determines how data is outputted
+
+s/idles/it idles/
+
 > +and sampled.
 > +
 > +Note: LSB first indicates that data is transferred least significant bit first,and MSB first
+
+missing space after the comma
+
 > +indicates that data is transferred most significant bit first.
 > +
 > +\field{max_freq_hz} is the maximum clock rate supported in Hz unit, 0 means no limitation
@@ -304,9 +280,7 @@ otherwise not:
 > +\end{lstlisting}
 > +
 > +\field{chip_select_id} indicates the chipselect index the SPI transfer used.
-
-\field{chip_select_id} indicates the chipselect index to use for the SPI transfer.
-
+> +
 > +\field{bits_per_word} indicates the number of bits in each SPI transfer word.
 > +
 > +\field{cs_change} indicates whether to deselect device before starting the next SPI transfer,
@@ -325,13 +299,124 @@ otherwise not:
 > +        4  : QUAD;
 > +        8  : OCTAL;
 > +        other values are invalid.
+> +
+> +\field{reserved} is currently unused and might be used for further extensions in the future.
+> +
+> +\field{mode} indicates some transfer settings. Bit definitions as follows:
+> +        bit 0: CPHA, determines the timing (i.e. phase) of the data bits relative to the
+> +	       clock pulses.
+> +        bit 1: CPOL, determines the polarity of the clock.
+> +        bit 2: CS_HIGH, if 1, chipselect active high, else active low.
+> +        bit 3: LSB_FIRST, determines per-word bits-on-wire, if 0, MSB first, else LSB first.
+> +        bit 4: LOOP, if 1, device is in loopback mode, else normal mode.
+> +
+> +\field{freq} indicates the SPI transfer speed in Hz.
+> +
+> +\field{word_delay_ns} indicates delay to be inserted between consecutive words of a transfer,
+> +in ns unit.
+> +
+> +\field{cs_setup_ns} indicates delay to be introduced after chipselect is asserted, in ns unit.
+> +
+> +\field{cs_delay_hold_ns} indicates delay to be introduced before chipselect is deasserted,
+> +in ns unit.
+> +
+> +\field{cs_change_delay_inactive_ns} indicates delay to be introduced after chipselect is
+> +deasserted and before next asserted, in ns unit.
+> +
+> +\field{tx_buf} is the buffer for data sent to the device.
+> +
+> +\field{rx_buf} is the buffer for data received from the device.
+> +
+> +\field{result} is the transfer result, it may be one of the following values:
+> +
+> +\begin{lstlisting}
+> +#define VIRTIO_SPI_TRANS_OK     0
+> +#define VIRTIO_SPI_PARAM_ERR    1
+> +#define VIRTIO_SPI_TRANS_ERR    2
+> +\end{lstlisting}
+> +
+> +VIRTIO_SPI_TRANS_OK indicates successful completion of the transfer.
+> +
+> +VIRTIO_SPI_PARAM_ERR indicates a parameter error, which means the parameters in 
+> +\field{struct virtio_spi_transfer_head} are not all valid, or some fields are set as
+> +non-zero values but the corresponding features are not supported by device.
+> +Especially, for full-duplex transfer, VIRTIO_SPI_PARAM_ERR also used to indicate the
 
-Duplication here can be removed too, like in the earlier example I gave.
+s/Especially/In particular/
 
-Looks much better now. Thanks.
+> +scenario that the buffer size of \field{tx_buf} is not equal to that of \field{rx_buf}.
 
--- 
-viresh
+Maybe
+
+"VIRTIO_SPI_PARAM_ERR can also indicate that \field{tx_buf} and
+\field{rx_buf} are not of the same length."
+
+?
+
+> +
+> +VIRTIO_SPI_TRANS_ERR indicates a transfer error, means that the parameters are all
+
+s/means/which means/
+
+> +valid but trasnfer process failed.
+
+s/trasnfer/the transfer/
+
+> +
+> +\subsubsection{Device Operation: Operation Status}\label{sec:Device Types / SPI Controller Device / Device Operation: Operation Status}
+> +
+> +Fields in \field{struct virtio_spi_transfer_head} are written by Virtio SPI driver, while
+> +\field{result} in \field{struct virtio_spi_transfer_result} is written by Virtio SPI device.
+> +
+> +virtio-spi supports three transfer types:
+> +\begin{itemize}
+> +\item half-duplex read;
+> +\item half-duplex write;
+> +\item full-duplex transfer. 
+> +\end{itemize}
+> +
+> +For half-duplex read and full-duplex transfer, \field{rx_buf} is filled by Virtio SPI device
+> +and consumed by Virtio SPI driver. For half-duplex write and full-duplex transfer, \field{tx_buf}
+> +is filled by Virtio SPI driver and consumed by Virtio SPI device.
+> +
+> +\drivernormative{\subsubsection}{Device Operation}{Device Types / SPI Controller Device / Device Operation}
+> +
+> +For half-duplex read, Virtio SPI driver MUST send \field{struct virtio_spi_transfer_head},
+> +\field{rx_buf} and \field{struct virtio_spi_transfer_result} to SPI Virtio Device in order.
+
+Maybe "in that order" instead of "in order" (also below)?
+
+> +
+> +For half-duplex write, Virtio SPI driver MUST send \field{struct virtio_spi_transfer_head},
+> +\field{tx_buf} and \field{struct virtio_spi_transfer_result} to SPI Virtio Device in order.
+> +
+> +For full-duplex transfer, Virtio SPI driver MUST send \field{struct virtio_spi_transfer_head}, 
+> +\field{tx_buf}, \field{rx_buf} and \field{struct virtio_spi_transfer_result} to SPI Virtio Device in order.
+> +
+> +For full-duplex transfer, Virtio SPI driver MUST guarantee that the buffer size of \field{tx_buf}
+> +and \field{rx_buf} is the same.
+> +
+> +Virtio SPI driver MUST not use \field{rx_buf} if the \field{result} returned from Virtio SPI device is
+> +not VIRTIO_SPI_TRANS_OK.
+> +
+> +\devicenormative{\subsubsection}{Device Operation}{Device Types / SPI Controller Device / Device Operation}
+> +
+> +Virtio SPI device MUST set all the fields of \field{struct virtio_spi_config} before they are
+> +read by Virtio SPI driver.
+> +
+> +Virtio SPI device MUST NOT change the data in \field{tx_buf}.
+> +
+> +Virtio SPI device MUST verify the parameters in \field{struct virtio_spi_transfer_head} after receiving
+> +the request, and MUST set \field{struct virtio_spi_transfer_result} as VIRTIO_SPI_PARAM_ERR if not all
+> +parameters are valid or some device unsupported features are set.
+> +
+> +For full-duplex transfer, Virtio SPI device MUST verify if the buffer size of \field{tx_buf} is equal to
+
+s/if/that/
+
+> +that of \field{rx_buf}. If not, Virtio SPI device MUST set \field{struct virtio_spi_transfer_result}
+> +as VIRTIO_SPI_PARAM_ERR.
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
