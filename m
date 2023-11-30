@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14085-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14086-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3090AC4167B
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 07:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A98D4C07CA9
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 08:13:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9A0F874DC0
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 07:36:47 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AC50B163E4E
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 08:13:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 94034986699
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 07:36:47 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 55A92986882
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 08:13:39 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 88479986671; Thu, 30 Nov 2023 07:36:47 +0000 (UTC)
+	id 3D9AF98666D; Thu, 30 Nov 2023 08:13:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,106 +24,73 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 76DDB98666F;
-	Thu, 30 Nov 2023 07:36:42 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 2F4FF986671
+	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Nov 2023 08:13:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <b3af0fd5-80ce-49c4-a70e-48b8c3104177@quicinc.com>
-Date: Thu, 30 Nov 2023 15:36:27 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701332016; x=1701936816;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AG5Q+TCbAkl1FEbOvEY0fT9oAGdK9DeMxicjiCd+I0Q=;
+        b=wbUd2T/74NIwTwZWEnEESTyTpeH3ixae86tval0OBafMzukkw6u2AhgbfeMZ7CjPKB
+         RlWGiylxy++P105eCUg4YHqpKiRNoVCqbTj58i22pRgbAorSL6i69hWpoFIZuGb3X8+G
+         ovM9CfwnVzj2QnPYbwsWt/bc7Tlbf+PsevkKrCf4Ee/SKxM6qD2ts9TXHfbtRd32NM27
+         R+1y9//XctGoDRUprXkZ/pIU97O7MXy5S0ZHwulVHVzNGkB6SG/KbU05KOQ4OECiUYVF
+         1Xj5cLXqaV5xDgk2kP0vx/g93k5q+gyyXgpuWrHHFgJ/oGOnwVscGiyMVx2iFlry5V8u
+         J9Fw==
+X-Gm-Message-State: AOJu0YxVwIkz1IOTOy4yEAfMABVRlczeLBl2wwbuCb6KFg+l7luQnvbu
+	VnnwDBy7CjncrSk2Ziz9Qm74DZb/O66JmbT1oLWU7aPHIiOvfMKm
+X-Google-Smtp-Source: AGHT+IFa8I6c15SPUDs6HlTS2VWJv2XHIAjpK8g8dWwcpL2gfc/h7lZ7Y1rI+5JSSnGH7f2nZbPFhaHzVuIVuaS+peY=
+X-Received: by 2002:a05:6512:2314:b0:50b:a823:8422 with SMTP id
+ o20-20020a056512231400b0050ba8238422mr14044722lfu.47.1701332016382; Thu, 30
+ Nov 2023 00:13:36 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: Viresh Kumar <viresh.kumar@linaro.org>, Cornelia Huck <cohuck@redhat.com>
-CC: <virtio-dev@lists.oasis-open.org>, <virtio-comment@lists.oasis-open.org>,
-        <harald.mommer@opensynergy.com>, <broonie@kernel.org>,
-        <qiang4.zhang@linux.intel.com>, <quic_ztu@quicinc.com>,
-        <alex.bennee@linaro.org>, <vincent.guittot@linaro.org>
-References: <20231127101750.6xmthho6lnppyw3k@vireshk-i7>
- <2ca987a6-eeb2-4ed6-9a12-10ae450eb4bf@quicinc.com>
- <20231129073022.ohxsfuawambvh3hm@vireshk-i7>
- <0674be8e-221f-479a-8da2-8a3e59e45bb9@quicinc.com>
- <871qc9x8k2.fsf@redhat.com>
- <9e0c5e5e-db7b-4634-9423-f4db1800b148@quicinc.com>
- <20231129100002.q73wtz6mkfixcbzt@vireshk-i7>
- <5367c2e6-93f1-4a4d-867e-0074b452052a@quicinc.com>
- <20231129113417.7kb6my3mm67zal3q@vireshk-i7> <87y1egwx27.fsf@redhat.com>
- <20231130041311.3azypbxfoujkwhj7@vireshk-i7>
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <20231130041311.3azypbxfoujkwhj7@vireshk-i7>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 919SK-JViEVsyFD2HQFZidF9JW8BHbRv
-X-Proofpoint-GUID: 919SK-JViEVsyFD2HQFZidF9JW8BHbRv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-30_05,2023-11-29_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 suspectscore=0 spamscore=0 clxscore=1015 impostorscore=0
- mlxscore=0 priorityscore=1501 phishscore=0 adultscore=0 mlxlogscore=835
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311300056
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH] [PATCH v5] virtio-spi: add the device
- specification
+References: <20231113061950.122683-1-stevensd@chromium.org>
+In-Reply-To: <20231113061950.122683-1-stevensd@chromium.org>
+From: David Stevens <stevensd@chromium.org>
+Date: Thu, 30 Nov 2023 17:13:25 +0900
+Message-ID: <CAD=HUj7O2HaJQUAmpOVm6P9nwdx8y4rnOTJD4wLKYkFZE5zTog@mail.gmail.com>
+To: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [PATCH v2 0/1] Define low power mode for devices
 
+On Mon, Nov 13, 2023 at 3:20=E2=80=AFPM David Stevens <stevensd@chromium.or=
+g> wrote:
+>
+> The virtio spec currently does not include the concept of device power
+> management. The lack means that there is no good action drivers can take
+> when they are requested to put the device into a low power state (e.g.
+> when a guest is entering a system-wide low power state like S0ix/S3).
+> Stateless devices can be handled - albeit inefficiently - by resetting
+> and reinitialzing the device. However, stateful devices cannot support
+> this situation. This patch defines a low power mode for devices that can
+> be used in this situation.
+>
+> Low power mode is mostly defined at the transport layer, and all
+> device-side power optimizations are optional. This avoids the need for
+> invasive device-by-device definitions. It also pushes the requirement
+> onto the device side, to simplify what driver side changes are
+> necessary to just [1].
+>
+> I believe this patch may address the virtio-gpu issue which [2] is
+> trying to address by avoiding the reset altogether when the guest enters
+> S3.
+>
+> [1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd@chromiu=
+m.org/
+> [2] https://lore.kernel.org/lkml/20230919114242.2283646-1-Jiqian.Chen@amd=
+.com/
+>
+> v1 -> v2:
+>  - Define virtio-pci support on top of PCI power management.
+>  - Add more conformance requirements.
 
+Friendly ping, and directly CC'ing reviewers.
 
-On 11/30/2023 12:13 PM, Viresh Kumar wrote:
-> On 29-11-23, 13:42, Cornelia Huck wrote:
->> On Wed, Nov 29 2023, Viresh Kumar <viresh.kumar@linaro.org> wrote:
->>
->>> On 29-11-23, 18:31, Haixu Cui wrote:
->>>> Hi Viresh,
->>>>
->>>>      Thank you for your helpful comments. In next patch, I will clearly point
->>>> this out:
->>>
->>> Great, finally we are on the same page. Thanks Haixu.
->>>
->>>>      "For full-duplex read and write transfer, both \field{tx_buf} and
->>>> \field{rx_buf} are used and the buffer size of \field{tx_buf} must be same
->>>> as \field{rx_buf}."
->>>
->>> Suggest rewriting as:
->>>
->>> In full-duplex transfer mode, both \field{tx_buf} and \field{rx_buf} are sent by
->>> the driver, \field{tx_buf} followed by \field{rx_buf}. The length of both the
->>> buffers MUST be same.
->>
->> Is that in a non-normative section? (Sorry, I've lost track here...)
-
-Hi Viresh，
-> 
-> I think yes, though I am not sure where Haixu will put it eventually :)
-
-I would like to put it in normative section, both for driver and device.
-
-> 
->> If
->> so, I would say:
->>
->> "The length of both buffers has to be the same."
-> 
-> That's better. Thanks.
-> 
->>> device MUST fail the transfer and notify the driver.
->>
->> "notify the driver" == "set an appropriate error value"?
->>
->> Can this be covered by one of the existing error values?
-> 
-> I think yes, this can be handled by the Param error.
-
-Yes, this seems still in scope of parameter checking.
-
-> 
-
-Thanks & Best Regards
-
-Haixu Cui
+-David
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
