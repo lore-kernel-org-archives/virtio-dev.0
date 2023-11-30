@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14087-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14088-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C04CFC4167B
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 09:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BCDFBC10DC1
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 09:02:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0592A2AEDC
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 09:01:10 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9947D41F2A
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 09:02:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DBD2398668B
-	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 09:01:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6028D9868DF
+	for <virtio-dev@archiver.kernel.org>; Thu, 30 Nov 2023 09:02:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id C217798666F; Thu, 30 Nov 2023 09:01:09 +0000 (UTC)
+	id 0ACDE98668A; Thu, 30 Nov 2023 09:02:31 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,194 +24,83 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B1A5A986670
-	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Nov 2023 09:01:09 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id C6D07986674
+	for <virtio-dev@lists.oasis-open.org>; Thu, 30 Nov 2023 09:02:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: whtmrKjZOXmChmBExpYgQw-1
+X-MC-Unique: vxLgMCJRO5aPGv-sUpta-Q-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701334865; x=1701939665;
+        d=1e100.net; s=20230601; t=1701334948; x=1701939748;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WNU1l5Prn4odXZCXbgzW7h5Gji1bJg0ks2wiyAJLqWw=;
-        b=tIte1qHFHQrMCQouDnYZl8p+I672YZvPjnY3rnjpaR9KVHSVBBCUx/NGdWmKUIEo0b
-         Hz8DacVPvFXZbligmxA76tKqkRUDpEJS+XkKe+u9vXZSRSWN7ZL1CM9ieS7Qe66pLh/q
-         Shbc6KiRTlhlQHamWXGr8uJB3/6UKm08cIou5GRZpx6iCqJuQlVnBV8pLfidCrHrbHFi
-         L0wogAGy0ZDN3t+ZzbjS2NOlm6+9dkur5oQYJJ+nEpHftrUkpsSUfckfE598oIyZrd9b
-         IW3T5HCs0BaefYojobVQUiqZ1cm1lx3HUcfaHvvAEm1O31GuDMT8HkT0r/SSVA9iXNpk
-         t+PQ==
-X-Gm-Message-State: AOJu0YzMzQ1GizMryeHML5mN2LFEKKhenx4dVf7+KGf5YxUh3AztlsPv
-	eG9sGvl0R+AGPZxDXvHmhEYXYwMSvBb1h0mkpjRE7kvqu+4LzmZod5l39wVuaoZfYV1a/t3w0M0
-	cViMGEsK4dfY/nLKlrmWdfnh2Wfum
-X-Received: by 2002:a5d:638d:0:b0:332:eeba:ee8f with SMTP id p13-20020a5d638d000000b00332eebaee8fmr12899884wru.11.1701334865299;
-        Thu, 30 Nov 2023 01:01:05 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGqULGMOZHavtF2MXEUBIbsY1pSSrssNmHiqOR1KdzcjEi0jriZdKYLKMhI0wbxgxw/x65R4w==
-X-Received: by 2002:a5d:638d:0:b0:332:eeba:ee8f with SMTP id p13-20020a5d638d000000b00332eebaee8fmr12899859wru.11.1701334864814;
-        Thu, 30 Nov 2023 01:01:04 -0800 (PST)
-Date: Thu, 30 Nov 2023 04:01:01 -0500
+        bh=VO+r+nfsIsQKg2F2+UO+QagaKw0vAHQp4N2Q4+RnbsI=;
+        b=F2TZRkXbFZd4/P10oLwY8Rp3G0rSy+g0xTAQADfBLip6bvr+qgEutl8eU3pnMW6/dG
+         cOGWIQHEYgPnthJF4JYWSOvJ8SZYz/xNpxHca/HIS4jcet5cTu0LfdGVHo5mWgvF+4aZ
+         PVnoFya7g+8PzheWd0Qah7859jcOxpLL2a50Jq1Jmohw6VJevJqlKyNi0Np9oiBgmUUn
+         npA+6LO2vvnpUWfBjxEhfnxROddyKprKz/wMrDAj2y+f4whGYprmEVBGc9bOlI7PBgez
+         +nidxtPmDu2HkKfumcQH2u0v9yXM67mFfo3bCjZ7Uas1FsCih/KCN6BRNkYzIf/NzNlJ
+         kmmg==
+X-Gm-Message-State: AOJu0YzjPjoLoLVevpch+V7uSNDwf4W0LwKXrdp7aVEsH+7jqMoKjZ2U
+	wYqBjJz4mjPvULTV2pQcSiwQOAJl+gEZL/h9wUqc651WhO2qhoVA6yCoEc4YsA/PL4EB6ZoGCeN
+	xNjExqIPL/1rW0QotyWV+BmtAjv8R
+X-Received: by 2002:a05:622a:13d1:b0:423:7843:2b4a with SMTP id p17-20020a05622a13d100b0042378432b4amr22081491qtk.50.1701334947874;
+        Thu, 30 Nov 2023 01:02:27 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IES6CtoXKGLAgSiSaT7z6JKCIkY4Kn3frvfA5N9a9YxzXLmcaZyldKkRP5nHzzdGSASGJdLIA==
+X-Received: by 2002:a05:622a:13d1:b0:423:7843:2b4a with SMTP id p17-20020a05622a13d100b0042378432b4amr22081469qtk.50.1701334947618;
+        Thu, 30 Nov 2023 01:02:27 -0800 (PST)
+Date: Thu, 30 Nov 2023 04:02:23 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: David Stevens <stevensd@chromium.org>
 Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
-Message-ID: <20231130032929-mutt-send-email-mst@kernel.org>
+Message-ID: <20231130040108-mutt-send-email-mst@kernel.org>
 References: <20231113061950.122683-1-stevensd@chromium.org>
- <20231113061950.122683-2-stevensd@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <20231113061950.122683-2-stevensd@chromium.org>
+In-Reply-To: <20231113061950.122683-1-stevensd@chromium.org>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH v2 1/1] Define a low power mode for
- devices
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v2 0/1] Define low power mode for devices
 
-On Mon, Nov 13, 2023 at 03:19:50PM +0900, David Stevens wrote:
-> Define a low power mode for virtio devices where the devices are
-> expected to maintain their state. This gives drivers an option for power
-> management besides simply resetting their device. In the virtualization
-> use case, this allows the guest to be suspended even with stateful
-> virtio devices like gpu and fs.
+On Mon, Nov 13, 2023 at 03:19:49PM +0900, David Stevens wrote:
+> The virtio spec currently does not include the concept of device power
+> management. The lack means that there is no good action drivers can take
+> when they are requested to put the device into a low power state (e.g.
+> when a guest is entering a system-wide low power state like S0ix/S3).
+> Stateless devices can be handled - albeit inefficiently - by resetting
+> and reinitialzing the device. However, stateful devices cannot support
+> this situation. This patch defines a low power mode for devices that can
+> be used in this situation.
 > 
-> Low power mode is primarily defined at the transport layer. The only
-> part that depends on device-type specific details is whether a given
-> virtqueue is device driven or driver driven.
+> Low power mode is mostly defined at the transport layer, and all
+> device-side power optimizations are optional. This avoids the need for
+> invasive device-by-device definitions. It also pushes the requirement
+> onto the device side, to simplify what driver side changes are
+> necessary to just [1].
+
+Great idea.
+This couldn't have come at a better time, too.
+Please do remember to CC reviewers directly in the future, though.
+
+
+> I believe this patch may address the virtio-gpu issue which [2] is
+> trying to address by avoiding the reset altogether when the guest enters
+> S3.
 > 
-> This change only defines the transport-specific implementation for
-> Virtio over PCI.
-> ---
+> [1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd@chromium.org/
+> [2] https://lore.kernel.org/lkml/20230919114242.2283646-1-Jiqian.Chen@amd.com/
+> 
+> v1 -> v2:
+>  - Define virtio-pci support on top of PCI power management.
+>  - Add more conformance requirements.
+> 
+> David Stevens (1):
+>   Define a low power mode for devices
+> 
 >  content.tex       | 45 +++++++++++++++++++++++++++++++++++++++++++++
 >  transport-pci.tex |  7 +++++++
 >  2 files changed, 52 insertions(+)
 > 
-> diff --git a/content.tex b/content.tex
-> index 0a62dce5f65f..7016778c38d6 100644
-> --- a/content.tex
-> +++ b/content.tex
-> @@ -502,6 +502,51 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
->  types. It is RECOMMENDED that devices generate version 4
->  UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
->  
-> +\section{Low Power Mode}\label{sec:Basic Facilities of a Virtio Device / Low Power Mode}
-
-
-
-
-> +
-> +Low power mode is a state a driver can put its device into to try to
-> +reduce the resource consumption of the device.
-
-This sounds somewhat vague and the grammar is convoluted. E.g. who
-tries what?
-
-How about something like:
-	Devices and drivers can implement a low power mode: in this mode device
-	state is maintained but driver does not access the device, allowing the
-	device to reduce the power consumption.
-
-
-> While in low power
-> +mode, a device can generate wakeup events to inform its driver about
-> +device driven events.
-
-using the term events here is confusing because it already
-has a meaning in the spec solely related to ring (discussed
-in the context of device event suppression).
-And "driven" is too close to "driver" and
-confuses me.
-
-I think these are
-really vq notifications and config change events right?
-Maybe just say so instead of coming up with new terms.
-
-
-> How a device is put into and taken out of low
-> +power mode is transport specific, as is how wakeup events are
-> +implemented.
-> +
-
-I would move the definition of device driven queues here and
-add the definition of driver driven queues.
-
-And add a high level explanation of how device and driver
-interact (repeating a bit what normative sections say,
-this duplication is normal).
-
-
-> +\devicenormative{\subsection}{Low Power Mode}{Basic Facilities of a Virtio
-> +Device / Low Power Mode}
-> +
-> +A device in low power mode MUST maintain its state such that all
-> +driver visible state after exiting low power mode exactly matches
-> +driver visible state before entering low power mode.
-> +
-> +A device in low power mode MUST continue to operate device driven
-> +queues. Device driven queues are queues where the driver provides
-
-makes available is the term we use
-
-> +buffers to the device that the device holds onto for an indeterminate
-> +time until some device-side event occurs (e.g. event queues, rx
-> +queues). When sending a used buffer notification for such a queue, the
-> +device MUST generate a wakeup event.
-
-is it only when sending notification? not when buffers are used?
-also what does "when" mean here? after sending a notification?
-
-> +
-> +A device in low power mode MUST continue to send configuration change
-> +notifications. When sending a configuration change notification, the
-> +device MUST generate a wakeup event.
-> +
-> +A device in low power mode SHOULD NOT generate wakeup events for
-> +driver driven queues. A device SHOULD stop sending used buffer
-> +notifications for such queues until after exiting the low power state.
-> +
-> +A device in low power mode SHOULD minimize its resource usage,
-> +although what steps to take are specific to a particular device
-> +implementation.
-> +
-> +\drivernormative{\subsection}{Low Power Mode}{Basic Facilities of a Virtio
-> +Device / Low Power Mode}
-> +
-> +A driver MUST not interact with a device in low power mode except
-> +to take the device out of low power mode
-
-i get this
-in a transport specific manner, yes?
-
-> or to handle wakeup events
-> +generated by the device.
-
-i don't get this. what does "handle" mean here?
-
-
-> +
-> +A driver MAY use wakeup events as a trigger to take the device out of
-> +low power mode, but it MAY also ignore wakeup events.
-> +
->  \input{admin.tex}
->  
->  \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
-> diff --git a/transport-pci.tex b/transport-pci.tex
-> index a5c6719ea871..6694e0f72d46 100644
-> --- a/transport-pci.tex
-> +++ b/transport-pci.tex
-> @@ -1212,3 +1212,10 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
->          re-examine the configuration space to see what changed.
->      \end{itemize}
->  \end{itemize}
-> +
-> +\subsubsection{Low Power Mode}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Low Power Mode}
-> +
-
-a bit of introduction here can't hurt too - this is a cmpletely separate
-section.
-e.g. devices can implement support for low power mode, see
-(link to generic description).
-
-> +Low power mode corresponds to the device power management state
-> +D3\textsubscript{Hot}. A device advertises support for low power mode
-> +by presenting the PCI Power Management Capability. Wakeup events are
-> +implemented as PCI Power Management Events (PMEs).
 > -- 
 > 2.42.0.869.gea05f2083d-goog
 > 
