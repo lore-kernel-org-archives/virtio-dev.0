@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14106-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14107-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 233B5C10F04
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Dec 2023 08:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 392EDC4167B
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Dec 2023 11:01:59 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 729DE217AC
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Dec 2023 08:37:57 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 73C572B056
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Dec 2023 11:01:58 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 56291986872
-	for <virtio-dev@archiver.kernel.org>; Fri,  1 Dec 2023 08:37:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 580D098687E
+	for <virtio-dev@archiver.kernel.org>; Fri,  1 Dec 2023 11:01:58 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 41FC698669D; Fri,  1 Dec 2023 08:37:57 +0000 (UTC)
+	id 3A2F798669D; Fri,  1 Dec 2023 11:01:58 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,89 +24,64 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 328F298669A
-	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Dec 2023 08:37:57 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 29EAE98669E
+	for <virtio-dev@lists.oasis-open.org>; Fri,  1 Dec 2023 11:01:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701419876; x=1702024676;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U8Fe5hcLPJKwZ8SsBsVjftNI1/vPOKic66ZaxXHl3hY=;
-        b=wISBJEDGhl7X5nvmLUMB1GYiR8zT237r+NSGj7KkijTAsV8yhQhTI2p7098tbeomFB
-         6VuCNBpzNp+sBRLYjJFqK/+4p27hg2bIo53ASzY90dFIaQy4MSclXGYHBucS01Vx038a
-         gpl/5TLEvYWwdTa1lKA8Js+s9DOKCivUZqpxpQ9KpQrapJ1Z4GrfVBCJfJ1G0dxz40K0
-         SElRH+ct+IMvcQmd7sxK9adYbVAv/rx4Cl50Ndy6Z4iA5E44nvx2FB7Duv5MYY/gOi5k
-         mMQNQiflp2tkB5MQnbkhDoOPEuecDJdIfWq+6p431btNswQp94pLh2OxzUK3sjFeP1UG
-         cONQ==
-X-Gm-Message-State: AOJu0YxGUGqp167ZENBLUqzVm33whbvTH+22PbW8n4aPNBU/KdZqi7zJ
-	zceQh4hn18JZTRtkuvgiyrIF9w==
-X-Google-Smtp-Source: AGHT+IHSebTlfn+3fMHYpsdPSz/U0NrsG4XeVsosduaqqzrxa1rAIdSn7rQVoHWFpq+QxAeo3IyesA==
-X-Received: by 2002:a17:902:ea84:b0:1cf:80db:72e1 with SMTP id x4-20020a170902ea8400b001cf80db72e1mr23165816plb.10.1701419875736;
-        Fri, 01 Dec 2023 00:37:55 -0800 (PST)
-Date: Fri, 1 Dec 2023 14:07:53 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Haixu Cui <quic_haixcui@quicinc.com>
-Cc: virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
-	cohuck@redhat.com, harald.mommer@opensynergy.com,
-	broonie@kernel.org, qiang4.zhang@linux.intel.com,
-	quic_ztu@quicinc.com
-Message-ID: <20231201083753.uw7i2rwymak4etnj@vireshk-i7>
-References: <20231201082143.14870-1-quic_haixcui@quicinc.com>
- <20231201082143.14870-3-quic_haixcui@quicinc.com>
+X-MC-Unique: qLsOwSG7PdqHtVJkb06RVg-1
+From: Cornelia Huck <cohuck@redhat.com>
+To: Haixu Cui <quic_haixcui@quicinc.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org, harald.mommer@opensynergy.com,
+ broonie@kernel.org, qiang4.zhang@linux.intel.com, viresh.kumar@linaro.org
+Cc: quic_ztu@quicinc.com
+In-Reply-To: <b459c448-5e45-4cdd-bb06-06db040348bd@quicinc.com>
+Organization: "Red Hat GmbH, Sitz: Werner-von-Siemens-Ring 12, D-85630
+ Grasbrunn, Handelsregister: Amtsgericht =?utf-8?Q?M=C3=BCnchen=2C?= HRB
+ 153243,
+ =?utf-8?Q?Gesch=C3=A4ftsf=C3=BChrer=3A?= Ryan Barnhart, Charles Cachera,
+ Michael O'Neill, Amy
+ Ross"
+References: <20231130092242.17303-1-quic_haixcui@quicinc.com>
+ <20231130092242.17303-3-quic_haixcui@quicinc.com>
+ <87r0k7lbd2.fsf@redhat.com>
+ <b459c448-5e45-4cdd-bb06-06db040348bd@quicinc.com>
+User-Agent: Notmuch/0.37 (https://notmuchmail.org)
+Date: Fri, 01 Dec 2023 12:01:52 +0100
+Message-ID: <87leaekwyn.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231201082143.14870-3-quic_haixcui@quicinc.com>
-Subject: Re: [virtio-dev][PATCH V7 2/2] virtio-spi: add the device
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [virtio-dev] [PATCH V6 2/2] virtio-spi: add the device
  specification
 
-On 01-12-23, 16:21, Haixu Cui wrote:
-> The Virtio SPI (Serial Peripheral Interface) device is a virtual
-> SPI controller that allows the driver to operate and use the SPI
-> controller under the control of the device.
-> 
-> This patch adds the specification for virtio-spi.
-> 
-> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
-> ---
->  device-types/spi/description.tex        | 280 ++++++++++++++++++++++++
->  device-types/spi/device-conformance.tex |   7 +
->  device-types/spi/driver-conformance.tex |   7 +
->  3 files changed, 294 insertions(+)
->  create mode 100644 device-types/spi/description.tex
->  create mode 100644 device-types/spi/device-conformance.tex
->  create mode 100644 device-types/spi/driver-conformance.tex
-> 
-> diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
-> new file mode 100644
-> index 0000000..7c81df5
-> --- /dev/null
-> +++ b/device-types/spi/description.tex
-> @@ -0,0 +1,280 @@
-> +\section{SPI Controller Device}\label{sec:Device Types / SPI Controller Device}
-> +
-> +The Virtio SPI (Serial Peripheral Interface) device is a virtual SPI controller that
-> +allows the driver to operate and use the SPI controller under the control of the device,
+On Fri, Dec 01 2023, Haixu Cui <quic_haixcui@quicinc.com> wrote:
 
-I feel the terminology here is still a bit confusing:
+>>> +Note: chipselect is an electrical signal controlled by the SPI control=
+ler, used to select the
+>>> +SPI slaves connected to the controller.
+>>=20
+>> I wonder whether another term is now more commonly used... the Wikipedia
+>> article uses main/sub, is there a term that is usually used together
+>> with "controller"?
+>
+> In Wikipedia,
+>
+> "Historically, this arrangement has been called master/slave. But to=20
+> avoid referencing slavery, alternative names discussed in =C2=A7 Alternat=
+ive=20
+> namings have been used."
+>
+> I am not quite sure if main/sub is widely used, but in latest Linux,=20
+> still use master/slave but master is gradually replaced by "controller".
+>
+> So I think "controller" here does make sense. What is your suggestion?
 
-"the SPI controller under the control of the device"
+"controller" is fine, I'm just wondering if "slave" has started to be
+replaced with something else as well... if it hasn't, we probably need
+to stick with it to avoid confusing readers.
 
-The Virtio SPI controller is "the device" and it is not under its own control.
-
-As I suggested earlier, maybe this should be written as:
-
-"the SPI controller under the control of the guest"
-
-> +either a physical SPI controller, or an emulated one.
-
-I just skimmed through the rest this time. Thanks for your effort.
-
-Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
-
--- 
-viresh
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
