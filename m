@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14110-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14111-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 03886C4167B
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A18CEC4167B
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4134F2CADD
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 0D8814454E
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:48 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 226939863F0
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 00734986530
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:48 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 041A798408C; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
+	id E93F298408C; Mon,  4 Dec 2023 09:41:47 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,75 +24,146 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E6EFD986377
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Dec 2023 09:41:33 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D94F49863A8
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Dec 2023 09:41:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701682892; x=1702287692;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fHYsh7OmxZQezOX7dfGh7Q9lPmJ2X1k3LnlsEPSJZwM=;
-        b=BlYV9btC292N7a4zDMU2+nNxEH988JqrSXWQhPO8lGtb+kmMihBwardS9hG1dALHJ8
-         D7MszgZIwd6iN/mlQY6ZTFvgsZuP1TN9WqVmiXTBDk04FDEQrAvRwvDMLFJGxJnHzX4U
-         UpgEHwKhvQVrARJiBEfB4KjkaxrgmKnfLkOr9wWn8DVLd7g6jpi7BdU+rb+jZjOsBvl1
-         tjjk/Dlk30cKtza3ip9n9zLDPoce8Z4yBnT103vK/QMooiYfrbB/oTUwPLQf93t0UJEA
-         lxA8fSmVIvKozguYxhHK4G44959VIa2qnqihqja7gZxBt7ew5EsYCKgwi263V54OZvut
-         xDDQ==
-X-Gm-Message-State: AOJu0YyTusWB593v+S6GAYx9UaX3MDHxpZttuc+kaC9F6NGzvQjG81Gg
-	pAOBzN74rKhuo6Jo5MLXD8dDzA==
-X-Google-Smtp-Source: AGHT+IGIEI4bip3e8piTzZqoMd8OgbN+NjU8eQxeMZaml0g985zyVZ9DXfpIRXfgMythZ1JCcu4jfg==
-X-Received: by 2002:a05:6a20:7d8f:b0:18c:8ff1:f0b with SMTP id v15-20020a056a207d8f00b0018c8ff10f0bmr2035975pzj.56.1701682892235;
-        Mon, 04 Dec 2023 01:41:32 -0800 (PST)
+        d=1e100.net; s=20230601; t=1701682896; x=1702287696;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NHMmTO9rzKbfdTR1rog0HpWRFw3rdJXsIgxcc6nBgIY=;
+        b=Uat7RUZbeaLDszFdyaleJ5twa6xyGunY57wrwFOB1hifKsts0Nmy62kFoluKfwjhNJ
+         tuqKPzLDeOAAdze68kvQw66joCma76S81ImMAF8MyF1cf/EwTjexcDQYxUjq4+fB9Z2b
+         D5FasymssaiMhXccNHdumOZ8edhMqjtU2ckq9InPztCU/hKkWOmy5MwTtA7O1+s0sZJw
+         gNEsLTP+1GxlhV3ilSDRhyG5LUBFoVy+P9z5Ja2HrtDsNc55w8l09IHktMv4EeB1422s
+         5TWfGtBYZTYftZj68DrRUibLWeG2nFpAPgn9KkN5qdilv0DoJmW3PdaB2hR3FygcNtip
+         +kHA==
+X-Gm-Message-State: AOJu0Yywm/dItc3X+TaDZgUSKzHUGyZLGtjjkDVBovpFc2n9ollFbJX/
+	ubErVLQzksJr6x4fMjvuin30CQ==
+X-Google-Smtp-Source: AGHT+IEbRmuBsJJF9gBz1SAp3bxSrBIDI+ksWhqWzy1JnW4AELmHLM/6QW3KWfLoITxlsGZlz8QIEg==
+X-Received: by 2002:a05:6a20:c130:b0:18f:97c:8a51 with SMTP id bh48-20020a056a20c13000b0018f097c8a51mr4164607pzb.124.1701682896142;
+        Mon, 04 Dec 2023 01:41:36 -0800 (PST)
 From: David Stevens <stevensd@chromium.org>
 To: "Michael S . Tsirkin" <mst@redhat.com>,
 	virtio-comment@lists.oasis-open.org,
 	virtio-dev@lists.oasis-open.org
 Cc: David Stevens <stevensd@chromium.org>
-Date: Mon,  4 Dec 2023 18:41:22 +0900
-Message-ID: <20231204094123.856214-1-stevensd@chromium.org>
+Date: Mon,  4 Dec 2023 18:41:23 +0900
+Message-ID: <20231204094123.856214-2-stevensd@chromium.org>
 X-Mailer: git-send-email 2.43.0.rc2.451.g8631bc7472-goog
+In-Reply-To: <20231204094123.856214-1-stevensd@chromium.org>
+References: <20231204094123.856214-1-stevensd@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH v3 0/1] Define low power mode for devices
+Subject: [virtio-dev] [PATCH v3 1/1] Define a low power mode for devices
 
-The virtio spec currently does not include the concept of device power
-management. The lack means that there is no good action drivers can take
-when they are requested to put the device into a low power state (e.g.
-when a guest is entering a system-wide low power state like S0ix/S3).
-Stateless devices can be handled - albeit inefficiently - by resetting
-and reinitialzing the device. However, stateful devices cannot support
-this situation. This patch defines a low power mode for devices that can
-be used in this situation.
+Define a low power mode for virtio devices where the devices are
+expected to maintain their state. This gives drivers an option for power
+management besides simply resetting their device. In the virtualization
+use case, this allows the guest to be suspended even with stateful
+virtio devices like gpu and fs.
 
-Low power mode is mostly defined at the transport layer, and all
-device-side power optimizations are optional. This avoids the need for
-invasive device-by-device definitions. It also pushes the requirement
-onto the device side, to simplify what driver side changes are
-necessary to just [1].
+Low power mode is primarily defined at the transport layer. The only
+part that depends on device-type specific details is whether a given
+virtqueue is device driven or driver driven.
 
-I believe this patch may address the virtio-gpu issue which [2] is
-trying to address by avoiding the reset altogether when the guest enters
-S3.
-
-[1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd@chromium.org/
-[2] https://lore.kernel.org/lkml/20230919114242.2283646-1-Jiqian.Chen@amd.com/
-
-v2 -> v3:
- - Use different words for some concepts to avoid conflicts with other
-   parts of the spec.
- - Rewrite various sentences to improve clarity.
-v1 -> v2:
- - Define virtio-pci support on top of PCI power management.
- - Add more conformance requirements.
-
-David Stevens (1):
-  Define a low power mode for devices
-
+This change only defines the transport-specific implementation for
+Virtio over PCI.
+---
  content.tex       | 61 +++++++++++++++++++++++++++++++++++++++++++++++
  transport-pci.tex |  9 +++++++
  2 files changed, 70 insertions(+)
 
+diff --git a/content.tex b/content.tex
+index 0a62dce5f65f..c1ff542bbe2c 100644
+--- a/content.tex
++++ b/content.tex
+@@ -502,6 +502,67 @@ \section{Exporting Objects}\label{sec:Basic Facilities of a Virtio Device / Expo
+ types. It is RECOMMENDED that devices generate version 4
+ UUIDs as specified by \hyperref[intro:rfc4122]{[RFC4122]}.
+ 
++\section{Low Power Mode}\label{sec:Basic Facilities of a Virtio Device / Low Power Mode}
++
++Devices and drivers can implement a low power mode: in this mode,
++device state is maintained but the driver does not access the device,
++allowing the device to reduce its power consumption. While in low
++power mode, after a device sends a notification, it generates a wakeup
++signal to inform the driver of the pending notification. While the
++device is in low power mode, the driver only needs to check for
++notifications after receiving a wakeup signal. How a device is put
++into and taken out of low power mode is transport specific, as is how
++wakeup signals are implemented.
++
++To give the driver a chance to respond to external input, the device
++is expected to send a wakeup signal after sending a notification
++resulting from such input. To achieve this, the device is expected to
++send wakeup signals after sending configuration change notifications.
++For used buffer notifications, device queues can be split into two
++categories: device led queues and driver led queues. Device led queues
++are queues where the device holds onto buffers that have been made
++available by the driver for an indeterminate period of time, until
++some device-side event occurs (e.g. event queues, rx queues). Driver
++led queues are queues where the device processes available buffers and
++adds them to used queue within a bounded time (e.g. command queues, tx
++queues). The device is expected to send wakeup signals after sending
++used buffer notifications for device led queues, but not for driver
++led queues.
++
++\devicenormative{\subsection}{Low Power Mode}{Basic Facilities of a Virtio
++Device / Low Power Mode}
++
++A device in low power mode MUST maintain its state such that all
++driver visible state after exiting low power mode exactly matches
++driver visible state before entering low power mode.
++
++A device in low power mode MUST continue to operate device led queues.
++After sending a used buffer notification for such a queue, the device
++MUST generate a wakeup signal.
++
++A device in low power mode MUST continue to send configuration change
++notifications. After sending a configuration change notification, the
++device MUST generate a wakeup signal.
++
++A device in low power mode SHOULD NOT generate wakeup signal for
++driver driven queues. A device SHOULD stop sending used buffer
++notifications for such queues until after exiting the low power state.
++
++A device in low power mode SHOULD minimize its resource usage,
++although what steps to take are specific to a particular device
++implementation.
++
++\drivernormative{\subsection}{Low Power Mode}{Basic Facilities of a Virtio
++Device / Low Power Mode}
++
++A driver MUST not interact with a device in low power mode except
++to take the device out of low power mode or to recieve and
++acknowledge a wakeup signal generated by the device, all of which are
++done in a transport-specific way.
++
++A driver MAY use wakeup signals as a trigger to take the device out of
++low power mode, but it MAY also ignore wakeup signals.
++
+ \input{admin.tex}
+ 
+ \chapter{General Initialization And Device Operation}\label{sec:General Initialization And Device Operation}
+diff --git a/transport-pci.tex b/transport-pci.tex
+index a5c6719ea871..932f3299dbab 100644
+--- a/transport-pci.tex
++++ b/transport-pci.tex
+@@ -1212,3 +1212,12 @@ \subsubsection{Driver Handling Interrupts}\label{sec:Virtio Transport Options /
+         re-examine the configuration space to see what changed.
+     \end{itemize}
+ \end{itemize}
++
++\subsubsection{Low Power Mode}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI-specific Initialization And Device Operation / Low Power Mode}
++
++Devices can implement support for low power mode (see \ref{sec:Basic
++Facilities of a Virtio Device / Low Power Mode}).  Low power mode
++corresponds to the device power management state
++D3\textsubscript{Hot}. A device advertises support for low power mode
++by presenting the PCI Power Management Capability. Wakeup events are
++implemented as PCI Power Management Events (PMEs).
 -- 
 2.43.0.rc2.451.g8631bc7472-goog
 
