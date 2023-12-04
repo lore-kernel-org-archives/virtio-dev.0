@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14109-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14110-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D4066C4167B
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 02:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 03886C4167B
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 31A503E575
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 02:30:22 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4134F2CADD
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1E0B8986413
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 02:30:22 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 226939863F0
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 12B99986377; Mon,  4 Dec 2023 02:30:22 +0000 (UTC)
+	id 041A798408C; Mon,  4 Dec 2023 09:41:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,104 +24,78 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 02677986376;
-	Mon,  4 Dec 2023 02:30:18 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E6EFD986377
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Dec 2023 09:41:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <daee943c-1dfa-4c9a-85cf-8170ffbc1956@quicinc.com>
-Date: Mon, 4 Dec 2023 10:30:05 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701682892; x=1702287692;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fHYsh7OmxZQezOX7dfGh7Q9lPmJ2X1k3LnlsEPSJZwM=;
+        b=BlYV9btC292N7a4zDMU2+nNxEH988JqrSXWQhPO8lGtb+kmMihBwardS9hG1dALHJ8
+         D7MszgZIwd6iN/mlQY6ZTFvgsZuP1TN9WqVmiXTBDk04FDEQrAvRwvDMLFJGxJnHzX4U
+         UpgEHwKhvQVrARJiBEfB4KjkaxrgmKnfLkOr9wWn8DVLd7g6jpi7BdU+rb+jZjOsBvl1
+         tjjk/Dlk30cKtza3ip9n9zLDPoce8Z4yBnT103vK/QMooiYfrbB/oTUwPLQf93t0UJEA
+         lxA8fSmVIvKozguYxhHK4G44959VIa2qnqihqja7gZxBt7ew5EsYCKgwi263V54OZvut
+         xDDQ==
+X-Gm-Message-State: AOJu0YyTusWB593v+S6GAYx9UaX3MDHxpZttuc+kaC9F6NGzvQjG81Gg
+	pAOBzN74rKhuo6Jo5MLXD8dDzA==
+X-Google-Smtp-Source: AGHT+IGIEI4bip3e8piTzZqoMd8OgbN+NjU8eQxeMZaml0g985zyVZ9DXfpIRXfgMythZ1JCcu4jfg==
+X-Received: by 2002:a05:6a20:7d8f:b0:18c:8ff1:f0b with SMTP id v15-20020a056a207d8f00b0018c8ff10f0bmr2035975pzj.56.1701682892235;
+        Mon, 04 Dec 2023 01:41:32 -0800 (PST)
+From: David Stevens <stevensd@chromium.org>
+To: "Michael S . Tsirkin" <mst@redhat.com>,
+	virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org
+Cc: David Stevens <stevensd@chromium.org>
+Date: Mon,  4 Dec 2023 18:41:22 +0900
+Message-ID: <20231204094123.856214-1-stevensd@chromium.org>
+X-Mailer: git-send-email 2.43.0.rc2.451.g8631bc7472-goog
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: Viresh Kumar <viresh.kumar@linaro.org>
-CC: <virtio-dev@lists.oasis-open.org>, <virtio-comment@lists.oasis-open.org>,
-        <cohuck@redhat.com>, <harald.mommer@opensynergy.com>,
-        <broonie@kernel.org>, <qiang4.zhang@linux.intel.com>,
-        <quic_ztu@quicinc.com>
-References: <20231201082143.14870-1-quic_haixcui@quicinc.com>
- <20231201082143.14870-3-quic_haixcui@quicinc.com>
- <20231201083753.uw7i2rwymak4etnj@vireshk-i7>
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <20231201083753.uw7i2rwymak4etnj@vireshk-i7>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: GYFadedMEMr78qoqFoDTnRCSm9recujr
-X-Proofpoint-ORIG-GUID: GYFadedMEMr78qoqFoDTnRCSm9recujr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-03_24,2023-11-30_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
- mlxscore=0 phishscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0
- mlxlogscore=612 priorityscore=1501 suspectscore=0 spamscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2312040016
-Subject: Re: [virtio-dev][PATCH V7 2/2] virtio-spi: add the device
- specification
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] [PATCH v3 0/1] Define low power mode for devices
 
-Hi Viresh,
+The virtio spec currently does not include the concept of device power
+management. The lack means that there is no good action drivers can take
+when they are requested to put the device into a low power state (e.g.
+when a guest is entering a system-wide low power state like S0ix/S3).
+Stateless devices can be handled - albeit inefficiently - by resetting
+and reinitialzing the device. However, stateful devices cannot support
+this situation. This patch defines a low power mode for devices that can
+be used in this situation.
 
-On 12/1/2023 4:37 PM, Viresh Kumar wrote:
-> On 01-12-23, 16:21, Haixu Cui wrote:
->> The Virtio SPI (Serial Peripheral Interface) device is a virtual
->> SPI controller that allows the driver to operate and use the SPI
->> controller under the control of the device.
->>
->> This patch adds the specification for virtio-spi.
->>
->> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
->> ---
->>   device-types/spi/description.tex        | 280 ++++++++++++++++++++++++
->>   device-types/spi/device-conformance.tex |   7 +
->>   device-types/spi/driver-conformance.tex |   7 +
->>   3 files changed, 294 insertions(+)
->>   create mode 100644 device-types/spi/description.tex
->>   create mode 100644 device-types/spi/device-conformance.tex
->>   create mode 100644 device-types/spi/driver-conformance.tex
->>
->> diff --git a/device-types/spi/description.tex b/device-types/spi/description.tex
->> new file mode 100644
->> index 0000000..7c81df5
->> --- /dev/null
->> +++ b/device-types/spi/description.tex
->> @@ -0,0 +1,280 @@
->> +\section{SPI Controller Device}\label{sec:Device Types / SPI Controller Device}
->> +
->> +The Virtio SPI (Serial Peripheral Interface) device is a virtual SPI controller that
->> +allows the driver to operate and use the SPI controller under the control of the device,
-> 
-> I feel the terminology here is still a bit confusing:
-> 
-> "the SPI controller under the control of the device"
-> 
-> The Virtio SPI controller is "the device" and it is not under its own control.
+Low power mode is mostly defined at the transport layer, and all
+device-side power optimizations are optional. This avoids the need for
+invasive device-by-device definitions. It also pushes the requirement
+onto the device side, to simplify what driver side changes are
+necessary to just [1].
 
-Exactly. I will update the statement as follows:
+I believe this patch may address the virtio-gpu issue which [2] is
+trying to address by avoiding the reset altogether when the guest enters
+S3.
 
-The Virtio SPI (Serial Peripheral Interface) device is a virtual SPI 
-controller that allows the driver to operate and use the SPI controller 
-under the control of the host, either a physical SPI controller, or an 
-emulated one.
-> 
-> As I suggested earlier, maybe this should be written as:
-> 
-> "the SPI controller under the control of the guest"
-> 
->> +either a physical SPI controller, or an emulated one.
-> 
-> I just skimmed through the rest this time. Thanks for your effort.
+[1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd@chromium.org/
+[2] https://lore.kernel.org/lkml/20230919114242.2283646-1-Jiqian.Chen@amd.com/
 
-Thank you so much for your supports and helpful comments. Really appreciate.
+v2 -> v3:
+ - Use different words for some concepts to avoid conflicts with other
+   parts of the spec.
+ - Rewrite various sentences to improve clarity.
+v1 -> v2:
+ - Define virtio-pci support on top of PCI power management.
+ - Add more conformance requirements.
 
-> 
-> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
-> 
+David Stevens (1):
+  Define a low power mode for devices
 
-Best Regards
-Haixu Cui
+ content.tex       | 61 +++++++++++++++++++++++++++++++++++++++++++++++
+ transport-pci.tex |  9 +++++++
+ 2 files changed, 70 insertions(+)
+
+-- 
+2.43.0.rc2.451.g8631bc7472-goog
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
