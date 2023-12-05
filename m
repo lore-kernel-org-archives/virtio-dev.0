@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14120-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14121-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8F9DDC4167B
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 13:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0CED3C10F04
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 15:14:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id C9B372B04F
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 13:54:46 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 622653358D
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 15:14:40 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id A339498664C
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 13:54:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 193F798657E
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 15:14:40 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 871B8986496; Tue,  5 Dec 2023 13:54:46 +0000 (UTC)
+	id E95F4986556; Tue,  5 Dec 2023 15:14:39 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,208 +24,161 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 77411986497
-	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2023 13:54:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D27B5986497;
+	Tue,  5 Dec 2023 15:14:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701784484; x=1702389284;
-        h=content-transfer-encoding:mime-version:message-id:date:user-agent
-         :references:in-reply-to:subject:cc:to:from:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gNuaCuEaf7bM8i7/MWTQxi6svOik2ZO+2bxIU/xC55w=;
-        b=OYrI56ZwqoU3Mxn1xJQdw+rssIlAdpF9+wKl1j1ec3wZM/TJz7x0fn9dB0qwbEH5QF
-         sDW6JhpywNsTv+epWQqZ9R6TxufjkW8X8TsdERWo0yfVPVlYQbw9LbUffeJp/e/jV072
-         7UFpJ6JQ62Ew8Dq422YpyXgBm6Gh6VPyPxWErupZpAZgLhTWbxdk1Mj0NuEoWyKv7/YD
-         tRjYTvGJ7J0+YPaE+Nn3oYkQBPTLBVk158mTScYT9PwtJTTFlCderwCwZE9pCEl+hRO7
-         Ag6qLk/XIG+M6AjmetLiNzv8050RgvEPQcZVINAGEAKiLoNR2iY37w/ttfckCfPeEBz0
-         ghwg==
-X-Gm-Message-State: AOJu0YzcTmoU7gGVhKBg0dzAF7xinzwq1FPvzaqhKqSMB3ci4RaoE0Q9
-	swr1R+vy/PdKcu+NeeTsAyiQfA==
-X-Google-Smtp-Source: AGHT+IFVEOvD2WSj7twFFnjT6hTfZBx8HUeMDsTfPhuyWTWyxttNj4B9D7kfkicCi5JGnziLWwsQWQ==
-X-Received: by 2002:a05:600c:3411:b0:40b:5e59:e9f1 with SMTP id y17-20020a05600c341100b0040b5e59e9f1mr513745wmp.144.1701784484536;
-        Tue, 05 Dec 2023 05:54:44 -0800 (PST)
-From: =?utf-8?Q?Alex_Benn=C3=A9e?= <alex.bennee@linaro.org>
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>,
-  virtio-dev@lists.oasis-open.org,  "Michael S. Tsirkin" <mst@redhat.com>,
-  Vincent Guittot <vincent.guittot@linaro.org>,
-  stratos-dev@op-lists.linaro.org,  Erik Schilling
- <erik.schilling@linaro.org>,  Manos Pitsidianakis
- <manos.pitsidianakis@linaro.org>,  Mathieu Poirier
- <mathieu.poirier@linaro.org>, Matias Ezequiel Vara Larsen
- <matiasevara@gmail.com>
-In-Reply-To: <875y1ciy9h.fsf@redhat.com> (Cornelia Huck's message of "Tue, 05
-	Dec 2023 14:18:02 +0100")
-References: <3fbb010e96124cfbffd70709d9ce7a2a458322c8.1701771424.git.viresh.kumar@linaro.org>
-	<875y1ciy9h.fsf@redhat.com>
-User-Agent: mu4e 1.11.26; emacs 29.1
-Date: Tue, 05 Dec 2023 13:54:43 +0000
-Message-ID: <87plzk92l8.fsf@draig.linaro.org>
+X-TM-MAIL-RECEIVED-TIME: 1701789275.696000
+X-TM-MAIL-UUID: 38f27a76-5e2c-40af-a5b3-bd5f3f0413ad
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ct2eQacfAEk2dGCJy/io6UzBnwniGlW2FydyvBm998zcO136b9+u0ftZBHwRcj1/mskBpz5lP9NrE2ZuPisf3iSKqhXOWPfzLJ1hnQz/0zya827pmZFCodOPPiYrEM/R9X8fWQZcp5UppPTByAjwh96IcBTdr4M86T/WLT1pg+wV8wcHZBTsT0AG+wVHoycE57UvJnDXiYudxi/kHlUhG64pXV/BR8fouP5vikSC68WK0XHa7ld9/cBs4FbyfbSwL6PlMT3Lodwbrm3Te8JsFwmik7H+1rTGjAw39vGLP05/XSbrx3qtWR7+BrvolIo8yqaYNO2EOAXuEmKlerR/ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=utQpSH89SAYVZIvcCg8VPaCTG5ak/nel3lkJ+MCRVDk=;
+ b=G/NIDfCo/bnO57/1pxkJSZZ9xh50khfitDjlRqPXPrOrGeOLrWnvrS6seJkE7hZWeC7AGXv1lnPNt/h5U86gpWQi/5eH691REqXxm+mygtwtzTHCclu5FDrhziegIaSOrX7Srn9ONjEJaSYcOEgseuqhjbEiAXoHN6qlcsu/KU3gNoStR8ziOlD++8uq9jXV/ZKOJKnUkNsmVfD07eJitmiH/DvXPegq/w4mcUcZsIAHbE7d2LT27t6P1BmD1HIjTsxuyJeFjbiCMd9VfYglXJRP7tvGPXULhmDSqJyY0b3QTSNgH5DPrHN7tDpM0X0OsaKsi5c+vNgMT5q6La4cdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <725bdcfe-9678-448d-8f8e-dc7fe1f19289@opensynergy.com>
+Date: Tue, 5 Dec 2023 16:14:32 +0100
+Content-Language: en-US
+To: Haixu Cui <quic_haixcui@quicinc.com>, virtio-dev@lists.oasis-open.org,
+ virtio-comment@lists.oasis-open.org, cohuck@redhat.com, broonie@kernel.org,
+ qiang4.zhang@linux.intel.com, viresh.kumar@linaro.org
+Cc: quic_ztu@quicinc.com
+References: <20231205082401.18111-1-quic_haixcui@quicinc.com>
+ <20231205082401.18111-2-quic_haixcui@quicinc.com>
+From: Harald Mommer <harald.mommer@opensynergy.com>
+In-Reply-To: <20231205082401.18111-2-quic_haixcui@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0049.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:92::9) To BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:4a::9)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [PATCH] virtio-transport: Clarify requirements
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BE1P281MB3400:EE_|FRYP281MB2060:EE_
+X-MS-Office365-Filtering-Correlation-Id: 22b92559-3ab6-432f-cd70-08dbf5a4e360
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	mL3VCxrd1vzj1h1gL5ex6WP5Y55a+1MnBK6MNTmFF93+HtQJt8hPQVPIf9zn47DCr26eO/HUUn3TvDyJAjX1nvvjytokbUJNMNuszX1meLjRMTRWA2ExPdAdmhApE3p5dF45TMdj7IV+RAjHvT18N5txgQn0xhJvpNZxa0KILNf4q7l+yt8RIeVRLZ0809hx/lQ8RRyu99CHI8otLowswlMLTVvXznxbnNkpd0VmVnhnv4Pq0GUHH/ZgsHkuQCxYpblk9hac9ee84aB07ypeMRyoaeDkD6hxNnhsB5BNjenK5pf8xzdTdM4Mt4a3Is3YuzHndP+qNSu545dsvY+2OZvINOPDk6VMac4b5i8nPWWHeRYddbtfE5uXAXHuupLqa5/+3vIwf+uJsQgKwcuEsrVBXxPGHYNjojEwJ2oh+PRaU+u/2sYtzCF+p8FExTHwj9I/HsFFUaZEveXiAFeWMoBo5mcB7O93UFOjpInUuArSte5HhGDLM0LJASW22wfFBMaKH/z0VNV+yE5I38g2/ctFvJGCj+PsddLvfqG7dbO3sLrCetervLA469N17gIcsair19bV6lCMKPxfOl7FyyJRpNIH5/AnWqNcNf6J4iw=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(39840400004)(346002)(366004)(396003)(376002)(136003)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(38100700002)(53546011)(478600001)(42186006)(66946007)(66476007)(66556008)(316002)(26005)(2616005)(83380400001)(4326008)(8676002)(8936002)(31686004)(44832011)(5660300002)(2906002)(31696002)(41300700001)(86362001)(4744005)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Yk1tNXlMU1QyRkY1Rm9qSllsVUJ1VC9EWkNRRy82L3JKZnBIVWZ5M1F0YkU2?=
+ =?utf-8?B?REQ2ak43K3lQN2trWEx2b09FUXRocURMVlNxUmJJVVU0VjdaakZVWmdOdW45?=
+ =?utf-8?B?a3gyTGVZWW53WGh2S0d3elozZStrKy92SmpjaTA1LzR3Uk9ZZDlrWmdyTWxp?=
+ =?utf-8?B?RmdsNk5yTGUyOEY1MEZHdEpjb1BjSnNZVUtya3RkZnZVTGZncTlRTXNjbm5u?=
+ =?utf-8?B?TDB6eDB4cVZaa3dZZXFvY3NQV1R2ZjBtNFB4dWt2TytxdlljNE0waGJiSTQy?=
+ =?utf-8?B?Nnd5dm9HQmszNlRFTk02aWZPVFFTNnFNbDl1NFpQcmx3V2pGVlpDQjlwSWJ2?=
+ =?utf-8?B?bW8yNi9iVEZjTlRCS2c3Y1ZlOGlsbHJCSkNIK1pCemZVbElhLy9QUFJLTCta?=
+ =?utf-8?B?MnNndWlzRWJSWnBsZm5mSXNSdS9pZ2J6TEFTWmZvdGFvb1paQ2RQRW9RSG9T?=
+ =?utf-8?B?dnpvRkYvY1o0bmZFN0VobERlS3NMSDBJQm1GeVJVQ2M3akRiNTNaZ3NMOXNM?=
+ =?utf-8?B?K2NDWEZ1ZVM5RVF2SlJsempPNFRVejRpWVlTRzFsUStMUzdrS1o1cncyK3dN?=
+ =?utf-8?B?ZE10WlpITE4wNFdVVHczMlk4ZC9Ud0FiaWJKUkJ0aUZlY3JaVHZKUks2QlRF?=
+ =?utf-8?B?Z0dxZUx3aGc5dzF4cGFOZFRvQUVEODNlaUxCU05yWWhrODBidjl4dXdBK3BX?=
+ =?utf-8?B?YmQyUjIxV2lvZVNQNzUwWERsYXlXbmU4VGliRHJOdFlla2pMUTJqeEZ0WnBM?=
+ =?utf-8?B?TXp3SjNwQ1lSK204d0lZY3lKNGtXVWhHN0ZWTE1ocjI4YnZZTHZFa3lHOGxl?=
+ =?utf-8?B?N3M4V3hhNnVOcC91WG5XT1V4S056TzZ6WnYvelVjS21CQVhLVVNLUGh6bCt4?=
+ =?utf-8?B?YVF2dXA2MGJYbTJRN3VJc0pPb0FBRmtEYWdWNDN3MGx6TmZOcFZMWHh3dmF1?=
+ =?utf-8?B?amxzbVhjNEhBNjZVZ3dkdWZDVzVJeHJUK1hmeDQvZlRYUHhjU2dNTEo4bTYv?=
+ =?utf-8?B?WG5idzVIalZoVE9ZdWJyajZIdXpYOXJ5Z0cyYVIxTHQwN1BUSUFKWlNVYjli?=
+ =?utf-8?B?b0FWTllORG93TUM0U3MyeUppUk91NjFiU2xMa0xoMW5PTmoxaFpjQW1jSC9B?=
+ =?utf-8?B?SjlxMVpNNXNzRGM1NmNXOXUxdDRCMkVqcmdHaXdhOTNGMStkR1hyM2F5cVFT?=
+ =?utf-8?B?WDJtempWSDVFQmhQM1dYOSswYlhoVVNJbmVlV1Zqd2hVNjdQMmVISTRaZ3NR?=
+ =?utf-8?B?ajBPa1RFNCtXVml3SDBpZmdmcGVTS0NWdzdHZ2JhMGFYd0tzWXlmekdBaEVv?=
+ =?utf-8?B?RkhrTTBrSUpPajBtN21wNHpzNDN3MVhTbmJXNnpsUlB0TEJEcFRCWVpVbWpQ?=
+ =?utf-8?B?RWI4K05DNE9DTFFaVTRLOTZ4UUVoYjE0MjE3NkgxOFpFa08vbjRuWms0aEl6?=
+ =?utf-8?B?Y0plcUp1RDNvSHIrWXJBd0FhUjlGb1l1ZHNURnFycitYVGZQdVFnMGxWWTdG?=
+ =?utf-8?B?dXFNZy9Fa0thM3Nmem9jaU44bmg3VjdHQ0FqekVCcmE1QTBYMG91RHBSOXYy?=
+ =?utf-8?B?SjZTV2FkRUxmMVM4eFdMblFVVnpBUnN0OTNxSDJURDdNNkxoUU9GSGVSOWVQ?=
+ =?utf-8?B?cXFFMTRIQTNjREJZNU5NYUk1bDBaUVZiNHJCeWJBRjl6ZFNWdXBaa3U1NDdG?=
+ =?utf-8?B?TE5LZzI4NUJFcHBWV3NPbS81NGFzcE9LT3JsUVFMU1lZREY1RURYbWlaeGRi?=
+ =?utf-8?B?NHNVUmV5NTFheFEyUUVxMEloL2xzVXExVWVyTEVPcCtwOUMzMDd2eW1LbGht?=
+ =?utf-8?B?Vkw3ZFFiak5CVEhRZTNVY1NjWTVyYW1hWUFVS0ZJUXUvOXRrTHFjWkxIVUFz?=
+ =?utf-8?B?MEdMalFYZEs2OUJnc2xCNEFubHpZTE9TVm51UjFRVFNFTkhmcjkyWkt5Snoy?=
+ =?utf-8?B?czZaenU2aHMzbjU0UVBTblhrZmhKbU5PVWVDd1NmNVhmWmdQSTdxeVdDTVU5?=
+ =?utf-8?B?VllzN1dCcXdhcW9lMUMxVFg2TjkxQkNlYTQ1RXpNeVl1NFc3YnBQQ1d1NzZ3?=
+ =?utf-8?B?aEc2aXpvOUlaT3NES3pUdXpQYUlHSUNENHBwbzFNSVVVbHhkWTViWUZnL1I1?=
+ =?utf-8?Q?HOe5klgrnU0YfxfhKq5C2t1bo?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22b92559-3ab6-432f-cd70-08dbf5a4e360
+X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB3400.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2023 15:14:34.2416
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9g4AJqERXkd8LeMf+MOJK9ktKhNQgiwTnvYaqtv2+0WYUEzJeVmWOsX6ZmQ9Kqx4zkmGqWhFEwU1H+5POJ3ZPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FRYP281MB2060
+X-TM-AS-ERS: 104.47.7.168-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28040.000
+X-TMASE-Result: 10--10.339700-4.000000
+X-TMASE-MatchedRID: +c13yJDs901TzAVQ78TKJRhvdi92BBAuG6vAF77GsJZrIVA3IGfCC6DE
+	DQa+uiKUXPH8g1DMMIhCX9ncE5tRwrzhbBgkH6FOJw66cQh/R5cIyIQE9neGFTB4jJltGVDbLN5
+	wGPX3TPXYeXOEzfM22dEoO5p+Ouf5UV8QgFV01kwryenjpiLrrlo7GmCOJYd13+6k97GsyDil3Q
+	o8+BrrvZRZn+l3dgxxLpr5d21SHwCano9LAJbc9m0pOFmsTNBM
+X-TMASE-XGENCLOUD: 4c75352a-523c-490d-8b65-9726a86c61c4-0-0-200-0
+X-TM-Deliver-Signature: 942E928255F8CCD381BAD33FC6DC7FFF
+X-TM-Addin-Auth: hOCNBKwUlN+ugop51+iw6c96nwJyg4Xr8sECzmTLXhM5/QKjtI4p+R3l2FK
+	0KnDCV0fFRl9oKd42tqHRVyhK2meud3GuXAXwBHcpWLTch+1crZzpfM7rd6RrhcJ22Ual0jnvVp
+	mgTTiwygGOasgpneqv28p/WO/qSZp9oezSmIBuIgB4UB58vaWsax7IPRIj00Y0/9g2vAWHI46br
+	p+XMN9PE8tNfT4XysMOv3NO0KfQxhjzJGz2FdgPJrxyJoUbq+EPsFaFvsn0o8b9zbJl3p0p7Du6
+	1yLHDY5v39HkAw4=.WywnnCBXrDeryfaef/nN5spBJmgKa8sZuPbFqYyWE3On1GHZVg7s6URZqf
+	LrCiBzuhdJmMc4au5zlhJvOREGonoYrS8BELDqD+Ik0zAf3IcSRg0cVfOBxfYgb0cMUwC6Eq/YY
+	Rm8Ufer6JS8s60MojkZIMUiNhmNm6dS79U8OENuFRUje/DTBnecB4jsn16fsmVT4GRBLd8wg7dy
+	Lfdl2wQD+SDgaBxYs0TOEOElXzEPzKVCqjUdr92WhuuNDVgKThL7HVve8UfqdMO58VSy4kVFmo0
+	EJMCvaRDNqR3cGR3oJVaa97KHlb9DVniVokn6zKoDg7WbzImKvvbtjKLzmQ==
+X-TM-Addin-ProductCode: EMS
+Subject: Re: [virtio-dev][PATCH V8 1/2] content: Rename SPI master to SPI
+ controller
 
-Cornelia Huck <cohuck@redhat.com> writes:
+Hello,
 
-> On Tue, Dec 05 2023, Viresh Kumar <viresh.kumar@linaro.org> wrote:
+On 05.12.23 09:24, Haixu Cui wrote:
+> SPI master is an outdated term and should use SPI controller.
 >
->> The virtio documentation currently doesn't define any generic
->> requirements that are applicable to all transports. They can be useful
->> while adding support for a new transport.
->>
->> This commit tries to define the same.
+> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
+> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
+> ---
+>   content.tex | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Thank you for tackling this, albeit the devil's in the details :)
->
->>
->> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
->> ---
->>  content.tex | 48 ++++++++++++++++++++++++++++++++++++++++++++++--
->>  1 file changed, 46 insertions(+), 2 deletions(-)
->>
->> diff --git a/content.tex b/content.tex
->> index 0a62dce5f65f..d4d5e7d7045b 100644
->> --- a/content.tex
->> +++ b/content.tex
->> @@ -631,8 +631,52 @@ \section{Device Cleanup}\label{sec:General Initiali=
-zation And Device Operation /
->>=20=20
->>  \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
->>=20=20
->> -Virtio can use various different buses, thus the standard is split
->> -into virtio general and bus-specific sections.
->> +The virtio devices are exposed to the guest as if they are physical
->> +devices using a specific transport method, like PCI, MMIO or Channel
->> +I/O.
->
-> I'm not sure we can talk about "exposed to the guest" here, except as an
-> example... maybe if we reword the whole paragraph (see my suggestion
-> below.)
->
->> The transport methods define various aspects of the communication
->> +between the device and the driver, like device discovery, exchanging
->> +capabilities, interrupt handling, data transfer, etc.. Virtio can use
->> +various different buses, thus the standard is split into virtio general
->> +and bus-specific sections.
->
-> I think we should concentrate on the transport being what links device
-> and driver together... what about (reusing parts of your writeup):
->
-> "Devices and drivers can use different transport methods to enable
-> interaction, for example PCI, MMIO, or Channel I/O. The transport
-> methods define various aspects of the communication between the device
-> and the driver, like device discovery, exchanging capabilities,
-> interrupt handling, data transfer, etc. For example, in a host/guest
-> architecture, the host might expose a device to the guest on a PCI bus,
-> and the guest will use a PCI-specific driver to interact with it.
->
-> The standard is split into sections describing general virtio
-> implementation and transport-specific sections."
->
->> +
->> +\section{Virtio Transport Requirements}\label{sec:Virtio Transport Opti=
-ons / Virtio Transport Requirements}
->> +
->> +\devicenormative{\subsection}{Virtio Transport Requirements}{Virtio Tra=
-nsport Options}
->
-> I'm not sure we can introduce MUST (NOT) requirements for basic
-> functionality after the spec has been published for quite a time already
-> (although I'd assume every implementation is fulfilling the requirements
-> anyway)... thoughts?
->
->> +
->> +The device MUST present each event, in a transport defined way, from the
->> +moment it takes place until the driver acknowledges the event.
->
-> I don't believe "event" is well-defined here.
+> diff --git a/content.tex b/content.tex
+> index 0a62dce..1c608eb 100644
+> --- a/content.tex
+> +++ b/content.tex
+> @@ -737,7 +737,7 @@ \chapter{Device Types}\label{sec:Device Types}
+>   \hline
+>   44         &   ISM device \\
+>   \hline
+> -45         &   SPI master \\
+> +45         &   SPI controller \\
+>   \hline
+>   \end{tabular}
+>   
 
-Maybe:
+Please add somewhere behind
 
-"A device initiated transaction can isn't considered complete until
-acknowledged by the driver. As such data MUST remain visible to the
-driver until the transaction is complete"?
+\input{device-types/pmem/description.tex}
 
->
->> +
->> +The device MUST NOT access virtqueue's contents before the driver
->> +notifies that the queue is ready for access, in a transport defined way.
->> +
->> +The device MUST NOT access buffers on the virtqueue, after it has
->> +modified them and notified the driver about their availability.
->> +
->> +The device MUST reset the virtqueues if requested by the driver, in a
->> +transport defined way.
->
-> Isn't all of this already defined in one place of the spec or another?
+the line
 
-I think the recent example is the virtio-sound driver continuing to feed
-data into buffers after those buffers where submitted into the
-virtqueue. We should be explicit that the only time both sides of a
-VirtIO implementation can access things at the same time is with
-explicitly shared memory (and you need some sort of mechanism to mediate
-that to avoid chaos).
+\input{device-types/spi/description.tex}
 
->> +
->> +\drivernormative{\subsection}{Virtio Transport Requirements}{Virtio Tra=
-nsport Options}
->> +
->> +The driver MUST NOT access guest memory locations outside what's made
->> +available by the device to the driver.
->
-> I don't think that makes sense -- I'd assume most guest memory locations
-> do not have anything to do with virtio, and we should try to avoid
-> host/guest terminology.
+so that I get my PDF generated without having to add this line all the 
+time manually.
 
-I agree guest memory isn't the right terminology here. However there are
-discussions about how to implement secure buffers for VirtIO - so for
-example a buffer mediated by some sort of secure layer. In those cases
-the driver may not have access to it outside of the transactions.=20
+Regards
+Harald
 
->
->> +
->> +The driver MUST NOT write to the read-only memory area and MUST NOT read
->> +from the write-only memory area.
->
-> Which memory areas does that refer to? Parts of the transport-specific
-> data structures?
->
->> +
->> +The driver MUST acknowledge events presented by the device, as mandated
->> +by the transport.
->
-> I don't think this is quite correct in the absolute -- for example, it
-> should be fine to not acknowledge events if some overriding event comes
-> along, or if the driver initiates a reset.
->
->> +
->> +The driver MUST NOT access virtqueue contents before the device notifies
->> +about the readiness of the same.
->> +
->> +The driver MUST NOT access buffers, after it has added them to the
->> +virtqueue and notified the device about their availability. The driver
->> +MAY access them after the device has processed them and notified the
->> +driver of their availability, in a transport defined way.
->> +
->> +The driver MAY ask the device to reset the virtqueues if, for example,
->> +the driver times out waiting for a notification from the device for a
->> +previously queued request.
->
-> Again, I believe this has already been covered in the generic
-> sections -- do we instead need to specify that a transport MUST provide
-> a method to do xy? (or SHOULD, MAY, as applicable -- it would be good to
-> list explicitly what is mandatory for a transport to implement, and what
-> is optional.)
 
-Yes I think so. The s390x channel transport gets referenced because it
-has a nice enumerated list of operations. It would be good to codify
-which operations are mandatory for all transports and which are
-optional.
-
---=20
-Alex Benn=C3=A9e
-Virtualisation Tech Lead @ Linaro
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
