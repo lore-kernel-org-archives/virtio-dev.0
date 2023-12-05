@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14117-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14118-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 33FF4C4167B
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 10:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8BA87C10F04
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 10:58:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5CEC72B051
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 10:21:29 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id E28A52A8F7
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 10:58:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 389B49865D1
-	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 10:21:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D535D986667
+	for <virtio-dev@archiver.kernel.org>; Tue,  5 Dec 2023 10:58:41 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 188E1986458; Tue,  5 Dec 2023 10:21:29 +0000 (UTC)
+	id C78A998645D; Tue,  5 Dec 2023 10:58:41 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,117 +24,73 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 09EC798645D
-	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2023 10:21:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id B276C986496
+	for <virtio-dev@lists.oasis-open.org>; Tue,  5 Dec 2023 10:58:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701771687; x=1702376487;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XKAle7c0KCE5subRFaSdAZs4lzOnil8ymQEwH4jWdf8=;
-        b=IwyvZy9+gUcVYPuCnhCJ1l4YCOmChwu17f1vUqU0YVgSgqUlyT21evk0X/YO881PPG
-         S9woHLOa7OhLlkJ8UkQNNyhjpADrG1sgutZeZDprGQaIbflEJIIA2BzOfzhEuH35QnEv
-         zcRFisHYw19pJOA2XVrEYJsBINmwyeMBA4QmWWSxxNzoriIqMg+h5Py2b3E7WVdoS9ge
-         nK7pE7E4ej3Lpdd/XH8rBuICdECUsWd1ymvxfMuvUACcJriMX/7A/hiZkJkYtcJ6tLh8
-         HPC4NudNQDRbqExAWLwluobH8hxoYPXgxr+sZO2mW9IprgACHj/TznVp3lV4D9ksDsLs
-         PQhg==
-X-Gm-Message-State: AOJu0YwuTKo+2fSsrHDWdIPHpucEq6xfwa3lVY2WwzcqgkF5oi/29aiG
-	legQaYAzufY6aQOcuv5eTd35g3GmJSzIa5TSPPg=
-X-Google-Smtp-Source: AGHT+IHOQ86rSMw5yMKnrCpIsCxkRGPtK7IJLo/fC+SwrxItZTR3LaUe3l9dCjDMoq4Fgfgy71kJEQ==
-X-Received: by 2002:a05:6a00:1d8c:b0:6ce:3ae6:42e5 with SMTP id z12-20020a056a001d8c00b006ce3ae642e5mr853664pfw.21.1701771687426;
-        Tue, 05 Dec 2023 02:21:27 -0800 (PST)
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: virtio-dev@lists.oasis-open.org,
-	Cornelia Huck <cohuck@redhat.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	=?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
-	stratos-dev@op-lists.linaro.org,
-	Erik Schilling <erik.schilling@linaro.org>,
-	Manos Pitsidianakis <manos.pitsidianakis@linaro.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>
-Date: Tue,  5 Dec 2023 15:50:51 +0530
-Message-Id: <3fbb010e96124cfbffd70709d9ce7a2a458322c8.1701771424.git.viresh.kumar@linaro.org>
-X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
+        d=1e100.net; s=20230601; t=1701773918; x=1702378718;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tlZDXRrdYPu6fBH6jwZH9netykcPABwx+0YuSPXngF4=;
+        b=VShevq9b2zQ1RT9PV2W36VUspQvxr+8zsEIFwTW6pMBF4taUQmLQ7qrtGaLge4S5dI
+         zn99qHQ5MHSPPrCRjdS/PvCVkq/RGc4JMlkOLXlvqV/dqGeto9bVnhk4ki9b65CNZp2R
+         fwrUVxLJKtEOAS22xzFix6U54ktWTF8eUF0pbHNIbfqZVeWNdDxKHoppikL50bhaxi47
+         hdI+Lghfu0xL+KcKKG7QPKPp9dtkf3oroWKfhsFYKA+g4v+/v4eomdaUy/n+s6t0jEmx
+         /uuyGnRYeqrja8V23QZPdQZbRuD6ctJr81Dj2tAzILmzyKOCvzhAmQytGCrUmz/8EUxj
+         Zn4Q==
+X-Gm-Message-State: AOJu0YxdAenyqR5fiQNJyeDjBpUMZxonOOIjjOpL5IdWWNel1613I9UU
+	EPpvQbIFPMO7siXDe9jo8gYvetEBxWxTfzS3WnD7QA==
+X-Google-Smtp-Source: AGHT+IEAEsLBLVTFZ2kYdR+dJLTRRlwCny2KR6Y3NYD5Vrc95eC65MpFY69FhfGKHNBP6B/PGRHYl4EFBn5BCkm2C34=
+X-Received: by 2002:a19:7612:0:b0:50b:e750:dd99 with SMTP id
+ c18-20020a197612000000b0050be750dd99mr1949414lff.38.1701773918067; Tue, 05
+ Dec 2023 02:58:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] [PATCH] virtio-transport: Clarify requirements
+References: <20231204094123.856214-1-stevensd@chromium.org>
+ <20231204094123.856214-2-stevensd@chromium.org> <CACGkMEuHLs=+8_RHVa9eTXfHLqo_Ra6hSrnT9k8DAG_0yz0pvQ@mail.gmail.com>
+In-Reply-To: <CACGkMEuHLs=+8_RHVa9eTXfHLqo_Ra6hSrnT9k8DAG_0yz0pvQ@mail.gmail.com>
+From: David Stevens <stevensd@chromium.org>
+Date: Tue, 5 Dec 2023 19:58:27 +0900
+Message-ID: <CAD=HUj6bBOOCWmrbxBHKymfAr3UVUL7S57FtffHi0vEzVmewDA@mail.gmail.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, 
+	virtio-dev@lists.oasis-open.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v3 1/1] Define a low power mode for devices
 
-The virtio documentation currently doesn't define any generic
-requirements that are applicable to all transports. They can be useful
-while adding support for a new transport.
+On Tue, Dec 5, 2023 at 1:18=E2=80=AFPM Jason Wang <jasowang@redhat.com> wro=
+te:
+>
+> On Mon, Dec 4, 2023 at 5:41=E2=80=AFPM David Stevens <stevensd@chromium.o=
+rg> wrote:
+> >
+> > Define a low power mode for virtio devices where the devices are
+> > expected to maintain their state. This gives drivers an option for powe=
+r
+> > management besides simply resetting their device. In the virtualization
+> > use case, this allows the guest to be suspended even with stateful
+> > virtio devices like gpu and fs.
+> >
+> > Low power mode is primarily defined at the transport layer. The only
+> > part that depends on device-type specific details is whether a given
+> > virtqueue is device driven or driver driven.
+> >
+> > This change only defines the transport-specific implementation for
+> > Virtio over PCI.
+>
+> A dumb question, if this is only for PCI, can the device just
+> implement no_soft_reset via PMC?
 
-This commit tries to define the same.
+This is basically No_Soft_Reset, yes. If a change similar to [1] would
+be acceptable based only on the No_Soft_Reset bit even with no concept
+of power management in the virtio spec, then I personally don't have
+any problems with that.
 
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- content.tex | 48 ++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 46 insertions(+), 2 deletions(-)
+[1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd@chromium.=
+org/
 
-diff --git a/content.tex b/content.tex
-index 0a62dce5f65f..d4d5e7d7045b 100644
---- a/content.tex
-+++ b/content.tex
-@@ -631,8 +631,52 @@ \section{Device Cleanup}\label{sec:General Initialization And Device Operation /
- 
- \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
- 
--Virtio can use various different buses, thus the standard is split
--into virtio general and bus-specific sections.
-+The virtio devices are exposed to the guest as if they are physical
-+devices using a specific transport method, like PCI, MMIO or Channel
-+I/O. The transport methods define various aspects of the communication
-+between the device and the driver, like device discovery, exchanging
-+capabilities, interrupt handling, data transfer, etc.. Virtio can use
-+various different buses, thus the standard is split into virtio general
-+and bus-specific sections.
-+
-+\section{Virtio Transport Requirements}\label{sec:Virtio Transport Options / Virtio Transport Requirements}
-+
-+\devicenormative{\subsection}{Virtio Transport Requirements}{Virtio Transport Options}
-+
-+The device MUST present each event, in a transport defined way, from the
-+moment it takes place until the driver acknowledges the event.
-+
-+The device MUST NOT access virtqueue's contents before the driver
-+notifies that the queue is ready for access, in a transport defined way.
-+
-+The device MUST NOT access buffers on the virtqueue, after it has
-+modified them and notified the driver about their availability.
-+
-+The device MUST reset the virtqueues if requested by the driver, in a
-+transport defined way.
-+
-+\drivernormative{\subsection}{Virtio Transport Requirements}{Virtio Transport Options}
-+
-+The driver MUST NOT access guest memory locations outside what's made
-+available by the device to the driver.
-+
-+The driver MUST NOT write to the read-only memory area and MUST NOT read
-+from the write-only memory area.
-+
-+The driver MUST acknowledge events presented by the device, as mandated
-+by the transport.
-+
-+The driver MUST NOT access virtqueue contents before the device notifies
-+about the readiness of the same.
-+
-+The driver MUST NOT access buffers, after it has added them to the
-+virtqueue and notified the device about their availability. The driver
-+MAY access them after the device has processed them and notified the
-+driver of their availability, in a transport defined way.
-+
-+The driver MAY ask the device to reset the virtqueues if, for example,
-+the driver times out waiting for a notification from the device for a
-+previously queued request.
- 
- \input{transport-pci.tex}
- \input{transport-mmio.tex}
--- 
-2.31.1.272.g89b43f80a514
-
+-David
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
