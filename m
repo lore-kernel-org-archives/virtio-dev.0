@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14133-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14134-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1CB3C4167B
-	for <virtio-dev@archiver.kernel.org>; Thu,  7 Dec 2023 05:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 37137C4167B
+	for <virtio-dev@archiver.kernel.org>; Thu,  7 Dec 2023 16:37:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 28FA91FF96
-	for <virtio-dev@archiver.kernel.org>; Thu,  7 Dec 2023 05:35:45 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6693F2ACAD
+	for <virtio-dev@archiver.kernel.org>; Thu,  7 Dec 2023 16:37:35 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1FC3098690E
-	for <virtio-dev@archiver.kernel.org>; Thu,  7 Dec 2023 05:35:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 48BBF986910
+	for <virtio-dev@archiver.kernel.org>; Thu,  7 Dec 2023 16:37:35 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 14A0398402B; Thu,  7 Dec 2023 05:35:45 +0000 (UTC)
+	id 2BDE69868FF; Thu,  7 Dec 2023 16:37:35 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,144 +24,130 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 077E89868FD
-	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Dec 2023 05:35:45 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1993D986907
+	for <virtio-dev@lists.oasis-open.org>; Thu,  7 Dec 2023 16:37:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: oYk0PX1sPmCoeNSj7yA_Tw-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701927341; x=1702532141;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JV3lwJ9MCw0XkzgAQl6MVcD2o1R3081jkFbTcpzA+vI=;
-        b=pyXfVImlabhtzuMwOBVNHtX4bEc51H4793je6O1GlUrIsXgXVRAtbc9eFT1prL7/t5
-         Ithq4zMHSQr8yo1UNmWCllf4nP81TEUmtAztx3Czt2XRlU1e61/1pbkD6Qin2UpinWLq
-         5rp5+t9aUdydxixHsmCZIZ4/5xTVt1yyOeWrx+G9Plh9vyCi0gQJsxI4sdINJgu4zJRN
-         0UWnRoJ7067THeV7pbHugiepyOdwTcDt2K8JORISW4diyFM67MTlHSQIEjvuKdV0e3eQ
-         9wtGWo8fmKLffdbKbs8ZAnNE0PYujPBnqdS5KrKGEdn/mSQCJfZgRWpmTsgnswYlA/zu
-         BEcw==
-X-Gm-Message-State: AOJu0YxHWjC6Chbhruu5Dnlqtb5RH64c3zjvPecoHXH6V47onIGIMdzn
-	JiyZcAEM//8yv5sNwlkBb54qrdzHggjhqgqwXujxX8xYHgmkfGIyfMis2ovhJNG18iDUdVyC32c
-	MWIHLSZRK6l+HN5AQ9MZQKqzi1eNjct3EaDmM04iOVM9r
-X-Received: by 2002:a17:90a:5c:b0:286:448f:610 with SMTP id 28-20020a17090a005c00b00286448f0610mr1656827pjb.2.1701927341713;
-        Wed, 06 Dec 2023 21:35:41 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IG2mT0XfKh7btJQ9Cu3EcT+GZugx4fbjk+0WMoBfIvbWsVaIwjTXeE171cfK2fzyF0ysdZfn0z98k5R/LXO11I=
-X-Received: by 2002:a17:90a:5c:b0:286:448f:610 with SMTP id
- 28-20020a17090a005c00b00286448f0610mr1656822pjb.2.1701927341394; Wed, 06 Dec
- 2023 21:35:41 -0800 (PST)
+X-TM-MAIL-RECEIVED-TIME: 1701967052.532000
+X-TM-MAIL-UUID: 8c36629c-bcc4-490e-9d0d-0c8db06f80d2
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=htLUGnrqHGtcP3iZePVrCdMuGt9p6mhk/mio8B60p4KpdlhqmyP3iAXHnyev5FQdCNNH+nLKwZyqrhSqA5b0RczsoKN+aHqpdxc4YyUqKzyTscerKIbxztlpyl35t6HxC6bnr2JBRktOWCyPEoUbVZw1Az1XikD6+Zlywz9cSaUiCgciG/sDeOa1s18n6yZMdn381cyetMnnSOjxovU4GDtVKMN/M0D7SvD7WP6pr1N0XEDuKPxPXbtsw/4p1j7teIXEk+Wtw1T0x2QMK+s4R5wn9gA6+/kqAUXUnIh4riGKD+HLLTuJXHCOHLeDjCCAYZtpK22HHhQYUQL3OSI3Yg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/9uQmWrQtwhiDdHbVjurskbDJWCSkKL22ibJc6HDnmo=;
+ b=Xp4ReBeDi6HY5KHtA2UbzrK81AyNSEJfY46v/uUzo5we+ra6gxxtHSOr0ANydKRTdoW4rznbAgpgVdIbdoH1gWALcA6B7h4vI5BgflJ+MUjzSfTbPumWpI6XHYJYhDgQG1tlCMGa11rBXuSa5+qPzBZrVeg7aBkIGRwvsaLKKQhV/ADj/ZvOZ03v4na4rMBnA1tMTZ19YetY+GNxXJ3ESdRFRYn+QEc9lwobpXMt4wr80BYOVQWVavuXgEL0n13Gb/lb2qQOixp4QguGk1lPm4CRi4Bhaw33uCqyVvKcJT4JaUQ0mGDyWPeYTmffHWonGuh0GHzYw6k5OetulD6O5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 217.66.60.4) smtp.rcpttodomain=gmail.com smtp.mailfrom=opensynergy.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none
+ header.from=opensynergy.com; dkim=none (message not signed); arc=none (0)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=opensynergy.com;
+Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
+ designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
+From: Igor Skalkin <Igor.Skalkin@opensynergy.com>
+To: virtio-dev@lists.oasis-open.org,
+	virtio-comment@lists.oasis-open.org,
+	luiz.dentz@gmail.com,
+	mst@redhat.com
+Cc: marcel@holtmann.org,
+	johan.hedberg@gmail.com,
+	jasowang@redhat.com,
+	boris.le.labousse@opensynergy.com,
+	Igor Skalkin <Igor.Skalkin@opensynergy.com>
+Date: Thu,  7 Dec 2023 17:37:20 +0100
+Message-Id: <20231207163721.26737-1-Igor.Skalkin@opensynergy.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-References: <20231204094123.856214-1-stevensd@chromium.org>
- <20231204094123.856214-2-stevensd@chromium.org> <CACGkMEuHLs=+8_RHVa9eTXfHLqo_Ra6hSrnT9k8DAG_0yz0pvQ@mail.gmail.com>
- <CAD=HUj6bBOOCWmrbxBHKymfAr3UVUL7S57FtffHi0vEzVmewDA@mail.gmail.com>
- <CACGkMEuGY9y5Zt9UdL+4V3tntnR4EyHHCRqX_P4QtmAOL0-Pew@mail.gmail.com>
- <20231206051652-mutt-send-email-mst@kernel.org> <CACGkMEvKo-c0XNRyJSrbkrgqLrWdXc9sju1JHx=y8QOLYCfffw@mail.gmail.com>
- <CAD=HUj4A_xvgD09OqvTVW8s4cieP3qFZBy0bXe=+FA028d5CoA@mail.gmail.com>
-In-Reply-To: <CAD=HUj4A_xvgD09OqvTVW8s4cieP3qFZBy0bXe=+FA028d5CoA@mail.gmail.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 7 Dec 2023 13:35:29 +0800
-Message-ID: <CACGkMEsAE7g3k7=9MS2jh2PZ54-0HZ355ALvq-EGj7ghgbNLPA@mail.gmail.com>
-To: David Stevens <stevensd@chromium.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, virtio-comment@lists.oasis-open.org, 
-	virtio-dev@lists.oasis-open.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [virtio-dev] Re: [virtio-comment] [PATCH v3 1/1] Define a low power mode for devices
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB8EUR05FT004:EE_|FR2P281MB2348:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 2c14789c-21d6-419c-8da6-08dbf742cebf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	PR1pxpRbX4cjQ6kDQ3j/4+LyhHA5quLSRKU8hOJizz+8Tz/I9dlqWEjYqwek6Sx5CV7GFlND8Q2/NdSduCLdmKVKv26RFnKjlSZ527gTBnw+8V43RHEm6eOYICrJ8KJvlDUykUxoM4Zd1si1+dBn3o22k4yC9S+vxGYOStWw90qSv35XCNcLM2++mpYvY12qPb/tbrN2n1r1++VnE501V9P1JGVeAJEPx+jbIWfo+TPUNqFgswRXSZociuXTrU4fBTlf10u5UCXGg1qkJ62a972hNC07ESs1xlbVqU889Q1V6vJrgEg01TRkUwOPjpk5bTPn2UkvBl6RfcG6zFCb4IJ7zuxUj4ocWrNABb5xUk8CwkFh0o4r1TBtq9NPzMHusUHHnSNbqPtIPrwUnJFxoNf4JILLhnngtuEScs4rcCVeq+gm91HPodvTfJ+gOciwbNXyAILjTCdWAzbDVUrD0Epy+LQ8ud4tBRXDyvIoLgoB5Q8bCeTuaDYJ7izSS2UELXHf++fG+zqMjOImsB4X2sSaA8SS8ds01ofqT3NcfdzBYS4FKQmiCJdvD42pkp54VDOOAl/XCXQQg1oQfsedsZZ8oPYolIn036HGwYtddAQ8ADbcpShXIpExwowKd2JDt3Jgmi+3hNhcPfCqAvNwzIBrqQo9Wkgu2Oncx2JYKaFtI3sg+UGYdmglUGbXn+z5paU0uNcPqKhpW6nRsEdUGH7TWpNCSHw5mce79E6qyL5ECIIAgLpeunqLUaky+UENW7Qy2wvKFGY/lpNQl1FmyRej2w7LxVH67gFkp2XToBQ=
+X-Forefront-Antispam-Report:
+	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(346002)(396003)(376002)(136003)(39830400003)(230922051799003)(186009)(1800799012)(82310400011)(451199024)(64100799003)(36840700001)(46966006)(4326008)(8676002)(8936002)(478600001)(86362001)(36860700001)(2616005)(107886003)(26005)(336012)(40480700001)(316002)(70586007)(70206006)(42186006)(1076003)(83380400001)(2906002)(5660300002)(81166007)(47076005)(41300700001)(36756003)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2023 16:37:31.0369
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c14789c-21d6-419c-8da6-08dbf742cebf
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB8EUR05FT004.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB2348
+X-TM-AS-ERS: 104.47.7.169-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28044.000
+X-TMASE-Result: 10--3.059100-4.000000
+X-TMASE-MatchedRID: 3JONONKdPRIAsgl6PZgqJEu+LBodhvWx6BFG8XEpG3qiMrI1WZc6u30L
+	sTLQdfV43uJSxwvFA3VKbULxlN2pgsjGK0ljEFZOE0bUNvPQomsVJPUqXnrQdfCKSoCoSADa14b
+	3/Wemcih3evePDuojGaUkHH7dGZNgIrHT8Wer/KeeKdOylUhP2ZmIL0rjgc972rBuSmnUvYWF1X
+	gM1szx650L1Z8+NdA82kG2v1GHnmDLULYDu+Fb7MVNAYApHGPk2j7jyCKpnCcSCDdzAMeX/RLdY
+	zv1bejiZrfFxrTdHoz+61oPYZ99aiVNJxt7aXvgmwjor1Nh6wucA6dTiL984/ZIIkeG6Ke/Ozg3
+	gsyqhuyqvD2pQEhSu553pi65LpW/gyPuz05qJv4=
+X-TMASE-XGENCLOUD: d769454a-3a96-404a-a647-61fc49233bbc-0-0-200-0
+X-TM-Deliver-Signature: 2A1CF33BCFC3C30B224BEBF3E0F28A75
+X-TM-Addin-Auth: Z1DnTEYFbXsbU5MyqRSrRycb964eoMY7M/V/R9XluHHqV3KTjCnoxllkBd9
+	4hUDHZ4EMp6TUfeXFh4cNgLLM+K4r/saQ8OOI3ahzBqMeODwW6TExFFhXYUUk5pH42ZE32P0lDM
+	IrhI6v81UADgHgQsch0lzseRZowv03NHZmRtKKaqh8LycTmwQYnl1DvqyCFi/g7i9gu/Y/GkkWj
+	mld280hCk98TwPftiKrp20m8ZlyuhEhg+zLhiCIbTwZSfxTVQXHtmnJkOB/ForeV48pLR5Dvfbc
+	OtvhtbAfK1n7Nao=.Y1qfkimoG2odoJrjnBoTSsiIieVV7PGni2noqz+n8Oi7Wvhr7Qydj8mn8O
+	GqGVTJV9PYo/uoGuuGqT6Eckv55xXWVNEYDlQcS80OV9lqUmkH5Il+yQNGoTBcI2kXDVcQmxCxW
+	XsalbNxUtzAnmsUwf8bstkwL9qf77AhId+X+9rW0SX2c1j74VzyhbqvuSfNR/CNpOxcQy6+DLpE
+	i5prmreLpdA7hAJwBgvkOEPl2b949Gk9sk4flJCvb9Vq/7rvQLYNYHXfIwwSCbcc0uKxehiijWw
+	/pfY91w16Qh0uyUbxsBVyXME6KCHZpha8UPAUbgwjg+8O/hxGHEM8w3KQGw==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] [PATCH v2 0/1] Virtio-bt specification draft
 
-On Thu, Dec 7, 2023 at 12:55=E2=80=AFPM David Stevens <stevensd@chromium.or=
-g> wrote:
->
-> On Thu, Dec 7, 2023 at 1:16=E2=80=AFPM Jason Wang <jasowang@redhat.com> w=
-rote:
-> >
-> > On Wed, Dec 6, 2023 at 6:17=E2=80=AFPM Michael S. Tsirkin <mst@redhat.c=
-om> wrote:
-> > >
-> > > On Wed, Dec 06, 2023 at 05:16:04PM +0800, Jason Wang wrote:
-> > > > On Tue, Dec 5, 2023 at 6:58=E2=80=AFPM David Stevens <stevensd@chro=
-mium.org> wrote:
-> > > > >
-> > > > > On Tue, Dec 5, 2023 at 1:18=E2=80=AFPM Jason Wang <jasowang@redha=
-t.com> wrote:
-> > > > > >
-> > > > > > On Mon, Dec 4, 2023 at 5:41=E2=80=AFPM David Stevens <stevensd@=
-chromium.org> wrote:
-> > > > > > >
-> > > > > > > Define a low power mode for virtio devices where the devices =
-are
-> > > > > > > expected to maintain their state. This gives drivers an optio=
-n for power
-> > > > > > > management besides simply resetting their device. In the virt=
-ualization
-> > > > > > > use case, this allows the guest to be suspended even with sta=
-teful
-> > > > > > > virtio devices like gpu and fs.
-> > > > > > >
-> > > > > > > Low power mode is primarily defined at the transport layer. T=
-he only
-> > > > > > > part that depends on device-type specific details is whether =
-a given
-> > > > > > > virtqueue is device driven or driver driven.
-> > > > > > >
-> > > > > > > This change only defines the transport-specific implementatio=
-n for
-> > > > > > > Virtio over PCI.
-> > > > > >
-> > > > > > A dumb question, if this is only for PCI, can the device just
-> > > > > > implement no_soft_reset via PMC?
-> > > > >
-> > > > > This is basically No_Soft_Reset, yes. If a change similar to [1] =
-would
-> > > > > be acceptable based only on the No_Soft_Reset bit even with no co=
-ncept
-> > > > > of power management in the virtio spec, then I personally don't h=
-ave
-> > > > > any problems with that.
-> > > > >
-> > > > > [1] https://lore.kernel.org/lkml/20231113055138.117392-1-stevensd=
-@chromium.org/
-> > > >
-> > > > So if I read the code correctly, the current Qemu advertises PM but
-> > > > without no_soft_reset.
-> > > >
-> > > > So this patch seems to break e.g virtio-net and doesn't fix virtio-=
-GPU.
-> > > >
-> > > > Thanks
-> > > >
-> > > > >
-> > > > > -David
-> > > > >
-> > >
-> > > what is the breakage exactly?
-> >
-> > It looks to me we need:
-> >
-> > 1) Device side, if device can preserve state on d3hot, it may
-> > advertise no_soft_reset
-> > 2) Driver side, if driver sees no_soft_reset, it doesn't need to
-> > manually suspend and resume. But in the above patch, it only checks
-> > the existence of PM, it looks to me it needs to check no_soft_reset
-> > instead.
->
-> Right, my original reply was needlessly vague. Similar to the linked
-> patch, but based on checking No_Soft_Reset instead of just pm_cap.
+We have been using virtio bluetooth linux kernel driver and virtio bluetooth
+devices for some time now, but it still has no spec.
+This is the first attempt to start developing this specification.
 
-Right, so I think I'm fine if it works like this.
+v2->v1:
+ - Few minor fixes.
+ - Necessary reference links added to the "Normative References".
 
->
-> That also raises the point that the proposed spec changes are also
-> insufficient - the PCI section needs to say that setting No_Soft_Reset
-> is required for low power mode.
+ - Changes in the configuration V2:
+ - Field "type" had been removed, because Alternate MAC/PHYs (AMP) secondary
+   controllers had been removed from the Bluetooth Core Specification since
+   version 5.3. And this field is not used in the current virtio-bt Linux
+   implementation.
+ - Approach of the "vendor" field has been completely changed, now it uses
+   documented manufacturer identifiers and does not force the driver to use
+   the hard-coded dependencies between non-documented index value and
+   vendor-specific parameters.
 
-Yes, but I think we probably don't need the spec patch.
+todo:
+   - The main question - "Do we have devices based on original (version 1)
+   configuration, or we can simple purge this version 1 configuration?" - still
+   has no answer(.
+   - SCO over HCI test still in process, it is not clear do we need to add
+   separate queue for the out of band data.
 
-Thanks
+Igor Skalkin (1):
+  RFC: virtio-bt: add virtio BT device specification
 
->
-> -David
->
+ conformance.tex                        |  12 +-
+ content.tex                            |   1 +
+ device-types/bt/description.tex        | 158 +++++++++++++++++++++++++
+ device-types/bt/device-conformance.tex |   7 ++
+ device-types/bt/driver-conformance.tex |   7 ++
+ introduction.tex                       |  15 +++
+ 6 files changed, 196 insertions(+), 4 deletions(-)
+ create mode 100644 device-types/bt/description.tex
+ create mode 100644 device-types/bt/device-conformance.tex
+ create mode 100644 device-types/bt/driver-conformance.tex
+
+-- 
+2.40.1
 
 
 ---------------------------------------------------------------------
