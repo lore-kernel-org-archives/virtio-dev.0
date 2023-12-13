@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14144-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14145-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B7D6EC4332F
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Dec 2023 06:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68D05C4332F
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Dec 2023 09:53:45 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 2B62494EF8
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Dec 2023 06:54:23 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id A791C19090A
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Dec 2023 09:53:44 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 186099866DD
-	for <virtio-dev@archiver.kernel.org>; Wed, 13 Dec 2023 06:54:23 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 8D7629866B8
+	for <virtio-dev@archiver.kernel.org>; Wed, 13 Dec 2023 09:53:44 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0AC619866B0; Wed, 13 Dec 2023 06:54:23 +0000 (UTC)
+	id 7297598669B; Wed, 13 Dec 2023 09:53:44 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,77 +24,578 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EA02498669C;
-	Wed, 13 Dec 2023 06:54:19 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6048F98669C
+	for <virtio-dev@lists.oasis-open.org>; Wed, 13 Dec 2023 09:53:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <67c474f3-30a5-4040-9535-e96d8fd4c7ee@quicinc.com>
-Date: Wed, 13 Dec 2023 14:54:09 +0800
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702461222; x=1703066022;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tzmtfdvh8MoZlQ5iBqvO3AB68PsHcRVFzEzdstl9GkM=;
+        b=SbNa4Btkr7PToZUHkbXG3ZFP9BbCOMXDF8PxGGSzG6f2bGsvjr0NOglicmbrinEvsW
+         zQg3CURPvIKBZ+6s8J7jnIO7VeyMN5r1HJYW7+jVyDBSHwXaQ1AglRVuLYtKL61ClZWu
+         HHdwHrNA0co2uGQCZdtweJroLS2DqUKgeqkUokfPC8+KlQvhe650j1jymDrWAt4leOkC
+         3cwmc1hIilxbW4yLR9y0rnMXJgmmQ3JcCU1NxIu0ffs+nGIy9W4m6FHrTzkiAY7okPOa
+         rYN/eBKtEQJ6b3lU9mVclUr/GcgwX5f1Wlhp9D1ES4FUAbPlvk6K7lrgJ1WC/tFHrdRE
+         KhNg==
+X-Gm-Message-State: AOJu0YxOWUrA9IA3eCUpstFFaAgssVFvyoMtwSGlmvQkEbLD4wJv3T+Y
+	du2bBi3GG9OQ8CGvjyLzzcadzw==
+X-Google-Smtp-Source: AGHT+IGmaafpc6Lp/1dId0bJ7+Egl3h6i7Z2OrZdU0SZ7n4VH5SmWCyoNukSRuvrWrxoYSu1PDUm5Q==
+X-Received: by 2002:a05:6808:3991:b0:3b9:fd0a:247f with SMTP id gq17-20020a056808399100b003b9fd0a247fmr10824848oib.90.1702461222422;
+        Wed, 13 Dec 2023 01:53:42 -0800 (PST)
+Date: Wed, 13 Dec 2023 15:23:39 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+To: Harald Mommer <Harald.Mommer@opensynergy.com>
+Cc: virtio-dev@lists.oasis-open.org, Haixu Cui <quic_haixcui@quicinc.com>,
+	Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Harald.Mommer@gmail.com,
+	quic_ztu@quicinc.com, Matti Moell <Matti.Moell@opensynergy.com>,
+	Mikhail Golubev <Mikhail.Golubev@opensynergy.com>,
+	Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>,
+	Vincent Guittot <vincent.guittot@linaro.org>
+Message-ID: <20231213095339.rurjk6mxjeap7tye@vireshk-i7>
+References: <20231027161016.26625-1-Harald.Mommer@opensynergy.com>
+ <20231027161016.26625-4-Harald.Mommer@opensynergy.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: <cohuck@redhat.com>
-CC: <quic_ztu@quicinc.com>,
-        "virtio-dev@lists.oasis-open.org"
-	<virtio-dev@lists.oasis-open.org>,
-        <virtio-comment@lists.oasis-open.org>,
-        Harald Mommer <harald.mommer@opensynergy.com>,
-        Viresh Kumar
-	<viresh.kumar@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-References: <20231212033317.22198-1-quic_haixcui@quicinc.com>
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <20231212033317.22198-1-quic_haixcui@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: dlFGRJ4WxY4nreukiOBfWQBGQbEQJ6hk
-X-Proofpoint-GUID: dlFGRJ4WxY4nreukiOBfWQBGQbEQJ6hk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_02,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- impostorscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0
- phishscore=0 priorityscore=1501 malwarescore=0 clxscore=1015
- mlxlogscore=678 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2312130049
-Subject: Re: [virtio-dev][PATCH V9 0/2] virtio-spi: add virtual SPI controller
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231027161016.26625-4-Harald.Mommer@opensynergy.com>
+Subject: Re: [virtio-dev] [RFC PATCH v1 3/3] SPI: Add virtio SPI driver (V4
+ draft specification).
 
-Hi Cornelia,
+Hi Harald,
 
-     In patch V9, all comments have been fixed. Could you please help to 
-review the new patch. And if there are no other comments, can you help 
-to merge it as the initial version of virtio-spi. Thank you so much for 
-your support.
+On 27-10-23, 18:10, Harald Mommer wrote:
+> From: Harald Mommer <harald.mommer@opensynergy.com>
+> 
+> This is the first public version of the virtio SPI Linux kernel driver
+> compliant to the "PATCH v4" draft virtio SPI specification.
+> 
+> Signed-off-by: Harald Mommer <Harald.Mommer@opensynergy.com>
+> ---
+>  drivers/spi/Kconfig      |  10 +
+>  drivers/spi/Makefile     |   1 +
+>  drivers/spi/spi-virtio.c | 513 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 524 insertions(+)
+>  create mode 100644 drivers/spi/spi-virtio.c
+> 
+> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+> index 35dbfacecf1c..55f45c5a8d82 100644
+> --- a/drivers/spi/Kconfig
+> +++ b/drivers/spi/Kconfig
+> @@ -1125,6 +1125,16 @@ config SPI_UNIPHIER
+>  
+>  	  If your SoC supports SCSSI, say Y here.
+>  
+> +config SPI_VIRTIO
+> +	tristate "Virtio SPI SPI Controller"
+> +	depends on VIRTIO
+> +	help
+> +	  This enables the Virtio SPI driver.
+> +
+> +	  Virtio SPI is an SPI driver for virtual machines using Virtio.
+> +
+> +	  If your Linux is a virtual machine using Virtio, say Y here.
+> +
+>  config SPI_XCOMM
+>  	tristate "Analog Devices AD-FMCOMMS1-EBZ SPI-I2C-bridge driver"
+>  	depends on I2C
+> diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
+> index 4ff8d725ba5e..ff2243e44e00 100644
+> --- a/drivers/spi/Makefile
+> +++ b/drivers/spi/Makefile
+> @@ -146,6 +146,7 @@ spi-thunderx-objs			:= spi-cavium.o spi-cavium-thunderx.o
+>  obj-$(CONFIG_SPI_THUNDERX)		+= spi-thunderx.o
+>  obj-$(CONFIG_SPI_TOPCLIFF_PCH)		+= spi-topcliff-pch.o
+>  obj-$(CONFIG_SPI_UNIPHIER)		+= spi-uniphier.o
+> +obj-$(CONFIG_SPI_VIRTIO)		+= spi-virtio.o
+>  obj-$(CONFIG_SPI_XCOMM)		+= spi-xcomm.o
+>  obj-$(CONFIG_SPI_XILINX)		+= spi-xilinx.o
+>  obj-$(CONFIG_SPI_XLP)			+= spi-xlp.o
+> diff --git a/drivers/spi/spi-virtio.c b/drivers/spi/spi-virtio.c
+> new file mode 100644
+> index 000000000000..12a4d96555f1
+> --- /dev/null
+> +++ b/drivers/spi/spi-virtio.c
+> @@ -0,0 +1,513 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * SPI bus driver for the Virtio SPI controller
+> + * Copyright (C) 2023 OpenSynergy GmbH
+> + */
+> +
+> +#include <linux/completion.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/stddef.h>
+> +#include <linux/virtio.h>
+> +#include <linux/virtio_ring.h>
+> +#include <linux/version.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/virtio_spi.h>
+> +
+> +/* SPI device queues */
+> +#define VIRTIO_SPI_QUEUE_RQ 0
+> +#define VIRTIO_SPI_QUEUE_COUNT 1
+> +
+> +/* virtio_spi private data structure */
+> +struct virtio_spi_priv {
+> +	/* The virtio device we're associated with */
+> +	struct virtio_device *vdev;
+> +	/* The virtqueues */
+> +	struct virtqueue *vqs[VIRTIO_SPI_QUEUE_COUNT];
 
-Thanks
-Haixu Cui
+There is no need to make this configurable since the specification
+fixes it to 1. You can simplify this a bit.
 
-On 12/12/2023 11:33 AM, Haixu Cui wrote:
-> The Virtio SPI (Serial Peripheral Interface) device is a virtual SPI controller that
-> allows the driver to operate and use the SPI controller under the control of the host,
-> either a physical SPI controller, or an emulated one.
+> +	/* I/O callback function pointers for the virtqueues */
+> +	vq_callback_t *io_callbacks[VIRTIO_SPI_QUEUE_COUNT];
+> +	/* Support certain delay timing settings */
+> +	bool support_delays;
+> +};
+> +
+> +/* Compare with file i2c_virtio.c structure virtio_i2c_req */
+> +struct virtio_spi_req {
+> +	struct completion completion;
+> +#ifdef DEBUG
+> +	unsigned int rx_len;
+> +#endif
+> +	// clang-format off
+> +	struct spi_transfer_head transfer_head	____cacheline_aligned;
+> +	const uint8_t *tx_buf			____cacheline_aligned;
+> +	uint8_t *rx_buf				____cacheline_aligned;
+> +	struct spi_transfer_result result	____cacheline_aligned;
+> +	// clang-format on
+> +};
+> +
+> +static struct spi_board_info board_info = {
+> +	.modalias = "spi-virtio",
+> +	.max_speed_hz = 125000000, /* Arbitrary very high limit */
+> +	.bus_num = 0, /* Patched later during initialization */
+> +	.chip_select = 0, /* Patched later during initialization */
+> +	.mode = SPI_MODE_0,
+> +};
+> +
+> +/* Compare with file i2c_virtio.c structure virtio_i2c_msg_done */
+> +static void virtio_spi_msg_done(struct virtqueue *vq)
+> +{
+> +	struct virtio_spi_req *req;
+> +	unsigned int len;
+> +
+> +	while ((req = virtqueue_get_buf(vq, &len)))
+> +		complete(&req->completion);
+> +}
+> +
+
+> +static int virtio_spi_transfer_one_message(struct spi_master *master,
+> +					   struct spi_message *msg)
+> +{
+> +	struct virtio_spi_priv *priv = spi_master_get_devdata(master);
+> +	struct virtqueue *vq = priv->vqs[VIRTIO_SPI_QUEUE_RQ];
+> +	struct virtio_spi_req *spi_req;
+> +	struct spi_transfer *xfer;
+> +	int ret = 0;
+> +
+> +	spi_req = kzalloc(sizeof(*spi_req), GFP_KERNEL);
+> +	if (!spi_req) {
+> +		ret = -ENOMEM;
+> +		goto no_mem;
+> +	}
+> +
+> +	/*
+> +	 * Simple implementation: Process message by message and wait for each
+> +	 * message to be completed by the device side.
+> +	 */
+
+And why not send all the messages once and speed this thing up ? Just
+like how I2C does it.
+
+> +	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
+> +		ret = virtio_spi_one_transfer(spi_req, master, msg, xfer);
+> +		if (ret)
+> +			goto msg_done;
+> +
+> +		virtqueue_kick(vq);
+> +
+> +		wait_for_completion(&spi_req->completion);
+> +
+> +		/* Read result from message */
+> +		ret = (int)spi_req->result.result;
+> +		if (ret)
+> +			goto msg_done;
+> +
+> +#ifdef DEBUG
+
+Drop all temporary things please.
+
+> +		if (spi_req->rx_buf) {
+> +			pr_debug("Dump of RX payload\n");
+> +			print_hex_dump(KERN_DEBUG, KBUILD_MODNAME " ",
+> +				       DUMP_PREFIX_NONE, 16, 1, spi_req->rx_buf,
+> +				       spi_req->rx_len, true);
+> +		}
+> +#endif
+> +	}
+> +
+> +msg_done:
+> +	kfree(spi_req);
+> +no_mem:
+> +	msg->status = ret;
+> +	/*
+> +	 * Looking into other SPI drivers like spi-atmel.c the function
+> +	 * spi_finalize_current_message() is supposed to be called only once
+> +	 * for all transfers in the list and not for each single message
+> +	 */
+> +	spi_finalize_current_message(master);
+> +	dev_dbg(&priv->vdev->dev, "%s() returning %d\n", __func__, ret);
+> +	return ret;
+> +}
+> +
+> +static void virtio_spi_read_config(struct virtio_device *vdev)
+> +{
+> +	struct spi_master *master = dev_get_drvdata(&vdev->dev);
+> +	struct virtio_spi_priv *priv = vdev->priv;
+> +	u16 bus_num;
+> +	u16 cs_max_number;
+> +	u8 support_delays;
+> +
+> +	bus_num = virtio_cread16(vdev,
+> +				 offsetof(struct virtio_spi_config, bus_num));
+> +	cs_max_number = virtio_cread16(vdev, offsetof(struct virtio_spi_config,
+> +						      chip_select_max_number));
+> +	support_delays =
+> +		virtio_cread16(vdev, offsetof(struct virtio_spi_config,
+> +					      cs_timing_setting_enable));
+
+Instead of reading values separately, you can also read the entire
+configuration structure in a single call to virtio_cread_bytes.
+
+Won't you also need to convert all the values using le16_to_cpu() ? I
+have done it that way for drivers/gpio/gpio-virtio.c driver, just in
+case it helps.
+
+> +
+> +	if (bus_num > S16_MAX) {
+> +		dev_warn(&vdev->dev, "Limiting bus_num = %u to %d\n", bus_num,
+> +			 S16_MAX);
+> +		bus_num = S16_MAX;
+> +	}
+> +
+> +	if (support_delays > 1)
+> +		dev_warn(&vdev->dev, "cs_timing_setting_enable = %u\n",
+> +			 support_delays);
+
+Why is this a warning ? And not just debug or info ?
+
+> +	priv->support_delays = (support_delays != 0);
+> +	master->bus_num = (s16)bus_num;
+> +	master->num_chipselect = cs_max_number;
+> +}
+> +
+> +static int virtio_spi_find_vqs(struct virtio_spi_priv *priv)
+> +{
+> +	static const char *const io_names[VIRTIO_SPI_QUEUE_COUNT] = { "spi-rq" };
+> +
+> +	priv->io_callbacks[VIRTIO_SPI_QUEUE_RQ] = virtio_spi_msg_done;
+> +
+> +	/* Find the queues. */
+> +	return virtio_find_vqs(priv->vdev, VIRTIO_SPI_QUEUE_COUNT, priv->vqs,
+> +			       priv->io_callbacks, io_names, NULL);
+
+Since the vq count is fixed by spec to 1, I think you can directly use
+virtio_find_single_vq() and simplify this a bit.
+
+> +}
+> +
+> +/* Compare with i2c-virtio.c function virtio_i2c_del_vqs() */
+> +/* Function must not be called before virtio_spi_find_vqs() has been run */
+> +static void virtio_spi_del_vq(struct virtio_device *vdev)
+> +{
+> +	vdev->config->reset(vdev);
+
+virtio_reset_device(vdev)
+
+> +	vdev->config->del_vqs(vdev);
+> +}
+> +
+> +static int virtio_spi_validate(struct virtio_device *vdev)
+> +{
+> +	/*
+> +	 * SPI needs always access to the config space.
+> +	 * Check that the driver can access the config space
+> +	 */
+> +	if (!vdev->config->get) {
+> +		dev_err(&vdev->dev, "%s failure: config access disabled\n",
+> +			__func__);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!virtio_has_feature(vdev, VIRTIO_F_VERSION_1)) {
+> +		dev_err(&vdev->dev,
+> +			"device does not comply with spec version 1.x\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtio_spi_probe(struct virtio_device *vdev)
+> +{
+> +	struct virtio_spi_priv *priv;
+> +	struct spi_master *master;
+> +	int err;
+> +	u16 csi;
+> +
+> +	err = -ENOMEM;
+
+Why not do it with the definition itself ?
+
+> +	master = spi_alloc_master(&vdev->dev, sizeof(struct virtio_spi_priv));
+
+sizeof(*priv)
+
+and there is a devm_* variant too that you can use.
+
+> +	if (!master) {
+> +		dev_err(&vdev->dev, "Kernel memory exhausted in %s()\n",
+> +			__func__);
+
+I think we removed print messages for allocation failure earlier, as
+the alloc core handles it now. This may not be required.
+
+> +		goto err_return;
+
+We don't need to free any resources, maybe just return directly
+without an unnecessary goto here. Yes it is normally cleaner to remove
+all the resources at the bottom with a single return point, but we
+normally return earlier if the resources were not required to be
+freed.
+
+> +	}
+> +
+> +	priv = spi_master_get_devdata(master);
+> +	priv->vdev = vdev;
+> +	vdev->priv = priv;
+> +	dev_set_drvdata(&vdev->dev, master);
+> +
+> +	/* the spi->mode bits understood by this driver: */
+> +	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LSB_FIRST |
+> +			    SPI_LOOP | SPI_TX_DUAL | SPI_TX_QUAD | SPI_RX_DUAL |
+> +			    SPI_RX_QUAD | SPI_TX_OCTAL | SPI_RX_OCTAL;
+> +
+> +	/* What most support. We don't know from the virtio device side */
+> +	master->bits_per_word_mask = SPI_BPW_RANGE_MASK(8, 16);
+
+> +	/* There is no associated device tree node */
+> +	master->dev.of_node = NULL;
+
+No need to unset a field which is already NULL.
+
+> +	/* Get bus_num and num_chipselect from the config space */
+> +	virtio_spi_read_config(vdev);
+
+Why call it in the middle of all the initialization. Can we do it
+before virtio_spi_find_vqs() ?
+
+> +	/* Maybe this method is not needed for virtio SPI */
+> +	master->setup = NULL; /* Function not needed for virtio-spi */
+> +	/* No restrictions to announce */
+> +	master->flags = 0;
+> +	/* Method to transfer a single SPI message */
+> +	master->transfer_one_message = virtio_spi_transfer_one_message;
+> +	/* Method to cleanup the driver */
+
+Some of the comments are not useful at all. The fields are self
+explanatory and don't need a comment, unless there is a reason for
+initializing it in a certain way that you want to mention.
+
+> +	master->cleanup = NULL; /* Function not needed for virtio-spi */
+> +
+> +	/* Initialize virtqueues */
+> +	err = virtio_spi_find_vqs(priv);
+> +	if (err) {
+> +		dev_err(&vdev->dev, "Cannot setup virtqueues\n");
+> +		goto err_master_put;
+> +	}
+> +
+> +	err = spi_register_master(master);
+> +	if (err) {
+> +		dev_err(&vdev->dev, "Cannot register master\n");
+> +		goto err_master_put;
+> +	}
+> +
+> +	/* spi_new_device() currently does not use bus_num but better set it */
+> +	board_info.bus_num = (u16)master->bus_num;
+
+I am not sure if you need explicit casting here and while converting
+from u16 to s16.
+
+> +
+> +	/* Add chip selects to master device */
+> +	for (csi = 0; csi < master->num_chipselect; csi++) {
+> +		dev_info(&vdev->dev, "Setting up CS=%u\n", csi);
+
+Should be a debug message ?
+
+> +		board_info.chip_select = csi;
+> +		if (!spi_new_device(master, &board_info)) {
+> +			dev_err(&vdev->dev, "Cannot setup device %u\n", csi);
+> +			goto err_unregister_master;
+
+What about freeing already added devices (before we failed) ? Is that
+done by the core automatically ?
+
+> +		}
+> +	}
+> +
+> +	/* Request device going live */
+> +	virtio_device_ready(vdev); /* Optionally done by virtio_dev_probe() */
+
+Normally a driver shouldn't be calling it unless the probe function
+uses the virtio device, like it is done in GPIO. Since it works for
+you just fine, you can simply remove this.
+
+> +
+> +	dev_info(&vdev->dev, "Device live!\n");
+
+Debug message ?
+
+> +
+> +	return 0;
+> +
+> +err_unregister_master:
+> +	spi_unregister_master(master);
+> +err_master_put:
+> +	spi_master_put(master);
+> +err_return:
+> +	return err;
+> +}
+> +
+> +static void virtio_spi_remove(struct virtio_device *vdev)
+> +{
+> +	struct spi_master *master = dev_get_drvdata(&vdev->dev);
+> +
+> +	virtio_spi_del_vq(vdev);
+> +	spi_unregister_master(master);
+
+The ordering should be just the opposite. Free the users first and
+then the resource.
+
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +/*
+> + * Compare with i2c-virtio.c function virtio_i2c_freeze()
+> + * and with spi-atmel.c function atmel_spi_suspend()
+> + */
+> +static int virtio_spi_freeze(struct virtio_device *vdev)
+> +{
+> +	struct device *dev = &vdev->dev;
+> +	struct spi_master *master = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	/* Stop the queue running */
+> +	ret = spi_master_suspend(master);
+> +	if (ret) {
+> +		dev_warn(dev, "cannot suspend master (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	virtio_spi_del_vq(vdev);
+> +	return 0;
+> +}
+> +
+> +/*
+> + * Compare with i2c-virtio.c function virtio_i2c_restore()
+> + * and with spi-atmel.c function atmel_spi_resume()
+> + */
+> +static int virtio_spi_restore(struct virtio_device *vdev)
+> +{
+> +	struct device *dev = &vdev->dev;
+> +	struct spi_master *master = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	/* Start the queue running */
+> +	ret = spi_master_resume(master);
+> +	if (ret)
+> +		dev_err(dev, "problem starting queue (%d)\n", ret);
+> +
+> +	return virtio_spi_find_vqs(vdev->priv);
+
+You need to setup the queues first and then resume the master.
+
+> +}
+> +#endif
+> +
+> +static struct virtio_device_id virtio_spi_id_table[] = {
+> +	{ VIRTIO_ID_SPI, VIRTIO_DEV_ANY_ID },
+> +	{ 0 },
+
+The 0 value here is optional. This can be just {}.
+
+> +};
+> +
+> +static struct virtio_driver virtio_spi_driver = {
+> +	.feature_table = NULL,
+> +	.feature_table_size = 0u,
+
+You can skip defining them and they should be initialized to NULL/0
+anyway.
+
+> +	.driver.name = KBUILD_MODNAME,
+> +	.driver.owner = THIS_MODULE,
+
+Or:
+	.driver = {
+		.name	= KBUILD_MODNAME,
+		.owner  = THIS_MODULE,
+	},
+
+> +	.id_table = virtio_spi_id_table,
+> +	.validate = virtio_spi_validate,
+> +	.probe = virtio_spi_probe,
+> +	.remove = virtio_spi_remove,
+> +	.config_changed = NULL,
+
+Here too.
+
+> +#ifdef CONFIG_PM_SLEEP
+> +	.freeze = virtio_spi_freeze,
+> +	.restore = virtio_spi_restore,
+> +#endif
+
+This is how we define them now a days.
+
+b221df9c4e09 i2c: virtio: Remove #ifdef guards for PM related functions
+
+> +};
+> +
+> +module_virtio_driver(virtio_spi_driver);
+
+> +MODULE_DEVICE_TABLE(virtio, virtio_spi_id_table);
+
+Maybe add right below the table without any blank line in between.
+
+> +
+> +MODULE_AUTHOR("OpenSynergy GmbH");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("SPI bus driver for Virtio SPI");
+
+Maybe just: "Virtio SPI bus driver"
+
+> -- 
+> 2.25.1
 > 
-> Patch summary:
-> patch 1 rename virtual SPI device name
-> patch 2 add the specification for virtio-spi
 > 
-> Haixu Cui (2):
->    content: Rename SPI master to SPI controller
->    virtio-spi: add the device specification
-> 
->   content.tex                             |   3 +-
->   device-types/spi/description.tex        | 281 ++++++++++++++++++++++++
->   device-types/spi/device-conformance.tex |   7 +
->   device-types/spi/driver-conformance.tex |   7 +
->   4 files changed, 297 insertions(+), 1 deletion(-)
->   create mode 100644 device-types/spi/description.tex
->   create mode 100644 device-types/spi/device-conformance.tex
->   create mode 100644 device-types/spi/driver-conformance.tex
-> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
+-- 
+viresh
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
