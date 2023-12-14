@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14149-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14150-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8FEA9C4167D
-	for <virtio-dev@archiver.kernel.org>; Thu, 14 Dec 2023 17:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ACB06C4332F
+	for <virtio-dev@archiver.kernel.org>; Thu, 14 Dec 2023 17:53:39 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id DF2101922FE
-	for <virtio-dev@archiver.kernel.org>; Thu, 14 Dec 2023 17:20:34 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7ADF11318D7
+	for <virtio-dev@archiver.kernel.org>; Thu, 14 Dec 2023 17:52:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B49BC9866FB
-	for <virtio-dev@archiver.kernel.org>; Thu, 14 Dec 2023 17:20:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5A201986973
+	for <virtio-dev@archiver.kernel.org>; Thu, 14 Dec 2023 17:52:56 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 94EDF9866E3; Thu, 14 Dec 2023 17:20:34 +0000 (UTC)
+	id 41C529867AF; Thu, 14 Dec 2023 17:52:56 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,226 +24,372 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0E2BF9866E4
-	for <virtio-dev@lists.oasis-open.org>; Thu, 14 Dec 2023 17:20:29 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6F175986AE6
+	for <virtio-dev@lists.oasis-open.org>; Thu, 14 Dec 2023 17:49:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1702574426.651000
-X-TM-MAIL-UUID: a4c0a978-4d78-44d6-94b3-697563e986b1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BhZ+vvMdlP8AcmFoIhAtphMfpnZsRHiE7zH+bTFyhCoJp7nkiszK1tw4oaHgxV3ipkkj8xJDWXac+QxxQr6SEo31kBWJBJ0eDz9BRMCG3z+IlcdYjOU1+/qhdjVTuQ0D/6tknHGf1jg6+eGyTNIbsaMZP5jQ0j8U6S0K4glwQvJhPt8r6xchfYILYqMvzsFzNqw2Ehv2uU9mzj7cyDstG31rry7HQVp+8jiV8NiMJpXg3Bb7Hm/EzRXDQ8N/yYRxD57ysWR+lVXqAhWS2UePGyuCO1X7jZVQhBcJiT4UzxIqZes652oenTkZmgISDynsNhPg+MYJcRVlUIsUFCw90Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OKIwyn/iWoEpWnQJMIk16o65gQjkD7Nx1yU5ZuEMECI=;
- b=OXe3umalUP4xSIoW+gWh5VDdwlQ88s4Jg7eTGgOwvgifY71VGP936Xpcqxr1D4OpHARot9n7exfPGPoYYQEJRVherwnQxQPC+YkbVDTTk/+EXai7YES58Lx68/BJkBw1LlG0xFyHA36rlHtLctGssf7SggIdHEFHNYLR3DmziFL0J64hPNSfDwhpejmoFvg+p6jnaIIDfVFR9gTX4zoBDXjqznCOobGJTuh03Om+fi2aIjLkALE4xerN56ZUxT+uBOPy/jCwm2eYQr9xtNEd8cmWpJ+NDGqdV7IaJOdzH5kHvUziuj0hb6eOeUHEVHyDD9KLFbrin7LoMJ4xYxoGSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <109b15ed-831c-4102-acba-0fd3c82d6440@opensynergy.com>
-Date: Thu, 14 Dec 2023 18:20:06 +0100
-Content-Language: en-US
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: virtio-dev@lists.oasis-open.org, Haixu Cui <quic_haixcui@quicinc.com>,
- Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
- linux-kernel@vger.kernel.org, Harald.Mommer@gmail.com, quic_ztu@quicinc.com,
- Matti Moell <Matti.Moell@opensynergy.com>,
- Mikhail Golubev <Mikhail.Golubev@opensynergy.com>,
- =?UTF-8?Q?Alex_Benn=C3=A9e?= <alex.bennee@linaro.org>,
- Vincent Guittot <vincent.guittot@linaro.org>
-References: <20231027161016.26625-1-Harald.Mommer@opensynergy.com>
- <20231027161016.26625-3-Harald.Mommer@opensynergy.com>
- <20231212103411.wbjmr5mefmxfnsib@vireshk-i7>
- <87f06ede-ac54-48cd-8135-ea2c8f5548f3@opensynergy.com>
- <20231213063335.xaejh3565gkn5cvh@vireshk-i7>
-From: Harald Mommer <harald.mommer@opensynergy.com>
-In-Reply-To: <20231213063335.xaejh3565gkn5cvh@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0104.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a9::15) To BEUP281MB3414.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:9e::6)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702576158; x=1703180958;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vspDngU/GkP+W8JovlDiSCzUTIfppJym89XjBrOySDM=;
+        b=vbPT5pOW96EnxU5fpBd9mNp2Wye+TU4tsFuSYfhkDMSzyE4q63oSAjxgDz+JAYIRXL
+         /Yu1OKoVFvCCQJXm1lu9YbwIOaAARN0vtzuYEa6/d0hWAmnUAX7f7Uld2Fng4FurOBVz
+         uA1lvjv0VRAlb5f/D/vV72h24q4fHWEQeDbf9aFxs3gckpn55GFgA0OLP/XwgubyAVsJ
+         SwVnBttxFDYshY+/TRPxXLF8uJGki5nE8Za5arlgKaj9KOHX7wcZdLVl9rSjR75e7zVi
+         kdzhfsRn8gI9GQo5NFwhbkueyyft3CS+1NHn6T2MtEPEQoOIlGCcZ1zwf9kQdB8p3jyK
+         rKxg==
+X-Gm-Message-State: AOJu0YwKWIO76lcTVyWODm5GBEVHQDsBgbjhUPMtGzlaJyPLV9CGA6bf
+	4+lPafyyW/CeCEjwFYa5RTRioPbKtsNjLOT/IVMU54od
+X-Google-Smtp-Source: AGHT+IFBi70352RsoEaDl5wDdM111HuZd7hxAwjpPsCOSrSYwE8TjcVZqIrVtP7MB5FBLS1F6O8xKdhlhYlkYSsgsAI=
+X-Received: by 2002:a25:9385:0:b0:dbc:cef2:b545 with SMTP id
+ a5-20020a259385000000b00dbccef2b545mr1835147ybm.2.1702576158451; Thu, 14 Dec
+ 2023 09:49:18 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BEUP281MB3414:EE_|FRYP281MB2605:EE_
-X-MS-Office365-Filtering-Correlation-Id: af0bc46e-8779-43d2-5dd0-08dbfcc8f597
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	4btDVf0qTYpCuFmgSwnA7Gmj3TP1jzDDyOZbOUmn3TD+HxEQgSv2c3EAD0mexT8ldCIy3LOj890jpjXuXt526VYjTIwdFm7CS9dLneXeNkY5ZHI18lrsqCoKOYEkUwI4c9qorPBbDqJCoNOiKg/6hzLqUUSxq8GA4il6G88+GpBWyQ3C4aQpzwdkvzAKvS5M0tMQHPTiv9bbJBSF06OO+OyCf6ppJptVNmkCUabb0CWARmLPaBRJCY096HPhsZtJefTPQQcpnyn06Nrmq8/rcVpoT1RR8gbgaCCeHRZr3sVJXzBeOVddpGMo5VhZmFY/istMOiLw79u9Red2oRuYw8VgO7FzDAts+kRPSJE7aiPPuA+7dp8ZC26fXHaH0T5UuacpuCy6pgNuJZw9nYltUuwbb2UAmItr7Aw/5VVodlhh+gWpBNZqSrcqQ0gQe39JhM3E+wR2AdUcEUnOSivxmaMDxcbKzg5orr81nfTQvesoYBwK2EdIlRNU8K1wQlQ2xqWR88Q+EB5u++W+uXBtbQUjlguEI28EHWv3l+tLx/gzlim6joQwnHeFei9ouOa22nc8rflykZH3NaTPfgLy1ZWPzhpAOt7gX8Z6y+sBrXE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEUP281MB3414.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(376002)(136003)(346002)(39840400004)(230922051799003)(186009)(64100799003)(451199024)(1800799012)(38100700002)(26005)(2616005)(83380400001)(86362001)(36756003)(31696002)(31686004)(53546011)(478600001)(54906003)(66476007)(6916009)(316002)(42186006)(66556008)(66946007)(8936002)(44832011)(4326008)(8676002)(2906002)(7416002)(5660300002)(41300700001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NTNqSTU0ZmpLejY0ZGhvblFCSEg2czVhUVo3emtoMmZ1SnFKTmUrUU1rNmc5?=
- =?utf-8?B?cUxqSjJTTG9vZ3JmR2ozbWNDMHZBeEFZaGxwTFoxVUdMTVVKVDdkeTR0Y3F6?=
- =?utf-8?B?VjQ4aDRZbURYdXpYYjFNUUM0ZzhBY2wwdmFmWWNCd2xqeitDSzdoTWtQU3Zk?=
- =?utf-8?B?WHpHcStsNzEwcitRTXVPUFFyZDNwQWZSYk5saXBzdGFKQmN5aGt6azNFMWNq?=
- =?utf-8?B?L1hVdDBFc2RlaEo0SzhDYkJwWEtMU3d5c2g4bHMrUVBweWhBNm9nR1JUekNj?=
- =?utf-8?B?bTZEQXIrU1VLRmF1UGVtalVHcUlrMEx2RnVBdVZGRUtXaDgzQzZGUzlJcnpn?=
- =?utf-8?B?UzRZYjNCazhxcnVaQ2kzMHpvNjBxUlVROWxiWmNqRndieWFIWDBheUJ2THNs?=
- =?utf-8?B?QlBhZmJ2U2MxZnRSQlErN21hN2JzUGkwenlFWTQzcTd1UnVaZGVKa21YVWhK?=
- =?utf-8?B?dEVIMlIvbHdTVTFVaDNrZzNaaGpHcUNLTnBxTmpzc2J0VWtxeVU5YzNkTHQz?=
- =?utf-8?B?bGM3OXZPR1J5d1ZmbkFGZnA4bmxDRDkrYTVVa0laYU5vMEpTbDlrVVBsdHFN?=
- =?utf-8?B?MWpQQ1IrYWNhZkVCZ05LZ3JNWjNMUkxPakZua3pNV3l3OEM1Kyszemt1NjFy?=
- =?utf-8?B?MkJBaG5Ib1RrYnlmL1VsU1dQRXhsTVhwTFdld1JzeHgwNGs0Y0JvOXVoNmp5?=
- =?utf-8?B?eS9ta2RTN3RZb2ErZFdJYlM1V2pnSzFmVnNjcUxON2l3SGNzUkVtUXhUSzZB?=
- =?utf-8?B?NFd0eGtPbHo3R1lCdEJsTzh3b3BGOWVuQ2RHSVNlRnBmcU9FQk1oMWVmRk1H?=
- =?utf-8?B?NXZVTEtKbmw4Y20raC82ZTRVM2NVeDJDcnhEVEIxOVRvTVRxeXdyQ2dUem9z?=
- =?utf-8?B?VUxOSnBwYmhma3pxSGdZRUtVeWpuUDlPY2JvT20ySHBtclIxeWVNOUc0WXlo?=
- =?utf-8?B?YlJBaktOUG03N3lacXpHbGYyN0VOVHVJNEc1MXQrR04wQkN3Tm1zZGpUZGZ6?=
- =?utf-8?B?cmVndHZYQTl0UDExUTF2VnRoZWFlN1RJRWxKL2l5bG5OclJvTGgyai9QcmV5?=
- =?utf-8?B?akIrQ2U4ZUdTcjhCUm1hanN5cFdYbnUwUm1uQ01vTFRLeEkwUE4wTDdjS2h5?=
- =?utf-8?B?THI2RCtMUTViM3UrcWNlaWZ1YmVtcUlIOVZvcVdab01QL1BwOXp3NEpVbTl1?=
- =?utf-8?B?bnY4MkdNWGd5aVVDQmxnZm9UNkJXRkhwMmNjUDRiQnRYOHlPMzFpUWE2VzJn?=
- =?utf-8?B?NVhIdVFwTlhGVDZXZWtGVGNtVDZOZTNmRmZpdUhyZXVTWDhTWldTYkZxZFZ2?=
- =?utf-8?B?K2QvNVYyQVY0UHNpNnFCODZvbzNkNWxQUjFCY3JzUjcrazdoaE14bGkydUFP?=
- =?utf-8?B?MVpCc0NOaU1kV0hCY0RyVVRTeWdyRmZ2c0V3TWJZMnFWaExLbnlYT2RjWm55?=
- =?utf-8?B?dXEwR2g5WTNNTlZQdTd0VnFSU2tNTVBFd2tqYldxR1VsQWttMW5yQUpSNU1j?=
- =?utf-8?B?U2pKRW96YUpaWExsTXZLU1EydlY2M09OZGdYUVU3WS9lN1hNUkRGZkNSQzlB?=
- =?utf-8?B?bUpoV3RvTmZnQ3ZkaHRucngrOVd2N2FmbWFSMGt5Q3FmcTFpRmZSdVg3Qzkz?=
- =?utf-8?B?ZHNENi9mK3M5MklrNjZLNVY2UDBUaHhTdXBtb1pFaDBLbnRSRWlscWRobzQ0?=
- =?utf-8?B?WHVYWmVweDdWa0IwNyt3T0dIZDRHRGdudm1JK3JTbGxoSHVlMG9mVCsrbFVa?=
- =?utf-8?B?RmFnaFpNYkQ2NXBXeUZnQi9ya1BWUS85aUhCOFBVZUlWeFh3Q3lsWURubFhi?=
- =?utf-8?B?Y0w3dDRwVFpvTGZjOTNYUEV2dFdDQ3NVK2daWkFSOUlmTEYvSkw5QldOZ2hw?=
- =?utf-8?B?VzVTcUZUS1ZYKzVINThydDRNbEtVODQ0clF0bWxpT1NoNlY4Y3JtcTRzQjZh?=
- =?utf-8?B?TkJWb1pCM1lEK2JtVkJYYUViTjMxNEJsbkNGWUYxQW4rbW5RaHNtRHNRcENo?=
- =?utf-8?B?UHk4S0FFVitaR3RwdnZkV1QxRHE3a1NTUzg2YWduQnlUay9ZMVJhSlFHQlFq?=
- =?utf-8?B?K2VIME5DZnFiSW80ZVdZMmN1dFh4anhYcXNiVzVKQlBDZ0JkSWpjYUxDQllz?=
- =?utf-8?Q?qd+H7X/zhGFVA7n6CpAmjCfy2?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af0bc46e-8779-43d2-5dd0-08dbfcc8f597
-X-MS-Exchange-CrossTenant-AuthSource: BEUP281MB3414.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2023 17:20:25.0212
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KQGrwAD+aTQhHX5/fAiBwb4NLdJDvjQVZDbANxHb/tXIEltlCEXrE2RJVsF6l26v4p3W6xqB4hSiWN1LidPP5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FRYP281MB2605
-X-TM-AS-ERS: 104.47.11.168-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1015-28058.000
-X-TMASE-Result: 10--13.814000-4.000000
-X-TMASE-MatchedRID: fE0JoqABJp35ETspAEX/ngw4DIWv1jSVbU+XbFYs1xJbEiFeSNHjmghA
-	ldnF4F9nvr/xYGrddAR2niii/WrAP/toM7gJNNcBWGSYKNZi9aXyQ6dAmPdzEgxiBe5NeGLx9NF
-	KrIIXgXzgUzDjDzdfPOpveUyNkIpvefr7vldIUbwMfiba6PAK20Ip2pwQ814LUm9B/5XRwTroTS
-	/4SHftFRMes8htdAThNGeRmiR9N6MsgR/6UiVnIRsM/hJVvJaGjXUhMb+lTxM7NXkrEITXoLD8l
-	cJ8FcxMWelk5oubh9Lj7XeW3zdoXigqC57sXmuTRYNhzuZZjRBjihLPH6H5Tk1sg0HAQZRNvxu7
-	Yq+NHNXhZgOr4Upmb7ePGfqO4IUPlQDYQnxtv53FTQGAKRxj5No+48giqZwnEgg3cwDHl/1qdlV
-	1LmbEfAP5R/zL3aImJpK4F9wnIiY7AFczfjr/7Bc/AP75GezndL96RUd5CeGo5LxsHn06JQDAhJ
-	GBUnW3Yk0d+RVwYxs=
-X-TMASE-XGENCLOUD: 5a996b41-675d-4615-8004-bb97d3091d0b-0-0-200-0
-X-TM-Deliver-Signature: E996C416EFD648AE2AFE579E7AB64DB0
-X-TM-Addin-Auth: 3uLyNSPmetJRTvVF5niKHIzCs7pHtn1Uxzfw0w29czY0/phdali9XuyGFt8
-	8ZdeQ3H3hwIezrnhhqMxu1aAQvio4no33Ip85TnF3f+SUBCfvpXRXlwxyscNYTGBfU6W+9+OPmx
-	zhVgN1z0B6/A5YtLKEmW5A1LUKvOkaeVUi0W4Ru5zk8VoXPWMw49nx/kny/LHjbRXlo6ayfJ5mg
-	C9KNEDC5rHILLYxAOhjM9F/HjPU7LR0+h6S6AZD25BLJOsorNGbO0sAPCFy6f8HglXOEhit+JOQ
-	ZJya2Fv7WJJot8s=.aOWFvEAdaFRLMTQPBm7knv9KGNjowEPVKkOsp/dgkwWLVl2mrB66ky27dQ
-	cS2jkc83KCQYVOSorFXV2lUhHV5pTE2XhRnxwq7tdd3ladk/8nPM1fpFTubZfAtuItGVXHdJT5f
-	ycLeJr34zSwqJm0QWpIRwN2bU8gazguiUZBTACikFwsJUimwuwA7fQaOl1ckJ4+jge4mn8S5lb0
-	5cjQUhPr+B1cCxrualP9CMnaOOq+lMVaxX9KJLEBLD5Yhvj4x3uJMTc5FppPliX2qWtR6AswAsc
-	RYIyRzT3NfxVNudMd17dPg7SLjynIfk9JqTU8H7rcaWq0vvYGTzvz6HmmFw==
-X-TM-Addin-ProductCode: EMS
-Subject: Re: [virtio-dev] [RFC PATCH v1 2/3] virtio-spi: Add virtio-spi.h (V4
- draft specification).
+From: Scott McGrath <scott.mcgrath@oasis-open.org>
+Date: Thu, 14 Dec 2023 12:49:07 -0500
+Message-ID: <CAD2Xst_syJj=sWZdz-XuAEaDhBxYn1dN_Jho2Hh5XQbF53D46Q@mail.gmail.com>
+To: avdl-dev@lists.oasis-open.org, bcm-dev@lists.oasis-open.org, 
+	cam-dev@lists.oasis-open.org, cap-dev@lists.oasis-open.org, 
+	clr-dev@lists.oasis-open.org, dsml-dev@lists.oasis-open.org, 
+	dss-dev@lists.oasis-open.org, election-dev@lists.oasis-open.org, 
+	emergency-dev@lists.oasis-open.org, eml-dev@lists.oasis-open.org, 
+	saml-dev@lists.oasis-open.org, search-ws-dev@lists.oasis-open.org, 
+	soa-rm-dev@lists.oasis-open.org, spml-dev@lists.oasis-open.org, 
+	ubl-dev@lists.oasis-open.org, uddi-dev@lists.oasis-open.org, 
+	virtio-dev@lists.oasis-open.org, ws-context-dev@lists.oasis-open.org, 
+	ws-reliability-dev@lists.oasis-open.org, 
+	ws-reliablemessaging-dev@lists.oasis-open.org, ws-sx-dev@lists.oasis-open.org, 
+	ws-tx-dev@lists.oasis-open.org, wsbpel-dev@lists.oasis-open.org, 
+	wsfed-dev@lists.oasis-open.org, wsn-dev@lists.oasis-open.org, 
+	wsrf-dev@lists.oasis-open.org, wsrp-dev@lists.oasis-open.org, 
+	wss-dev@lists.oasis-open.org, xacml-dev@lists.oasis-open.org, 
+	xcbf-dev@lists.oasis-open.org, xmlcatalogs-dev@lists.oasis-open.org
+Content-Type: multipart/alternative; boundary="00000000000020bddb060c7be764"
+Subject: [virtio-dev] Updated schedule for OASIS mail list system upgrade
 
-Hello Viresh,
+--00000000000020bddb060c7be764
+Content-Type: text/plain; charset="UTF-8"
 
-On 13.12.23 07:33, Viresh Kumar wrote:
-> On 12-12-23, 19:58, Harald Mommer wrote:
->> On 12.12.23 11:34, Viresh Kumar wrote:
->> I'm working on V8. It's coming to an end, will still have to check some
->> details but it's close. Internal review pending. Now there is a V9 and I
->> will also have to look at this. Maybe I will send V8 and subsequently update
->> to V9,
-> I hope you are talking about V8/V9 of the spec here, as I only see one
-> version of the Linux driver on the list. Please keep me in cc if
-> possible.
+We Recently announced the migration to a new List Mail system for this
+list. We've modified the implementation process to allow the legacy system
+to continue running a bit longer and to have a shorter downtime during
+transition.
 
-What you see is RFC PATCH v1 which meets the V4 draft specification. The 
-only one which has been sent so far. For you this is latest. And now I 
-got so much comments from you and also a spec update from V8 to V9 so 
-that this will remain that way for some days. Need to do changes.
 
-The next one will be RFC patch v2 and is planned to be made according to 
-the V9 spec.
+*The system cut-over is now scheduled for the first week of January *
 
-And most probably the next one will also attempt to be V9 spec compliant 
-if there comes in the mean time a specification update. Moving target 
-not good if you work agile, extension of scope all the time.
 
->>> On 27-10-23, 18:10, Harald Mommer wrote:
->>>> +++ b/include/uapi/linux/virtio_spi.h
->>>> @@ -0,0 +1,130 @@
->>>> +/* SPDX-License-Identifier: BSD-3-Clause */
->>> Maybe this should be:
->>>
->>> SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
->>>
->>> ?
->> Looking into what others do here. virtio_blk.h, virtio_input.h and
->> virtio_iommu.h for example: None is using GPL-2.0 here. virtio_iommu.h is
->> using exactly the same header as we do.
-> Looked at all headers for SPDX License in include/uapi/ and this is
-> what I see (Yes there are many non SPDX licenses there):
->
->      522 /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
->      106 /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
->       18 /* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
->       16 /* SPDX-License-Identifier: LGPL-2.1+ WITH Linux-syscall-note */
->       16 /* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
->       11 /* SPDX-License-Identifier: GPL-1.0+ WITH Linux-syscall-note */
->        6 /* SPDX-License-Identifier: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) */
->        5 /* SPDX-License-Identifier: BSD-3-Clause */
->        4 /* SPDX-License-Identifier: LGPL-2.1 WITH Linux-syscall-note */
->        4 /* SPDX-License-Identifier: LGPL-2.0+ WITH Linux-syscall-note */
->        4 /* SPDX-License-Identifier: ((GPL-2.0+ WITH Linux-syscall-note) OR BSD-3-Clause) */
->        3 /* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR MIT */
->        2 /* SPDX-License-Identifier: MIT */
->        2 /* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR Linux-OpenIB) */
->        2 /* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR CDDL-1.0) */
->        2 /* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-2-Clause) */
->        2 /* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
->        1 /* SPDX-License-Identifier: ((GPL-2.0+ WITH Linux-syscall-note) OR MIT) */
->        1 /* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause */
->        1 /* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) */
->        1 /* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note*/
->
-> Also Documentation/process/license-rules.rst says:
->
-> "The license described in the COPYING file applies to the kernel source
-> as a whole, though individual source files can have a different license
-> which is required to be compatible with the GPL-2.0::
->
-> ...
->
-> Aside from that, individual files can be provided under a dual license,
-> e.g. one of the compatible GPL variants and alternatively under a
-> permissive license like BSD, MIT etc."
->
-> And so I thought we may want this to be a dual license.
+Miss the original announcement?  Here it is...
 
-Please focus on include/uapi/linux/virtio_*.h files only.
+The legacy list engine in use since 2003 will be replaced in this upgrade.
+You are receiving this message because you are a subscriber to the list
+receiving this message.
 
-You will see a lot BSD without mentioning GPL at all. So we are just 
-doing what others did and what was accepted in the past. Changing the 
-license is not a change I can do with a finger tip.
+This transition will provide significant improvements and will change how
+you interact with your mail lists.  See below for more information about
+the changes, the transition schedule and what you can do to help.
 
->>>> +/* All config fields are read-only for the Virtio SPI driver */
->>>> +struct virtio_spi_config {
->>> Can you please add proper doc style comments for the structures ?
->> Checking my current code. This is updated in the V8 version.
-> V8 of this patch ?
+Changes to Expect
 
-V8 of the spec. Don't worry, you missed no code change, you are on 
-public latest.
+The new platform is built in a modern web environment and mail delivery
+mechanism. with a number of new features to improve both your platform user
+experience and ability to engage with the OASIS community.  Key features
+include:
+
+
+   -
+
+   Mail systems that you can depend on!  The new tools support and comply
+   with major deliverability and anti-spoofing standards.  This will eliminate
+   many of the sending and deliverability issues your group may be experiencing
 
 
 
----------------------------------------------------------------------
-To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+   -
 
+   Modern web interface and design for your committee internal work and
+   public presentation of your work
+
+
+
+   -
+
+   If you are on this public list in addition to Technical Committees, Open
+   Projects, and other community engagement mail lists you can manage this
+   experience in one cohesive package
+
+
+
+   -
+
+   All archives created in the legacy email system will be migrated and
+   available cohesively with your new work in the new platform.  All URL links
+   for assets in the old platform will redirect to the new location
+
+
+
+   -
+
+   After the cutover starts, you will be directed where to send future
+   messages for this list and where to find the archives. Any message sent to
+   a legacy list address after the cutover begins will receive an auto reply
+   with the new list address and archive location.
+
+
+
+   -
+
+   After the migration you can continue using the mail list as before. If
+   you wish to join additional public lists or modify your delivery to the new
+   digest delivery, you will be required to create or login to an existing
+   OASIS public community or member account to manage your subscriptions.
+   This account system will be used to confirm your email address once (as
+   opposed to each subscription) and will be the same account you may be using
+   now for OASIS membership, submitting e-CLA forms etc. Legacy-style
+   subscribe and unsubscribe email messages to the server will not be
+   respected in the new system.
+
+
+
+The Transition Schedule
+
+During the cut-over the first week of January, There will be some system
+downtime during the cutover. During the downtime you will not receive email
+messages sent to this list or have access to the archive.  All messages
+sent after the cut-over begins will receive an auto reply announcing the
+new list address and archive location.
+
+We will announce the timing specific as we get closer to the transition.
+
+What You Should Do Now
+
+If you no longer wish to subscribe to this list, send a message to
+[listname]-unsubscribe@lists.oasis-open.org
+
+Otherwise, watch for further messages in the coming days to include the new
+list mailing address and archive location.
+
+Feel free to contact me with any questions, and thanks for your patience
+with the inevitable short-term inconvenience implementing these
+improvements will bring.
+
+-- 
+Scott McGrath
+
+Chief Operating Officer
+
+OASIS Open
+
+
++1 781-929-7308 Mobile
+scott.mcgrath@oasis-open.org
+www.oasis-open.org
+
+--00000000000020bddb060c7be764
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><span id=3D"gmail-docs-internal-guid-64dc5fe4-7fff-eafa-5d=
+8c-6960ff2ec20d"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;ma=
+rgin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Arial,sans-serif=
+;color:rgb(0,0,0);background-color:transparent;font-variant-numeric:normal;=
+font-variant-east-asian:normal;font-variant-alternates:normal;vertical-alig=
+n:baseline">We Recently announced the migration to a new List Mail system f=
+or this list.  We&#39;ve modified the implementation process to allow the l=
+egacy system to continue running a bit longer and to have a shorter downtim=
+e during transition.</span></p><p dir=3D"ltr" style=3D"line-height:1.38;mar=
+gin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-variant-n=
+umeric:normal;font-variant-east-asian:normal;font-variant-alternates:normal=
+;vertical-align:baseline"><br></span></p><p style=3D"line-height:1.38;margi=
+n-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-variant-num=
+eric:normal;font-variant-east-asian:normal;font-variant-alternates:normal;v=
+ertical-align:baseline"><b>The system cut-over is now scheduled for the fir=
+st week of January=C2=A0</b></span></p><div><br></div><div><br></div>Miss t=
+he original announcement?=C2=A0 Here it is...</span><div><br><p dir=3D"ltr"=
+ style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D=
+"font-size:11pt;font-family:Arial,sans-serif;color:rgb(0,0,0);background-co=
+lor:transparent;font-variant-numeric:normal;font-variant-east-asian:normal;=
+font-variant-alternates:normal;vertical-align:baseline">The legacy list eng=
+ine in use since 2003 will be replaced in this upgrade.=C2=A0 You are recei=
+ving this message because you are a subscriber to the list receiving this m=
+essage.</span></p><br><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0=
+pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Arial,sans-=
+serif;color:rgb(0,0,0);background-color:transparent;font-variant-numeric:no=
+rmal;font-variant-east-asian:normal;font-variant-alternates:normal;vertical=
+-align:baseline">This transition will provide significant improvements and =
+will change how you interact with your mail lists.=C2=A0 See below for more=
+ information about the changes, the transition schedule and what you can do=
+ to help.</span></p><br><p dir=3D"ltr" style=3D"line-height:1.38;margin-top=
+:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-=
+variant-numeric:normal;font-variant-east-asian:normal;font-variant-alternat=
+es:normal;vertical-align:baseline">Changes to Expect</span></p><br><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span =
+style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(0,0,0);backg=
+round-color:transparent;font-variant-numeric:normal;font-variant-east-asian=
+:normal;font-variant-alternates:normal;vertical-align:baseline">The new pla=
+tform is built in a modern web environment and mail delivery mechanism. wit=
+h a number of new features to improve both your platform user experience an=
+d ability to engage with the OASIS community.=C2=A0 Key features include:</=
+span></p><br><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr"=
+ style=3D"list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;=
+color:rgb(0,0,0);background-color:transparent;font-variant-numeric:normal;f=
+ont-variant-east-asian:normal;font-variant-alternates:normal;vertical-align=
+:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-=
+top:0pt;margin-bottom:0pt" role=3D"presentation"><span style=3D"font-size:1=
+1pt;background-color:transparent;font-variant-numeric:normal;font-variant-e=
+ast-asian:normal;font-variant-alternates:normal;vertical-align:baseline">Ma=
+il systems that you can depend on!=C2=A0 The new tools support and comply w=
+ith major deliverability and anti-spoofing standards.=C2=A0 This will elimi=
+nate many of the sending and deliverability issues your group may be experi=
+encing</span></p></li></ul><br><ul style=3D"margin-top:0px;margin-bottom:0p=
+x"><li dir=3D"ltr" style=3D"list-style-type:disc;font-size:11pt;font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-varian=
+t-numeric:normal;font-variant-east-asian:normal;font-variant-alternates:nor=
+mal;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-h=
+eight:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><span st=
+yle=3D"font-size:11pt;background-color:transparent;font-variant-numeric:nor=
+mal;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-=
+align:baseline">Modern web interface and design for your committee internal=
+ work and public presentation of your work</span></p></li></ul><br><ul styl=
+e=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-=
+type:disc;font-size:11pt;font-family:Arial,sans-serif;color:rgb(0,0,0);back=
+ground-color:transparent;font-variant-numeric:normal;font-variant-east-asia=
+n:normal;font-variant-alternates:normal;vertical-align:baseline;white-space=
+:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom=
+:0pt" role=3D"presentation"><span style=3D"font-size:11pt;background-color:=
+transparent;font-variant-numeric:normal;font-variant-east-asian:normal;font=
+-variant-alternates:normal;vertical-align:baseline">If you are on this publ=
+ic list in addition to Technical Committees, Open Projects, and other commu=
+nity engagement mail lists you can manage this experience in one cohesive p=
+ackage=C2=A0=C2=A0</span></p></li></ul><br><ul style=3D"margin-top:0px;marg=
+in-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-size:11pt=
+;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-variant-numeric:normal;font-variant-east-asian:normal;font-variant-al=
+ternates:normal;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" sty=
+le=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentati=
+on"><span style=3D"font-size:11pt;background-color:transparent;font-variant=
+-numeric:normal;font-variant-east-asian:normal;font-variant-alternates:norm=
+al;vertical-align:baseline">All archives created in the legacy email system=
+ will be migrated and available cohesively with your new work in the new pl=
+atform.=C2=A0 All URL links for assets in the old platform will redirect to=
+ the new location</span></p></li></ul><br><ul style=3D"margin-top:0px;margi=
+n-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-size:11pt;=
+font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;=
+font-variant-numeric:normal;font-variant-east-asian:normal;font-variant-alt=
+ernates:normal;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentatio=
+n"><span style=3D"font-size:11pt;background-color:transparent;font-variant-=
+numeric:normal;font-variant-east-asian:normal;font-variant-alternates:norma=
+l;vertical-align:baseline">After the cutover starts, you will be directed w=
+here to send future messages for this list and where to find the archives. =
+ Any message sent to a legacy list address after the cutover begins will re=
+ceive an auto reply with the new list address and archive location.</span><=
+/p></li></ul><br><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"=
+ltr" style=3D"list-style-type:disc;font-size:11pt;font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-variant-numeric:norm=
+al;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-a=
+lign:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;mar=
+gin-top:0pt;margin-bottom:0pt" role=3D"presentation"><span style=3D"font-si=
+ze:11pt;background-color:transparent;font-variant-numeric:normal;font-varia=
+nt-east-asian:normal;font-variant-alternates:normal;vertical-align:baseline=
+">After the migration you can continue using the mail list as before.  If y=
+ou wish to join additional public lists or modify your delivery to the new =
+digest delivery, you will be required to create or login to an existing OAS=
+IS public community or member account to manage your subscriptions.=C2=A0 T=
+his account system will be used to confirm your email address once (as oppo=
+sed to each subscription) and will be the same account you may be using now=
+ for OASIS membership, submitting e-CLA forms etc.   Legacy-style subscribe=
+ and unsubscribe email messages to the server will not be respected in the =
+new system.</span></p></li></ul><br><br><p dir=3D"ltr" style=3D"line-height=
+:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-=
+family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-=
+weight:700;font-variant-numeric:normal;font-variant-east-asian:normal;font-=
+variant-alternates:normal;vertical-align:baseline">The Transition Schedule<=
+/span></p><br><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margi=
+n-bottom:0pt"><span style=3D"font-size:11pt;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-variant-numeric:normal;fon=
+t-variant-east-asian:normal;font-variant-alternates:normal;vertical-align:b=
+aseline">During the cut-over the first week of January,  There will be some=
+ system downtime during the cutover. During the downtime you will not recei=
+ve email messages sent to this list or have access to the archive.=C2=A0=C2=
+=A0All messages sent after the cut-over begins will receive an auto reply a=
+nnouncing the new list address and archive location.</span></p><br><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span =
+style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(0,0,0);backg=
+round-color:transparent;font-variant-numeric:normal;font-variant-east-asian=
+:normal;font-variant-alternates:normal;vertical-align:baseline">We will ann=
+ounce the timing specific as we get closer to the transition.</span></p><br=
+><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"=
+><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:700;font-variant-numeric:normal;=
+font-variant-east-asian:normal;font-variant-alternates:normal;vertical-alig=
+n:baseline">What You Should Do Now</span></p><br><p dir=3D"ltr" style=3D"li=
+ne-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:1=
+1pt;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-variant-numeric:normal;font-variant-east-asian:normal;font-variant=
+-alternates:normal;vertical-align:baseline">If you no longer wish to subscr=
+ibe to this list, send a message to [listname]</span><a href=3D"mailto:-uns=
+ubscribe@lists.oasis-open.org" style=3D"text-decoration-line:none"><span st=
+yle=3D"font-size:11pt;font-family:Arial,sans-serif;background-color:transpa=
+rent;font-variant-numeric:normal;font-variant-east-asian:normal;font-varian=
+t-alternates:normal;text-decoration-line:underline;vertical-align:baseline"=
+>-unsubscribe@lists.oasis-open.org</span></a></p><br><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-=
+size:11pt;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tr=
+ansparent;font-variant-numeric:normal;font-variant-east-asian:normal;font-v=
+ariant-alternates:normal;vertical-align:baseline">Otherwise, watch for furt=
+her messages in the coming days to include the new list mailing address and=
+ archive location.</span></p><br><p dir=3D"ltr" style=3D"line-height:1.38;m=
+argin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:=
+Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-variant=
+-numeric:normal;font-variant-east-asian:normal;font-variant-alternates:norm=
+al;vertical-align:baseline">Feel free to contact me with any questions, and=
+ thanks for your patience with the inevitable short-term inconvenience impl=
+ementing these improvements will bring.</span></p></div><div><br></div><spa=
+n class=3D"gmail_signature_prefix">-- </span><br><div dir=3D"ltr" class=3D"=
+gmail_signature" data-smartmail=3D"gmail_signature"><div dir=3D"ltr"><table=
+ cellspacing=3D"0" cellpadding=3D"0" style=3D"font-family:Arial;vertical-al=
+ign:-webkit-baseline-middle"><tbody><tr><td width=3D"70" style=3D"vertical-=
+align:middle"><span style=3D"margin-right:5px;display:block"><img width=3D"=
+70" height=3D"70" style=3D"max-width:70px" src=3D"https://ci3.googleusercon=
+tent.com/mail-sig/AIorK4wWWvttK4QvAyLjmQRfbisd2jdvX84ncnFeBuJn9NtWvi8WHJIwV=
+lm1HGm8Re2Ji0U6N10brtc"></span></td><td style=3D"vertical-align:middle"><h3=
+ style=3D"margin:0px;font-size:16px;color:rgb(0,0,0)">Scott=C2=A0McGrath</h=
+3><p style=3D"margin:0px;color:rgb(0,0,0);font-size:12px;line-height:20px">=
+Chief Operating Officer</p><p style=3D"margin:0px;color:rgb(0,0,0);font-siz=
+e:12px;line-height:20px">OASIS Open</p></td><td width=3D"30">=C2=A0</td><td=
+ width=3D"1" style=3D"width:1px;border-bottom:none;border-left:1px solid rg=
+b(34,72,229)">=C2=A0</td><td width=3D"30">=C2=A0</td><td style=3D"vertical-=
+align:middle"><table cellspacing=3D"0" cellpadding=3D"0" style=3D"vertical-=
+align:-webkit-baseline-middle;font-family:Arial"><tbody><tr style=3D"vertic=
+al-align:middle"><td width=3D"30" style=3D"vertical-align:middle"><table ce=
+llspacing=3D"0" cellpadding=3D"0" style=3D"vertical-align:-webkit-baseline-=
+middle;font-family:Arial"><tbody><tr><td style=3D"vertical-align:bottom"><s=
+pan style=3D"display:block;background-color:rgb(34,72,229)"><img src=3D"htt=
+ps://cdn2.hubspot.net/hubfs/53/tools/email-signature-generator/icons/phone-=
+icon-2x.png" width=3D"13" style=3D"display:block"></span></td></tr></tbody>=
+</table></td><td style=3D"padding:2px;color:rgb(0,0,0)"><br>+1 781-929-7308=
+ Mobile</td></tr><tr style=3D"vertical-align:middle"><td width=3D"30" style=
+=3D"vertical-align:middle"><table cellspacing=3D"0" cellpadding=3D"0" style=
+=3D"vertical-align:-webkit-baseline-middle;font-family:Arial"><tbody><tr><t=
+d style=3D"vertical-align:bottom"><span style=3D"display:block;background-c=
+olor:rgb(34,72,229)"><img src=3D"https://cdn2.hubspot.net/hubfs/53/tools/em=
+ail-signature-generator/icons/email-icon-2x.png" width=3D"13" style=3D"disp=
+lay:block"></span></td></tr></tbody></table></td><td style=3D"padding:2px">=
+<a href=3D"mailto:scott.mcgrath@oasis-open.org" style=3D"color:rgb(0,0,0);f=
+ont-size:12px" target=3D"_blank">scott.mcgrath@oasis-open.org</a></td></tr>=
+<tr style=3D"vertical-align:middle"><td width=3D"30" style=3D"vertical-alig=
+n:middle"><table cellspacing=3D"0" cellpadding=3D"0" style=3D"vertical-alig=
+n:-webkit-baseline-middle;font-family:Arial"><tbody><tr><td style=3D"vertic=
+al-align:bottom"><span style=3D"display:block;background-color:rgb(34,72,22=
+9)"><img src=3D"https://cdn2.hubspot.net/hubfs/53/tools/email-signature-gen=
+erator/icons/link-icon-2x.png" width=3D"13" style=3D"display:block"></span>=
+</td></tr></tbody></table></td><td style=3D"padding:2px"><a href=3D"https:/=
+/www.oasis-open.org/" style=3D"color:rgb(0,0,0);font-size:12px" target=3D"_=
+blank">www.oasis-open.org</a></td></tr></tbody></table></td></tr></tbody></=
+table></div></div></div>
+
+--00000000000020bddb060c7be764--
