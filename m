@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14156-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14157-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27892C35274
-	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 67B4DC46CA2
+	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:51 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 540412B04D
-	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:00:20 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id AAF932AEFF
+	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2A6BA98647D
-	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:00:20 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6A33F9864D3
+	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 10E6F983F75; Mon, 18 Dec 2023 07:00:20 +0000 (UTC)
+	id 4A323983F75; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,201 +24,292 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 010869863DE
-	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Dec 2023 07:00:20 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 357FD986445
+	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702882818; x=1703487618;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NfHo2vreWvvCDs/OHDUMIyHluUnjx67bnuPWXOlaOls=;
-        b=iHlxVP+ehp3vFVHAU6An9nAve35MGB2apGMdeDkT5LR3Cs8nMTxdplsJh5ro6c+JNs
-         dW6p1IPbMT13iOucl98opI+m139FI1a3hvNq/onO9q3ACGqxpMD4PwhMWP3aPyXFZWIf
-         MoW3N1yfUe52mKUM9TjsGPsUa/xyoeZ12yhUi1LxT2HucfAgwfS0HnY0ehzBpGTaRdIE
-         kWWTK4Ek7tEfy85kNVdF1L5yyfL5T5mSKMyVJ2DKQzvLdUkbL6+8FVQx4dZixwePxNS9
-         bIwhjAPJexmwqiaVPTLkIjKM2xq2+C5M7BseqHMINAlBpS1xQjke3Q2TnDNjvQp6TMjY
-         eGUA==
-X-Gm-Message-State: AOJu0YyjAKGAeEZX8gClZoqOubgrnAVlxQbTW333jhabIBCfsREWk9mC
-	dHWMZhf1iZXVn3DcItyfOik/wA==
-X-Google-Smtp-Source: AGHT+IHBHnq8LSEZ6zWeQPLEtDuufzsUjc31OqbT6Ij6L98JcnQoqK4mTGuUEWJj4d8Jw/tUlct7lg==
-X-Received: by 2002:a17:903:1206:b0:1cf:d07c:2806 with SMTP id l6-20020a170903120600b001cfd07c2806mr8600099plh.25.1702882817375;
-        Sun, 17 Dec 2023 23:00:17 -0800 (PST)
-Date: Mon, 18 Dec 2023 12:30:14 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: virtio-dev@lists.oasis-open.org, "Michael S. Tsirkin" <mst@redhat.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>,
-	stratos-dev@op-lists.linaro.org,
-	Erik Schilling <erik.schilling@linaro.org>,
-	Manos Pitsidianakis <manos.pitsidianakis@linaro.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>
-Message-ID: <20231218070014.br7m2xseo6ikfuxx@vireshk-i7>
-References: <3fbb010e96124cfbffd70709d9ce7a2a458322c8.1701771424.git.viresh.kumar@linaro.org>
- <875y1ciy9h.fsf@redhat.com>
- <20231206094354.nzjax4lx4e5jwgwo@vireshk-i7>
+X-TM-MAIL-RECEIVED-TIME: 1702885245.012000
+X-TM-MAIL-UUID: 28198508-2a03-4700-a5fa-aeca2680908b
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KwzptlNe6b8J5quWdxoZcV1qIeOUDZ/6OMHeAsu1kfZwUEz6OcPmNaCuAGpVeqggA2Nbm8vcF0a97Ua4X/GMMp8ofdB3hfsdn/asBgvBDkitSYx7dxqfuZPXQuB0wQVvrag8lZjKNV7OGjVDwH4alb6eJA/JfJdIC+a4yHf1+mco2so4rYFwbLXIAjL/AUrCXGJXcvO8rCZX9y/wkl3mUYvrm7LXclptK0+9GQmerBkGuIktaYwaj+kbB7FM5w2dRvhK/SgyuWuiB32S2N2Aef2mBYRKqLa8JX7uaNI8TQuDK0Qpq7YQR0IP0dwGWq1mcA47wWsaSmnW3epytOXZMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d+hC6iohx4wnPIyijDMGAV39cYrod9gNtUyxP57qoWE=;
+ b=J6gYyelz+zVvXHdS5jYEPWJb0iKE5WIvr7uUgpWMpc8SgOm8N2xI810caACVkO/cSMPHY1Gv5e1r4MGuxUVidhiY63WTRDIhZ1iMolG8YOxoyPaxQDiy8YbnDtF+PKXnh/sk5U29qPryDlnGz89n8xnSvwqWXNa3Fs+slTQBE55wa5R80IOVDO5K0pCiwJ4cgE98trNWFLpXh7TjCWdBzLjSTMrXpl2DCHqvM5ELVA31QaCCQMATSA5RI8PNbAextjWp+8ShP8f0AsigHFCkgCjHMuaUIMw2zO77pFAMNr871TSF8+35yhLuCiVq7nKhekjabcY19cLlZI7ibOeqBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 217.66.60.4) smtp.rcpttodomain=arm.com smtp.mailfrom=opensynergy.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none
+ header.from=opensynergy.com; dkim=none (message not signed); arc=none (0)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=opensynergy.com;
+Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
+ designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
+From: Peter Hilber <peter.hilber@opensynergy.com>
+To: linux-kernel@vger.kernel.org,
+	virtualization@lists.linux.dev,
+	virtio-dev@lists.oasis-open.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rtc@vger.kernel.org
+Cc: Peter Hilber <peter.hilber@opensynergy.com>,
+	"Christopher S. Hall" <christopher.s.hall@intel.com>,
+	Jason Wang <jasowang@redhat.com>,
+	John Stultz <jstultz@google.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	netdev@vger.kernel.org,
+	Richard Cochran <richardcochran@gmail.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>
+Date: Mon, 18 Dec 2023 08:38:38 +0100
+Message-Id: <20231218073849.35294-1-peter.hilber@opensynergy.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231206094354.nzjax4lx4e5jwgwo@vireshk-i7>
-Subject: [virtio-dev] Re: [PATCH] virtio-transport: Clarify requirements
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1EUR05FT027:EE_|FR3P281MB1567:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 6451ae63-c410-4d78-794e-08dbff9ca3ce
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	XETNSviSLuDUUElJVzMmExQYoGaeFAQSR35cET4DulS3gIxuclF0vWgHHVpxLQhNjmgobWf3vNUF54zIRXQpBNoM2reBq8DvNjY2bW8uh3LaxBTH+LFW6g/BZuwrJTq7VmmVIJUkINgxLgJXYYT7iUZhf4VSQLTapGFqmAjKd2fammrqnM4Ik3/JY05cFNbSXeGOS5qOV4A9ysKhnL0DVUwEusl5hlXJsyY163zM8o9lAig/hDt69F6ZqhuGQJKnZq6+Xcb/234VeY3RtQjt/yyHB8qWr03WobT9GayhWaKSCyhDxr5JQY0R8jUrl10lE6rfeP8hkaRqggAaABO7JOY/HjOoOGtiLSZop+xwqU3AfdNAfN1A8yunFHAxnzUYAX1S96KZBPCyN5+wBJHMyMErQnNLUw3BPqn2C2Sl3SkWaNQ7L+4by6IpXujmgT4gGfsjo/NR6VAEx10mf3B8Xg6hr7X7rF8ziqcu6CWGGtuM5/gW+rtPkoa2L7Xb+kzAyMW1umfaoRMBFk+xjf1n6BHKfR03BwrrwPs/AT/Y0t12OhaLq2bBbNBdxiHZ3AygrSHFL9biuH3x2v0YbhGJtbRtMYGOScWSqK5GVnAok7dCBjecEtxYBFjI25IF+/HyIEW2hHC24grWBSVoCjHFKH2Z4Tzz3k4Q9RSWRe5PjDJArHyxTU+6sgp7yuxdNT8PU8U7sFbeVOig3rvQiR7lHzI9YCXEh0AWLkejMUcj52UVNpDF2KIwYRyWl50k3l7OzRvqFkXnhI3+xLPmX9G84g==
+X-Forefront-Antispam-Report:
+	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(376002)(136003)(346002)(396003)(39830400003)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(82310400011)(46966006)(36840700001)(336012)(83380400001)(26005)(1076003)(2616005)(36860700001)(47076005)(4326008)(44832011)(41300700001)(7416002)(2906002)(966005)(478600001)(316002)(42186006)(54906003)(8936002)(8676002)(70206006)(70586007)(5660300002)(36756003)(86362001)(81166007)(40480700001)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2023 07:40:43.0474
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6451ae63-c410-4d78-794e-08dbff9ca3ce
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	VI1EUR05FT027.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR3P281MB1567
+X-TM-AS-ERS: 104.47.7.169-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28064.005
+X-TMASE-Result: 10--27.729800-4.000000
+X-TMASE-MatchedRID: sHskM9Mmy82jUFTkIPYrnGy53dw2JHQm59KGlOljPvtH7TVMOMpqUm9h
+	cWbYdsjRBf+oLr2yQk1ErIfdBFneW1qm5HDlCqpj8efplxAjKten2i3kZizDsSimJVj5dukrr2U
+	ZR/HJv/hBPzSMgZ5XbXWEMHF8clRqNVqd3XsX2Vb24vmE69obUusCZSpF32VZnFPS5wCjpHZswf
+	mutPEm12mZiAX3CMRYwwYLyMb/oe607aCop6XLRHQK0rQOCABezmG9pmg8ncKP9mtBIkWXYyOOH
+	pI1HwblQo3F0uWePB+seUtgw4Zmujr/DEybvAaNuva7QpapAo1H3ls04QB56HHs7RH0C1HiraqC
+	v7pIOOJDFPIF0Vh5UPeAK/DlpM8DO8W+8t9FmIFzHmBtsVCbBGBG77R/t8gKPiYO7EHc52hlIvg
+	AojhYfvez8J7InaCwBoXLchbhUqsDLvJy6pB8hY8Hmgwag40IZNsIhOcaMtCrUVp6ho4UsO/yMk
+	wYZmJ20Tt5NrgaswT5PQU6uVMf/IiYtM5LMzdS+DE5zr5ahdwNi5sB0+4vp4HPZlxvWzUUji3yp
+	wbXmz5aqC2oXMB+C+sQNAL2u95wD5teccobfJV8dniJUBtbDHwuCMDi78rnz6RkZznaT3nLIcKZ
+	m0DMBN/upPexrMg4lExlQIQeRG0=
+X-TMASE-XGENCLOUD: aea0283c-8fe3-410f-826f-59415184e9b2-0-0-200-0
+X-TM-Deliver-Signature: 949930DF5805738B3EBE1D43A8096C15
+X-TM-Addin-Auth: JH6ehlryyo1R2Fqa8f5NYKieqXGcw5xXseKW0gWmjsRlRCtTW8Y4pmA7dEj
+	hYSFuS7SdEFIX3nB4bIy8qWP+Q38IIeKk185oNOM0pecA8Fopg432TX4ueqpN9dSzTkDDNnpCYB
+	VSec8/9cUn3RZUiKX4PHQJPOmD0ue6BIjVW9BgixhlB3aIt30XVSESlQNLID4bf41Cy4CmJ+9BR
+	mK6TG1amwuggSMe26iruPkwWxxrfcnYtciC+yMeVRFPtxfHBj1HldOUSm0in8fHbpixIgI+FWno
+	cWwuiPY8d1rXdEs=.mW8rvV+XXobfiUeP94Zvl++x72hK7XmNS7GAyUUovNOoFjXzGxMqWrkIzM
+	HrNTftZAvnlFSMr7endXcZkXbgw6o2D5BXzfSvNr4C/G2RHXxrzFfY0XgZZHWwAFIECpkZLVcVM
+	iPxW48MjooZCirfN8GLuDFZiN7izR02QOSV+ACVxycNzU2dlzqFuBK2nbQy3OwW9A2Ge7urqHx5
+	zyKUfzPZQ5JuA0JgweXzLkP5S5zN3FuLyBunBnwcR3Mt3GpM2vvbgI5TwMJoYLWOQu+fH6jE4Rp
+	85zyGbJw3vtG8+rrpHo+I8vb4BczKMZM88DwL43JNvk8KvC9RIRtxc38F4g==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] [RFC PATCH v3 0/7] Add virtio_rtc module and related changes
 
-Ping.
+RFC v3 updates
+--------------
 
-On 06-12-23, 15:13, Viresh Kumar wrote:
-> On 05-12-23, 14:18, Cornelia Huck wrote:
-> > On Tue, Dec 05 2023, Viresh Kumar <viresh.kumar@linaro.org> wrote:
-> > > diff --git a/content.tex b/content.tex
-> 
-> > I think we should concentrate on the transport being what links device
-> > and driver together... what about (reusing parts of your writeup):
-> > 
-> > "Devices and drivers can use different transport methods to enable
-> > interaction, for example PCI, MMIO, or Channel I/O. The transport
-> > methods define various aspects of the communication between the device
-> > and the driver, like device discovery, exchanging capabilities,
-> > interrupt handling, data transfer, etc. For example, in a host/guest
-> > architecture, the host might expose a device to the guest on a PCI bus,
-> > and the guest will use a PCI-specific driver to interact with it.
-> > 
-> > The standard is split into sections describing general virtio
-> > implementation and transport-specific sections."
-> 
-> Looks good.
-> 
-> > > +\section{Virtio Transport Requirements}\label{sec:Virtio Transport Options / Virtio Transport Requirements}
-> > > +
-> > > +\devicenormative{\subsection}{Virtio Transport Requirements}{Virtio Transport Options}
-> > 
-> > I'm not sure we can introduce MUST (NOT) requirements for basic
-> > functionality after the spec has been published for quite a time already
-> > (although I'd assume every implementation is fulfilling the requirements
-> > anyway)... thoughts?
-> 
-> Fair point. I think it would be okay to use MUST (NOT) if we are sure
-> that the existing implementations are fulfilling the requirements.
-> Else maybe we can use SHOULD (NOT) ?
-> 
-> > > +The device MUST present each event, in a transport defined way, from the
-> > > +moment it takes place until the driver acknowledges the event.
-> > 
-> > I don't believe "event" is well-defined here.
-> 
-> I liked Alex's suggestion, how about that ?
-> 
-> "A device initiated transaction can isn't considered complete until
-> acknowledged by the driver. As such data MUST remain visible to the
-> driver until the transaction is complete"
-> 
-> > > +The device MUST NOT access virtqueue's contents before the driver
-> > > +notifies that the queue is ready for access, in a transport defined way.
-> > > +
-> > > +The device MUST NOT access buffers on the virtqueue, after it has
-> > > +modified them and notified the driver about their availability.
-> > > +
-> > > +The device MUST reset the virtqueues if requested by the driver, in a
-> > > +transport defined way.
-> > 
-> > Isn't all of this already defined in one place of the spec or another?
-> 
-> Yes, some of this is picked from those places only. The purpose of
-> this patch is to get it all at a single place, which would be easier
-> for people to go through. Especially while introducing new transports
-> or device specifications.
-> 
-> > > +\drivernormative{\subsection}{Virtio Transport Requirements}{Virtio Transport Options}
-> > > +
-> > > +The driver MUST NOT access guest memory locations outside what's made
-> > > +available by the device to the driver.
-> > 
-> > I don't think that makes sense -- I'd assume most guest memory locations
-> > do not have anything to do with virtio, and we should try to avoid
-> > host/guest terminology.
-> 
-> Hmm, you are right about the guest/host terminology. This comes mostly
-> from the MMIO transport section, where a guest presents 0x100 bytes of
-> memory, followed by configuration space (whose length is device/driver
-> dependent). The MMIO section has this:
-> 
-> "The driver MUST NOT access memory locations not described in the
-> table \ref{tab:Virtio Transport Options / Virtio Over MMIO / MMIO Device Register Layout}
-> (or, in case of the configuration space, described in the device specification),
-> MUST NOT write to the read-only registers (direction R) and
-> MUST NOT read from the write-only registers (direction W)."
-> 
-> > > +The driver MUST NOT write to the read-only memory area and MUST NOT read
-> > > +from the write-only memory area.
-> > 
-> > Which memory areas does that refer to? Parts of the transport-specific
-> > data structures?
-> 
-> Yes, based again on the above MMIO section, but perhaps apply to other
-> transports as well..
-> 
-> > > +The driver MUST acknowledge events presented by the device, as mandated
-> > > +by the transport.
-> > 
-> > I don't think this is quite correct in the absolute -- for example, it
-> > should be fine to not acknowledge events if some overriding event comes
-> > along, or if the driver initiates a reset.
-> 
-> What about:
-> 
-> The driver SHOULD acknowledge events presented by the device, as
-> mandated by the transport, unless a new event from the device
-> overrides the previous one or the driver initiates a reset.
-> 
-> > > +The driver MUST NOT access virtqueue contents before the device notifies
-> > > +about the readiness of the same.
-> > > +
-> > > +The driver MUST NOT access buffers, after it has added them to the
-> > > +virtqueue and notified the device about their availability. The driver
-> > > +MAY access them after the device has processed them and notified the
-> > > +driver of their availability, in a transport defined way.
-> > > +
-> > > +The driver MAY ask the device to reset the virtqueues if, for example,
-> > > +the driver times out waiting for a notification from the device for a
-> > > +previously queued request.
-> > 
-> > Again, I believe this has already been covered in the generic
-> > sections
-> 
-> Right, but having it all at a single place makes it more convenient,
-> instead of looking at implementations.
-> 
-> > do we instead need to specify that a transport MUST provide
-> > a method to do xy? (or SHOULD, MAY, as applicable -- it would be good to
-> > list explicitly what is mandatory for a transport to implement, and what
-> > is optional.)
-> 
-> Hmm, yeah sounds good. How about these ?
-> 
-> - The transport MUST provide a mechanism for device discovery at the
->   driver's end.
-> 
-> - The transport must provide a mechanism for the driver to identify
->   the device type.
-> 
-> - The transport MUST provide a mechanism for the driver to share
->   virtqueue configurations with the device.
-> 
-> - The transport SHOULD allow multiple virtqueues per device. The
->   number of virtqueues for a pair of device-driver are governed by the
->   individual device protocol.
-> 
-> - The transport MUST provide shared memory regions between the device
->   and the driver for the implementation of virtqueues.
-> 
-> - The transport MUST provide a mechanism for the device and the driver
->   to notify each other, for example about availability of a buffer on
->   the virtqueue.
-> 
-> - The transport SHOULD provide a mechanism for the driver to initiate
->   a reset of the virtqueues and device.
+This series implements a driver for a virtio-rtc device conforming to spec
+RFC v3 [1]. It now includes an RTC class driver with alarm, in addition to
+the PTP clock driver already present before.
 
+This patch series depends on the patch series "treewide: Use clocksource id
+for get_device_system_crosststamp()" [3]. Pull [4] to get the combined
+series on top of mainline.
+
+Overview
+--------
+
+This patch series adds the virtio_rtc module, and related bugfixes. The
+virtio_rtc module implements a driver compatible with the proposed Virtio
+RTC device specification [1]. The Virtio RTC (Real Time Clock) device
+provides information about current time. The device can provide different
+clocks, e.g. for the UTC or TAI time standards, or for physical time
+elapsed since some past epoch. The driver can read the clocks with simple
+or more accurate methods. Optionally, the driver can set an alarm.
+
+The series first fixes some bugs in the get_device_system_crosststamp()
+interpolation code, which is required for reliable virtio_rtc operation.
+Then, add the virtio_rtc implementation.
+
+For the Virtio RTC device, there is currently a proprietary implementation,
+which has been used for provisional testing.
+
+PTP clock interface
+-------------------
+
+virtio_rtc exposes clocks as PTP clocks to userspace, similar to ptp_kvm.
+If both the Virtio RTC device and this driver have special support for the
+current clocksource, time synchronization programs can use
+cross-timestamping using ioctl PTP_SYS_OFFSET_PRECISE2 aka
+PTP_SYS_OFFSET_PRECISE. Similar to ptp_kvm, system time synchronization
+with single-digit ns precision is possible with a quiescent reference clock
+(from the Virtio RTC device). This works even when the Virtio device
+response is slow compared to ptp_kvm hypercalls.
+
+The following illustrates a test using PTP_SYS_OFFSET_PRECISE, with
+interspersed strace log and chrony [2] refclocks log, on arm64. In the
+example, chrony tracks a virtio_rtc PTP clock ("PHCV", /dev/ptp0). The raw
+offset between the virtio_rtc clock and CLOCK_REALTIME is 0 to 1 ns. At the
+device side, the Virtio RTC device artificially delays both the clock read
+request, and the response, by 50 ms. Cross-timestamp interpolation still
+works with this delay. chrony also monitors a ptp_kvm clock ("PHCK",
+/dev/ptp3) for comparison, which yields a similar offset.
+
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000329>
+	===============================================================================
+	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
+	===============================================================================
+	2023-06-29 18:49:55.595742 PHCK    0 N 0  1.000000e-09  8.717931e-10  5.500e-08
+	2023-06-29 18:49:55.595742 PHCK    - N -       -        8.717931e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101545>
+	2023-06-29 18:49:56.147766 PHCV    0 N 0  1.000000e-09  8.801870e-10  5.500e-08
+	2023-06-29 18:49:56.147766 PHCV    - N -       -        8.801870e-10  5.500e-08
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000195>
+	2023-06-29 18:49:56.202446 PHCK    0 N 0  1.000000e-09  7.364180e-10  5.500e-08
+	2023-06-29 18:49:56.202446 PHCK    - N -       -        7.364180e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101484>
+	2023-06-29 18:49:56.754641 PHCV    0 N 0  0.000000e+00 -2.617368e-10  5.500e-08
+	2023-06-29 18:49:56.754641 PHCV    - N -       -       -2.617368e-10  5.500e-08
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000270>
+	2023-06-29 18:49:56.809282 PHCK    0 N 0  1.000000e-09  7.779321e-10  5.500e-08
+	2023-06-29 18:49:56.809282 PHCK    - N -       -        7.779321e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101510>
+	2023-06-29 18:49:57.361376 PHCV    0 N 0  0.000000e+00 -2.198794e-10  5.500e-08
+	2023-06-29 18:49:57.361376 PHCV    - N -       -       -2.198794e-10  5.500e-08
+
+This patch series only adds special support for the Arm Generic Timer
+clocksource. At the driver side, it should be easy to support more
+clocksources.
+
+Fallback PTP clock interface
+----------------------------
+
+Without special support for the current clocksource, time synchronization
+programs can still use ioctl PTP_SYS_OFFSET_EXTENDED2 aka
+PTP_SYS_OFFSET_EXTENDED. In this case, precision will generally be worse
+and will depend on the Virtio device response characteristics.
+
+The following illustrates a test using PTP_SYS_OFFSET_EXTENDED, with
+interspersed strace log and chrony refclocks log, on x86-64 (with `ts'
+values omitted):
+
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	===============================================================================
+	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
+	===============================================================================
+	2023-06-28 14:11:26.697782 PHCV    0 N 0  3.318200e-05  3.450891e-05  4.611e-06
+	2023-06-28 14:11:26.697782 PHCV    - N -       -        3.450891e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:27.208763 PHCV    0 N 0 -3.792800e-05 -4.023965e-05  4.611e-06
+	2023-06-28 14:11:27.208763 PHCV    - N -       -       -4.023965e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:27.722818 PHCV    0 N 0 -3.328600e-05 -3.134404e-05  4.611e-06
+	2023-06-28 14:11:27.722818 PHCV    - N -       -       -3.134404e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:28.233572 PHCV    0 N 0 -4.966900e-05 -4.584331e-05  4.611e-06
+	2023-06-28 14:11:28.233572 PHCV    - N -       -       -4.584331e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:28.742737 PHCV    0 N 0  4.902700e-05  5.361388e-05  4.611e-06
+	2023-06-28 14:11:28.742737 PHCV    - N -       -        5.361388e-05  4.611e-06
+
+PTP clock setup
+---------------
+
+The following udev rule can be used to get a symlink /dev/ptp_virtio to the
+UTC clock:
+
+	SUBSYSTEM=="ptp", ATTR{clock_name}=="Virtio PTP UTC", SYMLINK += "ptp_virtio"
+
+The following chrony configuration directive can then be added in
+/etc/chrony/chrony.conf to synchronize to the Virtio UTC clock:
+
+	refclock PHC /dev/ptp_virtio refid PHCV poll -1 dpoll -1
+
+RTC interface
+-------------
+
+This patch series adds virtio_rtc as a generic Virtio driver, including
+both a PTP clock driver and an RTC class driver.
+
+Feedback is greatly appreciated.
+
+[1] https://lore.kernel.org/virtio-comment/20231218064253.9734-1-peter.hilber@opensynergy.com/
+[2] https://chrony.tuxfamily.org/
+[3] https://lore.kernel.org/lkml/20231215220612.173603-1-peter.hilber@opensynergy.com/
+[4] https://github.com/OpenSynergy/linux.git virtio-rtc-v3-on-master
+
+v3:
+
+- Update to conform to virtio spec RFC v3 (no significant behavioral
+  changes).
+
+- Add RTC class driver with alarm according to virtio spec RFC v3.
+
+- For cross-timestamp corner case fix, switch back to v1 style closed
+  interval test (Thomas Gleixner).
+
+v2:
+
+- Depend on patch series "treewide: Use clocksource id for
+  get_device_system_crosststamp()" to avoid requiring a clocksource pointer
+  with get_device_system_crosststamp().
+
+- Assume Arm Generic Timer will use CP15 virtual counter. Drop
+  arm_arch_timer helper functions (Marc Zyngier).
+
+- Improve cross-timestamp fixes problem description and implementation
+  (John Stultz).
+
+
+Peter Hilber (7):
+  timekeeping: Fix cross-timestamp interpolation on counter wrap
+  timekeeping: Fix cross-timestamp interpolation corner case decision
+  timekeeping: Fix cross-timestamp interpolation for non-x86
+  virtio_rtc: Add module and driver core
+  virtio_rtc: Add PTP clocks
+  virtio_rtc: Add Arm Generic Timer cross-timestamping
+  virtio_rtc: Add RTC class driver
+
+ MAINTAINERS                          |    7 +
+ drivers/virtio/Kconfig               |   62 ++
+ drivers/virtio/Makefile              |    5 +
+ drivers/virtio/virtio_rtc_arm.c      |   22 +
+ drivers/virtio/virtio_rtc_class.c    |  269 +++++
+ drivers/virtio/virtio_rtc_driver.c   | 1357 ++++++++++++++++++++++++++
+ drivers/virtio/virtio_rtc_internal.h |  122 +++
+ drivers/virtio/virtio_rtc_ptp.c      |  342 +++++++
+ include/uapi/linux/virtio_rtc.h      |  230 +++++
+ kernel/time/timekeeping.c            |   24 +-
+ 10 files changed, 2428 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/virtio/virtio_rtc_arm.c
+ create mode 100644 drivers/virtio/virtio_rtc_class.c
+ create mode 100644 drivers/virtio/virtio_rtc_driver.c
+ create mode 100644 drivers/virtio/virtio_rtc_internal.h
+ create mode 100644 drivers/virtio/virtio_rtc_ptp.c
+ create mode 100644 include/uapi/linux/virtio_rtc.h
+
+
+base-commit: 2c41b211d72c1eb350c7629a8c85234fef0d12c1
 -- 
-viresh
+2.40.1
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
