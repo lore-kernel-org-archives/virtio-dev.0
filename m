@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14157-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14158-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 67B4DC46CA2
-	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E42FBC35274
+	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id AAF932AEFF
-	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 7CBF821690
+	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:54 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A33F9864D3
-	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 6F6B29864D3
+	for <virtio-dev@archiver.kernel.org>; Mon, 18 Dec 2023 07:40:54 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 4A323983F75; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
+	id 5F960983F75; Mon, 18 Dec 2023 07:40:54 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,18 +24,18 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 357FD986445
-	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Dec 2023 07:40:50 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 504D3986481
+	for <virtio-dev@lists.oasis-open.org>; Mon, 18 Dec 2023 07:40:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1702885245.012000
-X-TM-MAIL-UUID: 28198508-2a03-4700-a5fa-aeca2680908b
+X-TM-MAIL-RECEIVED-TIME: 1702885248.450000
+X-TM-MAIL-UUID: 31e06f38-11a2-421c-b5ae-d5339e368442
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KwzptlNe6b8J5quWdxoZcV1qIeOUDZ/6OMHeAsu1kfZwUEz6OcPmNaCuAGpVeqggA2Nbm8vcF0a97Ua4X/GMMp8ofdB3hfsdn/asBgvBDkitSYx7dxqfuZPXQuB0wQVvrag8lZjKNV7OGjVDwH4alb6eJA/JfJdIC+a4yHf1+mco2so4rYFwbLXIAjL/AUrCXGJXcvO8rCZX9y/wkl3mUYvrm7LXclptK0+9GQmerBkGuIktaYwaj+kbB7FM5w2dRvhK/SgyuWuiB32S2N2Aef2mBYRKqLa8JX7uaNI8TQuDK0Qpq7YQR0IP0dwGWq1mcA47wWsaSmnW3epytOXZMw==
+ b=NK/hQE8iKWcwRYsj7tUbw68UHPjokjjCkJCEK29D3NwbtRaJLWedWDU9kT+G7bEEg5F5vAwwGKVbgqgoA9BcuzxrkBI6Sh8XW80ouuXH+D53I21BK29aHsQfWjNp8qLCW/6dBsnoXqmCYXjda6xb3T5qHYnlyUHol5ZCkXw2iekhJdMxFHbI3Tt3fpI/cblKtGkLBlK9u86ENXX5YQ3ccGrCtvFMMmY7euu/jIuhJjeKmVr385z1nrZdhALdEkdku3eOUdEYqFIiAov8WDpfxuxtKs89coUN5PiEiRHy2L9yImcMxae+8pqh5j0fY9x+jgNWq6z6e9MUyXoR2yxENg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d+hC6iohx4wnPIyijDMGAV39cYrod9gNtUyxP57qoWE=;
- b=J6gYyelz+zVvXHdS5jYEPWJb0iKE5WIvr7uUgpWMpc8SgOm8N2xI810caACVkO/cSMPHY1Gv5e1r4MGuxUVidhiY63WTRDIhZ1iMolG8YOxoyPaxQDiy8YbnDtF+PKXnh/sk5U29qPryDlnGz89n8xnSvwqWXNa3Fs+slTQBE55wa5R80IOVDO5K0pCiwJ4cgE98trNWFLpXh7TjCWdBzLjSTMrXpl2DCHqvM5ELVA31QaCCQMATSA5RI8PNbAextjWp+8ShP8f0AsigHFCkgCjHMuaUIMw2zO77pFAMNr871TSF8+35yhLuCiVq7nKhekjabcY19cLlZI7ibOeqBw==
+ bh=YBJEa+VSM5FoMWndM2MPL8alyUCPzdErHELlZP8FuFk=;
+ b=eP3PgGHawxvTvXYkns37PAUk4i2jb6Mbshz8Nykl2MnztAqGGt53VWCNarCjMUtGQufXP9dNP8rJlfzdnmvq0ghubpjxjVekhjhRborgLBkv9KRss8czzpnaf+thoRNSeIoaLeavWz5hEk8CItrbiCimVc+u4H+MDPvq21Dwf7IYMxdQDLwwrLVbKtszcjPBcDOu+7vpyv3IJAhkDCXtAnAPsDHbZlI2Fp+/1+B04IPALop4zD7caVBS9Z2ZJ0TB5D9XknoXV7vHHPDtHEcdU6GLUQeRHltQDwb8iQGwQhRqi/EhGAQwx4AR7+Q6gfvQh/B4yaNp6SWmMsCmLq4Lqw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  217.66.60.4) smtp.rcpttodomain=arm.com smtp.mailfrom=opensynergy.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none
@@ -50,263 +50,156 @@ From: Peter Hilber <peter.hilber@opensynergy.com>
 To: linux-kernel@vger.kernel.org,
 	virtualization@lists.linux.dev,
 	virtio-dev@lists.oasis-open.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rtc@vger.kernel.org
+	linux-arm-kernel@lists.infradead.org
 Cc: Peter Hilber <peter.hilber@opensynergy.com>,
-	"Christopher S. Hall" <christopher.s.hall@intel.com>,
-	Jason Wang <jasowang@redhat.com>,
-	John Stultz <jstultz@google.com>,
 	"Michael S. Tsirkin" <mst@redhat.com>,
-	netdev@vger.kernel.org,
-	Richard Cochran <richardcochran@gmail.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
+	Jason Wang <jasowang@redhat.com>,
 	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
 	Marc Zyngier <maz@kernel.org>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>
-Date: Mon, 18 Dec 2023 08:38:38 +0100
-Message-Id: <20231218073849.35294-1-peter.hilber@opensynergy.com>
+	Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 18 Dec 2023 08:38:44 +0100
+Message-Id: <20231218073849.35294-7-peter.hilber@opensynergy.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20231218073849.35294-1-peter.hilber@opensynergy.com>
+References: <20231218073849.35294-1-peter.hilber@opensynergy.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1EUR05FT027:EE_|FR3P281MB1567:EE_
+X-MS-TrafficTypeDiagnostic: VI1EUR05FT004:EE_|BEZP281MB2456:EE_
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 6451ae63-c410-4d78-794e-08dbff9ca3ce
+X-MS-Office365-Filtering-Correlation-Id: b749595c-4cbf-4540-6660-08dbff9ca634
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	XETNSviSLuDUUElJVzMmExQYoGaeFAQSR35cET4DulS3gIxuclF0vWgHHVpxLQhNjmgobWf3vNUF54zIRXQpBNoM2reBq8DvNjY2bW8uh3LaxBTH+LFW6g/BZuwrJTq7VmmVIJUkINgxLgJXYYT7iUZhf4VSQLTapGFqmAjKd2fammrqnM4Ik3/JY05cFNbSXeGOS5qOV4A9ysKhnL0DVUwEusl5hlXJsyY163zM8o9lAig/hDt69F6ZqhuGQJKnZq6+Xcb/234VeY3RtQjt/yyHB8qWr03WobT9GayhWaKSCyhDxr5JQY0R8jUrl10lE6rfeP8hkaRqggAaABO7JOY/HjOoOGtiLSZop+xwqU3AfdNAfN1A8yunFHAxnzUYAX1S96KZBPCyN5+wBJHMyMErQnNLUw3BPqn2C2Sl3SkWaNQ7L+4by6IpXujmgT4gGfsjo/NR6VAEx10mf3B8Xg6hr7X7rF8ziqcu6CWGGtuM5/gW+rtPkoa2L7Xb+kzAyMW1umfaoRMBFk+xjf1n6BHKfR03BwrrwPs/AT/Y0t12OhaLq2bBbNBdxiHZ3AygrSHFL9biuH3x2v0YbhGJtbRtMYGOScWSqK5GVnAok7dCBjecEtxYBFjI25IF+/HyIEW2hHC24grWBSVoCjHFKH2Z4Tzz3k4Q9RSWRe5PjDJArHyxTU+6sgp7yuxdNT8PU8U7sFbeVOig3rvQiR7lHzI9YCXEh0AWLkejMUcj52UVNpDF2KIwYRyWl50k3l7OzRvqFkXnhI3+xLPmX9G84g==
+	RusVH3la176wxDg+L7Xq0fuHHTOvkxf+VNdAefakPvc+G60YmWlz7ShLVc1VaGEDPk9mGnpBQg/prQcrLDZd1nscDLOyNzo1qAdgUIEPGfqK/yEu9Ajp8X8hl/IJS80niwXxtIx9BbcIt5YeinMD4PrZ9lNbP0a/9blcxA7P1S2k0460V0TsV/rKQScQCwKpCKz0s9a45zGcFXIYc+GVsnaTY7ayefkwhnfzpWxL3xQQRNAXOuZ/+ZuBktSEh8nJRp0agFBRTeRrQEXApk1AvnyAiHs/minIwyiYJr2zWSexvj2eHTjyss7MqE/kPmOlqOFkD6JGAEJHxvXi0zlAgR2RnN7MlVbcHI8eumgdOIYGQXTgv7tYSl/zjflyG0uremUrcJWieDX8t6lsNcdr66QcCiVy7vKCNuo4M/yGwuyFVfuq+MHryBZ9rbSrsqcBr+mmFi31OEy9B9nnqFVwRL57GY+iV6Bp2cz/nCqeHzuMq7JGkKdz7I60ysFs+Uir3LUSTVQWMA3d1pvZ2SQ4hIYSmecnOSRpckf/Xo61KKvPzGbxhY/7c/LnA2B2molIsFn4Qn8YKbfLwfM0Hh1/R+87wwZ3kK/zyR1X9FfPF6Bq234NLoRSkWVLxPO6u3ueqZgiPo5UsSNj7D0mGdILRRd8a3RLmEPCrsp12bKShkV4FakUUpBKxE+CdqdBGv1XIuwvnsEdQTFrrw8BlwtunPv3/VU9ljCxcaAclbV3dXe15Ea2Fc/PY2Zp8Yy1iMvPRoPkWt/bF886Ex74iY93BwBX32yT0yvoa6gZVOf3u2A+uheG5Md/QtpwrUdzM2zV
 X-Forefront-Antispam-Report:
-	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(376002)(136003)(346002)(396003)(39830400003)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(82310400011)(46966006)(36840700001)(336012)(83380400001)(26005)(1076003)(2616005)(36860700001)(47076005)(4326008)(44832011)(41300700001)(7416002)(2906002)(966005)(478600001)(316002)(42186006)(54906003)(8936002)(8676002)(70206006)(70586007)(5660300002)(36756003)(86362001)(81166007)(40480700001)(36900700001);DIR:OUT;SFP:1102;
+	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(39840400004)(136003)(376002)(346002)(396003)(230922051799003)(186009)(64100799003)(82310400011)(451199024)(1800799012)(36840700001)(46966006)(40480700001)(70586007)(86362001)(81166007)(36756003)(8936002)(36860700001)(47076005)(83380400001)(336012)(26005)(2616005)(1076003)(478600001)(2906002)(42186006)(54906003)(70206006)(4326008)(316002)(8676002)(5660300002)(44832011)(7416002)(41300700001)(41533002)(36900700001);DIR:OUT;SFP:1102;
 X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2023 07:40:43.0474
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2023 07:40:47.0708
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6451ae63-c410-4d78-794e-08dbff9ca3ce
+X-MS-Exchange-CrossTenant-Network-Message-Id: b749595c-4cbf-4540-6660-08dbff9ca634
 X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	VI1EUR05FT027.eop-eur05.prod.protection.outlook.com
+	VI1EUR05FT004.eop-eur05.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR3P281MB1567
-X-TM-AS-ERS: 104.47.7.169-0.0.0.0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BEZP281MB2456
+X-TM-AS-ERS: 104.47.11.168-0.0.0.0
 X-TMASE-Version: StarCloud-1.3-9.1.1015-28064.005
-X-TMASE-Result: 10--27.729800-4.000000
-X-TMASE-MatchedRID: sHskM9Mmy82jUFTkIPYrnGy53dw2JHQm59KGlOljPvtH7TVMOMpqUm9h
-	cWbYdsjRBf+oLr2yQk1ErIfdBFneW1qm5HDlCqpj8efplxAjKten2i3kZizDsSimJVj5dukrr2U
-	ZR/HJv/hBPzSMgZ5XbXWEMHF8clRqNVqd3XsX2Vb24vmE69obUusCZSpF32VZnFPS5wCjpHZswf
-	mutPEm12mZiAX3CMRYwwYLyMb/oe607aCop6XLRHQK0rQOCABezmG9pmg8ncKP9mtBIkWXYyOOH
-	pI1HwblQo3F0uWePB+seUtgw4Zmujr/DEybvAaNuva7QpapAo1H3ls04QB56HHs7RH0C1HiraqC
-	v7pIOOJDFPIF0Vh5UPeAK/DlpM8DO8W+8t9FmIFzHmBtsVCbBGBG77R/t8gKPiYO7EHc52hlIvg
-	AojhYfvez8J7InaCwBoXLchbhUqsDLvJy6pB8hY8Hmgwag40IZNsIhOcaMtCrUVp6ho4UsO/yMk
-	wYZmJ20Tt5NrgaswT5PQU6uVMf/IiYtM5LMzdS+DE5zr5ahdwNi5sB0+4vp4HPZlxvWzUUji3yp
-	wbXmz5aqC2oXMB+C+sQNAL2u95wD5teccobfJV8dniJUBtbDHwuCMDi78rnz6RkZznaT3nLIcKZ
-	m0DMBN/upPexrMg4lExlQIQeRG0=
-X-TMASE-XGENCLOUD: aea0283c-8fe3-410f-826f-59415184e9b2-0-0-200-0
-X-TM-Deliver-Signature: 949930DF5805738B3EBE1D43A8096C15
-X-TM-Addin-Auth: JH6ehlryyo1R2Fqa8f5NYKieqXGcw5xXseKW0gWmjsRlRCtTW8Y4pmA7dEj
-	hYSFuS7SdEFIX3nB4bIy8qWP+Q38IIeKk185oNOM0pecA8Fopg432TX4ueqpN9dSzTkDDNnpCYB
-	VSec8/9cUn3RZUiKX4PHQJPOmD0ue6BIjVW9BgixhlB3aIt30XVSESlQNLID4bf41Cy4CmJ+9BR
-	mK6TG1amwuggSMe26iruPkwWxxrfcnYtciC+yMeVRFPtxfHBj1HldOUSm0in8fHbpixIgI+FWno
-	cWwuiPY8d1rXdEs=.mW8rvV+XXobfiUeP94Zvl++x72hK7XmNS7GAyUUovNOoFjXzGxMqWrkIzM
-	HrNTftZAvnlFSMr7endXcZkXbgw6o2D5BXzfSvNr4C/G2RHXxrzFfY0XgZZHWwAFIECpkZLVcVM
-	iPxW48MjooZCirfN8GLuDFZiN7izR02QOSV+ACVxycNzU2dlzqFuBK2nbQy3OwW9A2Ge7urqHx5
-	zyKUfzPZQ5JuA0JgweXzLkP5S5zN3FuLyBunBnwcR3Mt3GpM2vvbgI5TwMJoYLWOQu+fH6jE4Rp
-	85zyGbJw3vtG8+rrpHo+I8vb4BczKMZM88DwL43JNvk8KvC9RIRtxc38F4g==
+X-TMASE-Result: 10--18.516800-4.000000
+X-TMASE-MatchedRID: ZAkTtSyZ7B7c1YtpVABxhScOunEIf0eXRyG5SSR7mMFHwPpoS7xiTQ3u
+	hqemVNab4tr/y+kNIhx+41laLbgwdzURLmZdK2fK9K6xgLnDQNjrlkvw0pZ13MhGESF2QtYSsgk
+	fnaHAFPzm9Tc/GgfFJwFtWueZlMH0Hw0ziwm/5yd81fikUYgyLUMxQVRV15qN9zxz+98nLbrqqp
+	KNT13hEpMgmvUQU/w2ftTV5S2xLn0yxlgWcGNdNffKbx7F+zg4FkXEytHxBjkweIyZbRlQ2yzec
+	Bj190z12HlzhM3zNtns9WQVYycKfw3lGTiQlxzIv9rSd36EgUI+Mqg+CyrtwA==
+X-TMASE-XGENCLOUD: 5d705e4f-6d2a-4add-99e1-f085abd63cdc-0-0-200-0
+X-TM-Deliver-Signature: 814341606C3CE357FAA4FD95D4083D3D
+X-TM-Addin-Auth: oQqVyGfEqq1tPlA0MO11HPq0hwnejF6i8E6IARDqyDafuHtMRehVBO4//ml
+	go3/nrkqd4jsFcyczmBclIjpUY1+OsQpPGXNlH9WPVWIwU03DEFJBPKXQL2a7g1n8R7wolHQ9M7
+	dxcrNAbUSyM3pcsqP64QEbZQ/Rsf05X19gqNFaCBBe6xXIpQzIkBtt30VUDjPoGja47r7PB8Ji3
+	AhMhGyxWokLkMQ/oQEpzJQYFfCHP3dDuAWmNC1AW6krRYU0Cjn8SiCH31mR1F0LRGos9Rw3H6AF
+	ToiBDYSODFPs9nk=.ijNlbM3fQ75twsMA63aue4qsotouRPH3Vq5/TRxJPcMTK/2O748XJiS+g5
+	+8tI58pi8B9lOrxLqKzmqB8yQpzlpjCCceLHNib11OfBfTKEjExpMpBYqsxadk887rSWZkyoltD
+	BwVGSDExQPZec6Ixx9CY1kgKDklyEA7YTvG4i/KhxcVQb6B9Aj1GbMVMRKVqqMKa0sgHwtYyQMw
+	q9VdmyNiplJHPy4tgl5rmJ+oUCQVqb76/A7/gjTXx99Gx91+QAJreVq6MSQmKJ4jepH3GEkHAa8
+	Qq1ClqkAerIIPA5c/D74f/s3aLhEIVfZ8jEaIMGc45YcJGywvPogZPHs+eg==
 X-TM-Addin-ProductCode: EMS
-Subject: [virtio-dev] [RFC PATCH v3 0/7] Add virtio_rtc module and related changes
+Subject: [virtio-dev] [RFC PATCH v3 6/7] virtio_rtc: Add Arm Generic Timer cross-timestamping
 
-RFC v3 updates
---------------
+Add PTP_SYS_OFFSET_PRECISE2 support on platforms using the Arm Generic
+Timer.
 
-This series implements a driver for a virtio-rtc device conforming to spec
-RFC v3 [1]. It now includes an RTC class driver with alarm, in addition to
-the PTP clock driver already present before.
+Always report the CP15 virtual counter as the HW counter in use by
+arm_arch_timer, since the Linux kernel's usage of the Arm Generic Timer
+should always be compatible with this.
 
-This patch series depends on the patch series "treewide: Use clocksource id
-for get_device_system_crosststamp()" [3]. Pull [4] to get the combined
-series on top of mainline.
+Signed-off-by: Peter Hilber <peter.hilber@opensynergy.com>
+---
 
-Overview
---------
+Notes:
+    v2:
+    
+    - Depend on prerequisite patch series "treewide: Use clocksource id for
+      get_device_system_crosststamp()".
+    
+    - Return clocksource id instead of calling dropped arm_arch_timer helpers.
+    
+    - Always report the CP15 virtual counter to be in use by arm_arch_timer,
+      since distinction of Arm physical and virtual counter appears unneeded
+      after discussion with Marc Zyngier.
 
-This patch series adds the virtio_rtc module, and related bugfixes. The
-virtio_rtc module implements a driver compatible with the proposed Virtio
-RTC device specification [1]. The Virtio RTC (Real Time Clock) device
-provides information about current time. The device can provide different
-clocks, e.g. for the UTC or TAI time standards, or for physical time
-elapsed since some past epoch. The driver can read the clocks with simple
-or more accurate methods. Optionally, the driver can set an alarm.
-
-The series first fixes some bugs in the get_device_system_crosststamp()
-interpolation code, which is required for reliable virtio_rtc operation.
-Then, add the virtio_rtc implementation.
-
-For the Virtio RTC device, there is currently a proprietary implementation,
-which has been used for provisional testing.
-
-PTP clock interface
--------------------
-
-virtio_rtc exposes clocks as PTP clocks to userspace, similar to ptp_kvm.
-If both the Virtio RTC device and this driver have special support for the
-current clocksource, time synchronization programs can use
-cross-timestamping using ioctl PTP_SYS_OFFSET_PRECISE2 aka
-PTP_SYS_OFFSET_PRECISE. Similar to ptp_kvm, system time synchronization
-with single-digit ns precision is possible with a quiescent reference clock
-(from the Virtio RTC device). This works even when the Virtio device
-response is slow compared to ptp_kvm hypercalls.
-
-The following illustrates a test using PTP_SYS_OFFSET_PRECISE, with
-interspersed strace log and chrony [2] refclocks log, on arm64. In the
-example, chrony tracks a virtio_rtc PTP clock ("PHCV", /dev/ptp0). The raw
-offset between the virtio_rtc clock and CLOCK_REALTIME is 0 to 1 ns. At the
-device side, the Virtio RTC device artificially delays both the clock read
-request, and the response, by 50 ms. Cross-timestamp interpolation still
-works with this delay. chrony also monitors a ptp_kvm clock ("PHCK",
-/dev/ptp3) for comparison, which yields a similar offset.
-
-	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000329>
-	===============================================================================
-	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
-	===============================================================================
-	2023-06-29 18:49:55.595742 PHCK    0 N 0  1.000000e-09  8.717931e-10  5.500e-08
-	2023-06-29 18:49:55.595742 PHCK    - N -       -        8.717931e-10  5.500e-08
-	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101545>
-	2023-06-29 18:49:56.147766 PHCV    0 N 0  1.000000e-09  8.801870e-10  5.500e-08
-	2023-06-29 18:49:56.147766 PHCV    - N -       -        8.801870e-10  5.500e-08
-	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000195>
-	2023-06-29 18:49:56.202446 PHCK    0 N 0  1.000000e-09  7.364180e-10  5.500e-08
-	2023-06-29 18:49:56.202446 PHCK    - N -       -        7.364180e-10  5.500e-08
-	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101484>
-	2023-06-29 18:49:56.754641 PHCV    0 N 0  0.000000e+00 -2.617368e-10  5.500e-08
-	2023-06-29 18:49:56.754641 PHCV    - N -       -       -2.617368e-10  5.500e-08
-	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000270>
-	2023-06-29 18:49:56.809282 PHCK    0 N 0  1.000000e-09  7.779321e-10  5.500e-08
-	2023-06-29 18:49:56.809282 PHCK    - N -       -        7.779321e-10  5.500e-08
-	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101510>
-	2023-06-29 18:49:57.361376 PHCV    0 N 0  0.000000e+00 -2.198794e-10  5.500e-08
-	2023-06-29 18:49:57.361376 PHCV    - N -       -       -2.198794e-10  5.500e-08
-
-This patch series only adds special support for the Arm Generic Timer
-clocksource. At the driver side, it should be easy to support more
-clocksources.
-
-Fallback PTP clock interface
-----------------------------
-
-Without special support for the current clocksource, time synchronization
-programs can still use ioctl PTP_SYS_OFFSET_EXTENDED2 aka
-PTP_SYS_OFFSET_EXTENDED. In this case, precision will generally be worse
-and will depend on the Virtio device response characteristics.
-
-The following illustrates a test using PTP_SYS_OFFSET_EXTENDED, with
-interspersed strace log and chrony refclocks log, on x86-64 (with `ts'
-values omitted):
-
-	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
-	===============================================================================
-	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
-	===============================================================================
-	2023-06-28 14:11:26.697782 PHCV    0 N 0  3.318200e-05  3.450891e-05  4.611e-06
-	2023-06-28 14:11:26.697782 PHCV    - N -       -        3.450891e-05  4.611e-06
-	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
-	2023-06-28 14:11:27.208763 PHCV    0 N 0 -3.792800e-05 -4.023965e-05  4.611e-06
-	2023-06-28 14:11:27.208763 PHCV    - N -       -       -4.023965e-05  4.611e-06
-	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
-	2023-06-28 14:11:27.722818 PHCV    0 N 0 -3.328600e-05 -3.134404e-05  4.611e-06
-	2023-06-28 14:11:27.722818 PHCV    - N -       -       -3.134404e-05  4.611e-06
-	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
-	2023-06-28 14:11:28.233572 PHCV    0 N 0 -4.966900e-05 -4.584331e-05  4.611e-06
-	2023-06-28 14:11:28.233572 PHCV    - N -       -       -4.584331e-05  4.611e-06
-	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
-	2023-06-28 14:11:28.742737 PHCV    0 N 0  4.902700e-05  5.361388e-05  4.611e-06
-	2023-06-28 14:11:28.742737 PHCV    - N -       -        5.361388e-05  4.611e-06
-
-PTP clock setup
----------------
-
-The following udev rule can be used to get a symlink /dev/ptp_virtio to the
-UTC clock:
-
-	SUBSYSTEM=="ptp", ATTR{clock_name}=="Virtio PTP UTC", SYMLINK += "ptp_virtio"
-
-The following chrony configuration directive can then be added in
-/etc/chrony/chrony.conf to synchronize to the Virtio UTC clock:
-
-	refclock PHC /dev/ptp_virtio refid PHCV poll -1 dpoll -1
-
-RTC interface
--------------
-
-This patch series adds virtio_rtc as a generic Virtio driver, including
-both a PTP clock driver and an RTC class driver.
-
-Feedback is greatly appreciated.
-
-[1] https://lore.kernel.org/virtio-comment/20231218064253.9734-1-peter.hilber@opensynergy.com/
-[2] https://chrony.tuxfamily.org/
-[3] https://lore.kernel.org/lkml/20231215220612.173603-1-peter.hilber@opensynergy.com/
-[4] https://github.com/OpenSynergy/linux.git virtio-rtc-v3-on-master
-
-v3:
-
-- Update to conform to virtio spec RFC v3 (no significant behavioral
-  changes).
-
-- Add RTC class driver with alarm according to virtio spec RFC v3.
-
-- For cross-timestamp corner case fix, switch back to v1 style closed
-  interval test (Thomas Gleixner).
-
-v2:
-
-- Depend on patch series "treewide: Use clocksource id for
-  get_device_system_crosststamp()" to avoid requiring a clocksource pointer
-  with get_device_system_crosststamp().
-
-- Assume Arm Generic Timer will use CP15 virtual counter. Drop
-  arm_arch_timer helper functions (Marc Zyngier).
-
-- Improve cross-timestamp fixes problem description and implementation
-  (John Stultz).
-
-
-Peter Hilber (7):
-  timekeeping: Fix cross-timestamp interpolation on counter wrap
-  timekeeping: Fix cross-timestamp interpolation corner case decision
-  timekeeping: Fix cross-timestamp interpolation for non-x86
-  virtio_rtc: Add module and driver core
-  virtio_rtc: Add PTP clocks
-  virtio_rtc: Add Arm Generic Timer cross-timestamping
-  virtio_rtc: Add RTC class driver
-
- MAINTAINERS                          |    7 +
- drivers/virtio/Kconfig               |   62 ++
- drivers/virtio/Makefile              |    5 +
- drivers/virtio/virtio_rtc_arm.c      |   22 +
- drivers/virtio/virtio_rtc_class.c    |  269 +++++
- drivers/virtio/virtio_rtc_driver.c   | 1357 ++++++++++++++++++++++++++
- drivers/virtio/virtio_rtc_internal.h |  122 +++
- drivers/virtio/virtio_rtc_ptp.c      |  342 +++++++
- include/uapi/linux/virtio_rtc.h      |  230 +++++
- kernel/time/timekeeping.c            |   24 +-
- 10 files changed, 2428 insertions(+), 12 deletions(-)
+ drivers/virtio/Kconfig          | 13 +++++++++++++
+ drivers/virtio/Makefile         |  1 +
+ drivers/virtio/virtio_rtc_arm.c | 22 ++++++++++++++++++++++
+ 3 files changed, 36 insertions(+)
  create mode 100644 drivers/virtio/virtio_rtc_arm.c
- create mode 100644 drivers/virtio/virtio_rtc_class.c
- create mode 100644 drivers/virtio/virtio_rtc_driver.c
- create mode 100644 drivers/virtio/virtio_rtc_internal.h
- create mode 100644 drivers/virtio/virtio_rtc_ptp.c
- create mode 100644 include/uapi/linux/virtio_rtc.h
 
-
-base-commit: 2c41b211d72c1eb350c7629a8c85234fef0d12c1
+diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+index 8542b2f20201..d35c728778d2 100644
+--- a/drivers/virtio/Kconfig
++++ b/drivers/virtio/Kconfig
+@@ -205,6 +205,19 @@ config VIRTIO_RTC_PTP
+ 
+ 	 If unsure, say Y.
+ 
++config VIRTIO_RTC_ARM
++	bool "Virtio RTC cross-timestamping using Arm Generic Timer"
++	default y
++	depends on VIRTIO_RTC_PTP && ARM_ARCH_TIMER
++	help
++	 This enables Virtio RTC cross-timestamping using the Arm Generic Timer.
++	 It only has an effect if the Virtio RTC device also supports this. The
++	 cross-timestamp is available through the PTP clock driver precise
++	 cross-timestamp ioctl (PTP_SYS_OFFSET_PRECISE2 or
++	 PTP_SYS_OFFSET_PRECISE).
++
++	 If unsure, say Y.
++
+ endif # VIRTIO_RTC
+ 
+ endif # VIRTIO_MENU
+diff --git a/drivers/virtio/Makefile b/drivers/virtio/Makefile
+index 4d48cbcae6bb..781dff9f8822 100644
+--- a/drivers/virtio/Makefile
++++ b/drivers/virtio/Makefile
+@@ -15,3 +15,4 @@ obj-$(CONFIG_VIRTIO_DMA_SHARED_BUFFER) += virtio_dma_buf.o
+ obj-$(CONFIG_VIRTIO_RTC) += virtio_rtc.o
+ virtio_rtc-y := virtio_rtc_driver.o
+ virtio_rtc-$(CONFIG_VIRTIO_RTC_PTP) += virtio_rtc_ptp.o
++virtio_rtc-$(CONFIG_VIRTIO_RTC_ARM) += virtio_rtc_arm.o
+diff --git a/drivers/virtio/virtio_rtc_arm.c b/drivers/virtio/virtio_rtc_arm.c
+new file mode 100644
+index 000000000000..5185b130b3f1
+--- /dev/null
++++ b/drivers/virtio/virtio_rtc_arm.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Provides cross-timestamp params for Arm.
++ *
++ * Copyright (C) 2022-2023 OpenSynergy GmbH
++ */
++
++#include <linux/clocksource_ids.h>
++
++#include <uapi/linux/virtio_rtc.h>
++
++#include "virtio_rtc_internal.h"
++
++/* see header for doc */
++
++int viortc_hw_xtstamp_params(u16 *hw_counter, enum clocksource_ids *cs_id)
++{
++	*hw_counter = VIRTIO_RTC_COUNTER_ARM_VIRT;
++	*cs_id = CSID_ARM_ARCH_COUNTER;
++
++	return 0;
++}
 -- 
 2.40.1
 
