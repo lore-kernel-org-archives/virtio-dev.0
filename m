@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14182-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14183-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A62CC3DA6E
-	for <virtio-dev@archiver.kernel.org>; Thu, 21 Dec 2023 01:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99EF0C3DA6E
+	for <virtio-dev@archiver.kernel.org>; Thu, 21 Dec 2023 01:42:12 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 139B92168F
-	for <virtio-dev@archiver.kernel.org>; Thu, 21 Dec 2023 01:35:42 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 061BC2B026
+	for <virtio-dev@archiver.kernel.org>; Thu, 21 Dec 2023 01:42:12 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9E8519866E4
-	for <virtio-dev@archiver.kernel.org>; Thu, 21 Dec 2023 01:35:41 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CCF339865E0
+	for <virtio-dev@archiver.kernel.org>; Thu, 21 Dec 2023 01:42:11 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 263DB9867F0; Thu, 21 Dec 2023 01:35:41 +0000 (UTC)
+	id B225D9865B8; Thu, 21 Dec 2023 01:42:11 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,31 +24,31 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id DA1049865BA
-	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Dec 2023 01:34:34 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A27B79865B6
+	for <virtio-dev@lists.oasis-open.org>; Thu, 21 Dec 2023 01:42:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 5GzoFC02M1m6eVyw4rH_Aw-1
+X-MC-Unique: llxkykYLPQarR6YG8lHsmA-1
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703122471; x=1703727271;
+        d=1e100.net; s=20230601; t=1703122928; x=1703727728;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lUQYabeYmfUNLEEayXR9tXHsPjmPmwxj/YDw0KKnj5E=;
-        b=sth2secgEWE7tG/BNxQwOS9NqB9ONZWXazFVXc997r7SEfWd5+sfVmoI4Zh3IsN/Io
-         MhJvmV2Bkgbst9teHUZfVqqNN7AfL/UjBD6BxyDmi3wHitLn/mhzyctXELGSab48yXN1
-         xBDvnb6g1GkfnK4FK/dlWkEdS5ZqBo3YWIEVX6hswd8fFwd2AnY4u8o+rV+VNisn0YeI
-         UUMoc927AqFTt79tRDFyOYSkAQYhBLUvOt5lJKfCSd6bVByb5T3zYsX8sbzqEyXTBwzV
-         X8C7j5Kp5HcTOrQ8qSiewTPVbyz2RNsxjMXAjPCtCLSsT5/rrH3hC5EBQVu49FLIi6Bc
-         nF3Q==
-X-Gm-Message-State: AOJu0Yzgg7XU8wcXi4JvA0sYCwvjAhhwNw3xMFX8B8+Y2Nn4TDxrhfUQ
-	k+JVDSHwxMo+jUDMKfHn2viFFA0pSIzkMADZhAG/7ZJQ+GE5GkxXGySlxv6ItT+Iv66EUcRNbEi
-	sGWOdDowWK67vOYyaf4zVP/uPTlOgUgcH85zG/JXcX/8B
-X-Received: by 2002:a05:6e02:16cb:b0:35d:5995:7992 with SMTP id 11-20020a056e0216cb00b0035d59957992mr31645455ilx.44.1703122471064;
-        Wed, 20 Dec 2023 17:34:31 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHwOqcPWke/L5fT9aCiJA4RHsH8Fuk/PbNVtuqm+LxSSJqo3Ke9dIi/6HB+QOjM094CzXWN5yBCTT6IAFPHe3k=
-X-Received: by 2002:a05:6e02:16cb:b0:35d:5995:7992 with SMTP id
- 11-20020a056e0216cb00b0035d59957992mr31645443ilx.44.1703122470842; Wed, 20
- Dec 2023 17:34:30 -0800 (PST)
+        bh=Y48A5OHak+fbraYydmbuzmq2nQ+p2U/BXctHNPiL8r4=;
+        b=ZdGNhnhDB/+XJ4pt5iGkkhqWTfjqfoOaSjNVmrUZbVHu562y0pp5vJ4mb00EePgRu4
+         UFkjTGj6oZMetvsCsftqnfjGWV4t+G1XMm3aM/Mim/JLYDx46ygBtBUooRuQ/pC/LlBu
+         yCUyAj1SMMblgbThp59rgCP92ob/ndtsS3tfkcqElqPprBBCcIbnH5fqyJDPhiGXVefg
+         q/0G8Raqtxlq5tCR5DctPtLEFi1DIq7SMYovbbA6+72mHd4XQPSaCnui9ZhycZ+u3jBO
+         tx9D89eiw3OIQzARZmB3YE4d9qHuL9VoFZW1ydTktQqna+b5jVo8ScgUjZl2bgYKIKB9
+         VKig==
+X-Gm-Message-State: AOJu0YxtLSvD3z3GTyiOJwxgCWDglkYMGJtsesHlu3jkZybFrf2Bm4Vx
+	/PCWq9jgJQQubmaoboSZqAADmiMbWESNlQo4uJOc5OvkfHYed0g5XTsKJD5HtL1jgF+4uaEZIlm
+	Zjt/tFDnBPB/cRJii8KxFObpIVMsReSaWYZx9atrkQTyq
+X-Received: by 2002:a05:6a20:7d9f:b0:18f:ca74:fc0 with SMTP id v31-20020a056a207d9f00b0018fca740fc0mr677817pzj.50.1703122928158;
+        Wed, 20 Dec 2023 17:42:08 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHoz1UQMgtSEmW2VnSCKuFfqgMDAKC5zEuHuh9p7BVMLD1z6c6R6pkqCoPhVq4gzYTGta4Vx1VeVtn8Ie5D3Ic=
+X-Received: by 2002:a05:6a20:7d9f:b0:18f:ca74:fc0 with SMTP id
+ v31-20020a056a207d9f00b0018fca740fc0mr677807pzj.50.1703122927891; Wed, 20 Dec
+ 2023 17:42:07 -0800 (PST)
 MIME-Version: 1.0
 References: <20231212032713-mutt-send-email-mst@kernel.org>
  <bfd25f86-4292-45d2-a7a2-fe61bde0edb4@linux.alibaba.com> <b739d275-3664-4509-8a91-f19690719475@linux.alibaba.com>
@@ -56,12 +56,13 @@ References: <20231212032713-mutt-send-email-mst@kernel.org>
  <6d9353f7-2899-4ba9-8aef-2431c9362207@linux.alibaba.com> <CACGkMEsh9h_syGag48DL9rSSH2Yp4Ht-ES4gA-5rv16Lih_tJw@mail.gmail.com>
  <df90d58d-7e4e-44d7-8896-5fc5b131c164@linux.alibaba.com> <CACGkMEsxsLP=hnybYi2fiKXFq1U1zo+EuKnzfnbT3K_Wcrug5Q@mail.gmail.com>
  <68b0d00b-8b3b-4bd4-9e7c-c3b811dafd8c@linux.alibaba.com> <20231220020428-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20231220020428-mutt-send-email-mst@kernel.org>
+ <587686d2-79c7-41a3-aad0-cadec070694c@linux.alibaba.com>
+In-Reply-To: <587686d2-79c7-41a3-aad0-cadec070694c@linux.alibaba.com>
 From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 21 Dec 2023 09:34:19 +0800
-Message-ID: <CACGkMEspotRCqjgNGbmBfR9SH8P_um4me7TVsomnaJ6Gc9pSmA@mail.gmail.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Heng Qi <hengqi@linux.alibaba.com>, 
+Date: Thu, 21 Dec 2023 09:41:56 +0800
+Message-ID: <CACGkMEuqEx7Q5-Fz3=cQ72mY94y7p07B3LZE5HLC5QmZTrygYQ@mail.gmail.com>
+To: Heng Qi <hengqi@linux.alibaba.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, 
 	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>, 
 	Yuri Benditovich <yuri.benditovich@daynix.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
 	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
@@ -69,45 +70,122 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH v5] virtio-net:
- device does not deliver partially checksummed packet and may validate the checksum
+Subject: [virtio-dev] Re: [virtio-comment] Re: [virtio-dev] Re: [virtio-comment] Re: [PATCH
+ v5] virtio-net: device does not deliver partially checksummed packet and may
+ validate the checksum
 
-On Wed, Dec 20, 2023 at 3:35=E2=80=AFPM Michael S. Tsirkin <mst@redhat.com>=
- wrote:
+On Wed, Dec 20, 2023 at 5:31=E2=80=AFPM Heng Qi <hengqi@linux.alibaba.com> =
+wrote:
 >
-> On Wed, Dec 20, 2023 at 02:30:01PM +0800, Heng Qi wrote:
-> > But why are we discussing this?
 >
-> I think basically at this point everyone is confused about what
-> the feature does. right now we have packets
-> with
-> #define VIRTIO_NET_HDR_F_NEEDS_CSUM     1       -> partial
-> #define VIRTIO_NET_HDR_F_DATA_VALID     2       -> unnecessary
-> and packets without either                      -> none
 >
-> if both 1 and 2 are set then linux uses VIRTIO_NET_HDR_F_NEEDS_CSUM but
-> I am not sure it's not a mistake. Maybe it does not matter.
+> =E5=9C=A8 2023/12/20 =E4=B8=8B=E5=8D=883:35, Michael S. Tsirkin =E5=86=99=
+=E9=81=93:
+> > On Wed, Dec 20, 2023 at 02:30:01PM +0800, Heng Qi wrote:
+> >> But why are we discussing this?
+> > I think basically at this point everyone is confused about what
+> > the feature does. right now we have packets
+> > with
+> > #define VIRTIO_NET_HDR_F_NEEDS_CSUM     1       -> partial
+> > #define VIRTIO_NET_HDR_F_DATA_VALID     2       -> unnecessary
+> > and packets without either                    -> none
+> >
+> > if both 1 and 2 are set then linux uses VIRTIO_NET_HDR_F_NEEDS_CSUM but
+> > I am not sure it's not a mistake. Maybe it does not matter.
+> >
+> > What does this new thing do? So far all we have is "XDP will turn it on=
+"
+> > which is not really sufficient. I assumed it somehow replaces
+> > partial with complete. That would make sense for many reasons,
+> > for example the checksum fields in the header can be reused
+> > for other purposes. But maybe not?
 >
-> What does this new thing do? So far all we have is "XDP will turn it on"
-> which is not really sufficient. I assumed it somehow replaces
-> partial with complete.
+>
+> Hello Jaosn and Michael. I've summarized our discussion so far, so check
+> it out below. Thank you very much!
+>
+>  From the nic perspective, I think Jason's statement is correct, the
+> nic's checksum capability and setting DATA_VALID in flags
+> should not be determined by GUEST_CSUM feature. As long as the rx
+> checksum offload is turned on, DATA_VALID
+> should be set. (Though we now bind GUEST_CSUM negotiation with rx
+> checksum offload.)
 
-It looks not? CHECKSUM_COMPLETE is less optimal than
-CHECKSUM_UNNCESSARY as validation is still needed.
+I think we can fix this in the driver. Probably by just advertising
+RXCSUM regardless of GUEST_CSUM?
 
-If I understand correctly, this new thing wants DATA_VALID only.
+>
+> Therefore, we need to pay attention to the information of rx checksum
+> offload. Please check it out:
+>
+> Devices that comply with the below description are said to be existing
+> devices:
+>      "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST*
+> set flags to zero and SHOULD supply a fully checksummed packet to the
+> driver."
+>
+> As suggested by Jason, devices that comply with the below description
+> are said to be new devices:
+>      "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MAY* set
+> flags to zero and SHOULD supply a fully checksummed packet to the driver.=
+"
+>
+>
+> 1. Rx checksum offload is turned on
+> GUEST_CSUM feature is not negotiated. (now it is only used to indicate
+> whether the driver can handle partially checksummed packets)
+>     a. Existing devices continue to set flags to 0;
+
+Note that existing devices can set DATA_VALID regardless of rx csum.
+
+>     b. New devices may validate the packets and have flags set to
+> DATA_VALID;
+>     c. Migration.
+>         Migration of existing devices continues to check GUEST_CSUM
+> feature and rx checksum offload;
+>         Migration of new devices only check rx checksum offload;
+>         Without updating the existing migration management and control
+> system, existing devices cannot be migrated to new devices, and new
+> devices cannot be migrated to existing devices.
+
+Yes.
+
+>     d. How offload should be controlled now needs attention. Should
+> CTRL_GUEST_OFFLOADS still issue GUEST_CSUM feature bit to control the rx
+> checksum offload?
+
+So the only thing we need to do for the driver is, when rx csum is disabled=
+:
+
+1) drop packets with NEEDS_CSUM
+2) use CHECKSUM_NONE for the rest
+
+?
+
+>
+> 2. The new FULLY_CSUM feature must disable NEEDS_CSUM.
+> The device may set DATA_VALID regardless of whether FULLY_CSUM or
+> GUEST_CSUM is negotiated.
+>     a. Rx fully checksum offload is still controlled by
+> CTRL_GUEST_OFFLOADS carrying GUEST_FULLY_CSUM.
+>     b. When the rx device receives a partially checksummed packet, it
+> should calculate the checksum and delivering a fully checksummed packet
+> to the driver.
+>
+>
+> So now, if we modify the existing spec as Jason suggested, I think it's O=
+K.
+> But we need to find out how to control rx checksum offload. WDYT?
+
+See above, the driver can just not set CHECKSUM_UNNECESSARY in this case.
 
 Thanks
 
-
-
-> That would make sense for many reasons,
-> for example the checksum fields in the header can be reused
-> for other purposes. But maybe not?
 >
+> Thanks!
 >
-> --
-> MST
+> >
+> >
 >
 
 
