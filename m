@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14246-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14247-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1810BC3DA79
-	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 13:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E0D57C3DA79
+	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 15:09:33 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 52214F3F4D
-	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 13:48:03 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9E3432B150
+	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 15:09:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3090398644F
-	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 13:48:03 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 388CC986511
+	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 15:09:32 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 16FAD986367; Mon, 15 Jan 2024 13:48:03 +0000 (UTC)
+	id 1E8D2986396; Mon, 15 Jan 2024 15:09:32 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,161 +24,246 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 0667498636D
-	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Jan 2024 13:48:03 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0E1EB9863A8
+	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Jan 2024 15:09:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1705326478.493000
-X-TM-MAIL-UUID: 0ec476b0-0924-45b3-808f-7180926d3fb2
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z0lZ2kDUdv7uNL4ESVF1haAJeKoct6yLUp1ji5ZRsJK1z1HidiJowcoll/GWjKFigIGuJIDniAK5ZfmaTpgee6fqJAZeBUxLVK6hgjRpqRCMdjqUP8WUv9WZ+8M6lGMz+Ezf2BQGN/M8ZCxY8+13JVxOrKGq8gbP1MA+LhGv4zlcnrV1BnkW8WJYfXYj7PfPXNqfEMOQzJisd6o9K06pCrNCptAcztW/x3Ss+eV+E7+3KhN5qfVpZQ+i4Su5+Rz0ug9VgOXql9nAsIxBQQl0IW2cfd84MfjTYGFMPXffjNf5LRUEhkJOI5l3Ve/xQdvn/E9hqQsxkHHNiEyN/cv7uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PX7hMiwAgN2yoxYyC4aL79C73pQGqe0LsokCocL4p64=;
- b=Rgy2eIF/4elgEZrfesX2TZkoIsLUeFG4qfEatXb0ImwtPrZOajCuyS4jsmplwju9RxLJGtxHb9icGIt1z7dZaqy1XRAowqyhSrkE8/OGyJZLZ5l+2G6zpcdvND/TW8VL5buo/DgOrX29YZXIZ+vTY/zt+8x2t+S8XkemxnhucgrbJcjBFVVdRM5BU5m0N0ghfqU11R5QyCUiRYl34y991SsLWWgTkqK6W7VLXDlCGcU5GxUNgHPDEL9AGD9cHRCdBIWEEKMyawl8j0hErTFe8wnbQU6g5aryrg+seJWC5EpOMIug0umrUDsljSX0trtrBch+ofnTK2DXjG45UJ4qfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-From: Aiswarya Cyriac <Aiswarya.Cyriac@opensynergy.com>
-To: Marcin Radomski <dextero@google.com>
-CC: "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, Anton
- Yakovlev <Anton.Yakovlev@opensynergy.com>, "jasowang@redhat.com"
-	<jasowang@redhat.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "mst@redhat.com" <mst@redhat.com>,
-	"perex@perex.cz" <perex@perex.cz>, "tiwai@suse.com" <tiwai@suse.com>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-	"virtualization@lists.linux-foundation.org"
-	<virtualization@lists.linux-foundation.org>, "vill@google.com"
-	<vill@google.com>
-Thread-Topic: [RESEND PATCH 0/1] ALSA: virtio: add support for audio controls
-Thread-Index: AQHaRJL4RLSqE9IkI0CpBMXWFPV0yLDa54Lv
-Date: Mon, 15 Jan 2024 13:47:57 +0000
-Message-ID:
- <FR3P281MB252791030510D4334B3EB702E66C2@FR3P281MB2527.DEUP281.PROD.OUTLOOK.COM>
-References: <20230209115916.917569-1-aiswarya.cyriac@opensynergy.com>
- <20240111133320.2717702-1-dextero@google.com>
-In-Reply-To: <20240111133320.2717702-1-dextero@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: FR3P281MB2527:EE_|FR2P281MB2043:EE_
-x-ms-office365-filtering-correlation-id: c943a15b-0e2d-4ac5-0bf2-08dc15d094ab
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 5zQnSK+jlXxe5aiItfSjO2oopAA6/syOgdq/3REKzfyc0GI6GS9EvmiplI3MooZ1npZ8Ikc7JqBcsUgPmrmUi8h/tuzU6BCWuDfPiBIOUtS1gzUv2BiH4O00HAD+S+j5weyKQRWlNdGKvfFskc3zBFayDVoQWzgrJAP6PmlDg7qGkR0oaJBoMwFR/9/+uVG2teZvNVYvuBtPV5P/GRw2jWVpDx8qRE2oZY/WbJ1fkRfUGj8KBqbclocL01r0VQBi67BlUrhUUM8GWxyn9B48G+OrL4THUsh7F+YPTYVg2oa/8JIG8P2QEDRos2WzbN+aGt62e3EE7TqFEm0MJgrDciiiyN3XPYZ16XCZvg77Zv5msBMi86YK+KtVGW4i78uPoJ8Psxo9WdkcWtUdJdPe5Z7n22eMQSDC0xNnxhF6FTufbW0AVku3oYXXGrRGmKYr/RMi3npvHVnPI+kVshET8pf997j44K5SUvazLxDVvt4cw0PmGfmUzYiy2/41TLj4d5aLfpUd4IuexLo6rQNPAQ7/20SGDxY0im4dYCgvQBkrfKN4vs2rnZwXel2TClhUIIDs1zezynDejyP3QVtG3Uv0Bn0vOMAREeSr0wP9Lgc2XqVAyt2qeoR2qybo5gRiBGgeNm+wV9WFi6iORol9ng==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:FR3P281MB2527.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(39830400003)(366004)(346002)(136003)(376002)(396003)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(66899024)(38100700002)(122000001)(38070700009)(2013699003)(15974865002)(86362001)(26005)(83380400001)(42186006)(41300700001)(316002)(66946007)(71200400001)(54906003)(9686003)(53546011)(76116006)(6916009)(966005)(66446008)(64756008)(66476007)(66556008)(478600001)(33656002)(5660300002)(2906002)(4326008)(7416002)(8936002)(52536014)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?cVBIQmtQWTFKR041eG5GYXlHZkNQR0g0Q1E1dGRhZEpCaC9pbHM3d3duenNo?=
- =?utf-8?B?Y21pVUhMbGZCU1p4ZTB2ZnNzZDgwa2FnSHNKRUxYM01YdDFNR1R0bHlUeGMz?=
- =?utf-8?B?ZEMwN1FkZ3phL21vc295cUFqSk5hd1RwYjB5Y0ZydjNHcnM5cDhOdzQ1TjBJ?=
- =?utf-8?B?UGNLb2w5UC9MVnBLdXRFU0htaGp6ZWFwZytNeFpwM0RFM09jeWYya0JiT0JY?=
- =?utf-8?B?eTgzMnRiWHlISnNyNlZ6clhzVlZSWmdVUVpvMklzYUR0OUFBbzVOY2ZtWHg1?=
- =?utf-8?B?U09pUC9VeE0xWWFjdDh2SVFQQXFIWTVHcW5LWDh4WEZsbE1JR3FJN2hxb294?=
- =?utf-8?B?Y2hxekdSSjhDb1FqRVVXNXhYNzlXTTRlVlRBZlNKOFlqNUFSYzkrZ1pqQ0lm?=
- =?utf-8?B?Z1VQZGZERXJMYmZ3R0J4N2h2cEhKWERsd3B5dDJsbU4zY013VWZySTZySHZ0?=
- =?utf-8?B?dENkRUtHdkp4VFMySkQ3VFRkRk05SE5qZmtVeW52enk0cTdpTG56UGZCMFZs?=
- =?utf-8?B?RVJzditXQjNxNVZyakVTM3FUalcwVDZhSlB1Znd2QlpUaGNsek54Y0RUaEN5?=
- =?utf-8?B?MFZmMzVXTy9MVktyaTN5SmVUdW1HNkprUUFBZ29jOGF0Zmo0b3cxUGFTdVVU?=
- =?utf-8?B?Qk5EdGlmM0NabkFTNUpQRndqUENxbUZxMk1GamplNzEwYzN4eklreGdPY2N6?=
- =?utf-8?B?WUpaUElxRjg1WkFtQkpmRkl4MkZQa21PN1ozTDVUV0RLbzBWYnZmQ0h3cTMr?=
- =?utf-8?B?SnkvcWFWSFJwdTlsMGF5MDhqSy9tZVluak4rZGE2VjhCUkZFaUtreUxEay93?=
- =?utf-8?B?N3BHamNycndXZmMyYllmZXo1cE4zdk9pck93WnNxYXFZSWVBZy9XcDY2MVpO?=
- =?utf-8?B?RkdROFY2dk9uaE9rOHlwNDNFRXFPK2hvT1FmcGVYS3p1N1VQaStWTDFXUlZo?=
- =?utf-8?B?SzdOOG1uaUhhbXpiTW9tQVNBd3dSY1RHWUxZSEFBQW5yYmppK1BUNVVSdUlR?=
- =?utf-8?B?NkRLSjBoY1hxME1vOEszUzkzbW9EWHNVQ0VHQ1BVM1BDYlllWEl4NEo5YkVr?=
- =?utf-8?B?MnQzT3U1WjlEQnBxU3Zsd0JWMnlUdXRlUEpBL1pBRDVhODFpR29UMGNzZGdF?=
- =?utf-8?B?UXlPT1BpRUVveGkvdG5KVGVmaGxxNWxVaWJIN3FtaEp1OEJPVUFGMm5hT3NM?=
- =?utf-8?B?Z205QW9EYWkzMWNHWEN3NjVnSDJiSWxzNjV5Rkc3bjhubUhjQXlYa1dhcDR4?=
- =?utf-8?B?QVNHNUNSL1lyQU9xcEJHY3d3L0ZqUzV1QWF2QVhiSE4wVG4xa2JmWG1sL2tZ?=
- =?utf-8?B?OFloZHF1MGl5aUVidFpvb01GSTAvRnpnMG1KNlZOL0h5SjNUT0xKN01LYVhX?=
- =?utf-8?B?bXBRNzdhQVJkamJBalNmUU9qcjNuUGs5ZVdJYlFyOVl5bGh6eE1kalcwR2lu?=
- =?utf-8?B?MmZkTVgwajZqT2tOUGhobjIrdGVjOE9rQnRJVjF5YVUrRE5ONFpMTjFMcmNi?=
- =?utf-8?B?NE0wTWx3WWZtSkF1WjZUeG41cFJsby9zR3Jta3Z4UEZCdXB0WWd0b05GcU1n?=
- =?utf-8?B?S3Q5dHNTTEpmaWUvVEhBWlI0ZGU3ZG1EdFR4QkNJeVExT0lMSTJyTTAxQVJU?=
- =?utf-8?B?RG9qMDRYLzJremdyRVRqMzhTb0VOM2NScG92dll5WGVXcnlyRXpTNHIvQmhU?=
- =?utf-8?B?V3k2VFBjMmFjRnBGUkQ2MmdLVkRBYUVtSlpnNjZzUEx3KzBXKyt1VUFSampU?=
- =?utf-8?B?cW9DeU1XdnpEalNjT01GWVZnbzMySjBhK2hOSHVQUlh1Z0xIcjg0ajQ2dHR0?=
- =?utf-8?B?QWdQNFR1MHZrU3h1WDlvRzNrcE9heFJWUlNFMy9DdXlPZmlXV1djWFdwalpu?=
- =?utf-8?B?bzQwemlDeGc5RGl6RDdJd0Z5QW85V1ZhTTVsNEhOSzRRMmhGL29DWnMrNFVp?=
- =?utf-8?B?UXZyMWUxK1FCZC9oRE05ZGVmS1JjWUJTM25aMUVmVzJvMzF0TENSclZ6WjJt?=
- =?utf-8?B?STJNRUxWTWFkTXMzNkl6VG0xNG1nSDI4d0VVOVZuUEpQMnRNaWJZVmdDaWRo?=
- =?utf-8?B?a2s5NkQ5OEUrZURVbXlNaW9jVHhJZUxVbXR6clZCVElUODNGZzh1Q3pzV1pG?=
- =?utf-8?Q?WjRM=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+X-MC-Unique: NmA3R31kNpqwkBIaBPyrGQ-1
+From: Cornelia Huck <cohuck@redhat.com>
+To: Igor Skalkin <Igor.Skalkin@opensynergy.com>,
+ virtio-dev@lists.oasis-open.org, virtio-comment@lists.oasis-open.org,
+ luiz.dentz@gmail.com, mst@redhat.com
+Cc: marcel@holtmann.org, johan.hedberg@gmail.com, jasowang@redhat.com,
+ boris.le.labousse@opensynergy.com, Igor Skalkin
+ <Igor.Skalkin@opensynergy.com>
+In-Reply-To: <20231207163721.26737-2-Igor.Skalkin@opensynergy.com>
+Organization: "Red Hat GmbH, Sitz: Werner-von-Siemens-Ring 12, D-85630
+ Grasbrunn, Handelsregister: Amtsgericht =?utf-8?Q?M=C3=BCnchen=2C?= HRB
+ 153243,
+ =?utf-8?Q?Gesch=C3=A4ftsf=C3=BChrer=3A?= Ryan Barnhart, Charles Cachera,
+ Michael O'Neill, Amy
+ Ross"
+References: <20231207163721.26737-1-Igor.Skalkin@opensynergy.com>
+ <20231207163721.26737-2-Igor.Skalkin@opensynergy.com>
+User-Agent: Notmuch/0.37 (https://notmuchmail.org)
+Date: Mon, 15 Jan 2024 16:09:27 +0100
+Message-ID: <87zfx6my54.fsf@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: FR3P281MB2527.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: c943a15b-0e2d-4ac5-0bf2-08dc15d094ab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2024 13:47:57.0744
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: D1n+ZBvcBPa4lMT2ThC6Tg8thbbU0HkRlQfuLo9ngBvOGWqh3XHWuyy9XpDjfaOIpJwPQsLRhGAwaHIylA5o2Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2P281MB2043
-X-TM-AS-ERS: 104.47.7.168-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1015-28120.006
-X-TMASE-Result: 10--9.439700-4.000000
-X-TMASE-MatchedRID: byfwvk+IcRn5ETspAEX/nlqQSvqaPnYDQahV9NsL7Q+6rP6I4JtCoaPG
-	P5RJ5YgIPXUSCAF3o32jpqzOtfSNKEBAqYs8dAC5ugsKg3hgnMwwoEy+KKX0sulSG3LMOWfSChN
-	NSoowYAcaBWDNP8bM82g9lCkO6GnTkBNX7ctPCHUCzN6q2KcSe16UsWSgw8xYPtCfWUwJAdj8qY
-	Xo9dS9IQFotqoxYumbJufhTdofzCzXYXKnv16li4/LriVzPuf5OTa4xErHZffFy+Kv6e1n37asX
-	TFkoEYA+RdGqwirhhKk2eYHfOQSdQAJWpjAfSOIJtab7uGKaWb4rwQRo9u0sq3/rEOakn8sP9OL
-	H1rDZcJMf5hXxVDJJXkIQKrRR+YxmXejpL0l0EOpTAyXiqoTW7ueT4Q7MJk103HPJtwvmXfQEYQ
-	l671XeiVNJxt7aXvghG2qikEpQGVMNQ905ddvBRivhRZCXQyQ3/k8QyYVYXjXOD3csUq+p0Cb3g
-	/ewbHB
-X-TMASE-XGENCLOUD: 1206b4b9-35eb-43ee-8504-c898865337b7-0-0-200-0
-X-TM-Deliver-Signature: 51743A03635F30AC53171FD2D8C2EF29
-X-TM-Addin-Auth: b556KGzdewcOIz/saonBDlrSi7Rf19pLy+KNKmPYayF9ILgFvIE2qYNjAaQ
-	vjyujrAND2ePo1xPyJ/XbSnkhKLtV5+axGsoAVpQ1oQcTRX8qlW6N0PvU6aKffm9RloQ7AfhVv0
-	31oQBKBU+nHmx7Ei8xWWMjBWyQZhT/vNlh9pDHRVlcMd7SgQft8i6JbnjRsedc4lJOH4+2OeLNZ
-	5VbGDnXSbaHRngCdPgxGh315ff9Qn4P5dfEYsqTJ2CeUS/vFFhHuzc0C2e4LXxXbNVF2JtDYVgr
-	DypAsgFjUSEq4fzw0yNLiYSlkdpgzkgZiLPR7tbfPHjAaknK9CcabXmm/g==.oi+tHB2pO17nYD
-	PZvXUtk9FeLfc20nZ32Oqpyr9cnU7Bw/CLxXHfWEtVLbmr4vcsem8pkCnCF+uCL4mPTHRo71lXn
-	muKhKiz2FZs+zEUJ81Jy+GP8dz7qLm71xVGQV9ELLDTvoa2lGVYIuRK3CPt5j/MhmkrZIwMiYzk
-	wCPxS/uZgzY/A9Gsx+4LNfXk+blpHL8IuefgwpfnGJywmMk3i5lYjwamsEJtgmAmlRzWam8cGgC
-	SRiThMQzcav3tXdWT78hzK9A2GXxJC3yDkYDFJHBrpMh9QOsAd8x7heDlWhUEPJA0IXX+KUNsuC
-	bw73wKp/K7mwh63sfGKUpbGkO+Dg==
-X-TM-Addin-ProductCode: EMS
-Subject: [virtio-dev] Re: [RESEND PATCH 0/1] ALSA: virtio: add support for audio controls
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.5
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH v2 1/1] RFC: virtio-bt: add virtio BT
+ device specification
 
-SGkgTWFyY2luLA0KDQpJIGhhdmUgcHVzaGVkIHYyIG9mIHRoZSBwYXRjaGVzIHdpdGggYSBmaXgg
-dG9kYXkuIFRoZSBmZWF0dXJlIGRldmVsb3BtZW50IGlzIGNvbXBsZXRlIGFuZCB0aGUgcGF0Y2gg
-YXdhaXRzIHJldmlldy4NClRoYW5rcyBmb3IgYW55IHN1cHBvcnQgaW4gdGVzdGluZyBvciByZXZp
-ZXcuDQoNCkJlc3QgUmVnYXJkcywNCkFpc3dhcnlhIEN5cmlhYw0KU29mdHdhcmUgRW5naW5lZXIN
-CuKAiw0KT3BlblN5bmVyZ3kgR21iSA0KUm90aGVyc3RyLiAyMCwgMTAyNDUgQmVybGluDQoNCkVN
-YWlsOiBhaXN3YXJ5YS5jeXJpYWNAb3BlbnN5bmVyZ3kuY29tDQoNCnd3dy5vcGVuc3luZXJneS5j
-b20NCkhhbmRlbHNyZWdpc3Rlci9Db21tZXJjaWFsIFJlZ2lzdHJ5OiBBbXRzZ2VyaWNodCBDaGFy
-bG90dGVuYnVyZywgSFJCIDEwODYxNkINCkdlc2Now6RmdHNmw7xocmVyL01hbmFnaW5nIERpcmVj
-dG9yOiBSw6lnaXMgQWRqYW1haA0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fDQpGcm9tOiBNYXJjaW4gUmFkb21za2kgPGRleHRlcm9AZ29vZ2xlLmNvbT4NClNlbnQ6
-IFRodXJzZGF5LCBKYW51YXJ5IDExLCAyMDI0IDI6MzMgUE0NClRvOiBBaXN3YXJ5YSBDeXJpYWMN
-CkNjOiBhbHNhLWRldmVsQGFsc2EtcHJvamVjdC5vcmc7IEFudG9uIFlha292bGV2OyBqYXNvd2Fu
-Z0ByZWRoYXQuY29tOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBtc3RAcmVkaGF0LmNv
-bTsgcGVyZXhAcGVyZXguY3o7IHRpd2FpQHN1c2UuY29tOyB2aXJ0aW8tZGV2QGxpc3RzLm9hc2lz
-LW9wZW4ub3JnOyB2aXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgdmls
-bEBnb29nbGUuY29tDQpTdWJqZWN0OiBSZTogW1JFU0VORCBQQVRDSCAwLzFdIEFMU0E6IHZpcnRp
-bzogYWRkIHN1cHBvcnQgZm9yIGF1ZGlvIGNvbnRyb2xzDQoNCkhpIEFpc3dhcnlhLA0KDQpJIHdh
-cyBsb29raW5nIGludG8gVmlydElPIGF1ZGlvIGNvbnRyb2xzIHN1cHBvcnQgaW4gTGludXggYW5k
-IGNhbWUgYWNyb3NzIHRoaXMgcGF0Y2ggc2VyaWVzLCB3aGljaCBzZWVtcyB0byBiZSBtYXJrZWQg
-ImFyY2hpdmVkIiBvbiBwYXRjaHdvcmsgWzBdLiBJIHdvdWxkIGxvdmUgdG8gYmUgYWJsZSB0byB1
-c2UgdGhpcyB3aXRoIG1haW5saW5lIExpbnV4LiBJJ20gd29uZGVyaW5nIGFib3V0IHRoZSBzdGF0
-dXMgb2YgdGhpcyBzZXJpZXMgLSBpcyB0aGUgZmVhdHVyZSBzdGlsbCB1bmRlciBkZXZlbG9wbWVu
-dCwgb3IgYXJlIHRoZXJlIHNvbWUgY29uY2VybnMgdGhhdCBuZWVkIHRvIGJlIGFkZHJlc3NlZD8N
-Cg0KSSdkIGJlIG1vcmUgdGhhbiBoYXBweSB0byBoZWxwIHdpdGggdGVzdGluZy4NCg0KVGhhbmtz
-IGZvciBhbnkgaW5zaWdodHMgb3IgdXBkYXRlcyB5b3UgY2FuIG9mZmVyLg0KDQpSZWdhcmRzLA0K
-TWFyY2luIFJhZG9tc2tpDQoNClswXSBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3Byb2pl
-Y3QvYWxzYS1kZXZlbC9wYXRjaC8yMDIzMDIwOTExNTkxNi45MTc1NjktMi1haXN3YXJ5YS5jeXJp
-YWNAb3BlbnN5bmVyZ3kuY29tLw0K
+On Thu, Dec 07 2023, Igor Skalkin <Igor.Skalkin@opensynergy.com> wrote:
+
+> diff --git a/device-types/bt/description.tex b/device-types/bt/description.tex
+> new file mode 100644
+> index 0000000..98311f4
+> --- /dev/null
+> +++ b/device-types/bt/description.tex
+> @@ -0,0 +1,158 @@
+> +\section{BT Device}\label{sec:Device Types / BT Device}
+> +
+> +The virtio-bt device provides an HCI (Host Control Interface) over VirtIO
+> +link between the guest HCI device and the host HCI backend.
+> +Also, the device can inform the guest driver which operational system / vendor
+> + specific HCI extensions it supports.
+
+Is there any good way to describe this without using guest/host
+terminology while using the typical guest/host setup as an example
+instead?
+
+> +Host Control Interface is described in Bluetooth Core Specification (see
+> +\hyperref[intro:bluetooth-core]{Bluetooth Core Specification}).
+> +
+> +\subsection{Device ID}\label{sec:Device Types / BT Device / Device ID}
+> +
+> +40
+> +
+> +\subsection{Virtqueues}\label{sec:Device Types / BT Device / Virtqueues}
+> +
+> +\begin{description}
+> +\item[0] transmitq
+> +\item[1] receiveq
+> +\end{description}
+> +
+> +\subsection{Feature bits}\label{sec:Device Types / BT Device / Feature bits}
+> +
+> +\begin{description}
+> +\item[VIRTIO_BT_F_VND_HCI (0)]  The device supports vendor-specific HCI
+> +extensions.
+> +\item[VIRTIO_BT_F_MSFT_EXT (1)] The device supports Microsoft HCI Extensions.
+> +\item[VIRTIO_BT_F_AOSP_EXT (2)] The device supports Android HCI Extensions.
+> +\item[VIRTIO_BT_F_CONFIG_V2 (3)] The device uses the second version of the
+> +configuration space structure.
+> +\end{description}
+> +
+> +\devicenormative{\subsubsection}{Feature bits}{Device Types / BT Device / Feature bits}
+> +
+> +The device MAY require the driver to accept the \field{VIRTIO_BT_F_CONFIG_V2}
+> +feature bit and use the second version of the configuration layout, because the
+> +first one is unaligned, which violates the specification.
+
+ISTR that it was "violates the requirements for configuration space
+accesses for some transports"? That might be a bit clearer.
+
+And if that's the case, can we maybe require that the device MUST
+require the driver to accept the feature bit if the transport the device
+uses cannot deal with v1?
+
+> +
+> +The device should offer \field{VIRTIO_BT_F_MSFT_EXT} or
+
+s/should offer/SHOULD offer the/
+
+> +\field{VIRTIO_BT_F_AOSP_EXT} feature bit if it supports correspondingly MSFT or
+> +AOSP extension command sets (see \hyperref[intro:bluetooth-aosp]{Bluetooth AOSP
+> +HCI Extensions}, \hyperref[intro:bluetooth-msft]{Bluetooth MSFT HCI Extensions}
+> +). In case of \field{VIRTIO_BT_F_MSFT_EXT}, device should also set configuration
+
+"the device SHOULD also set the configuration field"
+
+> +field \field{msft_opcode}.
+> +
+> +The device should offer \field{VIRTIO_BT_F_VND_HCI} feature bit and set
+
+s/should offer/SHOULD offer the/
+s/set/set the/
+
+> +configuration field \field{vendor}, if it supports corresponding vendor
+
+s/corresponding/the corresponding/
+
+> +extensions. Also, in case of second configuration version, fields
+
+s/in case of second configuration version/if VIRTIO_BT_F_CONFIG_V2 is negotiated/
+
+> +\field{set_bdaddr_opcode} and \field{quirks} can be set according to this
+
+MAY be set? Or SHOULD be set?
+
+> +\field{vendor}.
+> +
+> +\drivernormative{\subsubsection}{Feature bits}{Device Types / BT Device / Feature bits}
+> +
+> +The driver MUST accept \field{VIRTIO_BT_F_CONFIG_V2} feature bit if offered by
+> +the device.
+> +
+> +The driver SHOULD accept any of the  \field{VIRTIO_BT_F_VND_HCI},
+> +\field{VIRTIO_BT_F_MSFT_EXT} or \field{VIRTIO_BT_F_AOSP_EXT} feature bits if
+> +offered by the device.
+> +
+> +\subsection{Device configuration layout}\label{sec:Device Types / BT Device / Device configuration layout}
+> +BT device supports two versions of the configuration structure layout.
+> +\subsubsection{Device configuration layout: Version 1}\label{sec:Device Types / BT Device / Device configuration layout / Verion 1}
+> +
+> +All fields of this configuration are always available and read-only for the
+> +driver.
+> +\begin{lstlisting}
+> +struct virtio_bt_config {
+> +    u8 type;
+> +    le16 vendor;
+> +    le16 msft_opcode;
+> +} __attribute__((packed));
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +
+> +\item[\field{type}] indicates the type of the device, is it "Primary BR/EDR
+> +controller" or "Alternate MAC/PHYs (AMP) secondary controller" and can have the
+> +following values:
+> +\begin{lstlisting}
+> +#define VIRTIO_BT_CONFIG_TYPE_PRIMARY 0
+> +#define VIRTIO_BT_CONFIG_TYPE_AMP     1
+> +\end{lstlisting}
+> +
+> +\item[\field{vendor}]
+> +Indicates the vendor of the BT device and can have the following mutually
+> +exclusive values:
+> +\begin{lstlisting}
+> +#define VIRTIO_BT_CONFIG_VENDOR_NONE     0
+> +#define VIRTIO_BT_CONFIG_VENDOR_ZEPHYR   1
+> +#define VIRTIO_BT_CONFIG_VENDOR_INTEL    2
+> +#define VIRTIO_BT_CONFIG_VENDOR_REALTEK  3
+> +\end{lstlisting}
+> +The device MUST offer the \field{VIRTIO_BT_F_VND_HCI} feature bit if it sets
+> +\field{vendor} to any value other than \field{VIRTIO_BT_CONFIG_VENDOR_NONE}.
+
+Any MUST statement has to go into a normative section.
+
+
+> +In the current Linux implementation of virtio-bt, these values are simply
+> +hard-coded and point to the hard-coded (\field{manufacturer},
+> +\field{set_bdaddr_opcode}, \field{quirks}) parameters, there
+> +\field{manufacturer} is a "Company Identifier" from the
+> +\hyperref[intro:bluetooth-numbers]{Bluetooth Assigned Numbers}, Chapter 7
+> +(Company Identifiers).
+> +This approach is not extensible and has been replaced in the second version of
+> +the configuration.
+
+All of the above should probably go into a "Note" statement, as it
+basically explains why things are as they are?
+
+> +\item[\field{msft_opcode}]
+> +This field is used by the driver if device offers \field{VIRTIO_BT_F_MSFT_EXT}
+
+s/device/the device/
+
+> +feature bit.
+> +\end{description}
+> +
+> +\subsubsection{Device configuration layout: Version 2}\label{sec:Device Types / BT Device / Device configuration layout / Version 2}
+> +All fields of this configuration are always available and read-only for the
+> +driver.
+> +\begin{lstlisting}
+> +struct virtio_bt_config_v2 {
+> +    le16 vendor;
+> +    le16 set_bdaddr_opcode;
+> +    le32 quirks;
+> +    le16 msft_opcode;
+> +};
+> +\end{lstlisting}
+> +
+> +\begin{description}
+> +
+> +\item[\field{vendor}] - Manufacturer identifier, for the possible values see
+> +\hyperref[intro:bluetooth-numbers]{Bluetooth Assigned Numbers}, Chapter 7
+> +(Company Identifiers).
+> +The device MUST offer the VIRTIO_BT_F_VND_HCI feature bit if it sets
+> +\field{vendor} to any value other than VIRTIO_BT_CONFIG_VENDOR_NONE.
+
+Again, MUST statements have to go into a normative section.
+
+> +According to the Linux guest driver implementation, devices from different
+> +vendors can have different opcodes for the \field{set_bdaddr} (Bluetooth Device
+> +Address) command, and the different \field{quirks} bits (list and short
+> +description of these \field{quirks} you can find in
+> +\hyperref[intro:bluetooth-quirks]{Bluetooth HCI device quirks}.
+
+Some of this should be extracted into some kind of "Note" as well. IIUC,
+the aim here is to specify what the Linux driver expects, so that people
+can write devices that driver works with out of the box, and that
+informs the specification here?
+
+> +So, next two fields allow us to set these parameters.
+> +
+> +\item[\field{set_bdaddr_opcode}] - opcode for the set_bdaddr (Bluetooth Device
+> +Address) command.
+> +\item[\field{quirks}] - Quirks bits supported by the device.
+> +\hyperref[intro:bluetooth-quirks]{Bluetooth HCI device quirks}
+> +
+> +\item[\field{msft_opcode}]
+> +This fields is used by the driver if device offers \field{VIRTIO_BT_F_MSFT_EXT}
+
+s/fields/field/
+s/device/the device/
+
+> +feature bit.
+> +\end{description}
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
