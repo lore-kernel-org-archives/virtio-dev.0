@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14249-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14250-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA530C3DA79
-	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 22:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92210C4706C
+	for <virtio-dev@archiver.kernel.org>; Tue, 16 Jan 2024 05:52:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 080A12AFF8
-	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 22:58:47 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 064096034E
+	for <virtio-dev@archiver.kernel.org>; Tue, 16 Jan 2024 05:52:56 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id E338B986556
-	for <virtio-dev@archiver.kernel.org>; Mon, 15 Jan 2024 22:58:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E026E98667B
+	for <virtio-dev@archiver.kernel.org>; Tue, 16 Jan 2024 05:52:55 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CA8B798616D; Mon, 15 Jan 2024 22:58:46 +0000 (UTC)
+	id D2CB698657E; Tue, 16 Jan 2024 05:52:55 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,181 +24,147 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id B3CDE9864A1
-	for <virtio-dev@lists.oasis-open.org>; Mon, 15 Jan 2024 22:58:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BCA11986561;
+	Tue, 16 Jan 2024 05:52:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: ZcR6c9vvOj67qki9owbmeQ-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705359523; x=1705964323;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BVqC7mqTDrUUHnj35eLV9K3kK97Njwv/UaU1wlg+XwA=;
-        b=A/qOleZWo4PiY3nrudR5yTfYwqD1fWTPaxwmkoYNx9YOlFlU1cLQeqOvqIoXYn5UyW
-         3quUw2YMc9fA/X7Z5LuCPmXV7gvo1TlcE7ISusT8JwuAvxjZ+lak6NAqX99ldC1sELLo
-         2chsMWu74NO+wvwN6y9JzUYdEMFFt6wKl5Il6nJXV3/BoBds6a0J1NM17ldLpEmv14wn
-         JmtPn5pKZZlh8+qRdK7IwIAtZW/rvtqhijaR7cW2Vq9ffGpZYeCAwTsDGjbOycw2JIgp
-         rPYG1G5DnqA5DJqZ15P+aCF25NS6yZd2T5G/rLkATLRZg8Af/Tt3IrPXU3P11lBcRd2+
-         01Pg==
-X-Gm-Message-State: AOJu0YxRkDxTMFF8pjWeRyfjv0sp6w3Hc95TKWdRobpNu0nxypbIwKe9
-	owYoSaGIQ59FGvxlOFUG1i/d8iJUREp9xhuM1wl3S6+GIdmTKYX1/kiG61ye9o1UH5K6W8Q21mm
-	ayTj9wTxAGa51ME05oXmnOaZMUvTtfjaIxTSg
-X-Received: by 2002:adf:fa0e:0:b0:337:6bbb:26b2 with SMTP id m14-20020adffa0e000000b003376bbb26b2mr2817136wrr.8.1705359522914;
-        Mon, 15 Jan 2024 14:58:42 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEEBDcXla1Pci43eFTV9AEVMMf6M5zvG4+4Ok3zG+0n+OcpRrRMulez+TfxtmsnO2HGUAzlSw==
-X-Received: by 2002:adf:fa0e:0:b0:337:6bbb:26b2 with SMTP id m14-20020adffa0e000000b003376bbb26b2mr2817132wrr.8.1705359522578;
-        Mon, 15 Jan 2024 14:58:42 -0800 (PST)
-Date: Mon, 15 Jan 2024 17:58:39 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0W-kw5ft_1705384359;
+Message-ID: <1705384341.865516-1-xuanzhuo@linux.alibaba.com>
+Date: Tue, 16 Jan 2024 13:52:21 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To: Heng Qi <hengqi@linux.alibaba.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Message-ID: <20240115173401-mutt-send-email-mst@kernel.org>
-References: <1705323962-96063-1-git-send-email-hengqi@linux.alibaba.com>
-MIME-Version: 1.0
-In-Reply-To: <1705323962-96063-1-git-send-email-hengqi@linux.alibaba.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v2] virtio-net: support setting coalescing params for
- multiple vqs
+Cc: Jason Wang <jasowang@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ Cornelia Huck <cohuck@redhat.com>,
+ virtio-comment@lists.oasis-open.org,
+ virtio-dev@lists.oasis-open.org
+References: <1704263702-50528-1-git-send-email-hengqi@linux.alibaba.com>
+In-Reply-To: <1704263702-50528-1-git-send-email-hengqi@linux.alibaba.com>
+Subject: [virtio-dev] Re: [PATCH v8] virtio-net: correct conditions for devices to validate packet checksum
 
-On Mon, Jan 15, 2024 at 09:06:02PM +0800, Heng Qi wrote:
-> Currently, when each time the driver attempts to update the coalescing parameters
-> for a vq, it needs to kick the device and wait for the ctrlq response to return.
-> The following path is observed: 1. Driver kicks the device; 2. After the device
-> receives the kick, CPU scheduling occurs and DMA multiple buffers multiple times;
-> 3. The device completes processing and replies with a response.
-> 
-> When large-queue devices issue multiple requests and kick the device frequently,
-> this often interrupt the work of the device-side CPU. In addition, each vq request
-> is processed separately, causing more delays for the CPU to wait for the DMA
-> request to complete.
-> 
-> These interruptions and overhead will strain the CPU responsible for controlling
-> the path of the DPU, especially in multi-device and large-queue scenarios.
-> 
-> To solve the above problems, we internally tried batch request, which merges
-> requests from multiple queues and sends them at once. We conservatively tested
-> 8 queue commands and sent them together. The DPU processing efficiency can be
-> improved by 8 times, which greatly eases the DPU's support for multi-device
-> and multi-queue DIM.
-> 
-> Maintainers may be concerned about whether the batch command method can optimize
-> the above problems: accumulate multiple request commands to kick the device once,
-> and obtain the processing results of the corresponding commands asynchronously.
-> The batch command method is used by us to optimize the CPU overhead of the DIM
-> worker caused by the guest being busy waiting for the command response result.
-> This is a different focus than batch request to solve the problem.
-
-
-Hmm. Could the issue be actually that
-1. you are using split vqs so processing is complex
-2. Linux driver uses indirect to pass coalescing commands around
-   so even more complex
-?
-
-Is packed an option for you at all? Guest should also be changed to
-avoid indirect with ctrl vq. As a quick test, disable indirect maybe
-that is fast enough?
-
-
-
-
-> Suggested-by: Xiaoming Zhao <zxm377917@alibaba-inc.com>
+On Wed,  3 Jan 2024 14:35:02 +0800, Heng Qi <hengqi@linux.alibaba.com> wrote:
+> There is a historical error in virtio spec:
+>   "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST* set flags
+>    to zero and SHOULD supply a fully checksummed packet to the driver."
+>
+> Currently in Linux and virtio-related implementations, the device validates
+> the packet checksum and sets DATA_VALID regardless of whether
+> VIRTIO_NET_F_GUEST_CSUM is negotiated.
+>
+> Please refer to the following summary and thread[1] for details and reasons:
+>
+> Summary
+> =============
+> 1. GUEST_CSUM at virtio spec 0.95 is intended to be compatible with partially
+> checksummed packets (NEEDS_CSUM <-> CHECKSUM_PARTIAL). So GUEST_CSUM is mapped
+> to NETIF_F_RXCSUM.
+> GUEST_CSUM only indicates whether the driver handles partially checksummed packets.
+> When XDP is loaded, the GUEST_CSUM's offload will be disabled, which means that
+> packets have NEEDS_CSUM set will be dropped, and packets have DATA_VALID set will
+> still be received.
+>
+> 2. When DATA_VALID was added to Linux in 2011[2] and virtio1.0, it was actually
+> expected that rx checksum offload (the driver can set CHECKSUM_UNNECESSARY) had
+> nothing to do with whether GUEST_CSUM was negotiated. But due to an error, below
+> desctiption was added incorrectly:
+>   "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST* set flags
+>    to zero and SHOULD supply a fully checksummed packet to the driver."
+>
+> 3. We now hope to correct this error. Let the setting of DATA_VALID not be
+> controlled by whether GUEST_CSUM is negotiated, but only controlled by whether
+> rx checksum offload is enabled on the OS side. The state of this rx checksum
+> offload is not aware of the device.
+>
+> 4. [Optional] NETIF_F_RXCSUM corresponding to rx checksum offload should be
+> added to dev->hw_features. When the user turns off rx checksum offload through
+> ethtool -K, neither NEEDS_CSUM nor DATA_VALID should be taken care of, that is,
+> all packets will be marked as CHECKSUM_NONE.
+>
+> Related Link
+> =============
+> [1] https://lists.oasis-open.org/archives/virtio-comment/202312/msg00135.html
+> [2] 10a8d94a9574 ("virtio_net: introduce VIRTIO_NET_HDR_F_DATA_VALID")
+>
+> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/185
+>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
 > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+
 > ---
-> v1->v2: Updated commit log. Due to sensitivity, sorry that can not give the
->     absolute value directly. @Michael
-> 
->  device-types/net/description.tex | 26 ++++++++++++++++++++------
->  1 file changed, 20 insertions(+), 6 deletions(-)
-> 
+> v7->v8:
+> - Drop the new FULLY_CSUM feature and optimize the description. @Jason
+>
+> v6->v7:
+> - FULLY_CSUM no longer depends on GUEST_CSUM.
+> - The description related to DATA_VALID has nothing to do with
+>   whether GUEST_CSUM is negotiated or not. @Jason
+>
+> v5->v6:
+> - Rewrite and clarify patch description. @Michael
+>
+> v4->v5:
+> - Remove the modification to the GUEST_CSUM. @Jason
+> - The description of this feature has been reorganized for greater clarity. @Michael
+>
+> v3->v4:
+> - Streamline some repetitive descriptions. @Jason
+> - Add how features should work, when to be enabled, and overhead. @Jason @Michael
+>
+> v2->v3:
+> - Add a section named "Driver Handles Fully Checksummed Packets"
+>   and more descriptions. @Michael
+>
+> v1->v2:
+> - Modify full checksum functionality as a configurable offload
+>   that is initially turned off. @Jason
+>
+>  device-types/net/description.tex | 14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
+>
 > diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-> index aff5e08..b3766c4 100644
+> index aff5e08..14978c0 100644
 > --- a/device-types/net/description.tex
 > +++ b/device-types/net/description.tex
-> @@ -1667,8 +1667,8 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  for notification coalescing.
->  
->  If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, the driver can
-> -send commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET
-> -for virtqueue notification coalescing.
-> +send commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET and
-> +VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET for virtqueue notification coalescing.
->  
->  \begin{lstlisting}
->  struct virtio_net_ctrl_coal {
-> @@ -1682,11 +1682,17 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->      struct virtio_net_ctrl_coal coal;
->  };
->  
-> +struct virtio_net_ctrl_mrg_coal_vq {
-> +        le16 num_entries; /* indicates number of valid entries */
-> +        struct virtio_net_ctrl_coal_vq entries[];
-> +};
-> +
->  #define VIRTIO_NET_CTRL_NOTF_COAL 6
->   #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
->   #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
->   #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 2
->   #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET 3
-> + #define VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET 4
->  \end{lstlisting}
->  
->  Coalescing parameters:
-> @@ -1706,6 +1712,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  \item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure virtio_net_ctrl_coal_vq is write-only for the driver.
->  \item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET, \field{vq_index} and \field{reserved} are write-only
->        for the driver, and the structure virtio_net_ctrl_coal is read-only for the driver.
-> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET, the structure virtio_net_ctrl_mrg_coal_vq is write-only for the driver.
->  \end{itemize}
->  
->  The class VIRTIO_NET_CTRL_NOTF_COAL has the following commands:
-> @@ -1716,6 +1723,9 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->                                          for an enabled transmit/receive virtqueue whose index is \field{vq_index}.
->  \item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets} parameters
->                                          for an enabled transmit/receive virtqueue whose index is \field{vq_index}.
-> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET: use the structure virtio_net_ctrl_mrg_coal_vq to set the \field{max_usecs} and \field{max_packets} parameters
-> +                                         for \field{num_entries} enabled transmit/receive virtqueues. The corresponding index value
-> +                                         of each configured virtqueue is \field{vq_index}.
->  \end{enumerate}
->  
->  The device may generate notifications more or less frequently than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
-> @@ -1782,9 +1792,13 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  
->  The driver MUST set \field{vq_index} to the virtqueue index of an enabled transmit or receive virtqueue.
->  
-> +The driver MUST set \field{num_entries} to a non-zero value and MUST NOT set \field{num_entries} to
-> +a value greater than the number of enabled transmit and receive virtqueues.
-> +
->  The driver MUST have negotiated the VIRTIO_NET_F_NOTF_COAL feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET.
->  
-> -The driver MUST have negotiated the VIRTIO_NET_F_VQ_NOTF_COAL feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET.
-> +The driver MUST have negotiated the VIRTIO_NET_F_VQ_NOTF_COAL feature when issuing commands
-> +VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET.
->  
->  The driver MUST ignore the values of coalescing parameters received from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if the device responds with VIRTIO_NET_ERR.
->  
-> @@ -1794,10 +1808,10 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  
->  The device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if it was not able to change the parameters.
->  
-> -The device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET command with VIRTIO_NET_ERR if it was not able to change the parameters.
-> +The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET commands with VIRTIO_NET_ERR if it was not able to change the parameters.
->  
-> -The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with
-> -VIRTIO_NET_ERR if the designated virtqueue is not an enabled transmit or receive virtqueue.
-> +The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET
-> +commands with VIRTIO_NET_ERR if the designated virtqueue is not an enabled transmit or receive virtqueue.
->  
->  Upon disabling and re-enabling a transmit virtqueue, the device MUST set the coalescing parameters of the virtqueue
->  to those configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or, if the driver did not set any TX coalescing parameters, to 0.
-> -- 
+> @@ -723,8 +723,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>    \field{num_buffers} is one, then the entire packet will be
+>    contained within this buffer, immediately following the struct
+>    virtio_net_hdr.
+> -\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+> -  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+> +\item The VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+>    set: if so, device has validated the packet checksum.
+>    In case of multiple encapsulated protocols, one level of checksums
+>    has been validated.
+> @@ -783,9 +782,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>  packet together, such that at least \field{num_buffers} are
+>  observed by driver as used.
+>
+> -If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
+> -\field{flags} to zero and SHOULD supply a fully checksummed
+> -packet to the driver.
+> +If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device SHOULD supply
+> +a fully checksummed packet to the driver.
+>
+>  If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
+>  \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+> @@ -842,12 +840,6 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>  not less than the length of the headers, including the transport
+>  header.
+>
+> -If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+> -device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+> -\field{flags}, if so, the device MUST validate the packet
+> -checksum (in case of multiple encapsulated protocols, one level
+> -of checksums is validated).
+> -
+>  \drivernormative{\paragraph}{Processing of Incoming
+>  Packets}{Device Types / Network Device / Device Operation /
+>  Processing of Incoming Packets}
+> --
 > 1.8.3.1
-
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
