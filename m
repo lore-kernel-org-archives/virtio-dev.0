@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14254-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14255-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EDFA8C4706C
-	for <virtio-dev@archiver.kernel.org>; Tue, 16 Jan 2024 08:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D55EC47DA7
+	for <virtio-dev@archiver.kernel.org>; Wed, 17 Jan 2024 04:52:11 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 62CB41CACE
-	for <virtio-dev@archiver.kernel.org>; Tue, 16 Jan 2024 08:27:32 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5E228F4031
+	for <virtio-dev@archiver.kernel.org>; Wed, 17 Jan 2024 04:52:10 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3BE429865C8
-	for <virtio-dev@archiver.kernel.org>; Tue, 16 Jan 2024 08:27:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 4A7DF98671B
+	for <virtio-dev@archiver.kernel.org>; Wed, 17 Jan 2024 04:52:10 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 28DC098402B; Tue, 16 Jan 2024 08:27:32 +0000 (UTC)
+	id 394B89866B9; Wed, 17 Jan 2024 04:52:10 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,268 +24,293 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 1612B986561;
-	Tue, 16 Jan 2024 08:27:24 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1D93A983EAF;
+	Wed, 17 Jan 2024 04:52:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R6Y9UB0iclQyZJ7TufZschwrXEjXirwju0BKxrs+vpcybTPMXQZ5TFyOn/Jp4/yDXhiR5t3XsS4EGYBQjD2qy12Ta++75QMpOCYdVX5NdE3grt1pmAVySYYE3PvxtePUD+couy6kmTe9XLR08OX2tZoWymIzY6ESW/Ek9ts0Nx/ORFxBBWuBVTES8o35tThJNTdt7/eQzrM6sJKaapiMZu843k0bGQRfYDxxkvJRbk3+x/VBK9SQeON9uM2ZsNN7+LVmxAd2B9TQjrgeP5946N139KSk6wPE7X50+WoCtvKz4gJOMSfSTIb7r0O5QRT6a5nbmVsjUnOcrp2Mh58UMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HPoW9EZa88VwaVarJl/j1zLDMh8h4Y6p+oQFqvD2JyQ=;
- b=Motrepy8qXMRskVvVUBDJJ8s3SpepI6IiS1x34jfMJyYAvRfMyZnZs0gypcZ+erQDv/IpaMvEKOtYXFduh5eCNg50wGwz9/bhEtuW26xCpGNqLdJMll0N0Ft7CsHOaDO+EvxKFlNeg0sX3A5JgK5Om2oh693PyoqSns1I1cKp7rs4Ey9zmlt9cOtc6U2+cQYk0Lo0mP5qeWSWbOWZgrZoeHSkfQdpxS2TuM3n4G8pNh87H09ruKUm86OScf1YNYLgZQWBuudeVsdRj/Pmrvnoxda2EkIyCTCe4PatTYLZoxb5g5X239q1dh/tJKfkTeTMsQmKYGVfB7tUmSzGchGpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-From: Parav Pandit <parav@nvidia.com>
-To: "Chen, Jiqian" <Jiqian.Chen@amd.com>
-CC: "Michael S. Tsirkin" <mst@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
-	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	David Airlie <airlied@redhat.com>, Gurchetan Singh
-	<gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
-	=?utf-8?B?TWFyYy1BbmRyw6kgTHVyZWF1?= <marcandre.lureau@gmail.com>, Robert
- Beckett <bob.beckett@collabora.com>, Mikhail Golubev-Ciuchea
-	<Mikhail.Golubev-Ciuchea@opensynergy.com>,
-	"virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
-	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "Huang,
- Honglei1" <Honglei1.Huang@amd.com>, "Zhang, Julia" <Julia.Zhang@amd.com>,
-	"Huang, Ray" <Ray.Huang@amd.com>
-Thread-Topic: [virtio-comment] RE: [PATCH v6 1/1] content: Add new feature
- VIRTIO_F_PRESERVE_RESOURCES
-Thread-Index:
- AQHaA9H0ua9xMq0gbkqU60djCdCUsrBW4XZQgABREYCAAC/xEIABYZmAgAADs4CAABezgIABBRDQgAIBBQCAAAGaAIABFX6AgHlRKACAAAN/0IAACNEAgAAEgaCAAAwWgIAABN1AgASS9ACAAADIQIAAA3aAgAABUvCAAAfBgIAACCRggAAFhACAAADCcIAAB8gAgAAAqUCAABIUAIAAAJPQgAAFBgCAAABBkIABRtWAgAAJxrCAABLpgIAAAKNg
-Date: Tue, 16 Jan 2024 08:27:20 +0000
-Message-ID:
- <PH0PR12MB5481DE701DC0C6A34DE69B6CDC732@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20231021035111.650248-1-Jiqian.Chen@amd.com>
- <PH0PR12MB548145B7409F2D58AC2F6D44DC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
- <BL1PR12MB58497CDB1A3AE937CAF24BCFE76C2@BL1PR12MB5849.namprd12.prod.outlook.com>
- <PH0PR12MB54816CC7AEE14209D3ECF795DC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
- <BL1PR12MB58496E8AA1278A8E3573CCB7E76C2@BL1PR12MB5849.namprd12.prod.outlook.com>
- <PH0PR12MB5481469DD511988B1A0D306CDC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
- <BL1PR12MB584944D5ECADD4566A8E066CE76C2@BL1PR12MB5849.namprd12.prod.outlook.com>
- <PH0PR12MB5481FC877410A34DF11CFBFCDC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
- <BL1PR12MB5849D9B54611E347DA492F0CE76C2@BL1PR12MB5849.namprd12.prod.outlook.com>
- <PH0PR12MB5481FFD5FEDFD63C75927878DC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
- <BL1PR12MB5849F428DC1BEDEFFFF80AA1E7732@BL1PR12MB5849.namprd12.prod.outlook.com>
- <PH0PR12MB5481420A98DF819262559C0EDC732@PH0PR12MB5481.namprd12.prod.outlook.com>
- <BL1PR12MB584995C7C87C811EDDA89DCCE7732@BL1PR12MB5849.namprd12.prod.outlook.com>
-In-Reply-To:
- <BL1PR12MB584995C7C87C811EDDA89DCCE7732@BL1PR12MB5849.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM3PR12MB9327:EE_
-x-ms-office365-filtering-correlation-id: 7456b304-a75c-484a-8a96-08dc166cf4e7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- Hde1XY65dN3VthT+rIHltAoghDkTp0GrSi4Y9fG8+nExpSuxV5tIHvBVYS4SfBf6j4eUa5dVlzUeMnJyOAQiCwvP7LEIsPPlq/xQzur6v/OGlXZShE9cjIntr3Sx5jeYP+OAqA/R+aOwVC0JvfHToKgMy2o2m27PHcme7SvDcDU8AagCeyCQoQq+4GOy/75FGUel88uyio2chwE+n3jSfWJX/jkkOCe2Xw5yxFsHsAfZkp0MeWEaE6Nn+DYuQzB4RwFl5p+wNp9Zb6rfag4B3YEt7avJKxYTsm07KaGRLh97DkKAqO4tXqJ4UXgSmeUhPM3PJFUxsOc0VDcv0EWrkHRoWDIbzm/fXFwp0Rxz98AWs5N7pA26L4fp0DexjbINuPe+hASCrZhSnolLiOODKYqhkLRP3k99ifKu1ZQ5lJYT1yQevj5LLdtxVJaUfNzntREVyVw5ZK1ARyIy7oc4kLw8vulyQaOZBhZT6H7lzhr2zADEIFU7U3msY11bJhFgZu0iD/5GLOmFdHrNNeRr668BmQzq3zpQ/VaRmwPQQYItNLTqwS0gK5otKVzK5UZFY2OXkCXi401Y83NWwNCXrYsdiZwfh4QrnfwDH2qqnVzCT87bwPsQR9NvJY9a5IZ5
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(136003)(346002)(396003)(39860400002)(230922051799003)(64100799003)(186009)(451199024)(1800799012)(66946007)(83380400001)(33656002)(26005)(53546011)(66556008)(9686003)(122000001)(64756008)(54906003)(6916009)(4326008)(8936002)(7416002)(8676002)(6506007)(66476007)(71200400001)(478600001)(38100700002)(2906002)(7696005)(66446008)(5660300002)(52536014)(316002)(41300700001)(76116006)(86362001)(38070700009)(55016003)(66899024);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?NkhNNU9FYk9zZWxldlZOMnU5eGxiYWs1Q2lnMFJhZUFoMWkraWxjUlNYMndB?=
- =?utf-8?B?QTBrSlJ2Tm5UaldYRW03OFUySjlkSWd6TEtkSU4wZi9pYWVsVEl0S3IzU2dw?=
- =?utf-8?B?N24vbzBZc3psMGg1S2lKaTNmU3o2VTlOdEs5eFF1QnozWTFnUEwxYktMQklY?=
- =?utf-8?B?ZUhuWlU2cDZJS0xkTW1LQ0JjNTYvd0FNdzV3U2RVMlVVVDdjVVRPa2VkSUR3?=
- =?utf-8?B?VUswT2pFM3ZHUVB5RlZhRkxHNUFwUDFBSVlJbktUdUpyQWZGSVFSYWUxQ2pU?=
- =?utf-8?B?WDFEcGdZY202MkdIdERSWFJKOGtFaDM4QndMUFNVeXRyTmc2SktxYVd6RmM2?=
- =?utf-8?B?NVlmeTFqTUx6ckRmN0t0VE8reVhwSEwyU2hLRFZQSm9uRWxBUnhIQ1diS2lr?=
- =?utf-8?B?NGI4RXBMZVdLVTV0VlB0NHFudDFMUjYxSzZNcUFEZEtCVFlYMkJmQ0pqMjhI?=
- =?utf-8?B?amtpM0s4OHhidzZ6N3R0Z3lwanRsTk9TT0NEVXZpTDd2aUovSUxvcjc3TnNU?=
- =?utf-8?B?bDNxS1JqVTRkeUpNRGxNWHdmVS9xMlRHSmVhaG9NZjFYU056M1drTzhiUVI3?=
- =?utf-8?B?dHl3bVVRWUJrOUpDdlFEZytxQ1Mra2pVVDVIb01idkZWWERYNlhuQ3QvVHZm?=
- =?utf-8?B?bjdFbi9kS1h1cTlqNkFMVTA1Ry8wSXdGQVFxcVNRSFlVT2l4V0s3eTl3Mng3?=
- =?utf-8?B?azloRlV0aGxoOVVJNlZ1WUpFa1ArTEJMNUdSelFHZDgwYzlMMDFkcW5PSG91?=
- =?utf-8?B?MmRuek1jWTNlOEUzakp5WVYwTUN3dCt3TldaQjA5d0xnYnFOem5LU2F6L3kw?=
- =?utf-8?B?bGpBaWl1dzNrM1J4d0l0anJLbnpJUUpyN2doUm5aQi9mL01DcVZVd1Y0M2hv?=
- =?utf-8?B?ODYrNzBYS04vYkc4cTd4VGFxOEFJZ055OG1xZHc2dXBqSVU5VFRsalNkRWF1?=
- =?utf-8?B?NFZVOTlXREo2MkhGTktaSnRuOGo1bEFnSWM1MmM4WFlUWC9sTWROVEtJZGlB?=
- =?utf-8?B?dXd3MHNmWDUycUtJNFVJekJWL0V5Mzg0ajZ2OGZhZGVmS2Q5UU93dVhua0g2?=
- =?utf-8?B?WDNRbWUxY3JVSm5ZUXBQSXRnNWg5czR1MmhiTElwclNQNTRMUXN5Q2FPTEIx?=
- =?utf-8?B?eEFHNGwwV0FPdjNWSmt2RERPTmFhMTR0MklUenBRS202cnpBNnlINWp6Znow?=
- =?utf-8?B?WGFROFRab0ExQ3hvTmlHZTB6NnRscGMrdWNqRWdUbVR1dXArQ0EwMG5SUFNh?=
- =?utf-8?B?aFNlc0NWdmo0Qm9MbnBzYUFzdSszM2ZQTjlsV05PZ1dIRlhCR1ZOYWdrcjZx?=
- =?utf-8?B?S1U2WWQ2ZGtUdUhGNFR6TjVuK25iRjRacDlMWFhYUXlYWjY1clhpT3dJazQr?=
- =?utf-8?B?dnhOOURJdCtYcDBkWXpVWkY5MVUyUFh5ai9SbTRSekNWYzUrVU10WEY2TUR5?=
- =?utf-8?B?WG9wZ3lDMDFkRFBpZWhjRXFxbDUzcTlmaURaMU4xQVNtNVFsNU5TK1g4WnRp?=
- =?utf-8?B?SzBmRlRVZVpIejNCUkFMelA4VUFaUnhGc01va2p2SWNTOGpBRmRlR0tBUzc0?=
- =?utf-8?B?a090M1dSTHJKOXVmWVE1aGVlMkVVWkpZeDc0UjJmVWcwV2hPTkZVS3AzblpX?=
- =?utf-8?B?TlE4VDdjYXp5dllRYU44ck56T3hQNFdaN1RnL1RzSHdWeFltM3FmNzlnU1g3?=
- =?utf-8?B?Q09IdnRJSVhIbVM0R3owTU4wMHl1bGhFcEtPdk01SkczKytjMzVHaWZ5L3F2?=
- =?utf-8?B?SGMrZE1vQ05YQVBSSjRIWE5qQUZiaG9NTG5ZM3R5WEROdkFVM1dxdElJbnZN?=
- =?utf-8?B?MHlxaURMVjM1RFpVZU9raFV2OGdKQ2xFRjJ5eVVRUW5yaGRkdkhJRGMwU1VT?=
- =?utf-8?B?Ykt5OUxEWkNOK0x0NDRselNVQm1PWHJ4eGg0SER3aXlGK1NMSXJwYU9STlVU?=
- =?utf-8?B?dVRhaGR6RGxmYUovVUtpazNsNk9KZjZ2WlhCNXhhS0xDdU1nTlFrMHRXSUhH?=
- =?utf-8?B?Z3haaVlucWJwMFcxZW5pcWF3ZlFlbmZPUW5PY1YvZE5BZG91VG5rUzlQOWxU?=
- =?utf-8?B?cW5EbGdFTC9TSWN0dWJqY0RnSWkwU1pESHM0SVJuVUJJbWxKNWZ3VysxYTdh?=
- =?utf-8?Q?mlOs=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0W-o8mqZ_1705467120;
+Message-ID: <3977e2c2-f514-4b51-a646-6f729df7403d@linux.alibaba.com>
+Date: Wed, 17 Jan 2024 12:52:00 +0800
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7456b304-a75c-484a-8a96-08dc166cf4e7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jan 2024 08:27:20.0397
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zsDvpq8cj6AfwZud1YlFJDQcX+XCunYFzoZ4ac9G6REZlE/udcPsv4W7xopZhQ87Tczb/P2fnmqQz0NvsN0dRA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR12MB9327
-Subject: [virtio-dev] RE: [virtio-comment] RE: [PATCH v6 1/1] content: Add new feature
- VIRTIO_F_PRESERVE_RESOURCES
+User-Agent: Mozilla Thunderbird
+To: Parav Pandit <parav@nvidia.com>,
+ "virtio-comment@lists.oasis-open.org" <virtio-comment@lists.oasis-open.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <1705323962-96063-1-git-send-email-hengqi@linux.alibaba.com>
+ <PH0PR12MB5481EA21646CEA571FF2D3F9DC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <PH0PR12MB5481EA21646CEA571FF2D3F9DC6C2@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] RE: [virtio-comment] [PATCH v2] virtio-net: support
+ setting coalescing params for multiple vqs
 
-DQo+IEZyb206IENoZW4sIEppcWlhbiA8SmlxaWFuLkNoZW5AYW1kLmNvbT4NCj4gU2VudDogVHVl
-c2RheSwgSmFudWFyeSAxNiwgMjAyNCAxOjUxIFBNDQo+IA0KPiBPbiAyMDI0LzEvMTYgMTU6MTks
-IFBhcmF2IFBhbmRpdCB3cm90ZToNCj4gPg0KPiA+PiBGcm9tOiBDaGVuLCBKaXFpYW4gPEppcWlh
-bi5DaGVuQGFtZC5jb20+DQo+ID4+IFNlbnQ6IFR1ZXNkYXksIEphbnVhcnkgMTYsIDIwMjQgMTI6
-MDggUE0NCj4gPj4NCj4gPj4gT24gMjAyNC8xLzE1IDE5OjEwLCBQYXJhdiBQYW5kaXQgd3JvdGU6
-DQo+ID4+Pg0KPiA+Pj4+IEZyb206IENoZW4sIEppcWlhbiA8SmlxaWFuLkNoZW5AYW1kLmNvbT4N
-Cj4gPj4+PiBTZW50OiBNb25kYXksIEphbnVhcnkgMTUsIDIwMjQgNDozNyBQTQ0KPiA+Pj4+DQo+
-ID4+Pj4gT24gMjAyNC8xLzE1IDE4OjUyLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4+Pj4+DQo+
-ID4+Pj4+PiBGcm9tOiBDaGVuLCBKaXFpYW4gPEppcWlhbi5DaGVuQGFtZC5jb20+DQo+ID4+Pj4+
-PiBTZW50OiBNb25kYXksIEphbnVhcnkgMTUsIDIwMjQgNDoxNyBQTQ0KPiA+Pj4+Pj4NCj4gPj4+
-Pj4+IE9uIDIwMjQvMS8xNSAxNzo0NiwgUGFyYXYgUGFuZGl0IHdyb3RlOg0KPiA+Pj4+Pj4+DQo+
-ID4+Pj4+Pj4+IEZyb206IENoZW4sIEppcWlhbiA8SmlxaWFuLkNoZW5AYW1kLmNvbT4NCj4gPj4+
-Pj4+Pj4gU2VudDogTW9uZGF5LCBKYW51YXJ5IDE1LCAyMDI0IDM6MTAgUE0NCj4gPj4+Pj4+Pg0K
-PiA+Pj4+Pj4+Pj4gRGlzcGxheSByZXNvdXJjZXMgc2hvdWxkIGJlIG9ubHkgcmVzdG9yZWQgd2hl
-biBmb2xsb3dpbmcNCj4gPj4+Pj4+Pj4+IGNvbmRpdGlvbnMgYXJlDQo+ID4+Pj4+Pj4+IG1ldC4N
-Cj4gPj4+Pj4+Pj4+IDEuIFBDSSBQTSBjYXAgaXMgcmVwb3J0ZWQuDQo+ID4+Pj4+Pj4+PiAyLiBQ
-Q0kgUE0gY2FwIGhhcyBub25fc29mdF9yZXNldD0xIDMuIHZpcnRpbyBndWVzdCBkcml2ZXIgZG8N
-Cj4gPj4+Pj4+Pj4+IG5vdCBwZXJmb3JtIHJlc2V0IHdoZW4gdHJhbnNwb3J0IG9mZmVycyBhIHJl
-c3RvcmUNCj4gPj4+Pj4+Pj4gY2FwYWJpbGl0eSB1c2luZyAjMSBhbmQgIzIuDQo+ID4+Pj4+Pj4+
-Pg0KPiA+Pj4+Pj4+Pj4gRG8geW91IGFncmVlPyBZZXM/DQo+ID4+Pj4+Pj4+IFllcywgSSB0aGlu
-ayB0aGlzIHByb2JsZW0gKGRpc3BsYXkgcmVzb3VyY2VzIGFyZSBkZXN0cm95ZWQNCj4gPj4+Pj4+
-Pj4gZHVyaW5nDQo+ID4+Pj4+Pj4+IFMzKSBjYW4gYmUgc29ydGVkIHRvIHR3byBzaXR1YXRpb25z
-Og0KPiA+Pj4+Pj4+PiBGaXJzdCBpcyB3aGF0IHlvdSBzYWlkIGFib3ZlLCBpbiB0aGlzIHNpdHVh
-dGlvbiwgdGhlDQo+ID4+Pj4+Pj4+IGRldmljZXNfcmVzZXQgb2YgcWVtdSBpcyB1bnJlYXNvbmFi
-bGUsIGlmIGEgZGV2aWNlIGhhcyBQTSBjYXANCj4gPj4+Pj4+Pj4gYW5kIG5vbl9zb2Z0X3Jlc2V0
-PTEsIHFlbXUgc2hvdWxkIG5vdCBkbyByZXNldHRpbmcuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+Pj4g
-U2Vjb25kIGlzIHdpdGhvdXQgIzEgb3IgIzIsIHRoZSByZXNldCBiZWhhdmlvciBpcyBmaW5lLiBN
-eQ0KPiA+Pj4+Pj4+PiBwYXRjaCBpcyB0byBmaXggdGhpcyBzaXR1YXRpb24sIHRoYXQgc2VuZGlu
-ZyBhIG5ldyB2aXJ0aW8tZ3B1DQo+ID4+Pj4+Pj4+IGNvbW1hbmQgdG8gbm90aWZ5IHFlbXUgdG8g
-cHJldmVudCBkZXN0cm95aW5nIGRpc3BsYXkgcmVzb3VyY2VzDQo+IGR1cmluZyBTMy4NCj4gPj4+
-Pj4+Pg0KPiA+Pj4+Pj4+IEkgc3RpbGwgaGF2ZSBoYXJkIHRpbWUgZm9sbG93aW5nICJNeSBwYXRj
-aCBpcyB0byBmaXggdGhpcyBzaXR1YXRpb24uLi4iLg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gV2hl
-biAjMSBhbmQgIzIgaXMgbm90IGRvbmUsIHRoZXJlIGlzIG5vdGhpbmcgdG8gcmVzdG9yZS4NCj4g
-Pj4+Pj4+PiBEcml2ZXIgc2hvdWxkIG5vdCBzZW5kIHNvbWUgbmV3IHZpcnRpbyBzcGVjaWZpYyBj
-b21tYW5kIHdoZW4gIzENCj4gPj4+Pj4+PiBhbmQNCj4gPj4+Pj4+PiAjMiBpcw0KPiA+Pj4+Pj4g
-bm90IHRoZXJlLg0KPiA+Pj4+Pj4+IEluc3RlYWQsIGlmIHRoZSBkZXZpY2Ugd2FudHMgdG8gcmVz
-dG9yZSB0aGUgY29udGV4dCwgYWxsICMxLCAjMg0KPiA+Pj4+Pj4+IGFuZA0KPiA+Pj4+Pj4+ICMz
-IHNob3VsZA0KPiA+Pj4+Pj4gYmUgZG9uZSB0byBpbXBsZW1lbnQgdGhlIHJlc3RvcmUgZnVuY3Rp
-b25hbGl0eS4NCj4gPj4+Pj4+IFdoZW4gIzEgYW5kICMyIGlzIGRvbmUuIFRoZSAiZGV2aWNlIHJl
-c2V0IGJlaGF2aW9yIiBzaG91bGQgbm90DQo+ID4+Pj4+PiBoYXBwZW4uIEFuZCB0aGVuIHRoZSBk
-aXNwbGF5IHJlc291cmNlcyBhcmUgbm90IGRlc3Ryb3llZC4NCj4gPj4+Pj4+IEkgZGlkbuKAmXQg
-c2F5IHNlbmQgY29tbWFuZCB0byByZXN0b3JlIGNvbnRleHQuDQo+ID4+Pj4+DQo+ID4+Pj4+PiBJ
-IG1lYW4gd2hlbiAjMSBhbmQgIzIgaXMgbm90IGRvbmUuIERyaXZlciBhbmQgcWVtdSBib3RoIHJl
-c2V0DQo+ID4+Pj4+PiBkZXZpY2VzIHdoZW4gcmVzdW1pbmcsIGF0IHRoYXQgdGltZSwNCj4gPj4+
-Pj4gQWJvdmUgYmVoYXZpb3IgaXMgYXMgcGVyIHRoZSBzcGVjIGd1aWRlbGluZXMuIEhlbmNlIGl0
-IGlzIGZpbmUuDQo+ID4+Pj4+DQo+ID4+Pj4+PiB3ZSBuZWVkIGEgbWV0aG9kIHRvIHByZXZlbnQg
-dGhlIGRpc3BsYXkgcmVzb3VyY2VzIGZyb20gZGVzdHJveWluZy4NCj4gPj4+Pj4gSSBkaXNhZ3Jl
-ZSB0byBhYm92ZSBhcyBpdCBpcyBub3QgYXMgcGVyIHRoZSBzcGVjIGd1aWRlbGluZXMuDQo+ID4+
-Pj4+IEp1c3QgZm9sbG93ICMxLCAjMiBhbmQgIzMgdG8gbm90IGRlc3Ryb3kgdGhlIGRpc3BsYXkg
-cmVzb3VyY2UgZGVzdHJveWluZy4NCj4gPj4+PiBJIGFncmVlIHRoYXQgZm9sbG93ICMxLCAjMiBh
-bmQgIzMgd2lsbCBub3QgZGVzdHJveSBkaXNwbGF5IHJlc291cmNlLg0KPiA+Pj4+IFNvIHRoZSBx
-dWVzdGlvbiBnb2VzIGJhY2s6IElmIHRoZXJlIGlzIG5vICMyIGFuZCB5b3Ugc2F5IHRoYXQgdGhl
-DQo+ID4+Pj4gcmVzZXQgYmVoYXZpb3IgY29tcGxpZXMgd2l0aCB0aGUgc3BlYyBndWlkZWxpbmVz
-LCBob3cgY2FuIEkgbWFrZQ0KPiA+Pj4+IHRoZSB2aXJ0aW8gZ3B1IHdvcmsgcHJvcGVybHkgd2l0
-aCBkaXNwbGF5IHJlc291cmNlcyBkZXN0cm95ZWQ/DQo+ID4+PiBJbXBsZW1lbnQgIzIuIDopDQo+
-ID4+IFdlIGNhbid0IHNpbXBseSBpbXBsZW1lbnQgIzIgaWYgYSBkZXZpY2UgZG9lc24ndCBoYXZl
-ICMyLA0KPiA+IEhvdyBkbyB5b3UgZGVmaW5lICJXZSIgYWJvdmU/DQo+ID4gSXNuJ3Qgd2UgPT0g
-ZGV2aWNlPw0KPiA+DQo+ID4+IHNlZSBTZWN0aW9uIDcuNS4yLjINCj4gPj4gaW4gUENJIEV4cHJl
-c3MgU3BlYywgYWJvdXQgTm9fU29mdF9SZXNldDoNCj4gPj4gIiBJZiBhIFZGIGltcGxlbWVudHMg
-dGhlIFBvd2VyIE1hbmFnZW1lbnQgQ2FwYWJpbGl0eSwgdGhlIFZGJ3MgdmFsdWUNCj4gPj4gb2Yg
-dGhpcyBmaWVsZCBtdXN0IGJlIGlkZW50aWNhbCB0byB0aGUgYXNzb2NpYXRlZCBQRidzIHZhbHVl
-LiAiDQo+ID4+IFdoYXQncyBtb3JlLCBhIGRldmljZSBkb2Vzbid0IGhhdmUgIzIgaXMgYWxsb3dl
-ZCwgd2Ugc2hvdWxkIGNvbnNpZGVyDQo+ID4+IGhvdyB0byBzb2x2ZSB0aGUgdHdvIHNpdHVhdGlv
-bnMoTm9fU29mdF9SZXNldD0xIGFuZCBOb19Tb2Z0X1Jlc2V0PTApLA0KPiA+PiByYXRoZXIgdGhh
-biBzaW1wbHkgY29uc2lkZXJpbmcgaW1wbGVtZW50aW5nICMyIGZvciB0aGUgZGV2aWNlIHdoZW4g
-aXQgZG9lcw0KPiBub3QgaGF2ZSAjMi4NCj4gPiBBIGRldmljZSBpbXBsZW1lbnRhdGlvbiAoc3cg
-b3IgaHcpIHRoYXQgd2FudHMgdG8gb2ZmZXIgbWFpbnRhaW4gdGhlDQo+IGZ1bmN0aW9uIGNvbnRl
-eHQgd2lsbCBpbXBsZW1lbnQgTm9fU29mdF9yZXNldD0xLg0KPiA+DQo+ID4+IEFsc28gaW4gUENJ
-IEV4cHJlc3MgU3BlYzoNCj4gPj4gIiBGdW5jdGlvbmFsIGNvbnRleHQgaXMgcmVxdWlyZWQgdG8g
-YmUgbWFpbnRhaW5lZCBieSBGdW5jdGlvbnMgaW4gdGhlDQo+ID4+IEQzSG90IHN0YXRlIGlmIHRo
-ZSBOb19Tb2Z0X1Jlc2V0IGZpZWxkIGluIHRoZSBQTUNTUiBpcyBTZXQuIEluIHRoaXMNCj4gPj4g
-Y2FzZSwgU3lzdGVtIFNvZnR3YXJlIGlzIG5vdCByZXF1aXJlZCB0byByZS1pbml0aWFsaXplIHRo
-ZSBGdW5jdGlvbg0KPiA+PiBhZnRlciBhIHRyYW5zaXRpb24gZnJvbSBEM0hvdCB0byBEMCAodGhl
-IEZ1bmN0aW9uIHdpbGwgYmUgaW4gdGhlDQo+ID4+IEQwYWN0aXZlIHN0YXRlKS4gSWYgdGhlIE5v
-X1NvZnRfUmVzZXQgYml0IGlzIENsZWFyLCBmdW5jdGlvbmFsDQo+ID4+IGNvbnRleHQgaXMgbm90
-IHJlcXVpcmVkIHRvIGJlIG1haW50YWluZWQgYnkgdGhlIEZ1bmN0aW9uIGluIHRoZSBEM0hvdA0K
-PiBzdGF0ZS4iDQo+ID4gUmlnaHQuIEl0IGlzIE5PVCByZXF1aXJlZCB0byBtYWludGFpbi4gSGVu
-Y2UsIGxldHMgbm90IG1haW50YWluLg0KPiA+DQo+ID4+IFRoaXMgZGVzY3JpcHRpb24gY29ycmVz
-cG9uZHMgdG8gdGhlIHR3byBzaXR1YXRpb25zIHdlIGFyZSBkaXNjdXNzaW5nLg0KPiA+PiBGaXJz
-dCBpcyBhIGRldmljZSBoYXMgIzIoTm9fU29mdF9SZXNldD0xKSwgdGhlIGRldmljZSByZXNldHRp
-bmcgd2lsbA0KPiA+PiBub3QgaGFwcGVuLCB0aGVuIHRoZSBkaXNwbGF5IHJlc291cmNlcyBvZiB2
-aXJ0aW8tZ3B1IHByb2JsZW0gd2lsbCBub3QNCj4gaGFwcGVuLg0KPiA+IFJpZ2h0Lg0KPiA+DQo+
-ID4+IEJ1dCBpbiBTZWNvbmQsIGEgZGV2aWNlIGRvZXNuJ3QgaGF2ZSAjMihOb19Tb2Z0X1Jlc2V0
-PTApLCBpdCBpcyBmaW5lDQo+ID4+IGZvciBzeXN0ZW0gdG8gZG8gZGV2aWNlIHJlc2V0dGluZywg
-YXQgdGhpcyB0aW1lLCB0aGUgZGlzcGxheQ0KPiA+PiByZXNvdXJjZXMgb2YgdmlydGlvLWdwdSBw
-cm9ibGVtIHdpbGwgaGFwcGVuLCB3ZSBzaG91bGQgYWxzbyBjb25zaWRlcg0KPiA+PiBhIG1ldGhv
-ZCB0byBzb2x2ZSB0aGF0IHByb2JsZW0sIGJ1dCBub3QgdG8gaW1wbGVtZW50ICMyLg0KPiA+IE5v
-LCBiZWNhdXNlIGFzIHdyb3RlIGluIHRoZSBzcGVjLCAiLCBmdW5jdGlvbmFsIGNvbnRleHQgaXMg
-bm90IHJlcXVpcmVkIHRvIGJlDQo+IG1haW50YWluZWQiLiBIZW5jZSBubyBuZWVkIHRvIG1haW50
-YWluLg0KPiA+DQo+ID4+DQo+ID4+Pg0KPiA+Pj4+IFdoYXQgbXkgcGF0Y2ggZG8gaXMgbm90IHRv
-IHByZXZlbnQgcmVzZXR0aW5nLCBpcyB0byBwcmV2ZW50DQo+ID4+Pj4gZGVzdHJveWluZyByZXNv
-dXJjZXMgZHVyaW5nIHJlc2V0dGluZy4gR2VyZCBIb2ZmbWFubiBoYXMgYWdyZWVkIHRvDQo+ID4+
-Pj4gdGhpcyBwb2ludCBpbiBteSBxZW11IHBhdGNoIHJldmlld2luZy4NCj4gPj4+PiBFdmVuIGlm
-IEkgdXNlIFBNIGNhcCwgSSBzdGlsbCBuZWVkIHRvIHByZXZlbnQgZGVzdHJveWluZyByZXNvdXJj
-ZXMNCj4gPj4+PiBkdXJpbmcgcmVzZXR0aW5nLg0KPiA+Pj4gRG8geW91IG1lYW4gd2hlbiB2aXJ0
-aW8gZGV2aWNlIGlzIHJlc2V0LCB5b3Ugd2FudCB0byBwcmV2ZW50Pw0KPiA+PiBJIHdhbnQgdG8g
-cHJvdGVjdCBkaXNwbGF5IHJlc291cmNlcywgbm90IHRvIHByZXZlbnQgdGhlIHdob2xlIHByb2Nl
-c3MNCj4gPj4gb2YgZGV2aWNlIHJlc2V0dGluZy4NCj4gPiBUaGlzIGlzIGNvbnRyYWRpY3Rpbmcu
-DQo+ID4gV2hlbiB5b3UgcmVzZXQgdGhlIGRldmljZSBpdCB3aWxsIHJlc2V0IHRoZSBmdW5jdGlv
-bmFsIGNvbnRleHQgYXMgd2VsbCBhcw0KPiBndWlkZWQgYnkgcGNpLg0KPiA+DQo+ID4+IEFsc28g
-aW4gUENJIEV4cHJlc3MgU3BlYzoNCj4gPj4gIk5vdGUgdGhhdCBhIEZ1bmN0aW9uJ3Mgc29mdHdh
-cmUgZHJpdmVyIHBhcnRpY2lwYXRlcyBpbiB0aGUgcHJvY2Vzcw0KPiA+PiBvZiB0cmFuc2l0aW9u
-aW5nIHRoZSBGdW5jdGlvbiBmcm9tIEQwIHRvIEQzSG90LiBJdCBjb250cmlidXRlcyB0byB0aGUN
-Cj4gPj4gcHJvY2VzcyBieSBzYXZpbmcgYW55IGZ1bmN0aW9uYWwgc3RhdGUgdGhhdCB3b3VsZCBv
-dGhlcndpc2UgYmUgbG9zdA0KPiA+PiB3aXRoIHJlbW92YWwgb2YgbWFpbiBwb3dlciwgYW5kIG90
-aGVyd2lzZSBwcmVwYXJpbmcgdGhlIEZ1bmN0aW9uIGZvciB0aGUNCj4gdHJhbnNpdGlvbiB0byBE
-M0hvdC4iDQo+ID4+IEkgbGV0IGd1ZXN0IGRyaXZlciB0byBub3RpZnkgcWVtdSB0byBwcm90ZWN0
-IHRoZSBkaXNwbGF5IHJlc291cmNlcw0KPiA+PiB0aGF0IHdpbGwgYmUgbG9zcyBkdXJpbmcgUzMs
-IGl0IGlzIGFsc28gY29tcGxpYW50IHdpdGggU3BlYy4NCj4gPiBUaGlzIGlzIGFscmVhZHkgZG9u
-ZSBieSB0aGUgZ3Vlc3QgUENJIGRyaXZlciB1c2luZyB0aGUgUE0gY29udHJvbCBiaXRzLiBSaWdo
-dD8NCj4gPiBPbmx5IHRoaW5nIG5lZWRlZCBpcyB0byBmaXggdGhlIHZpcnRpbyBsYXllciB0byBo
-b25vciB0aGUgUENJIFBNIGNhcGFiaWxpdGllcw0KPiBhbmQgc2tpcCByZXNldHRpbmcgdGhlIGRl
-dmljZS4NCj4gPg0KPiA+Pg0KPiA+Pj4gSWYgc28sIHRoYXQgaXMgeWV0IGFkZGl0aW9uYWwgdmly
-dGlvIHNwZWMgaGFjayB0aGF0IG11c3QgYmUgYXZvaWRlZA0KPiA+Pj4gYXMgcmVzZXQgZmxvdw0K
-PiA+PiBzaG91bGQgYmUgb25lLg0KPiA+Pj4gUGxlYXNlIGRvICMzIHRvIGF2b2lkIHJlc2V0dGlu
-ZyB0aGUgZGV2aWNlLg0KPiA+PiBUaGUgc2FtZSByZWFzb24gYXMgYWJvdmUuIEFjY29yZGluZyB0
-byB0aGUgcmVndWxhdGlvbnMgb2YgdGhlIHNwZWMsDQo+ID4+IHdlIHNob3VsZCBhbGxvdyBmb3Ig
-dGhlIG9jY3VycmVuY2Ugb2YgdHdvIHNpdHVhdGlvbnMoTm9fU29mdF9SZXNldD0xDQo+ID4+IGFu
-ZA0KPiA+PiBOb19Tb2Z0X1Jlc2V0PTApIGFuZCBwcm92aWRlIHNvbHV0aW9ucyBmb3IgZWFjaCBz
-aXR1YXRpb24sIHJhdGhlcg0KPiA+PiB0aGFuIHNpbXBseSBjYXRlZ29yaXppbmcgdGhlbSBpbnRv
-IG9uZS4NCj4gPj4NCj4gPiBOb19zb2Z0X3Jlc2V0PTAgaGFzIG5vIG9ibGlnYXRpb24gdG8gcmVz
-dG9yZSB0aGUgZnVuY3Rpb25hbCBjb250ZXh0Lg0KPiA+DQo+ID4gSXQgc2VlbXMgdG8gbWUgdGhh
-dCB5b3UgYXJlIHRyeWluZyB0byBtYWludGFpbiB0aGUgZnVuY3Rpb24gY29udGV4dCBFVkVOIG9u
-DQo+IGRldmljZSByZXNldCBmb3IgdGhlIG1vdGl2YXRpb24gb2Ygbm90IG1vZGlmeWluZyB0aGUg
-Z3Vlc3QgZHJpdmVyLg0KPiA+IElmIHRoYXQgaXMgdGhlIG1vdGl2YXRpb24sIGlzIGNlcnRhaW5s
-eSBub3QgcmlnaHQgdG8gd29yayBhcm91bmQgdGhpbmdzIHRoYXQNCj4gd2F5Lg0KPiA+IEkgaG9w
-ZSBteSBpbnRlcnByZXRhdGlvbiBpcyB3cm9uZy4gOikNCj4gWW91IGFyZSB3cm9uZywgSSBhbSBu
-b3QgZm9yIHRoZSBtb3RpdmF0aW9uIG9mIG5vdCBtb2RpZnlpbmcgdGhlIGd1ZXN0IGRyaXZlci4N
-Ck9rLiBnb29kLg0KDQo+IEJlY2F1c2UgZ3Vlc3QgZHJpdmVyIGRvZXNuJ3QgaGF2ZSBlbm91Z2gg
-aW5mb3JtYXRpb24gdG8gcmVjcmVhdGUgYWxsIHRoZQ0KPiBkaXNwbGF5IHJlc291cmNlcywgdGhp
-cyBoYXMgYmVlbiBkaXNjdXNzZWQgYW5kIGFncmVlZCB1cG9uIGluIG15IHFlbXUgcGF0Y2gNCj4g
-cmV2aWV3Lg0KT2suIEkgYW0gYWxzbyBpbiBmYXZvciBvZiByZXN0b3JpbmcgdGhlIHJlc291cmNl
-cyBvbiBkMy0+ZDAuDQpXZSBhcmUgYWxpZ25lZCBmb3IgIzEgYW5kICMzLg0KDQo+IEkganVzdCB3
-YW50IHRvIGFzayB5b3UgaWYgYSBkZXZpY2UgaGFzIG5vICMyIChOb19Tb2Z0X1Jlc2V0PTApLCBo
-b3cgZG8geW91DQo+IHNvbHZlIHRoZSBkaXNwbGF5IHJlc291cmNlcyBvZiB2aXJ0aW8tZ3B1IGRl
-c3Ryb3llZCBwcm9ibGVtPyANCkJ5IGltcGxlbWVudGluZyAjMi4NCg0KKE5vdCB0bz4gaW1wbGVt
-ZW50ICMyLCBiZWNhdXNlIHRoaXMgc2l0dWF0aW9uIGV4aXN0cywNCldoaWNoIHNpdHVhdGlvbiBl
-eGlzdHM/IERldmljZSBpbXBsZW1lbnRhdGlvbiBpcyBtaXNzaW5nICMyPw0KSWYgc28sIGxldHMg
-aW1wcm92ZSB0aGUgZGV2aWNlIGltcGxlbWVudGF0aW9uIHRvIGRvICMyLg0KDQogaXMgcmVhc29u
-YWJsZSwgYW5kIGNvbXBsaWVzIHdpdGgNCj4gdGhlIFNwZWMuIFNob3VsZG4ndCB3ZSBhbHNvIGNv
-bnNpZGVyIGhvdyB0byBtb2RpZnkgY29kZSB0byBtYWtlIHRoZSB2aXJ0aW8tDQo+IGdwdSB3b3Jr
-IHByb3Blcmx5IGluIHRoaXMgc2l0dWF0aW9uPyAgWW91IGNhbid0IHNheSB0byBkaXJlY3RseSBp
-bXBsZW1lbnQgIzIgdG8NCj4gZWxpbWluYXRlIHRoZSBleGlzdGVuY2Ugb2YgdGhpcyBzaXR1YXRp
-b24sIGNhbiB5b3U/KQ0KSSBkaWRu4oCZdCBmb2xsb3csIHdoYXQgaXMgdGhlIHByb2JsZW0gaW4g
-aW1wbGVtZW50aW5nICMyPw0K
+
+
+在 2024/1/15 下午9:21, Parav Pandit 写道:
+>
+>> From: virtio-comment@lists.oasis-open.org <virtio-comment@lists.oasis-
+>> open.org> On Behalf Of Heng Qi
+>> Sent: Monday, January 15, 2024 6:36 PM
+>>
+>> Currently, when each time the driver attempts to update the coalescing
+>> parameters for a vq, it needs to kick the device and wait for the ctrlq
+>> response to return.
+> It does not need to wait. This is some driver limitation that does not use the queue as "queue".
+> Such driver limitation should be removed in the driver. It does not qualify as limitation.
+
+Yes, we don't have to wait.
+
+But in general, for user commands, it is necessary to obtain the final 
+results synchronously.
+The user command cannot return before the final result is obtained.
+And wait is not the problem this patch solves.
+
+>
+> This will enable driver to enqueue multiple cvq commands without waiting for previous one.
+> This will also enable device to find natural coalescing done on multiple commands.
+
+When batch user commands occur, ensuring synchronization is a concern.
+
+>
+>> The following path is observed: 1. Driver kicks the device; 2. After the device
+>> receives the kick, CPU scheduling occurs and DMA multiple buffers multiple
+>> times; 3. The device completes processing and replies with a response.
+>>
+>> When large-queue devices issue multiple requests and kick the device
+>> frequently, this often interrupt the work of the device-side CPU.
+> When there is large devices and multiple driver notifications by a cpu that is N times faster than the device side cpu,
+> the device may find natural coalescing on the commands of a given cvq.
+
+First we have to solve the ctrlq batch adding user (ethtool) command.
+Even if processed in a batch way on device side, the number of kicks and 
+the number of backend DMAs has not been reduced.
+
+>
+> For multiple DMAs, we need to way to send 8 bytes of data without 16 bytes of indirection via a descriptor.
+> This is what we discussed a while back to do in txq and Stefan suggested to generalize for more queues, which is also a good idea.
+
+Yes, this sounds good.
+
+>
+>> In addition,
+>> each vq request is processed separately, causing more delays for the CPU to
+>> wait for the DMA request to complete.
+>>
+>> These interruptions and overhead will strain the CPU responsible for
+>> controlling the path of the DPU, especially in multi-device and large-queue
+>> scenarios.
+>>
+>> To solve the above problems, we internally tried batch request, which merges
+>> requests from multiple queues and sends them at once. We conservatively
+>> tested
+> The batching done may end up modifying the given VQ's parameters multiple times.
+
+In practice, we do not try to accumulate multiple parameter 
+modifications for a specific vqn.
+
+> The right test on Linux to do without rtnl lock which is anyway ugly and wrong semantic to use blocking the whole netdev stack.
+> (in case if you used that).
+
+Do you have any good directions and attempts to remove rtnl_lock?
+
+>
+>> 8 queue commands and sent them together. The DPU processing efficiency
+>> can be improved by 8 times, which greatly eases the DPU's support for multi-
+>> device and multi-queue DIM.
+>>
+> This is good.
+
+YES. Makes sense for our DPUs.
+
+>   
+>> Maintainers may be concerned about whether the batch command method
+>> can optimize the above problems: accumulate multiple request commands to
+>> kick the device once, and obtain the processing results of the corresponding
+>> commands asynchronously.
+> This is unlikely to improve, rather it will have negative impact as it only means that moderation parameters are just delayed by the driver.
+>
+
+Why is it delayed by the driver? It is not delayed by the driver, the 
+kick still happens for every command.
+In theory and practice, it will not affect DIM performance, but it will 
+significantly reduce CPU consumption caused by waiting.
+
+>> The batch command method is used by us to optimize the CPU overhead of
+>> the DIM worker caused by the guest being busy waiting for the command
+>> response result.
+> In that case fixing the guest driver which is not yet written is the right fix.
+>
+>> This is a different focus than batch request to solve the problem.
+>>
+>> Suggested-by: Xiaoming Zhao <zxm377917@alibaba-inc.com>
+>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>> ---
+>> v1->v2: Updated commit log. Due to sensitivity, sorry that can not give
+>> v1->the
+>>      absolute value directly. @Michael
+>>
+>>   device-types/net/description.tex | 26 ++++++++++++++++++++------
+>>   1 file changed, 20 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/device-types/net/description.tex b/device-
+>> types/net/description.tex
+>> index aff5e08..b3766c4 100644
+>> --- a/device-types/net/description.tex
+>> +++ b/device-types/net/description.tex
+>> @@ -1667,8 +1667,8 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi  for notification
+>> coalescing.
+>>
+>>   If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, the driver can -
+>> send commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET -for virtqueue notification
+>> coalescing.
+>> +send commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET,
+>> +VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET for virtqueue notification
+>> coalescing.
+>>
+> A new feature bit is needed for this extra functionality.
+
+I tried to extend it to the command VIRTIO_NET_F_VQ_NOTF_COAL, is it too 
+late?
+
+Thanks!
+
+>
+>>   \begin{lstlisting}
+>>   struct virtio_net_ctrl_coal {
+>> @@ -1682,11 +1682,17 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>       struct virtio_net_ctrl_coal coal;
+>>   };
+>>
+>> +struct virtio_net_ctrl_mrg_coal_vq {
+>> +        le16 num_entries; /* indicates number of valid entries */
+>> +        struct virtio_net_ctrl_coal_vq entries[]; };
+>> +
+>>   #define VIRTIO_NET_CTRL_NOTF_COAL 6
+>>    #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET  0
+>>    #define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET 1
+>>    #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET 2
+>>    #define VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET 3
+>> + #define VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET 4
+>>   \end{lstlisting}
+>>
+>>   Coalescing parameters:
+>> @@ -1706,6 +1712,7 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi  \item For the
+>> command VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET, the structure
+>> virtio_net_ctrl_coal_vq is write-only for the driver.
+>>   \item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET,
+>> \field{vq_index} and \field{reserved} are write-only
+>>         for the driver, and the structure virtio_net_ctrl_coal is read-only for the
+>> driver.
+>> +\item For the command VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET, the
+>> structure virtio_net_ctrl_mrg_coal_vq is write-only for the driver.
+>>   \end{itemize}
+>>
+>>   The class VIRTIO_NET_CTRL_NOTF_COAL has the following commands:
+>> @@ -1716,6 +1723,9 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>                                           for an enabled transmit/receive virtqueue whose
+>> index is \field{vq_index}.
+>>   \item VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET: use the structure
+>> virtio_net_ctrl_coal_vq to get the \field{max_usecs} and \field{max_packets}
+>> parameters
+>>                                           for an enabled transmit/receive virtqueue whose
+>> index is \field{vq_index}.
+>> +\item VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET: use the structure
+>> virtio_net_ctrl_mrg_coal_vq to set the \field{max_usecs} and
+>> \field{max_packets} parameters
+>> +                                         for \field{num_entries} enabled transmit/receive
+>> virtqueues. The corresponding index value
+>> +                                         of each configured virtqueue is \field{vq_index}.
+>>   \end{enumerate}
+>>
+>>   The device may generate notifications more or less frequently than specified
+>> by set commands of the VIRTIO_NET_CTRL_NOTF_COAL class.
+>> @@ -1782,9 +1792,13 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>
+>>   The driver MUST set \field{vq_index} to the virtqueue index of an enabled
+>> transmit or receive virtqueue.
+>>
+>> +The driver MUST set \field{num_entries} to a non-zero value and MUST
+>> +NOT set \field{num_entries} to a value greater than the number of enabled
+>> transmit and receive virtqueues.
+>> +
+>>   The driver MUST have negotiated the VIRTIO_NET_F_NOTF_COAL feature
+>> when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET.
+>>
+>> -The driver MUST have negotiated the VIRTIO_NET_F_VQ_NOTF_COAL
+>> feature when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET
+>> and VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET.
+>> +The driver MUST have negotiated the VIRTIO_NET_F_VQ_NOTF_COAL
+>> feature
+>> +when issuing commands VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET,
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET.
+>>
+>>   The driver MUST ignore the values of coalescing parameters received from
+>> the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if the device
+>> responds with VIRTIO_NET_ERR.
+>>
+>> @@ -1794,10 +1808,10 @@ \subsubsection{Control
+>> Virtqueue}\label{sec:Device Types / Network Device / Devi
+>>
+>>   The device SHOULD respond to VIRTIO_NET_CTRL_NOTF_COAL_TX_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_RX_SET commands with VIRTIO_NET_ERR if
+>> it was not able to change the parameters.
+>>
+>> -The device MUST respond to the VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET
+>> command with VIRTIO_NET_ERR if it was not able to change the parameters.
+>> +The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET commands with VIRTIO_NET_ERR
+>> if it was not able to change the parameters.
+>>
+>> -The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with -VIRTIO_NET_ERR
+>> if the designated virtqueue is not an enabled transmit or receive virtqueue.
+>> +The device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET,
+>> +VIRTIO_NET_CTRL_NOTF_COAL_VQS_SET and
+>> VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with VIRTIO_NET_ERR if
+>> the designated virtqueue is not an enabled transmit or receive virtqueue.
+>>
+>>   Upon disabling and re-enabling a transmit virtqueue, the device MUST set
+>> the coalescing parameters of the virtqueue  to those configured through the
+>> VIRTIO_NET_CTRL_NOTF_COAL_TX_SET command, or, if the driver did not
+>> set any TX coalescing parameters, to 0.
+>> --
+>> 1.8.3.1
+>>
+>>
+>> This publicly archived list offers a means to provide input to the
+>> OASIS Virtual I/O Device (VIRTIO) TC.
+>>
+>> In order to verify user consent to the Feedback License terms and
+>> to minimize spam in the list archive, subscription is required
+>> before posting.
+>>
+>> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+>> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+>> List help: virtio-comment-help@lists.oasis-open.org
+>> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+>> Feedback License: https://www.oasis-
+>> open.org/who/ipr/feedback_license.pdf
+>> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+>> Committee: https://www.oasis-open.org/committees/virtio/
+>> Join OASIS: https://www.oasis-open.org/join/
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
 
