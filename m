@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14312-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14313-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05D8FC48BEB
-	for <virtio-dev@archiver.kernel.org>; Wed, 14 Feb 2024 09:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D8A10C48BEC
+	for <virtio-dev@archiver.kernel.org>; Wed, 14 Feb 2024 10:31:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 5534322364
-	for <virtio-dev@archiver.kernel.org>; Wed, 14 Feb 2024 09:38:28 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4213C2355E
+	for <virtio-dev@archiver.kernel.org>; Wed, 14 Feb 2024 10:31:34 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 2A1F69865A1
-	for <virtio-dev@archiver.kernel.org>; Wed, 14 Feb 2024 09:38:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 35D189865B3
+	for <virtio-dev@archiver.kernel.org>; Wed, 14 Feb 2024 10:31:34 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 0F93B986589; Wed, 14 Feb 2024 09:38:28 +0000 (UTC)
+	id 29EC7986589; Wed, 14 Feb 2024 10:31:34 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,188 +24,55 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F353698658D
-	for <virtio-dev@lists.oasis-open.org>; Wed, 14 Feb 2024 09:38:27 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1CBB898658D
+	for <virtio-dev@lists.oasis-open.org>; Wed, 14 Feb 2024 10:31:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1707903505.521000
-X-TM-MAIL-UUID: c6205d0d-b439-45c9-a48d-614fc24f8fb2
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hOG9gzdlunrpYR9eEG1VBOk+CH2B7ZAB8QbSpgiSNdE54UEzOwZPecF7VkwmpjD5TtX5EwGBkciFk+vsx+ZFAgW8xMUU5eWGJSkcQlAjVuDv1XjuS+5XF2z7FU8tyllBYGd/gY9VyqxyZhQ9RKedmarEJ2AvwYxAxMIueeQz2Asz9xaI6JiTGCdgeo7lYfU5LhcSp+BWTRgZZcwKArzHpRC9u+GN1q5XuDVCzpx81ForrL+/uNAzPF64Ao8U+hde8l9QcqZ+RnJoOr3wCGeBFYE0Z9gfecIOn1NCZXlXswwM5nXt5Hoq3GiJLGipLpQECFj0ot0W33JMtc4P1RuNYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/QRXNfD7h7qGAgiy2nS8fLn8dHSS7bhLFivdaFpFmqU=;
- b=ny8zaI0qnjEKLwLk3h5SKA71GzIqPbpAq/3Xz89VAA2xB8f6QU0gq3FrxXtRzAwtVqak1007fegMgoG5yuCLC4S1L/rcafhCR2Ouf9/cmbozVyYhOuRrK4oQU2f0UNIQhEOG9OeKob7/XKciYtWY6p/00fa6SGGtmDi//WU/8yLzp8yIVJ/a3QmoGKU2II8tMC39bHppxr5pQmpDTtcQ37voN+5N66UgOB+fdCKGb7P/PahJFcOlKY210mpoGDqak0FheeBBSAeN/BXF0auYTr/ge0Bpqoko4LI9lxre5bVc0WllYgY73Ro6DRsqfQFLAbNOABjTKcGfMaAxTc+mNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 217.66.60.4) smtp.rcpttodomain=alsa-project.org
- smtp.mailfrom=opensynergy.com; dmarc=pass (p=reject sp=reject pct=100)
- action=none header.from=opensynergy.com; dkim=none (message not signed);
- arc=none (0)
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
- smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=opensynergy.com;
-Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
- designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
-From: Aiswarya Cyriac <aiswarya.cyriac@opensynergy.com>
-To: mst@redhat.com,
-	jasowang@redhat.com,
-	perex@perex.cz,
-	tiwai@suse.com,
-	linux-kernel@vger.kernel.org,
-	alsa-devel@alsa-project.org,
-	virtualization@lists.linux-foundation.org,
-	virtio-dev@lists.oasis-open.org
-Cc: Aiswarya Cyriac <aiswarya.cyriac@opensynergy.com>,
-	Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-	coverity-bot <keescook+coverity-bot@chromium.org>
-Date: Wed, 14 Feb 2024 10:38:13 +0100
-Message-Id: <20240214093813.578906-1-aiswarya.cyriac@opensynergy.com>
-X-Mailer: git-send-email 2.25.1
+X-MC-Unique: 7eVbi6YcN2icl2P9OgxJGw-1
+From: Cornelia Huck <cohuck@redhat.com>
+To: Anton Yakovlev <anton.yakovlev@opensynergy.com>, "Pape, Andreas
+ (ADITG/ESS3)" <apape@de.adit-jv.com>,
+ "virtio-comment@lists.oasis-open.org"
+ <virtio-comment@lists.oasis-open.org>, "virtio-dev@lists.oasis-open.org"
+ <virtio-dev@lists.oasis-open.org>
+In-Reply-To: <719bcf1b-c9f8-41e9-9ee0-4f8b63148c2e@opensynergy.com>
+Organization: "Red Hat GmbH, Sitz: Werner-von-Siemens-Ring 12, D-85630
+ Grasbrunn, Handelsregister: Amtsgericht =?utf-8?Q?M=C3=BCnchen=2C?= HRB
+ 153243,
+ =?utf-8?Q?Gesch=C3=A4ftsf=C3=BChrer=3A?= Ryan Barnhart, Charles Cachera,
+ Michael O'Neill, Amy
+ Ross"
+References: <10d461c112924dce8f29215359889b7b@de.adit-jv.com>
+ <719bcf1b-c9f8-41e9-9ee0-4f8b63148c2e@opensynergy.com>
+User-Agent: Notmuch/0.37 (https://notmuchmail.org)
+Date: Wed, 14 Feb 2024 11:31:24 +0100
+Message-ID: <871q9fgww3.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM4PEPF00027A6B:EE_|FR4P281MB3449:EE_
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.9
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 8fbcafdd-786c-41ee-aaa4-08dc2d40b070
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	pcIeJRBFcjfg/L8PRkdDOdtpd8HCmckomQY73Xjit2aKeeDBPMSz+J2X9v3v8PU1vWlLiCFiPOgrfYWSobHC7gaayVTb3KG8gDP70j2B38iYFvmqOMpJXZ3/2J5gub+WdwIiuH/zxsmM+pRXzqDqfP2YEiFch+H0fkxe9dc9bZwwcpwZ24coPq9jPRnshVP5ss65tif1qmmteLO3v16MVitbYvsmi8oWmewmgSh7UqXz4mopXMPx63dh7j0cyl8+ixHXr6r/MVYDASJsMOvp8nrOKEKOvG0Q36UAv0XnOWoGrI08tj+NvhE4QGOoz/S8adZCi+bCKVMmuG15qiQ5HI/aUbuENetWDPoaxS0wWU7HbP5Z2jGzHe09EMCbYLqgLVWDxHeCsghUir5yJ3MHg3zwTODsR+Nt14XWxtLy7le26PJtW/yyLFnXmhbiW/nDDDlqQEmGc4zyXQXho6g+I8piLWaOL09ij7nxr3d2cjcayzogHkLWBTbVAuDUZ+vM2IpnOzPE0wQwQdwgrLrgcO5YB0uxfexFM08fol9vVDduT3k3YMcYgVYtamvnfD1Dz17U+Mcavdy5M0+VYJAwbhkQ2jUXzS+E3VsAt/Bcsn8=
-X-Forefront-Antispam-Report:
-	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(346002)(39840400004)(376002)(396003)(136003)(230273577357003)(230922051799003)(1800799012)(451199024)(64100799003)(186009)(82310400011)(46966006)(36840700001)(44832011)(5660300002)(8936002)(8676002)(4326008)(70206006)(70586007)(2906002)(83380400001)(26005)(1076003)(336012)(81166007)(36756003)(86362001)(54906003)(42186006)(316002)(2616005)(41300700001)(478600001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2024 09:38:24.0473
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8fbcafdd-786c-41ee-aaa4-08dc2d40b070
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AM4PEPF00027A6B.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR4P281MB3449
-X-TM-AS-ERS: 104.47.11.169-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1015-28190.006
-X-TMASE-Result: 10--9.394100-4.000000
-X-TMASE-MatchedRID: IVNJzyZeXh4m6W0B8rdIY/bi+YTr2htSkUTOyGwQKEcG1bmUGNW4DRKy
-	wsos70CFgYfoPrmJSwc0MlZvaRoxGO5pF8IH54mMiu6u4shZ+fE304eoJbTN0Rw72DTAhdU77hX
-	WJUuROzeNk6CnOOT0tJ4u7onx25Mlk/dA6P3T5FsZD7bjq+6lMGzY00haS8QoYcKx85MjSJVz3h
-	/NOzc2C1aH2Ww5mg7njnZ7ULZGdtPt1Qm1UP4H3bo2KXQsvVZSR/Lj9ymbWRKLlRtHfK5Nk+k8T
-	n8qScCE31w1NnIhFDKV1h6ijsb1eK0AyU/iBF0WfHZ4iVAbWwx8LgjA4u/K5/+gZM0aHrd/IlQ2
-	Q2u3mv3f7qT3sazIOMmngP9RbA2Gek66q4St1YszG22WPtozUnVXYrS4nzkTUpD9C5CYK00=
-X-TMASE-XGENCLOUD: f047a65c-4aa9-44d1-be1d-7fd823ffc862-0-0-200-0
-X-TM-Deliver-Signature: 6EB0B460C135D74A72E9266240592764
-X-TM-Addin-Auth: FfV4VFjiqOvf0hL8p/v/tO6V8jFW4jCP9+rZ3hyRMz40U3AN4r457IWMJ2O
-	ri9JmRNNatUx5M0vYPLKoJIj1WVWiqx6nGMe7zG4BCxXNO6E7C7axk2MasSbqXvngicCoYIIxhp
-	YC8GpLPJO/w6Woboa43TGQLCHIeqqVzo9Z6KRIe/YlhiQG8FbbO3nN4A5s0q5HqIm9qfYhe2ZFp
-	FLspF98STfaKtr8gy9dwNvw7Cpb4ivmTN4nM77cehd2uxLJf2I5DueTcHZTDG3Ykp3Ie70lQ8wg
-	pRUdONOW95330CL/CVGVtf2qY2ToGgXzrXTN.xb0G/EvtBgUe++fJbqve6A7PeedsNJ2etGTmpN
-	/nqoK92NFu3hf82PY73MR9bFgh9G3pvd1dhgYPa2tSYbc0zzXdN5Hshk3vOXPLe7L/a31WuCbjE
-	v1u+9FaKRhuBkHTW7vHckOyBbtkoHhUSEYKc8D4jr+i9Fdh/FyP6jByVmxOxKjVSq5iuN8M4EaH
-	YSTYzNSSEfljqI7Q7D+NjXpK7QTr6Upwi1KTShDvvcU2iZSgauTfP3l6dmgC92myD/avk+PWJSi
-	piHhYss56Zbtt6LxEBv6p8qzssjBNdXpmrIyNGEJm602ExAd+NoteHBh5ME2bZJ2DxqkIyGlmaI
-	r0RA==
-X-TM-Addin-ProductCode: EMS
-Subject: [virtio-dev] [v2 PATCH] ALSA: virtio: Fix "Coverity: virtsnd_kctl_tlv_op(): Uninitialized variables" warning.
+Subject: [virtio-dev] Re: [virtio-comment] [PATCH] sound: add sampling rates 12000Hz and
+ 24000Hz
 
-This commit fixes the following warning when building virtio_snd driver.
+On Wed, Feb 14 2024, Anton Yakovlev <anton.yakovlev@opensynergy.com> wrote:
 
-"
-*** CID 1583619:  Uninitialized variables  (UNINIT)
-sound/virtio/virtio_kctl.c:294 in virtsnd_kctl_tlv_op()
-288
-289     		break;
-290     	}
-291
-292     	kfree(tlv);
-293
-vvv     CID 1583619:  Uninitialized variables  (UNINIT)
-vvv     Using uninitialized value "rc".
-294     	return rc;
-295     }
-296
-297     /**
-298      * virtsnd_kctl_get_enum_items() - Query items for the ENUMERATED element type.
-299      * @snd: VirtIO sound device.
-"
+> Thanks Pape!
+>
+>
+> On 05.02.2024 23:41, Pape, Andreas (ADITG/ESS3) wrote:
+>> 24kHz is used for 'super wideband' voice transmission 12kHz is added 'for completeness'
+>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/184
+>> 
+>> Signed-off-by: Andreas Pape <apape@de.adit-jv.com>
+>
+> Reviewed-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
 
-This warning is caused by the absence of the "default" branch in the
-switch-block, and is a false positive because the kernel calls
-virtsnd_kctl_tlv_op() only with values for op_flag processed in
-this block.
+Thanks for re-adding your R-b!
 
-Also, this commit unifies the cleanup path for all possible control
-paths in the callback function.
-
-Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-Signed-off-by: Aiswarya Cyriac <aiswarya.cyriac@opensynergy.com>
-Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
-Addresses-Coverity-ID: 1583619 ("Uninitialized variables")
-Fixes: d6568e3de42d ("ALSA: virtio: add support for audio controls")
----
- sound/virtio/virtio_kctl.c | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/sound/virtio/virtio_kctl.c b/sound/virtio/virtio_kctl.c
-index 0c6ac74aca1e..89e29a496dbe 100644
---- a/sound/virtio/virtio_kctl.c
-+++ b/sound/virtio/virtio_kctl.c
-@@ -253,8 +253,8 @@ static int virtsnd_kctl_tlv_op(struct snd_kcontrol *kcontrol, int op_flag,
- 
- 	tlv = kzalloc(size, GFP_KERNEL);
- 	if (!tlv) {
--		virtsnd_ctl_msg_unref(msg);
--		return -ENOMEM;
-+		rc = -ENOMEM;
-+		goto on_cleanup;
- 	}
- 
- 	sg_init_one(&sg, tlv, size);
-@@ -266,6 +266,11 @@ static int virtsnd_kctl_tlv_op(struct snd_kcontrol *kcontrol, int op_flag,
- 	case SNDRV_CTL_TLV_OP_READ:
- 		hdr->hdr.code = cpu_to_le32(VIRTIO_SND_R_CTL_TLV_READ);
- 
-+		/* Since virtsnd_ctl_msg_send() drops the reference, we increase
-+		 * the counter to be consistent with the on_cleanup path.
-+		 */
-+		virtsnd_ctl_msg_ref(msg);
-+
- 		rc = virtsnd_ctl_msg_send(snd, msg, NULL, &sg, false);
- 		if (!rc) {
- 			if (copy_to_user(utlv, tlv, size))
-@@ -281,14 +286,25 @@ static int virtsnd_kctl_tlv_op(struct snd_kcontrol *kcontrol, int op_flag,
- 			hdr->hdr.code =
- 				cpu_to_le32(VIRTIO_SND_R_CTL_TLV_COMMAND);
- 
--		if (copy_from_user(tlv, utlv, size))
-+		if (copy_from_user(tlv, utlv, size)) {
- 			rc = -EFAULT;
--		else
-+		} else {
-+			/* Same as the comment above */
-+			virtsnd_ctl_msg_ref(msg);
-+
- 			rc = virtsnd_ctl_msg_send(snd, msg, &sg, NULL, false);
-+		}
-+
-+		break;
-+	default:
-+		rc = -EINVAL;
- 
- 		break;
- 	}
- 
-+on_cleanup:
-+	virtsnd_ctl_msg_unref(msg);
-+
- 	kfree(tlv);
- 
- 	return rc;
--- 
-2.43.0
+>
+>> ---
+>>   device-types/sound/description.tex | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
 
 
 ---------------------------------------------------------------------
