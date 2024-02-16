@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14322-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14323-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A217C48260
-	for <virtio-dev@archiver.kernel.org>; Fri, 16 Feb 2024 08:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E5D7DC48260
+	for <virtio-dev@archiver.kernel.org>; Fri, 16 Feb 2024 10:07:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 718C2600D4
-	for <virtio-dev@archiver.kernel.org>; Fri, 16 Feb 2024 08:56:16 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 3058377C2E
+	for <virtio-dev@archiver.kernel.org>; Fri, 16 Feb 2024 10:07:38 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 63058986668
-	for <virtio-dev@archiver.kernel.org>; Fri, 16 Feb 2024 08:56:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 0C216986661
+	for <virtio-dev@archiver.kernel.org>; Fri, 16 Feb 2024 10:07:38 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 548BC981232; Fri, 16 Feb 2024 08:56:16 +0000 (UTC)
+	id DF3659865FD; Fri, 16 Feb 2024 10:07:37 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,143 +24,176 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4601C986650
-	for <virtio-dev@lists.oasis-open.org>; Fri, 16 Feb 2024 08:56:16 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id CF1A09865FF
+	for <virtio-dev@lists.oasis-open.org>; Fri, 16 Feb 2024 10:07:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: IlS8NBSSMpyGblLqv_dUNw-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708073769; x=1708678569;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8wJ/BW/ih+cckLHrgBJ5R7XqMnb4HA0MXREj7ccXYnk=;
-        b=qfsSH8DPvSTK6VeD3jWkX7on2ehy8xG6VxzEbLFZboIUN9X9N+Gcua4IxkgCkqw/7q
-         +5fO/aGxHR+NDt6LuRgZ9uqgcYlTS1STbAZ3b2BVePwaOME5r6RF/9sFETNh3PdBiva4
-         jq9loDyUgES5VJPHZf87qkcS+SG5C+E9xf2efLCRU/RTXmkTUzcrIjDUIpZtgJ3JlKIl
-         szt5GRZjRe2Geu8TQAco910edOZWr/NdeqwHMNrjtX40Zc6Cpw7wBrp0j/IbAgGIZp/m
-         qGk0uhDXJjJPat0fgtbii0URVgdtmID9bwLub3ypfqjVUyclw8RJd197ax0Y8OYXxv5h
-         HXdw==
-X-Forwarded-Encrypted: i=1; AJvYcCV+WmjfbDASKsHiIHrjs13oECd33xUqGqq6pijnoBpnOkCM6SrcxtjJbprmfnbF/qu7Kht5QNF9ZqMLN7Rfs4aVnpH6NGLqWYMTHNTDyAT/
-X-Gm-Message-State: AOJu0YzSwvKObvbi9rrMoaNVQTR5tvPvzU3rkAVSdT6JGvOifiVr5j9l
-	sQuJ6EPgKAF63JdXmEl4gGy6UAagZiGpnq7e019tFRqpyXshgH9ZbTZTTzO7iz1jJZgGWXjPCmb
-	zRQHyQFIezBpSsnvRmiV5gGhbRIV71lqVmOHKdqXbvKbLS8SUllmEiIF2vw78NVjpKA==
-X-Received: by 2002:a05:622a:4c7:b0:42c:6016:5d39 with SMTP id q7-20020a05622a04c700b0042c60165d39mr5246959qtx.19.1708073769704;
-        Fri, 16 Feb 2024 00:56:09 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGUy/dng9YgkAUqxDNox+owCGzFmMzwt51f+FlUgySkFYXLWhy2ZgY4esd1Rh7nmIwwrWD0wA==
-X-Received: by 2002:a05:622a:4c7:b0:42c:6016:5d39 with SMTP id q7-20020a05622a04c700b0042c60165d39mr5246944qtx.19.1708073769391;
-        Fri, 16 Feb 2024 00:56:09 -0800 (PST)
-Date: Fri, 16 Feb 2024 03:56:04 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: David Stevens <stevensd@chromium.org>
-Cc: Jason Wang <jasowang@redhat.com>, virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, parav@nvidia.com
-Message-ID: <20240216035144-mutt-send-email-mst@kernel.org>
-References: <20240216082432.709956-1-stevensd@chromium.org>
- <20240216082432.709956-2-stevensd@chromium.org>
+X-TM-MAIL-RECEIVED-TIME: 1708078023.684000
+X-TM-MAIL-UUID: 48a7f490-4bfc-4c10-8c9b-8b39c8f27e12
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KiTbvtrOhg65QHR+cqhjd68NHx9p6Gu1QMji1lgJC0dmwTGCcuE3hWuAPECHHuShPN1UjEvkO8GXqbKg+eXkb+Z7olWpF5fCKyKvczp2nQPJ8RHObzE9lCsaFHTuHZiVuQ30EO5ii2KjkJM35YBrSYz1J7U2PKsnCwplxuYzZelG3FXSFp8Y91o+R724d0qtFJu2XhZyAAJljiCqFoF/ihZw9TYylEzOF7GqQSf0CMefkQ8PvcndQ4T9iEq/+kmLpMYVy/IgU+BBPYLm0uE5GBnqh+66wJ03T9/L4Q51E7b4ZHoes/agc7JLDOnAx2HHqqzDwHoZ3NDT+AGE+iBD0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HE0jL9M9QVaUs8zzkQhxJzC+O+G/NljfyGALdz4tB8s=;
+ b=a209xJ8ybHUBeQZytggDzkYOmCGDG5zf+ziDav6Pt4qfoo+E2z14594A6NqYYpT4QlPf9/yHdY5wzYUZwgBMI/JTJjlAv+oFiWUeR4Af0dkuh1mXbfCGdl+4Es3j0j9SplKaG++Evivpwjf2MZnTfsTGGC2cba8goMYHMEwsadd9q+NrLbK1GgtEQlXENXkSXUzTTSQbdnwqf9hpkwflpTWTn7HJy7GrROJ3Jyi85joUfcxrXDyEPyj9a9Fu5d35twlXuZ7lKDEI+DOkJKe4bAnpivJY3H5wFCUh2fxr26+NLvIEWxyC12g++OKBDn1FQ6xNxhZzYSnXXyosMaAAUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 217.66.60.4) smtp.rcpttodomain=alsa-project.org
+ smtp.mailfrom=opensynergy.com; dmarc=pass (p=reject sp=reject pct=100)
+ action=none header.from=opensynergy.com; dkim=none (message not signed);
+ arc=none (0)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=opensynergy.com;
+Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
+ designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
+From: Aiswarya Cyriac <aiswarya.cyriac@opensynergy.com>
+To: mst@redhat.com,
+	jasowang@redhat.com,
+	perex@perex.cz,
+	tiwai@suse.com,
+	linux-kernel@vger.kernel.org,
+	alsa-devel@alsa-project.org,
+	virtualization@lists.linux-foundation.org,
+	virtio-dev@lists.oasis-open.org
+Cc: Aiswarya Cyriac <aiswarya.cyriac@opensynergy.com>,
+	Anton Yakovlev <anton.yakovlev@opensynergy.com>,
+	coverity-bot <keescook+coverity-bot@chromium.org>
+Date: Fri, 16 Feb 2024 11:06:43 +0100
+Message-Id: <20240216100643.688590-1-aiswarya.cyriac@opensynergy.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20240216082432.709956-2-stevensd@chromium.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [PATCH v4 1/1] Add suspend support for virtio PCI devices
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU2PEPF00028D13:EE_|BEZP281MB3092:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 3a2fd6b1-6498-4c90-b6cc-08dc2ed704b2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	LJOBHZ4bn/kMSF+H5w8It71ZVnxd/UnIZM74rpOVXwJDG3byVP6qX69gWRXGCxQvLhOXcoeqBn3+2cCRDlvAQAI8blRz3goAZgOLT5zHx7MzXCQCR1DxETi2qHungPqztnzIeqQL51XKT4EHXp3vGNRcI2X3ic+ZNicPiOwgYgXtBtwk7h0nBa57rIhGZ1qTXpR7LcbM9b46HOmEkNTbOLuvRwnBqAdc8yk5UQCf4Xblf9q59fGQ+fVS460atS5lfggjXERPCnYFxR5NpfDZYDaRq6tGVnQItAeYREGiII2Rk++2JrIn5DDqIQ93/HxL2JHsHkrED9+r6SaHTZSKyWZK6CmhcAMG9X8KyVZ+LhD9xpjjmpkvmSYQ1/N0JAhfwLMlWg+D/V6oDNteZJVoqV+k6SfuXHjOrqw9qsLfrR1q4rcPYPyVhBPn0zWdbzxIAQgTi/RSq8SLBFRpI8phJMobcRb89NICIDehi2+Fp2owSxvIVjrl6M7m897rSMDK5j06L9oqkLOn4S1HXdManZXOU0mijtxnoghiMyGP5OkjdAlRJAKwS8v8g9Yg6M/eJVqjEwSUlUHjIL2LZU4ribRspvgaDzJelV0oLY4fIOyh1yDDB/Xh7MLmhOQCwT9VGDlTivHrCLWkz0U/1YAS+f7qUfwu4IHL9fEhjShJ7VA=
+X-Forefront-Antispam-Report:
+	CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(396003)(376002)(346002)(39840400004)(136003)(230922051799003)(230273577357003)(82310400011)(64100799003)(186009)(451199024)(1800799012)(36860700004)(46966006)(83380400001)(478600001)(2616005)(336012)(1076003)(26005)(5660300002)(2906002)(42186006)(70206006)(70586007)(54906003)(316002)(44832011)(8676002)(8936002)(4326008)(36756003)(81166007)(86362001)(41300700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2024 10:07:01.0341
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a2fd6b1-6498-4c90-b6cc-08dc2ed704b2
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DU2PEPF00028D13.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BEZP281MB3092
+X-TM-AS-ERS: 104.47.7.169-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28194.006
+X-TMASE-Result: 10--6.073000-4.000000
+X-TMASE-MatchedRID: yLHOPqhdQyUm6W0B8rdIY/bi+YTr2htSkUTOyGwQKEcG1bmUGNW4DRKy
+	wsos70CFgYfoPrmJSwc0MlZvaRoxGO5pF8IH54mMiu6u4shZ+fE304eoJbTN0Rw72DTAhdU77hX
+	WJUuROzeNk6CnOOT0tJ4u7onx25Mlk/dA6P3T5FsZD7bjq+6lMGzY00haS8QoYcKx85MjSJV7ZP
+	o4/uRLKdjkA7ZIeC0hSsHaTC+tV4yT+faG0UZYkbF+GhWADCGDcnxszfxH2Cl7wQPQv9XohUiWq
+	V2CUL6T2HlzhM3zNtns9WQVYycKfw3lGTiQlxzIqDtmjlQ4FGmiWLhmiI4dP34gKq42LRYkLQsA
+	4Lf47hfQyG0Im0vQFRYVjN3ayo9ftrLio4OQIpt+3BndfXUhXQ==
+X-TMASE-XGENCLOUD: bb9067a1-5a4d-4378-86da-fc05fbc94867-0-0-200-0
+X-TM-Deliver-Signature: 38AB2E0AAE7BF7D54D21C43B51702617
+X-TM-Addin-Auth: e7Mwzoh2XWMygMHTd7pOSJ1N8aTN+6kV8/kvETaVr1NvWYWI1jSBpAChZEI
+	yuT+KKOjfCj9OtFB1kiAOGV3JUDDy0JiGZ21/eoessHfDN7avmSChM7XibdZFH9gpnuI/5a3+gL
+	3yA/NG97L04aQZk1qRENR1cBNwzZFQlYvKwUOuajwteNr4XbKMxpQcA+WQRQWy3cITPMsp9Ey5M
+	7j4oygRtPhAwWbiTIGJRB3RYR056eyQZd4dzp6smQP85gY6H3bxS50OT2uTetoPbhIEWfGEr+GO
+	LKsztdRVBs1JcixDoKbpZ9fHjPa8u+VLdfL4.PvpLRZDEfqKALqs7WCWi2pAhmxgx1BZr5va9P1
+	fjKIp3AfF2jFsnz71KeoZjjXSQ2YTLK08lOeKBRIspN/DrztGUqid/wRfgXVXVN/bPVfQNVZFLQ
+	rQYunqPGTDoYX/Q+nLGJes2ApQD4mMye19Voysl1vD1HXsKJzJeTLLsPHkBuSsMXP3dCv2jEvqT
+	EFJQzyXHViFKSlGXO0tp+S9F1Rwm60Z7cJp3D/KrbxcnBCMl+equQuXXJIQtg15r96YSq9Frz8d
+	w1ov9lMYw5u+JUFEeLlVFPJ3PYPzCTGiGRn7Qm3eK77P/EEFsJ15MzKwThmwn/f/6rG8gHpRDvy
+	MVvA==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] [v4 PATCH] ALSA: virtio: Fix "Coverity: virtsnd_kctl_tlv_op(): Uninitialized variables" warning.
 
-On Fri, Feb 16, 2024 at 05:24:32PM +0900, David Stevens wrote:
-> Add a virtio power management PCI capability to allow drivers to suspend
-> virtio PCI devices. This allows drivers to suspend devices at the virtio
-> level before suspending them at the PCI transport layer. This allows
-> drivers to do a two phase suspend, which prevents notifications from
-> being ignored or lost if interrupts are reconfigured at the PCI
-> transport layer immediately before or after the device is put into the
-> PCI PM D3 low power state.
-> ---
->  transport-pci.tex | 51 +++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 51 insertions(+)
-> 
-> diff --git a/transport-pci.tex b/transport-pci.tex
-> index a5c6719ea871..ce77708a9b69 100644
-> --- a/transport-pci.tex
-> +++ b/transport-pci.tex
-> @@ -188,6 +188,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
->  #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
->  /* Vendor-specific data */
->  #define VIRTIO_PCI_CAP_VENDOR_CFG        9
-> +/* Power management configuration */
-> +#define VIRTIO_PCI_CAP_PM_CFG            10
->  \end{lstlisting}
->  
->          Any other value is reserved for future use.
-> @@ -804,6 +806,55 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
->  specified by some other Virtio Structure PCI Capability
->  of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
->  
-> +\subsubsection{Power management capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Power management capability}
-> +
-> +The VIRTIO_PCI_CAP_PM_CFG capability refers to a single byte. The
-> +driver can write to the byte to set the power state of the device,
-> +and it can read from the byte to get the current power state of the
-> +device.
-> +
-> +The valid power states are:
-> +
-> +\begin{lstlisting}
-> +/* Device is operating normally */
-> +#define VIRTIO_PM_STATE_ACTIVE    0
-> +/* Device operation is suspended */
-> +#define VIRTIO_PM_STATE_SUSPENDED 1
-> +\end{lstlisting}
-> +
-> +The device power state has no effect when \field{device status} does
-> +not have the DRIVER_OK bit set or does have the DEVICE_NEEDS_RESET bit
-> +set.
+This commit fixes the following warning when building virtio_snd driver.
 
+"
+*** CID 1583619:  Uninitialized variables  (UNINIT)
+sound/virtio/virtio_kctl.c:294 in virtsnd_kctl_tlv_op()
+288
+289     		break;
+290     	}
+291
+292     	kfree(tlv);
+293
+vvv     CID 1583619:  Uninitialized variables  (UNINIT)
+vvv     Using uninitialized value "rc".
+294     	return rc;
+295     }
+296
+297     /**
+298      * virtsnd_kctl_get_enum_items() - Query items for the ENUMERATED element type.
+299      * @snd: VirtIO sound device.
+"
 
-Given this is only after DRIVER_OK, wouldn't a feature bit + status bit
-make more sense? This will make it transport-independent and simplify
-discovery.
+This warning is caused by the absence of the "default" branch in the
+switch-block, and is a false positive because the kernel calls
+virtsnd_kctl_tlv_op() only with values for op_flag processed in
+this block.
 
-> +\devicenormative{\paragraph}{Power management capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Power management capability}
-> +
-> +A device MUST maintain its state while suspended such that all driver
-> +visible state after resuming exactly matches driver visible state
-> +before suspending.
-> +
-> +A device MUST NOT send notifications while suspended.
-> +
-> +A device MAY operate on any buffers in its virtqueue while suspended.
+Also, this commit unifies the cleanup path for all possible control
+paths in the callback function.
 
-How is this reconsiled with state matching exactly? buffers are
-driver-visible ...
+Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+Signed-off-by: Aiswarya Cyriac <aiswarya.cyriac@opensynergy.com>
+Reported-by: coverity-bot <keescook+coverity-bot@chromium.org>
+Addresses-Coverity-ID: 1583619 ("Uninitialized variables")
+Fixes: d6568e3de42d ("ALSA: virtio: add support for audio controls")
+---
+ sound/virtio/virtio_kctl.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-> +A device MUST set its power state to VIRTIO_PM_STATE_ACTIVE on reset.
-> +
-> +A device SHOULD take steps to minimize its resource consumption while
-> +suspended, although what this involves is specific to the particular
-> +device implementation.
-> +
-> +\drivernormative{\paragraph}{Power management capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Power management capability}
-> +
-> +A driver MUST NOT access a suspended device's BARs corresponding to
-> +any virtio structures, except for the power management byte.
-> +
-> +A driver MAY suspend a device that has buffers in one of its
-> +virtqueues, but it MUST NOT modify any such buffers while the device
-> +is suspended.
-> +
-> +A driver MUST read from the power management byte after writing to the
-> +byte to verify that the device successfully entered the target power
-> +state.
-
-Verify how? By checking the value returned? And what should it do with the value 
-does not match?
-
-
-> +
->  \subsubsection{Legacy Interfaces: A Note on PCI Device Layout}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Legacy Interfaces: A Note on PCI Device Layout}
->  
->  Transitional devices MUST present part of configuration
-> -- 
-> 2.44.0.rc0.258.g7320e95886-goog
+diff --git a/sound/virtio/virtio_kctl.c b/sound/virtio/virtio_kctl.c
+index 0c6ac74aca1e..7aa79c05b464 100644
+--- a/sound/virtio/virtio_kctl.c
++++ b/sound/virtio/virtio_kctl.c
+@@ -253,8 +253,8 @@ static int virtsnd_kctl_tlv_op(struct snd_kcontrol *kcontrol, int op_flag,
+ 
+ 	tlv = kzalloc(size, GFP_KERNEL);
+ 	if (!tlv) {
+-		virtsnd_ctl_msg_unref(msg);
+-		return -ENOMEM;
++		rc = -ENOMEM;
++		goto on_msg_unref;
+ 	}
+ 
+ 	sg_init_one(&sg, tlv, size);
+@@ -281,14 +281,25 @@ static int virtsnd_kctl_tlv_op(struct snd_kcontrol *kcontrol, int op_flag,
+ 			hdr->hdr.code =
+ 				cpu_to_le32(VIRTIO_SND_R_CTL_TLV_COMMAND);
+ 
+-		if (copy_from_user(tlv, utlv, size))
++		if (copy_from_user(tlv, utlv, size)) {
+ 			rc = -EFAULT;
+-		else
++			goto on_msg_unref;
++		} else {
+ 			rc = virtsnd_ctl_msg_send(snd, msg, &sg, NULL, false);
++		}
+ 
+ 		break;
++	default:
++		rc = -EINVAL;
++		/* We never get here - we listed all values for op_flag */
++		WARN_ON(1);
++		goto on_msg_unref;
+ 	}
++	kfree(tlv);
++	return rc;
+ 
++on_msg_unref:
++	virtsnd_ctl_msg_unref(msg);
+ 	kfree(tlv);
+ 
+ 	return rc;
+-- 
+2.43.2
 
 
 ---------------------------------------------------------------------
