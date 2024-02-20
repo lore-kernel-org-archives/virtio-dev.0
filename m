@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14333-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14334-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 424B7C48BF8
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 01:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DE735C48BC3
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 02:38:57 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4A50F75B91
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 01:38:00 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 12E078E263
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 02:38:57 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 04C949864CD
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 01:37:59 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id EA1C8986526
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 02:38:56 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CEE02984278; Tue, 20 Feb 2024 01:37:59 +0000 (UTC)
+	id CE857984278; Tue, 20 Feb 2024 02:38:56 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,145 +24,176 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BB2FD98648B
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 01:37:59 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BE47A9864A1
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 02:38:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-TM-MAIL-RECEIVED-TIME: 1708393076.382000
-X-TM-MAIL-UUID: 4f07d80d-1248-413d-83a2-ca2a7537b5af
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ekqnyTDBhpiyROM5ibPgGfSMUOQK7tZdaPSE/NycvDAd9xFTO4ODwWr5/9dhycJgltZosPI//lAoPnTz4PwVmZFlwzSF8Hv5gxKjMlmQUrVZW+G7BmjtsmhgXpUIHe5iXGW2Tq/1Hm3yA1UE9SeL3z7kJ8ZJH9RjMzNIweDSY/LeK7x4cRr9qMgqceNCM2cL8jDUbSWE7aB3AP91c+MmvX2AYB4JniUIvF8kKZI0Mzxv6Ai7fDQQ2sGwHg+VDy0KAl9dXrNRE9s+xKSWH6PchR8dMkCmoplRdbSOa5NDg8A97x81wWIv7a6cAdd6uX5EjDWLNQ5rEC9AjMfaO/Gv1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hsZg67DlrisXTVWPZYPDWOLYrZjVxQK2sdJHmEkyO6Q=;
- b=EZkoHBsMRXBYZ/R2EutJnHbSE0mKfuF2X9nivNft5CuD6Y7MaRY//dOy7z8vBlTTu5LarJTnwm/BImbLwfT+fssBcISDTndju6ahpW3OeQ5ltC0Q2o/TIVmhRsu1LH1LuzG5No7JCuuOB1TGH/Tc1RNT0I2qlizt+fQtJmO6/DJvINxeE/IVyZfEkFluZa0M8pJjNe6yKokthztqeEq0BfGBbd6XW9x8s0WERQ8/InBo7zTFifNTEGDGoqmJd9/qDFays9sgVmBfgsFbnUCt8S4H3ucs2K+JvyDGrAT2LCpI0XodQcWcsjc2C2owS+MBuKD+oOamQpO6ao8fXm90gA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <d9a99397-4111-4677-b535-ee20c86018ad@opensynergy.com>
-Date: Tue, 20 Feb 2024 10:37:41 +0900
-To: Marcin Radomski <dextero@google.com>, aiswarya.cyriac@opensynergy.com
-Cc: vill@google.com, alsa-devel@alsa-project.org, jasowang@redhat.com,
- linux-kernel@vger.kernel.org, mst@redhat.com, perex@perex.cz,
- tiwai@suse.com, virtio-dev@lists.oasis-open.org,
- virtualization@lists.linux-foundation.org
-References: <20240115133654.576068-2-aiswarya.cyriac@opensynergy.com>
- <20240219172417.1383044-1-dextero@google.com>
-Content-Language: en-US
-From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
-In-Reply-To: <20240219172417.1383044-1-dextero@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYXPR01CA0060.jpnprd01.prod.outlook.com
- (2603:1096:403:a::30) To BEZP281MB2374.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:5c::11)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0W0uzzcc_1708396729;
+Message-ID: <c4fd63b3-5bdf-45e7-b846-3d858c3bd8ea@linux.alibaba.com>
+Date: Tue, 20 Feb 2024 10:38:47 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BEZP281MB2374:EE_|BE1P281MB3153:EE_
-X-MS-Office365-Filtering-Correlation-Id: a2d5f35e-3c33-4d37-4366-08dc31b48edb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CAtjyAvPzVXC08vsIIKXdpgD9jmoEINqDIfnFx4UDaa4vETB1lxtshPH/Vx6RHvM1tsFYP/mYQhgGLl2Brz/+8ZRagKyUcUsTh1723+qSSsez/s+3evoRwzqWNrhgR66zncrmOP4/bd5tCsRTZwX8rw8nEj3FZ7+D8IXiObQIUyKK68x/dk3+Q1nJaFEmfVJw00lsCQ/stt9lHdHf5Yrsv3b0oGHmi2lxIGlV7tIUur+hq4H4XzoDVGOd2mROuvOZRXhdfraAfWbg622eZKAQdSVljvr4+PzkPNzT/NGSReOjAkNYVArPwtcnboQD8LmNGubqApXVVGR6zQvd8rb8Nosy8jzP4Sn+aYoriVcHritsWHgsizAZHen1IXfWkpTm8TpeHKfddGAjj0/loil+CLkt273huZLXkdoE4NMzPf9Hx5R61jVBxrOdg9eCTeQ2xF23AS38z4Pscu79/K2Ke5AWw7Cw9ZKUlaKS73cgETu9YvnV29sHsRrk0pplwTxsMC5ShLf6X+j4JPjPwVy4cBYar8JLLiD/aI3jLL9bX0=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEZP281MB2374.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bVlwTUdUNGxjNXNlUm5EZjNTSUcyUUNQblFLTktaVzVBOVBoR1BVUlRBQ1pi?=
- =?utf-8?B?dXZFWit3UlcwNFZkblQ2RW1KMzBMOXZoMklkWVhDWlE5R0l4SGZZbDZrcG5S?=
- =?utf-8?B?SE02UUloeFJhdWZ1Ny9NQVQyY1ZqbVE2aEpsZ0Yzc2pRWnhoeWpOUW9QcWtW?=
- =?utf-8?B?S2I4ZXltVkxGeERNYndKNHUzUEI4a3E2dHFpQSsyRkF1aVhMU09oem5uT2l0?=
- =?utf-8?B?ZWhiS1BjZzFKV043dm5zZEs0T0k5Rm44UFI4bU5JaGh3aEYrWGxqeWRWaXdI?=
- =?utf-8?B?R05WZTRITDJjdEk3c0ZkdXRMbXFHN0hUTnIrOWhHRmpYN2l5Y2J4eTFxaWlz?=
- =?utf-8?B?UUNTR0l1OXRsNVJzcUQzb2VuS293bHFKbVZUejJHSlhCeTZLMHNVVUdTNkNl?=
- =?utf-8?B?ZmdwV3c2amxwNU80UW92YzZGSWZicXdYN1VkNkpYcXoxVmpMUTgxOTYvQ3BG?=
- =?utf-8?B?djhqdnBSQXcxNEd1b01JMU5yN2Q0VDVnbHZROURkbkJIMHRZSklCMmlTaEZp?=
- =?utf-8?B?OUNhMzVzSk80QmozdFdQb0xwYmF4U0VVRHkveVl2bVR2Ny9ReGNiOWp3ZDB6?=
- =?utf-8?B?aEJLVXo1dUJQTmNHRHJkTWRoY2dkN3d2RUFTamRJRnhKWHFVR1NuT2NRTndo?=
- =?utf-8?B?Z2MxTU9pVjYvMlA5WTZGU2ZWeFhia1VuV1RFRktXTXpWOVVFaE9ibDJqVXlI?=
- =?utf-8?B?d1lNL0UxbURuSjhFTyt0eHJtR1VJdDVLa0RzU2NBTTF3MVRDS1VqY3J4TlVP?=
- =?utf-8?B?bnNGZFVId1ltTElnK1lQVlRDL3hadkdQRUZiUndCcHhNekh1QkhzN0ZMaW4v?=
- =?utf-8?B?RERxQ1F2cU5jQVUvYkp0WkFpTUwrV2tBVWxJVDVyTWdiSzNzYUVNaTh5V1NC?=
- =?utf-8?B?K2U2blpDdlNXZUp2dm1GRWN2VEZGN2REQmNRMVlhc2ZpbGk5cHVpYVRySE5t?=
- =?utf-8?B?Qm94c2dVdzR6Q3NIbDFPQ3BtVW93d2Z5ZW9MdkpiQ1ZVTnBzc1VINzNvb0h4?=
- =?utf-8?B?Tmx4aE9uNTFxaGpsR29za1psWmoySmwxVGQvR293dU9wZkxZRnk2aFZ2VGVh?=
- =?utf-8?B?V3RIalQveGtyL0RIU1hpdDBWeTEwWEJ0b25wTmIwT2JJR1pEOU1ZUVJuRUY3?=
- =?utf-8?B?Y2xJNy8yS3U4U1JOWThNRi9sUE9lSFV4OFYvbWw0OUxXUFNLanBWSEZsbS92?=
- =?utf-8?B?TjhYakhvaHc3NWpzQTA3NFZLZHFDcjBCUmJVcXR6ODBaM2ZYdUxIRzZJN28v?=
- =?utf-8?B?eVdUL0I0SWt4RFVEQUxOOEFPdFFIMmdHUzd0SW9INDUrc20xZGpHZ2RxLzBq?=
- =?utf-8?B?WVRvSDJFcmhJbHZXdjhueEVWVFVVaTdGTmxhcUZEV0RQUDN4L1RSb2llYVRr?=
- =?utf-8?B?Q25rbmx1RVBMM0ZyK25ScXp3WU1zbnZEanliZDZja2N5cjdMRlJISGZZdHVI?=
- =?utf-8?B?bDJtUVZXaE5ySEtkZkthdHJGTGVaVE5ORnlXQ0haUHlOdkJJd1hnZzVyZTNt?=
- =?utf-8?B?TEIrejhKQmdUMFk2ZHdOWW5FQysyVUFHOWRCQ0VxZjhpOXhFTXh4bzkya0tv?=
- =?utf-8?B?VS8vNDR5WGtCYzdUdTJzYU5UNmMyNVVMTlRnakE5MlQvMkF4Q2hXa0F0SXpB?=
- =?utf-8?B?ZU5JRllyc3VQYWhqaWo3YzNXOXQvb2JFMjcrMS9QS0hLd3NNa2pJKzVNT01z?=
- =?utf-8?B?V0drWFlNU0hEMko1eWFnZ1dhUmJNaHlNOGhxcXEveXh6VlFpYzFoaGhXd2lG?=
- =?utf-8?B?bUxBOStvK1VtNEMvWVpGWkk1bndNR2Q5R1dMQjhhV1FYbklRREJiV05VdGZx?=
- =?utf-8?B?VTFlakE4cHgxeEdrcFNiTERMMVlDeFQyOEdiNHRHMDNDYlIvYUFmRERkSG1p?=
- =?utf-8?B?R0hjMVB6M1JsV1dpYldpMmcrVEZvdE1ZL20yYTJYbW5SK25MajJDRkg5MHFK?=
- =?utf-8?B?OThPYzkrdUNHbzFvL3RPVXVDa3JmRWk1TStuVGRGWmVBNG5mVnVDNWQzcUdR?=
- =?utf-8?B?bWE0RVpZYlNYQWt4OXlDbGpoVlYwQW1HZXlUY0NtdnRpVFlCcFk3cFlpT1Zu?=
- =?utf-8?B?d1g0citDZG4zbWpuSVdGekhBODhMOWZSOW5oNlZ1MHB6Y1RKMXFOWDJZNEdD?=
- =?utf-8?B?K2pOYmtlWll2ZUVMRU10YW96dEVMeTgzSitYajRhcEJOYXl6Z1RxbkR0TGFm?=
- =?utf-8?Q?48IUIzljOBbfL0q+YnPQOXKy6JDdpmJKLqzMz/O71fA9?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2d5f35e-3c33-4d37-4366-08dc31b48edb
-X-MS-Exchange-CrossTenant-AuthSource: BEZP281MB2374.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2024 01:37:54.5266
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7Vp9htuiXW246cK3J9xbYXIaWr7LQc8f6OCAnzQsOvAWiBzMFDi+AV2mmpG2wW83N6CyU5qVEeh8l/WRaGa9AA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB3153
-X-TM-AS-ERS: 104.47.11.169-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.1.1015-28202.004
-X-TMASE-Result: 10--11.951600-4.000000
-X-TMASE-MatchedRID: O/y65JfDwwv5ETspAEX/npGPSO6O5JCalR7tN56aWVW0sdSrJZyyxp0Q
-	FAkvwQa1x+4DBaCRcWVROHkKgWFqUmOOjE/261b4M6mKelUSkRFW1n4bHTHoQZXVwPqFeiBVT0B
-	RZNI+Ywa6miiB19Ur4l3jHUhSUqcUaIn7kYcazIMk+VN5SeE/CnM1+1Vqzfv2+SDH3HyigbT8XL
-	wN2+AeMDsAVzN+Ov/sOECyFyDVMckc9LpRfRZMDc2QAgAkkoe3EvSxyyaSskdOMWgY1PD+9A==
-X-TMASE-XGENCLOUD: 7f0722c9-a23d-488e-9bea-2fdc98ba01f1-0-0-200-0
-X-TM-Deliver-Signature: 2FB02D8C42C688081AC4470B2AC02FA2
-X-TM-Addin-Auth: bPQussCM3H8d2AQJ4f+AT7k0LR9t4SR6SLykmIdarNfTI6vg0ynJ7SZUfAX
-	RjhNDT8Ff/ejSqn0stzVmSqqZOGe5Zkg30XUQlrWr15xwJs3+85+G4BdieSvjdQYIe/cW950hg4
-	yGXincMcjW2BQm7GSef4awXLyAMyTD6dFMXmzQnzjDW8N4f7xn/IYtS2muOXsj3XbBRmLtX269d
-	qcH4Gg7VpyOuAeHm2mcKfOKT2evF/0l0tDw7q+M5NXk1ELCveAZYcGXDoxmcESnopm2dSFBwuF2
-	k0EjWXu6zabzz3g=.OO9U42TrfaEutwaF3eE9KK+NgSOh4T0hDPlFYy8nz3K04PCfrRRGOpg4Pt
-	BmAcqXE599Yai34hdoTQF49lXohZbN02dyQCKS8UOPkrXJnhg350rwsFEzPWBUdcKr5pfs/8kMr
-	92fQh9GLMfhaootf/ckDPP8kOMOf6phd2b367AzwPdsM9dSt3xhACtsYC7V6MK4D7wT7ZwT3ZMe
-	zzzNc/D1v/IqgT6fP9BfnAKEJyND888UVaSODdvFnEBHVuemFuLdop2oiCPEz++5VtB9L0DP1E6
-	qUqnqtG7XZPa+aTvQvrh6MGc0NXdp5GEY7PGaBqficqi29CG6NafbjvZsiQ==
-X-TM-Addin-ProductCode: EMS
-Subject: [virtio-dev] Re: [v2 PATCH 0/1] ALSA: virtio: add support for audio controls
-
-Hi Marcin,
-
-
-Thanks for the help!
+User-Agent: Mozilla Thunderbird
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Yuri Benditovich <yuri.benditovich@daynix.com>,
+ virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <1704263702-50528-1-git-send-email-hengqi@linux.alibaba.com>
+ <1705384341.865516-1-xuanzhuo@linux.alibaba.com>
+From: Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <1705384341.865516-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: Re: [virtio-dev] Re: [PATCH v8] virtio-net: correct conditions for
+ devices to validate packet checksum
 
 
 
-On 20.02.2024 02:24, Marcin Radomski wrote:
-> Thanks Anton for the reupload.
-> 
-> I tested this series with a 6.1 kernel guest on a proprietary hypervisor. The
-> controls exposed by the host (BOOLEAN/INTEGER ones, as that was all I could
-> get) worked as expected when adjusted via ALSA APIs.
-> 
-> Reviewed-by: Marcin Radomski <dextero@google.com>
-> Tested-By: Marcin Radomski <dextero@google.com>
+在 2024/1/16 下午1:52, Xuan Zhuo 写道:
+> On Wed,  3 Jan 2024 14:35:02 +0800, Heng Qi <hengqi@linux.alibaba.com> wrote:
+>> There is a historical error in virtio spec:
+>>    "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST* set flags
+>>     to zero and SHOULD supply a fully checksummed packet to the driver."
+>>
+>> Currently in Linux and virtio-related implementations, the device validates
+>> the packet checksum and sets DATA_VALID regardless of whether
+>> VIRTIO_NET_F_GUEST_CSUM is negotiated.
+>>
+>> Please refer to the following summary and thread[1] for details and reasons:
+>>
+>> Summary
+>> =============
+>> 1. GUEST_CSUM at virtio spec 0.95 is intended to be compatible with partially
+>> checksummed packets (NEEDS_CSUM <-> CHECKSUM_PARTIAL). So GUEST_CSUM is mapped
+>> to NETIF_F_RXCSUM.
+>> GUEST_CSUM only indicates whether the driver handles partially checksummed packets.
+>> When XDP is loaded, the GUEST_CSUM's offload will be disabled, which means that
+>> packets have NEEDS_CSUM set will be dropped, and packets have DATA_VALID set will
+>> still be received.
+>>
+>> 2. When DATA_VALID was added to Linux in 2011[2] and virtio1.0, it was actually
+>> expected that rx checksum offload (the driver can set CHECKSUM_UNNECESSARY) had
+>> nothing to do with whether GUEST_CSUM was negotiated. But due to an error, below
+>> desctiption was added incorrectly:
+>>    "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST* set flags
+>>     to zero and SHOULD supply a fully checksummed packet to the driver."
+>>
+>> 3. We now hope to correct this error. Let the setting of DATA_VALID not be
+>> controlled by whether GUEST_CSUM is negotiated, but only controlled by whether
+>> rx checksum offload is enabled on the OS side. The state of this rx checksum
+>> offload is not aware of the device.
+>>
+>> 4. [Optional] NETIF_F_RXCSUM corresponding to rx checksum offload should be
+>> added to dev->hw_features. When the user turns off rx checksum offload through
+>> ethtool -K, neither NEEDS_CSUM nor DATA_VALID should be taken care of, that is,
+>> all packets will be marked as CHECKSUM_NONE.
+>>
+>> Related Link
+>> =============
+>> [1] https://lists.oasis-open.org/archives/virtio-comment/202312/msg00135.html
+>> [2] 10a8d94a9574 ("virtio_net: introduce VIRTIO_NET_HDR_F_DATA_VALID")
+>>
+>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/185
 
--- 
-Anton Yakovlev
-Senior Software Engineer
+Hi Cornelia,
 
-OpenSynergy GmbH
-Rotherstr. 20, 10245 Berlin
+Can this proposal be opened for voting?
+
+Thank you very much!
+
+>>
+>> Suggested-by: Jason Wang <jasowang@redhat.com>
+>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>
+>> ---
+>> v7->v8:
+>> - Drop the new FULLY_CSUM feature and optimize the description. @Jason
+>>
+>> v6->v7:
+>> - FULLY_CSUM no longer depends on GUEST_CSUM.
+>> - The description related to DATA_VALID has nothing to do with
+>>    whether GUEST_CSUM is negotiated or not. @Jason
+>>
+>> v5->v6:
+>> - Rewrite and clarify patch description. @Michael
+>>
+>> v4->v5:
+>> - Remove the modification to the GUEST_CSUM. @Jason
+>> - The description of this feature has been reorganized for greater clarity. @Michael
+>>
+>> v3->v4:
+>> - Streamline some repetitive descriptions. @Jason
+>> - Add how features should work, when to be enabled, and overhead. @Jason @Michael
+>>
+>> v2->v3:
+>> - Add a section named "Driver Handles Fully Checksummed Packets"
+>>    and more descriptions. @Michael
+>>
+>> v1->v2:
+>> - Modify full checksum functionality as a configurable offload
+>>    that is initially turned off. @Jason
+>>
+>>   device-types/net/description.tex | 14 +++-----------
+>>   1 file changed, 3 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
+>> index aff5e08..14978c0 100644
+>> --- a/device-types/net/description.tex
+>> +++ b/device-types/net/description.tex
+>> @@ -723,8 +723,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>>     \field{num_buffers} is one, then the entire packet will be
+>>     contained within this buffer, immediately following the struct
+>>     virtio_net_hdr.
+>> -\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
+>> -  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+>> +\item The VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
+>>     set: if so, device has validated the packet checksum.
+>>     In case of multiple encapsulated protocols, one level of checksums
+>>     has been validated.
+>> @@ -783,9 +782,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>>   packet together, such that at least \field{num_buffers} are
+>>   observed by driver as used.
+>>
+>> -If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
+>> -\field{flags} to zero and SHOULD supply a fully checksummed
+>> -packet to the driver.
+>> +If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device SHOULD supply
+>> +a fully checksummed packet to the driver.
+>>
+>>   If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
+>>   \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
+>> @@ -842,12 +840,6 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
+>>   not less than the length of the headers, including the transport
+>>   header.
+>>
+>> -If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
+>> -device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
+>> -\field{flags}, if so, the device MUST validate the packet
+>> -checksum (in case of multiple encapsulated protocols, one level
+>> -of checksums is validated).
+>> -
+>>   \drivernormative{\paragraph}{Processing of Incoming
+>>   Packets}{Device Types / Network Device / Device Operation /
+>>   Processing of Incoming Packets}
+>> --
+>> 1.8.3.1
+>>
+> This publicly archived list offers a means to provide input to the
+> OASIS Virtual I/O Device (VIRTIO) TC.
+>
+> In order to verify user consent to the Feedback License terms and
+> to minimize spam in the list archive, subscription is required
+> before posting.
+>
+> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
+> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
+> List help: virtio-comment-help@lists.oasis-open.org
+> List archive: https://lists.oasis-open.org/archives/virtio-comment/
+> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
+> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
+> Committee: https://www.oasis-open.org/committees/virtio/
+> Join OASIS: https://www.oasis-open.org/join/
+
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
