@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14338-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14339-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D2035C48BC4
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 07:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45BA5C48BC4
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 08:32:27 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 38E642AED4
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 07:50:36 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 8E60177B05
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 08:32:25 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 3197698657E
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 07:50:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 7FA0098658B
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 08:32:24 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 219189864A3; Tue, 20 Feb 2024 07:50:36 +0000 (UTC)
+	id 644019864A3; Tue, 20 Feb 2024 08:32:24 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,211 +24,586 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 77B1C9864CD
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 07:48:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 516939864BB
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 08:32:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: YX-ksBuzMFybrUgflEcoug-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708415330; x=1709020130;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WyjQMn8R1+g6iiWR1qlDgnifvYDRCiiqTwdsQ1kNYi8=;
-        b=pGViSZu4EpbElL/mvjBsSyZpmMj+1MLEudiwUoboEdBDmyooxrwWJQyVNAug0e2KAK
-         GKVlepb9yb9PP1zKHqggWIqumtlCDaEuJcFX4yeypM7dkdSSvwvuXpoSjAP0yP8whIoL
-         n6Ot2koNOH79uO3Z/I205CWI7/3kHz2xQApF8yZlSY1t8G+XrqiQ5LhEjsgJYYcCh5z8
-         ebt7dsk+ap6cJ9yW1K682xluGqjfJZ+zpqQZCnTOh+SpnbnpKZO35GBCplyBN4WP1xq0
-         G4aaL+BiE5JSuPF1afP9MOMgZ7ReOUgRX6JxHqUfPL2gEbbSXABDtGvD7Q98coZwyMR6
-         Gj4g==
-X-Forwarded-Encrypted: i=1; AJvYcCUE9q58siUMVdxtD5e3583TTRgE/AckFMMV1c8dREqBGq1HkJVqiqj1EfDJjWmMVQH2lbICBAXuBBeHWCzsM0ZNupyLZQSG0YJtzp3g/Fnl
-X-Gm-Message-State: AOJu0Yxf4fHg90K6WWCrGBq+JrOVy12tR+YNeZOhT7C253Qam6tRq84P
-	HKL4gnROc0V72EErx3ET/1RX/PYk55ySVnXEcLzfJzoEMTBd4CRFpKJlXZYLlhgO/WmGa8hGIGC
-	4uLd42Nazu/uHA4jNZIDJ6vX/Nz5iZyuhxt8sIbtyARCJrpLDFWUf9kkbe+V7Mj0uLg==
-X-Received: by 2002:adf:f390:0:b0:33d:2474:afd1 with SMTP id m16-20020adff390000000b0033d2474afd1mr6582215wro.20.1708415330586;
-        Mon, 19 Feb 2024 23:48:50 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHTrJ8ZxJMwJCbG9ozwraNQ0XK9X/eyNgDKgCEEMwg8u0Npo+o6+HG2J4PiSSVF4BZnikRu4A==
-X-Received: by 2002:adf:f390:0:b0:33d:2474:afd1 with SMTP id m16-20020adff390000000b0033d2474afd1mr6582205wro.20.1708415330127;
-        Mon, 19 Feb 2024 23:48:50 -0800 (PST)
-Date: Tue, 20 Feb 2024 02:48:45 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: David Stevens <stevensd@chromium.org>
-Cc: "Zhu, Lingshan" <lingshan.zhu@intel.com>, jasowang@redhat.com,
-	eperezma@redhat.com, cohuck@redhat.com, stefanha@redhat.com,
-	virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org
-Message-ID: <20240220024401-mutt-send-email-mst@kernel.org>
-References: <20240218132306.83456-1-lingshan.zhu@intel.com>
- <20240218090935-mutt-send-email-mst@kernel.org>
- <CAD=HUj4b3gLsA2VD4cxmVzLPGRZfaREQcJNb4zfxLH=xv=2X6g@mail.gmail.com>
- <be09ad18-398e-47c0-abea-3f025df40734@intel.com>
- <CAD=HUj6iVc=QpA6kGyNhdM-BrD5tuAj1yUkS6gJtU+hi=QmtLg@mail.gmail.com>
+Message-ID: <a7f80f14-e8be-47fe-aa2c-6b40a3fbebd4@quicinc.com>
+Date: Tue, 20 Feb 2024 16:30:55 +0800
 MIME-Version: 1.0
-In-Reply-To: <CAD=HUj6iVc=QpA6kGyNhdM-BrD5tuAj1yUkS6gJtU+hi=QmtLg@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH] virtio: introduce SUSPEND bit in device status
+User-Agent: Mozilla Thunderbird
+To: Harald Mommer <Harald.Mommer@opensynergy.com>,
+        <virtio-dev@lists.oasis-open.org>, Mark Brown <broonie@kernel.org>,
+        "Viresh
+ Kumar" <viresh.kumar@linaro.org>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: <quic_ztu@quicinc.com>, Matti Moell <Matti.Moell@opensynergy.com>,
+        "Mikhail Golubev" <Mikhail.Golubev@opensynergy.com>
+References: <20240213135350.5878-1-Harald.Mommer@opensynergy.com>
+ <20240213135350.5878-4-Harald.Mommer@opensynergy.com>
+Content-Language: en-US
+From: Haixu Cui <quic_haixcui@quicinc.com>
+In-Reply-To: <20240213135350.5878-4-Harald.Mommer@opensynergy.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: zJeujGpQMpLq0q5pwAlkfC5sAbXkv0Cq
+X-Proofpoint-ORIG-GUID: zJeujGpQMpLq0q5pwAlkfC5sAbXkv0Cq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-20_06,2024-02-19_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 clxscore=1011
+ priorityscore=1501 malwarescore=0 bulkscore=0 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 phishscore=0 suspectscore=0 adultscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2401310000
+ definitions=main-2402200061
+Subject: [virtio-dev] Re: [RFC PATCH v3 3/3] SPI: Add virtio SPI driver.
 
-On Tue, Feb 20, 2024 at 02:09:18PM +0900, David Stevens wrote:
-> On Tue, Feb 20, 2024 at 1:06 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
-> > On 2/19/2024 2:46 PM, David Stevens wrote:
-> > > On Sun, Feb 18, 2024 at 11:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >> On Sun, Feb 18, 2024 at 09:23:06PM +0800, Zhu Lingshan wrote:
-> > >>> This commit allows the driver to suspend the device by
-> > >>> introducing a new status bit SUSPEND in device_status.
-> > >>>
-> > >>> This commit also introduce a new feature bit VIRTIO_F_SUSPEND
-> > >>> which indicating whether the device support SUSPEND.
-> > >>>
-> > >>> This SUSPEND bit is transport-independent.
-> > >>>
-> > >>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> > >>> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > >>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-> > >> Could we get some kind of dscription how this has taken into
-> > >> consideration the proposal from David Stevens?
-> > >>
-> > >> I find it really tiring when there are competing patches with authors
-> > >> ignoring each other's work and leaving it up to reviewers to
-> > >> figure out how do the patches compare.
-> > > This patch looks like it could be used to implement my use case.
-> > > However, parts of it are a bit vague and imprecise, so it's hard to
-> > > actually say whether my use case would actually be covered by a
-> > > specific implementation of this proposal.
-> > I am on vacation till this Friday. Shall we co-work on this and
-> > post something new together?
-> 
-> That works for me.
-> 
-> > >
-> > > To give specifics on what I'm trying to do, I need to allow a guest
-> > > with virtio-pci devices (including stateful devices like virtio-fs and
-> > > virtio-gpu) to be put into S1/S3, and to allow the virtio-pci devices
-> > > to wake up the guest (currently via an ACPI GPE, but eventually via a
-> > > native PCI PME). This is all done on a consumer device, so there is no
-> > > need for snapshotting or for live migration.
-> > Suspending is not dedicated only for live migration.
-> > For your use case, shall we add a new PCI section like saying: when entering
-> > SUSPEND, the device should get into S1/S3 and other PCI specific steps
-> > in PCI transport charter.
-> >
-> > That is because PCI is a transport layer of virtio, controlling virtio
-> > states by PCI sounds like a layer violation.
-> 
-> I don't know if it's really necessary to mandate that in the spec.
-> Sure, most systems are probably going to want to put the virtio-pci
-> device into S1/S3 after suspending virtio operation. But nothing
-> really breaks or goes wrong if we don't do that.
 
-What I feel is worth mentioning in virtio spec is that just setting the
-status bit does not reduce power by itself, standard pci
-control is required for that.
 
-> > >
-> > >>> ---
-> > >>>   content.tex | 34 ++++++++++++++++++++++++++++++++--
-> > >>>   1 file changed, 32 insertions(+), 2 deletions(-)
-> > >>>
-> > >>> diff --git a/content.tex b/content.tex
-> > >>> index 0a62dce..3d656b5 100644
-> > >>> --- a/content.tex
-> > >>> +++ b/content.tex
-> > >>> @@ -49,6 +49,9 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
-> > >>>
-> > >>>   \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
-> > >>>     an error from which it can't recover.
-> > >>> +
-> > >>> +\item[SUSPEND (16)] When VIRTIO_F_SUSPEND is negotiated, indicates that the
-> > >>> +  device has been suspended by the driver.
-> > >>>   \end{description}
-> > >>>
-> > >>>   The \field{device status} field starts out as 0, and is reinitialized to 0 by
-> > >>> @@ -73,6 +76,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
-> > >>>   recover by issuing a reset.
-> > >>>   \end{note}
-> > >>>
-> > >>> +The driver SHOULD NOT set SUSPEND if FEATURES_OK is not set.
-> > >>> +
-> > >>> +When setting SUSPEND, the driver MUST re-read \field{device status} to ensure the SUSPEND bit is set.
-> > >>> +
-> > >>>   \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
-> > >>>
-> > >>>   The device MUST NOT consume buffers or send any used buffer
-> > >>> @@ -82,6 +89,25 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
-> > >>>   that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
-> > >>>   MUST send a device configuration change notification to the driver.
-> > >>>
-> > >>> +The device MUST ignore SUSPEND if FEATURES_OK is not set.
-> > >>> +
-> > >>> +The device MUST ignore SUSPEND if VIRTIO_F_SUSPEND is not negotiated.
-> > >>> +
-> > >>> +The device SHOULD allow settings to \field{device status} even when SUSPEND is set.
-> > >>> +
-> > >>> +If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device SHOULD clear SUSPEND
-> > >>> +and resumes operation upon DRIVER_OK.
-> > >>> +
-> > >>> +If VIRTIO_F_SUSPEND is negotiated, when the driver sets SUSPEND,
-> > >>> +the device SHOULD perform the following actions before presenting SUSPEND bit in the \field{device status}:
-> > >>> +
-> > >>> +\begin{itemize}
-> > >>> +\item Stop consuming buffers of any virtqueues and mark all finished descriptors as used.
-> > >>> +\item Wait until all descriptors that being processed to finish and mark them as used.
-> > >>> +\item Flush all used buffer and send used buffer notifications to the driver.
-> > > What's the difference between the previous three lines? They might be
-> > > trying to say different things, but there is a lot of overlap in how
-> > > they're phrased. That makes it hard to figure out exactly what they're
-> > > mandating. Is it something like: "stop processing new buffers",
-> > > "finish processing any buffers that are currently in flight", "mark
-> > > all finished buffers as used and send a used buffer notification"?
-> > sure, the "mark used" parts can merge.
-> > >
-> > > Also, what does this mean for devices where the driver places empty
-> > > buffers into the virtqueue that the device then holds on to for an
-> > > indeterminate period of time (e.g. network receiveq, balloon statsq,
-> > > etc)?
-> > The device doesn't process them.
-> > Oh, I should add: The driver should not make any more buffers available
-> > to the device.
-> > >
-> > >>> +\item Pause its operation except \field{device status} and preserve configurations in its Device Configuration Space, see \ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
-> > > What does "Pause its operation except device status" mean? The word
-> > > "operation" is vague, what exactly does it include? Also what does
-> > > "operate its device status" mean?
-> > Because we need to resume the device after suspending it by setting
-> > DRIVER_OK, so we need the device status
-> > filed keel alive.
+On 2/13/2024 9:53 PM, Harald Mommer wrote:
+> From: Harald Mommer <harald.mommer@opensynergy.com>
 > 
-> This doesn't answer what "Pause its operation" means. If the
-> specification is not precise, then the best that can be implemented is
-> for a specific device to be compatible with a specific driver. If we
-> actually want portable, spec-compliant devices, we need explicitly
-> defined MUST/MUST NOT requirements. Presumably we want something like:
+> This is the virtio SPI Linux kernel driver.
 > 
-> A device MUST not send notifications while suspended.
-> A device MUST ignore writes to its device configuration while
-> suspended, except for writes to the device status byte.
-> A driver MUST NOT write to a suspended device's configuration space,
-> except for the device status byte.
+> Signed-off-by: Harald Mommer <Harald.Mommer@opensynergy.com>
+> ---
+>   drivers/spi/Kconfig      |  11 +
+>   drivers/spi/Makefile     |   1 +
+>   drivers/spi/spi-virtio.c | 475 +++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 487 insertions(+)
+>   create mode 100644 drivers/spi/spi-virtio.c
 > 
-> We also need to specify what a suspended device is allowed to do with
-> buffers it owns. For my use case of just suspending/resuming a VM, I
-> don't think it particularly matters if a suspended device writes to
-> buffers or descriptors while it is suspended. But based on what you
-> wrote about finishing any in-flight processing of buffers and not
-> processing any empty buffers, presumably you would prefer that the
-> device not be allowed to access buffer/descriptors while it is
-> suspended? That approach is probably cleaner from a pure specification
-> standpoint, but it's also more restrictive for devices and thus harder
-> to properly implement.
-> 
-> -David
+> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+> index bc7021da2fe9..0b5cd4c1f06b 100644
+> --- a/drivers/spi/Kconfig
+> +++ b/drivers/spi/Kconfig
+> @@ -1125,6 +1125,17 @@ config SPI_UNIPHIER
+>   
+>   	  If your SoC supports SCSSI, say Y here.
+>   
+> +config SPI_VIRTIO
+> +	tristate "Virtio SPI Controller"
+> +	depends on SPI_MASTER && VIRTIO
+> +	help
+> +	  This enables the Virtio SPI driver.
+> +
+> +	  Virtio SPI is an SPI driver for virtual machines using Virtio.
+> +
+> +	  If your Linux is a virtual machine using Virtio, say Y here.
+> +	  If unsure, say N.
+> +
+>   config SPI_XCOMM
+>   	tristate "Analog Devices AD-FMCOMMS1-EBZ SPI-I2C-bridge driver"
+>   	depends on I2C
+> diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
+> index 4ff8d725ba5e..ff2243e44e00 100644
+> --- a/drivers/spi/Makefile
+> +++ b/drivers/spi/Makefile
+> @@ -146,6 +146,7 @@ spi-thunderx-objs			:= spi-cavium.o spi-cavium-thunderx.o
+>   obj-$(CONFIG_SPI_THUNDERX)		+= spi-thunderx.o
+>   obj-$(CONFIG_SPI_TOPCLIFF_PCH)		+= spi-topcliff-pch.o
+>   obj-$(CONFIG_SPI_UNIPHIER)		+= spi-uniphier.o
+> +obj-$(CONFIG_SPI_VIRTIO)		+= spi-virtio.o
+>   obj-$(CONFIG_SPI_XCOMM)		+= spi-xcomm.o
+>   obj-$(CONFIG_SPI_XILINX)		+= spi-xilinx.o
+>   obj-$(CONFIG_SPI_XLP)			+= spi-xlp.o
+> diff --git a/drivers/spi/spi-virtio.c b/drivers/spi/spi-virtio.c
+> new file mode 100644
+> index 000000000000..700cb36e815f
+> --- /dev/null
+> +++ b/drivers/spi/spi-virtio.c
+> @@ -0,0 +1,475 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * SPI bus driver for the Virtio SPI controller
+> + * Copyright (C) 2023 OpenSynergy GmbH
+> + */
+> +
+> +#include <linux/completion.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/stddef.h>
+> +#include <linux/virtio.h>
+> +#include <linux/virtio_ring.h>
+> +#include <linux/virtio_spi.h>
+> +
+> +/* virtio_spi private data structure */
+> +struct virtio_spi_priv {
+> +	/* The virtio device we're associated with */
+> +	struct virtio_device *vdev;
+> +	/* Pointer to the virtqueue */
+> +	struct virtqueue *vq;
+> +	/* Copy of config space mode_func_supported */
+> +	u32 mode_func_supported;
+> +	/* Copy of config space max_freq_hz */
+> +	u32 max_freq_hz;
+> +};
+> +
+> +struct virtio_spi_req {
+> +	struct completion completion;
+> +	struct spi_transfer_head transfer_head	____cacheline_aligned;
+> +	const uint8_t *tx_buf			____cacheline_aligned;
+> +	uint8_t *rx_buf				____cacheline_aligned;
+> +	struct spi_transfer_result result	____cacheline_aligned;
+> +};
+> +
 
-Of course it's a bit harder. It does not sound too restrictive
-to me: as driver will not be adding new buffers, if device is
-still processing queues just defer setting the bit until it does not.
+Hello Harald,
 
+     Do you add the "spi-virtio" in spidev_spi_ids in spidev.c when you 
+doing the tests? And any other method to expose the spidev interface to 
+userspace?
+
+> +static struct spi_board_info board_info = {
+> +	.modalias = "spi-virtio",
+> +};
+> +
+> +static void virtio_spi_msg_done(struct virtqueue *vq)
+> +{
+> +	struct virtio_spi_req *req;
+> +	unsigned int len;
+> +
+> +	while ((req = virtqueue_get_buf(vq, &len)))
+> +		complete(&req->completion);
+> +}
+> +
+> +/*
+> + * See also
+> + * https://lore.kernel.org/all/6171c1c3-55ba-4f74-ae60-764820cf1caf@quicinc.com
+> + */
+
+     For setting delay function, looks good to me. And I will look into 
+other parts.
+
+Thanks
+> +static int virtio_spi_set_delays(struct spi_transfer_head *th,
+> +				 struct spi_device *spi,
+> +				 struct spi_transfer *xfer)
+> +{
+> +	int cs_setup;
+> +	int cs_word_delay_xfer;
+> +	int cs_word_delay_spi;
+> +	int delay;
+> +	int cs_hold;
+> +	int cs_inactive;
+> +	int cs_change_delay;
+> +
+> +	cs_setup = spi_delay_to_ns(&spi->cs_setup, xfer);
+> +	if (cs_setup < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert cs_setup\n");
+> +		return cs_setup;
+> +	}
+> +	th->cs_setup_ns = cpu_to_le32((u32)cs_setup);
+> +
+> +	cs_word_delay_xfer = spi_delay_to_ns(&xfer->word_delay, xfer);
+> +	if (cs_word_delay_xfer < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert cs_word_delay_xfer\n");
+> +		return cs_word_delay_xfer;
+> +	}
+> +	cs_word_delay_spi = spi_delay_to_ns(&spi->word_delay, xfer);
+> +	if (cs_word_delay_spi < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert cs_word_delay_spi\n");
+> +		return cs_word_delay_spi;
+> +	}
+> +	if (cs_word_delay_spi > cs_word_delay_xfer)
+> +		th->word_delay_ns = cpu_to_le32((u32)cs_word_delay_spi);
+> +	else
+> +		th->word_delay_ns = cpu_to_le32((u32)cs_word_delay_xfer);
+> +
+> +	delay = spi_delay_to_ns(&xfer->delay, xfer);
+> +	if (delay < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert delay\n");
+> +		return delay;
+> +	}
+> +	cs_hold = spi_delay_to_ns(&spi->cs_hold, xfer);
+> +	if (cs_hold < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert cs_hold\n");
+> +		return cs_hold;
+> +	}
+> +	th->cs_delay_hold_ns = cpu_to_le32((u32)delay + (u32)cs_hold);
+> +
+> +	cs_inactive = spi_delay_to_ns(&spi->cs_inactive, xfer);
+> +	if (cs_inactive < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert cs_inactive\n");
+> +		return cs_inactive;
+> +	}
+> +	cs_change_delay = spi_delay_to_ns(&xfer->cs_change_delay, xfer);
+> +	if (cs_change_delay < 0) {
+> +		dev_warn(&spi->dev, "Cannot convert cs_change_delay\n");
+> +		return cs_change_delay;
+> +	}
+> +	th->cs_change_delay_inactive_ns = cpu_to_le32((u32)cs_inactive +
+> +						      (u32)cs_change_delay);
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtio_spi_one_transfer(struct virtio_spi_req *spi_req,
+> +				   struct spi_controller *ctrl,
+> +				   struct spi_message *msg,
+> +				   struct spi_transfer *xfer)
+> +{
+> +	struct virtio_spi_priv *priv = spi_controller_get_devdata(ctrl);
+> +	struct spi_device *spi = msg->spi;
+> +	struct spi_transfer_head *th;
+> +	struct scatterlist sg_out_head, sg_out_payload;
+> +	struct scatterlist sg_in_result, sg_in_payload;
+> +	struct scatterlist *sgs[4];
+> +	unsigned int outcnt = 0u;
+> +	unsigned int incnt = 0u;
+> +	int ret;
+> +
+> +	th = &spi_req->transfer_head;
+> +
+> +	/* Fill struct spi_transfer_head */
+> +	th->chip_select_id = spi_get_chipselect(spi, 0);
+> +	th->bits_per_word = spi->bits_per_word;
+> +	/*
+> +	 * Got comment: "The virtio spec for cs_change is *not* what the Linux
+> +	 * cs_change field does, this will not do the right thing."
+> +	 * TODO: Understand/discuss this, still unclear what may be wrong here
+> +	 */
+> +	th->cs_change = xfer->cs_change;
+> +	th->tx_nbits = xfer->tx_nbits;
+> +	th->rx_nbits = xfer->rx_nbits;
+> +	th->reserved[0] = 0;
+> +	th->reserved[1] = 0;
+> +	th->reserved[2] = 0;
+> +
+> +	BUILD_BUG_ON(VIRTIO_SPI_CPHA != SPI_CPHA);
+> +	BUILD_BUG_ON(VIRTIO_SPI_CPOL != SPI_CPOL);
+> +	BUILD_BUG_ON(VIRTIO_SPI_CS_HIGH != SPI_CS_HIGH);
+> +	BUILD_BUG_ON(VIRTIO_SPI_MODE_LSB_FIRST != SPI_LSB_FIRST);
+> +
+> +	th->mode = cpu_to_le32(spi->mode & (SPI_LSB_FIRST | SPI_CS_HIGH |
+> +					    SPI_CPOL | SPI_CPHA));
+> +	if ((spi->mode & SPI_LOOP) != 0)
+> +		th->mode |= cpu_to_le32(VIRTIO_SPI_MODE_LOOP);
+> +
+> +	th->freq = cpu_to_le32(xfer->speed_hz);
+> +
+> +	if (virtio_spi_set_delays(th, spi, xfer))
+> +		goto msg_done;
+> +
+> +	/* Set buffers */
+> +	spi_req->tx_buf = xfer->tx_buf;
+> +	spi_req->rx_buf = xfer->rx_buf;
+> +
+> +	/* Prepare sending of virtio message */
+> +	init_completion(&spi_req->completion);
+> +
+> +	sg_init_one(&sg_out_head, th, sizeof(*th));
+> +	sgs[outcnt] = &sg_out_head;
+> +	outcnt++;
+> +
+> +	if (spi_req->tx_buf) {
+> +		sg_init_one(&sg_out_payload, spi_req->tx_buf, xfer->len);
+> +		sgs[outcnt] = &sg_out_payload;
+> +		outcnt++;
+> +	}
+> +
+> +	if (spi_req->rx_buf) {
+> +		sg_init_one(&sg_in_payload, spi_req->rx_buf, xfer->len);
+> +		sgs[outcnt + incnt] = &sg_in_payload;
+> +		incnt++;
+> +	}
+> +
+> +	sg_init_one(&sg_in_result, &spi_req->result,
+> +		    sizeof(struct spi_transfer_result));
+> +	sgs[outcnt + incnt] = &sg_in_result;
+> +	incnt++;
+> +
+> +	ret = virtqueue_add_sgs(priv->vq, sgs, outcnt, incnt, spi_req,
+> +				GFP_KERNEL);
+> +
+> +msg_done:
+> +	if (ret)
+> +		msg->status = ret;
+> +
+> +	return ret;
+> +}
+> +
+> +static int virtio_spi_transfer_one_message(struct spi_controller *ctrl,
+> +					   struct spi_message *msg)
+> +{
+> +	struct virtio_spi_priv *priv = spi_controller_get_devdata(ctrl);
+> +	struct virtio_spi_req *spi_req;
+> +	struct spi_transfer *xfer;
+> +	int ret = 0;
+> +
+> +	spi_req = kzalloc(sizeof(*spi_req), GFP_KERNEL);
+> +	if (!spi_req) {
+> +		ret = -ENOMEM;
+> +		goto no_mem;
+> +	}
+> +
+> +	/*
+> +	 * Simple implementation: Process message by message and wait for each
+> +	 * message to be completed by the device side.
+> +	 */
+> +	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
+> +		ret = virtio_spi_one_transfer(spi_req, ctrl, msg, xfer);
+> +		if (ret)
+> +			goto msg_done;
+> +
+> +		virtqueue_kick(priv->vq);
+> +
+> +		wait_for_completion(&spi_req->completion);
+> +
+> +		/* Read result from message */
+> +		ret = (int)spi_req->result.result;
+> +		if (ret)
+> +			goto msg_done;
+> +	}
+> +
+> +msg_done:
+> +	kfree(spi_req);
+> +no_mem:
+> +	msg->status = ret;
+> +	spi_finalize_current_message(ctrl);
+> +
+> +	return ret;
+> +}
+> +
+> +static void virtio_spi_read_config(struct virtio_device *vdev)
+> +{
+> +	struct spi_controller *ctrl = dev_get_drvdata(&vdev->dev);
+> +	struct virtio_spi_priv *priv = vdev->priv;
+> +	u8 cs_max_number;
+> +	u8 tx_nbits_supported;
+> +	u8 rx_nbits_supported;
+> +
+> +	cs_max_number = virtio_cread8(vdev, offsetof(struct virtio_spi_config,
+> +						     cs_max_number));
+> +	ctrl->num_chipselect = cs_max_number;
+> +
+> +	/* Set the mode bits which are understood by this driver */
+> +	priv->mode_func_supported =
+> +		virtio_cread32(vdev, offsetof(struct virtio_spi_config,
+> +					      mode_func_supported));
+> +	ctrl->mode_bits = priv->mode_func_supported &
+> +			  (VIRTIO_SPI_CS_HIGH | VIRTIO_SPI_MODE_LSB_FIRST);
+> +	if ((priv->mode_func_supported & VIRTIO_SPI_MF_SUPPORT_CPHA_1) != 0)
+> +		ctrl->mode_bits |= VIRTIO_SPI_CPHA;
+> +	if ((priv->mode_func_supported & VIRTIO_SPI_MF_SUPPORT_CPOL_1) != 0)
+> +		ctrl->mode_bits |= VIRTIO_SPI_CPOL;
+> +	if ((priv->mode_func_supported & VIRTIO_SPI_MF_SUPPORT_LSB_FIRST) != 0)
+> +		ctrl->mode_bits |= SPI_LSB_FIRST;
+> +	if ((priv->mode_func_supported & VIRTIO_SPI_MF_SUPPORT_LOOPBACK) != 0)
+> +		ctrl->mode_bits |= SPI_LOOP;
+> +	tx_nbits_supported =
+> +		virtio_cread8(vdev, offsetof(struct virtio_spi_config,
+> +					     tx_nbits_supported));
+> +	if ((tx_nbits_supported & VIRTIO_SPI_RX_TX_SUPPORT_DUAL) != 0)
+> +		ctrl->mode_bits |= SPI_TX_DUAL;
+> +	if ((tx_nbits_supported & VIRTIO_SPI_RX_TX_SUPPORT_QUAD) != 0)
+> +		ctrl->mode_bits |= SPI_TX_QUAD;
+> +	if ((tx_nbits_supported & VIRTIO_SPI_RX_TX_SUPPORT_OCTAL) != 0)
+> +		ctrl->mode_bits |= SPI_TX_OCTAL;
+> +	rx_nbits_supported =
+> +		virtio_cread8(vdev, offsetof(struct virtio_spi_config,
+> +					     rx_nbits_supported));
+> +	if ((rx_nbits_supported & VIRTIO_SPI_RX_TX_SUPPORT_DUAL) != 0)
+> +		ctrl->mode_bits |= SPI_RX_DUAL;
+> +	if ((rx_nbits_supported & VIRTIO_SPI_RX_TX_SUPPORT_QUAD) != 0)
+> +		ctrl->mode_bits |= SPI_RX_QUAD;
+> +	if ((rx_nbits_supported & VIRTIO_SPI_RX_TX_SUPPORT_OCTAL) != 0)
+> +		ctrl->mode_bits |= SPI_RX_OCTAL;
+> +
+> +	ctrl->bits_per_word_mask =
+> +		virtio_cread32(vdev, offsetof(struct virtio_spi_config,
+> +					      bits_per_word_mask));
+> +
+> +	priv->max_freq_hz =
+> +		virtio_cread32(vdev, offsetof(struct virtio_spi_config,
+> +					      max_freq_hz));
+> +}
+> +
+> +static int virtio_spi_find_vqs(struct virtio_spi_priv *priv)
+> +{
+> +	struct virtqueue *vq;
+> +
+> +	vq = virtio_find_single_vq(priv->vdev, virtio_spi_msg_done, "spi-rq");
+> +	if (IS_ERR(vq))
+> +		return (int)PTR_ERR(vq);
+> +	priv->vq = vq;
+> +	return 0;
+> +}
+> +
+> +/* Function must not be called before virtio_spi_find_vqs() has been run */
+> +static void virtio_spi_del_vq(struct virtio_device *vdev)
+> +{
+> +	virtio_reset_device(vdev);
+> +	vdev->config->del_vqs(vdev);
+> +}
+> +
+> +static int virtio_spi_validate(struct virtio_device *vdev)
+> +{
+> +	/*
+> +	 * SPI needs always access to the config space.
+> +	 * Check that the driver can access the config space
+> +	 */
+> +	if (!vdev->config->get) {
+> +		dev_err(&vdev->dev, "%s failure: config access disabled\n",
+> +			__func__);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!virtio_has_feature(vdev, VIRTIO_F_VERSION_1)) {
+> +		dev_err(&vdev->dev,
+> +			"device does not comply with spec version 1.x\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtio_spi_probe(struct virtio_device *vdev)
+> +{
+> +	struct device_node *np = vdev->dev.parent->of_node;
+> +	struct virtio_spi_priv *priv;
+> +	struct spi_controller *ctrl;
+> +	int err;
+> +	u32 bus_num;
+> +	u16 csi;
+> +
+> +	ctrl = devm_spi_alloc_host(&vdev->dev, sizeof(*priv));
+> +	if (!ctrl) {
+> +		dev_err(&vdev->dev, "Kernel memory exhausted in %s()\n",
+> +			__func__);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	priv = spi_controller_get_devdata(ctrl);
+> +	priv->vdev = vdev;
+> +	vdev->priv = priv;
+> +	dev_set_drvdata(&vdev->dev, ctrl);
+> +
+> +	err = of_property_read_u32(np, "spi,bus-num", &bus_num);
+> +	if (!err && bus_num <= S16_MAX)
+> +		ctrl->bus_num = (s16)bus_num;
+> +
+> +	virtio_spi_read_config(vdev);
+> +
+> +	/* Method to transfer a single SPI message */
+> +	ctrl->transfer_one_message = virtio_spi_transfer_one_message;
+> +
+> +	/* Initialize virtqueues */
+> +	err = virtio_spi_find_vqs(priv);
+> +	if (err) {
+> +		dev_err(&vdev->dev, "Cannot setup virtqueues\n");
+> +		return err;
+> +	}
+> +
+> +	err = spi_register_controller(ctrl);
+> +	if (err) {
+> +		dev_err(&vdev->dev, "Cannot register controller\n");
+> +		goto err_return;
+> +	}
+> +
+> +	board_info.max_speed_hz = priv->max_freq_hz;
+> +	/* spi_new_device() currently does not use bus_num but better set it */
+> +	board_info.bus_num = (u16)ctrl->bus_num;
+> +
+> +	/* Add chip selects to controller */
+> +	for (csi = 0; csi < ctrl->num_chipselect; csi++) {
+> +		dev_dbg(&vdev->dev, "Setting up CS=%u\n", csi);
+> +		board_info.chip_select = csi;
+> +		/* TODO: Discuss setting of board_info.mode */
+> +		if (!(priv->mode_func_supported & VIRTIO_SPI_CS_HIGH))
+> +			board_info.mode = SPI_MODE_0;
+> +		else
+> +			board_info.mode = SPI_MODE_0 | SPI_CS_HIGH;
+> +		if (!spi_new_device(ctrl, &board_info)) {
+> +			dev_err(&vdev->dev, "Cannot setup device %u\n", csi);
+> +			spi_unregister_controller(ctrl);
+> +			err = -ENODEV;
+> +			goto err_return;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +
+> +err_return:
+> +	vdev->config->del_vqs(vdev);
+> +	return err;
+> +}
+> +
+> +static void virtio_spi_remove(struct virtio_device *vdev)
+> +{
+> +	struct spi_controller *ctrl = dev_get_drvdata(&vdev->dev);
+> +
+> +	/* Order: 1.) unregister controller, 2.) remove virtqueue */
+> +	spi_unregister_controller(ctrl);
+> +	virtio_spi_del_vq(vdev);
+> +}
+> +
+> +static int virtio_spi_freeze(struct virtio_device *vdev)
+> +{
+> +	struct device *dev = &vdev->dev;
+> +	struct spi_controller *ctrl = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	/* Stop the queue running */
+> +	ret = spi_controller_suspend(ctrl);
+> +	if (ret) {
+> +		dev_warn(dev, "cannot suspend controller (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	virtio_spi_del_vq(vdev);
+> +	return 0;
+> +}
+> +
+> +static int virtio_spi_restore(struct virtio_device *vdev)
+> +{
+> +	struct device *dev = &vdev->dev;
+> +	struct spi_controller *ctrl = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	ret = virtio_spi_find_vqs(vdev->priv);
+> +	if (ret) {
+> +		dev_err(dev, "problem starting vqueue (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = spi_controller_resume(ctrl);
+> +	if (ret)
+> +		dev_err(dev, "problem resuming controller (%d)\n", ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static struct virtio_device_id virtio_spi_id_table[] = {
+> +	{ VIRTIO_ID_SPI, VIRTIO_DEV_ANY_ID },
+> +	{ 0 },
+> +};
+> +
+> +static struct virtio_driver virtio_spi_driver = {
+> +	.driver.name = KBUILD_MODNAME,
+> +	.driver.owner = THIS_MODULE,
+> +	.id_table = virtio_spi_id_table,
+> +	.validate = virtio_spi_validate,
+> +	.probe = virtio_spi_probe,
+> +	.remove = virtio_spi_remove,
+> +	.freeze = pm_sleep_ptr(virtio_spi_freeze),
+> +	.restore = pm_sleep_ptr(virtio_spi_restore),
+> +};
+> +
+> +module_virtio_driver(virtio_spi_driver);
+> +MODULE_DEVICE_TABLE(virtio, virtio_spi_id_table);
+> +
+> +MODULE_AUTHOR("OpenSynergy GmbH");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("Virtio SPI bus driver");
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
