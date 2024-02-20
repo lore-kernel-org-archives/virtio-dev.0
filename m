@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14332-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14333-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F779C48BC3
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Feb 2024 07:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 424B7C48BF8
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 01:38:01 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 87FA72AF8C
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Feb 2024 07:42:17 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 4A50F75B91
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 01:38:00 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6947A9864A3
-	for <virtio-dev@archiver.kernel.org>; Mon, 19 Feb 2024 07:42:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 04C949864CD
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 01:37:59 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 519B0983E47; Mon, 19 Feb 2024 07:42:17 +0000 (UTC)
+	id CEE02984278; Tue, 20 Feb 2024 01:37:59 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,203 +24,145 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 4129E98640B
-	for <virtio-dev@lists.oasis-open.org>; Mon, 19 Feb 2024 07:42:17 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id BB2FD98648B
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 01:37:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: 465gWgdhMLOU8pkXDzaQmA-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708328531; x=1708933331;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gF6sbJ3+Ht94/f53QpZC/f1xLrCP5Ef+HmZxuAzHsY8=;
-        b=aqP+X5X/YQ18eJPS2YlLaWH+w9crYms3NjxTwj5YOwBsWtly6k1liSdk6jWIqS8DfT
-         +kR9iyK6fLPPjiT4Z1/XHo8ISNW2SNCoheXq06JLR0VilUtUc9kabefPcyJFdoPEzq7Y
-         S5LOhf2797F7GfJVbpkWBPU32y+zgqp6SDbAAA7Sc1lG5ErubVICUhZt8hGXWgvlxhYn
-         rX3yRwogpfo2Co7OYnp7v37xyWZ626EriDw0KWZwkuawB1GXHcGTyA+IL1IQqBkg93fm
-         DnxGzfKEnn/v7nBFR4GC3LJJfiNfbNAq0bI/JkaHeEw58pT0XnWRoGQf5L+b+3W6wYpt
-         NwVQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXyYG4a3zsdABt5M/5jY1I3Ji/R28SRKepwDtN6if1ibBedUxVbIFv0apA4X8jaJxpH+VuOEyds7j+hzGkx769B0HruwlCpseeRPNK3bhLT
-X-Gm-Message-State: AOJu0Yy1EEEg0K/r/R4N7p57HPH5blOtyJjPBUKs2l2gDZJk426Kuj1n
-	X5IGZ1u1iKCpoUcQNJi1AtP7fUGfZg6Y0x3khaNxz07Ip2uqk4UU746KBjySUpnhkvi9bJMR+sh
-	uN2v/BIpvv5ezm9InbdXAQvL5p9ils24SuMkL0wxHJ2Ja5Cl8FfaoNq3UFkMCzvuB3Q==
-X-Received: by 2002:adf:cb05:0:b0:33d:3896:be5f with SMTP id u5-20020adfcb05000000b0033d3896be5fmr2851970wrh.54.1708328531058;
-        Sun, 18 Feb 2024 23:42:11 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IE9lEFbdndHpAeM2K86yRrbxuzBm2RSKuC9u9sU4lYJTXMVgNMHXY5vJuNuFg+E73MfpwgbrA==
-X-Received: by 2002:adf:cb05:0:b0:33d:3896:be5f with SMTP id u5-20020adfcb05000000b0033d3896be5fmr2851954wrh.54.1708328530607;
-        Sun, 18 Feb 2024 23:42:10 -0800 (PST)
-Date: Mon, 19 Feb 2024 02:42:06 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: David Stevens <stevensd@chromium.org>
-Cc: Jason Wang <jasowang@redhat.com>, virtio-comment@lists.oasis-open.org,
-	virtio-dev@lists.oasis-open.org, parav@nvidia.com
-Message-ID: <20240219023718-mutt-send-email-mst@kernel.org>
-References: <20240216082432.709956-1-stevensd@chromium.org>
- <20240216082432.709956-2-stevensd@chromium.org>
- <20240216035144-mutt-send-email-mst@kernel.org>
- <CAD=HUj79esxJTKZNMk3MkWOW5Ch=9L4kuokjvPryuTsV2z=sdA@mail.gmail.com>
+X-TM-MAIL-RECEIVED-TIME: 1708393076.382000
+X-TM-MAIL-UUID: 4f07d80d-1248-413d-83a2-ca2a7537b5af
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ekqnyTDBhpiyROM5ibPgGfSMUOQK7tZdaPSE/NycvDAd9xFTO4ODwWr5/9dhycJgltZosPI//lAoPnTz4PwVmZFlwzSF8Hv5gxKjMlmQUrVZW+G7BmjtsmhgXpUIHe5iXGW2Tq/1Hm3yA1UE9SeL3z7kJ8ZJH9RjMzNIweDSY/LeK7x4cRr9qMgqceNCM2cL8jDUbSWE7aB3AP91c+MmvX2AYB4JniUIvF8kKZI0Mzxv6Ai7fDQQ2sGwHg+VDy0KAl9dXrNRE9s+xKSWH6PchR8dMkCmoplRdbSOa5NDg8A97x81wWIv7a6cAdd6uX5EjDWLNQ5rEC9AjMfaO/Gv1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hsZg67DlrisXTVWPZYPDWOLYrZjVxQK2sdJHmEkyO6Q=;
+ b=EZkoHBsMRXBYZ/R2EutJnHbSE0mKfuF2X9nivNft5CuD6Y7MaRY//dOy7z8vBlTTu5LarJTnwm/BImbLwfT+fssBcISDTndju6ahpW3OeQ5ltC0Q2o/TIVmhRsu1LH1LuzG5No7JCuuOB1TGH/Tc1RNT0I2qlizt+fQtJmO6/DJvINxeE/IVyZfEkFluZa0M8pJjNe6yKokthztqeEq0BfGBbd6XW9x8s0WERQ8/InBo7zTFifNTEGDGoqmJd9/qDFays9sgVmBfgsFbnUCt8S4H3ucs2K+JvyDGrAT2LCpI0XodQcWcsjc2C2owS+MBuKD+oOamQpO6ao8fXm90gA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <d9a99397-4111-4677-b535-ee20c86018ad@opensynergy.com>
+Date: Tue, 20 Feb 2024 10:37:41 +0900
+To: Marcin Radomski <dextero@google.com>, aiswarya.cyriac@opensynergy.com
+Cc: vill@google.com, alsa-devel@alsa-project.org, jasowang@redhat.com,
+ linux-kernel@vger.kernel.org, mst@redhat.com, perex@perex.cz,
+ tiwai@suse.com, virtio-dev@lists.oasis-open.org,
+ virtualization@lists.linux-foundation.org
+References: <20240115133654.576068-2-aiswarya.cyriac@opensynergy.com>
+ <20240219172417.1383044-1-dextero@google.com>
+Content-Language: en-US
+From: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+In-Reply-To: <20240219172417.1383044-1-dextero@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TYXPR01CA0060.jpnprd01.prod.outlook.com
+ (2603:1096:403:a::30) To BEZP281MB2374.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:5c::11)
 MIME-Version: 1.0
-In-Reply-To: <CAD=HUj79esxJTKZNMk3MkWOW5Ch=9L4kuokjvPryuTsV2z=sdA@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH v4 1/1] Add suspend support for virtio PCI devices
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BEZP281MB2374:EE_|BE1P281MB3153:EE_
+X-MS-Office365-Filtering-Correlation-Id: a2d5f35e-3c33-4d37-4366-08dc31b48edb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	CAtjyAvPzVXC08vsIIKXdpgD9jmoEINqDIfnFx4UDaa4vETB1lxtshPH/Vx6RHvM1tsFYP/mYQhgGLl2Brz/+8ZRagKyUcUsTh1723+qSSsez/s+3evoRwzqWNrhgR66zncrmOP4/bd5tCsRTZwX8rw8nEj3FZ7+D8IXiObQIUyKK68x/dk3+Q1nJaFEmfVJw00lsCQ/stt9lHdHf5Yrsv3b0oGHmi2lxIGlV7tIUur+hq4H4XzoDVGOd2mROuvOZRXhdfraAfWbg622eZKAQdSVljvr4+PzkPNzT/NGSReOjAkNYVArPwtcnboQD8LmNGubqApXVVGR6zQvd8rb8Nosy8jzP4Sn+aYoriVcHritsWHgsizAZHen1IXfWkpTm8TpeHKfddGAjj0/loil+CLkt273huZLXkdoE4NMzPf9Hx5R61jVBxrOdg9eCTeQ2xF23AS38z4Pscu79/K2Ke5AWw7Cw9ZKUlaKS73cgETu9YvnV29sHsRrk0pplwTxsMC5ShLf6X+j4JPjPwVy4cBYar8JLLiD/aI3jLL9bX0=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEZP281MB2374.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bVlwTUdUNGxjNXNlUm5EZjNTSUcyUUNQblFLTktaVzVBOVBoR1BVUlRBQ1pi?=
+ =?utf-8?B?dXZFWit3UlcwNFZkblQ2RW1KMzBMOXZoMklkWVhDWlE5R0l4SGZZbDZrcG5S?=
+ =?utf-8?B?SE02UUloeFJhdWZ1Ny9NQVQyY1ZqbVE2aEpsZ0Yzc2pRWnhoeWpOUW9QcWtW?=
+ =?utf-8?B?S2I4ZXltVkxGeERNYndKNHUzUEI4a3E2dHFpQSsyRkF1aVhMU09oem5uT2l0?=
+ =?utf-8?B?ZWhiS1BjZzFKV043dm5zZEs0T0k5Rm44UFI4bU5JaGh3aEYrWGxqeWRWaXdI?=
+ =?utf-8?B?R05WZTRITDJjdEk3c0ZkdXRMbXFHN0hUTnIrOWhHRmpYN2l5Y2J4eTFxaWlz?=
+ =?utf-8?B?UUNTR0l1OXRsNVJzcUQzb2VuS293bHFKbVZUejJHSlhCeTZLMHNVVUdTNkNl?=
+ =?utf-8?B?ZmdwV3c2amxwNU80UW92YzZGSWZicXdYN1VkNkpYcXoxVmpMUTgxOTYvQ3BG?=
+ =?utf-8?B?djhqdnBSQXcxNEd1b01JMU5yN2Q0VDVnbHZROURkbkJIMHRZSklCMmlTaEZp?=
+ =?utf-8?B?OUNhMzVzSk80QmozdFdQb0xwYmF4U0VVRHkveVl2bVR2Ny9ReGNiOWp3ZDB6?=
+ =?utf-8?B?aEJLVXo1dUJQTmNHRHJkTWRoY2dkN3d2RUFTamRJRnhKWHFVR1NuT2NRTndo?=
+ =?utf-8?B?Z2MxTU9pVjYvMlA5WTZGU2ZWeFhia1VuV1RFRktXTXpWOVVFaE9ibDJqVXlI?=
+ =?utf-8?B?d1lNL0UxbURuSjhFTyt0eHJtR1VJdDVLa0RzU2NBTTF3MVRDS1VqY3J4TlVP?=
+ =?utf-8?B?bnNGZFVId1ltTElnK1lQVlRDL3hadkdQRUZiUndCcHhNekh1QkhzN0ZMaW4v?=
+ =?utf-8?B?RERxQ1F2cU5jQVUvYkp0WkFpTUwrV2tBVWxJVDVyTWdiSzNzYUVNaTh5V1NC?=
+ =?utf-8?B?K2U2blpDdlNXZUp2dm1GRWN2VEZGN2REQmNRMVlhc2ZpbGk5cHVpYVRySE5t?=
+ =?utf-8?B?Qm94c2dVdzR6Q3NIbDFPQ3BtVW93d2Z5ZW9MdkpiQ1ZVTnBzc1VINzNvb0h4?=
+ =?utf-8?B?Tmx4aE9uNTFxaGpsR29za1psWmoySmwxVGQvR293dU9wZkxZRnk2aFZ2VGVh?=
+ =?utf-8?B?V3RIalQveGtyL0RIU1hpdDBWeTEwWEJ0b25wTmIwT2JJR1pEOU1ZUVJuRUY3?=
+ =?utf-8?B?Y2xJNy8yS3U4U1JOWThNRi9sUE9lSFV4OFYvbWw0OUxXUFNLanBWSEZsbS92?=
+ =?utf-8?B?TjhYakhvaHc3NWpzQTA3NFZLZHFDcjBCUmJVcXR6ODBaM2ZYdUxIRzZJN28v?=
+ =?utf-8?B?eVdUL0I0SWt4RFVEQUxOOEFPdFFIMmdHUzd0SW9INDUrc20xZGpHZ2RxLzBq?=
+ =?utf-8?B?WVRvSDJFcmhJbHZXdjhueEVWVFVVaTdGTmxhcUZEV0RQUDN4L1RSb2llYVRr?=
+ =?utf-8?B?Q25rbmx1RVBMM0ZyK25ScXp3WU1zbnZEanliZDZja2N5cjdMRlJISGZZdHVI?=
+ =?utf-8?B?bDJtUVZXaE5ySEtkZkthdHJGTGVaVE5ORnlXQ0haUHlOdkJJd1hnZzVyZTNt?=
+ =?utf-8?B?TEIrejhKQmdUMFk2ZHdOWW5FQysyVUFHOWRCQ0VxZjhpOXhFTXh4bzkya0tv?=
+ =?utf-8?B?VS8vNDR5WGtCYzdUdTJzYU5UNmMyNVVMTlRnakE5MlQvMkF4Q2hXa0F0SXpB?=
+ =?utf-8?B?ZU5JRllyc3VQYWhqaWo3YzNXOXQvb2JFMjcrMS9QS0hLd3NNa2pJKzVNT01z?=
+ =?utf-8?B?V0drWFlNU0hEMko1eWFnZ1dhUmJNaHlNOGhxcXEveXh6VlFpYzFoaGhXd2lG?=
+ =?utf-8?B?bUxBOStvK1VtNEMvWVpGWkk1bndNR2Q5R1dMQjhhV1FYbklRREJiV05VdGZx?=
+ =?utf-8?B?VTFlakE4cHgxeEdrcFNiTERMMVlDeFQyOEdiNHRHMDNDYlIvYUFmRERkSG1p?=
+ =?utf-8?B?R0hjMVB6M1JsV1dpYldpMmcrVEZvdE1ZL20yYTJYbW5SK25MajJDRkg5MHFK?=
+ =?utf-8?B?OThPYzkrdUNHbzFvL3RPVXVDa3JmRWk1TStuVGRGWmVBNG5mVnVDNWQzcUdR?=
+ =?utf-8?B?bWE0RVpZYlNYQWt4OXlDbGpoVlYwQW1HZXlUY0NtdnRpVFlCcFk3cFlpT1Zu?=
+ =?utf-8?B?d1g0citDZG4zbWpuSVdGekhBODhMOWZSOW5oNlZ1MHB6Y1RKMXFOWDJZNEdD?=
+ =?utf-8?B?K2pOYmtlWll2ZUVMRU10YW96dEVMeTgzSitYajRhcEJOYXl6Z1RxbkR0TGFm?=
+ =?utf-8?Q?48IUIzljOBbfL0q+YnPQOXKy6JDdpmJKLqzMz/O71fA9?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2d5f35e-3c33-4d37-4366-08dc31b48edb
+X-MS-Exchange-CrossTenant-AuthSource: BEZP281MB2374.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2024 01:37:54.5266
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7Vp9htuiXW246cK3J9xbYXIaWr7LQc8f6OCAnzQsOvAWiBzMFDi+AV2mmpG2wW83N6CyU5qVEeh8l/WRaGa9AA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB3153
+X-TM-AS-ERS: 104.47.11.169-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28202.004
+X-TMASE-Result: 10--11.951600-4.000000
+X-TMASE-MatchedRID: O/y65JfDwwv5ETspAEX/npGPSO6O5JCalR7tN56aWVW0sdSrJZyyxp0Q
+	FAkvwQa1x+4DBaCRcWVROHkKgWFqUmOOjE/261b4M6mKelUSkRFW1n4bHTHoQZXVwPqFeiBVT0B
+	RZNI+Ywa6miiB19Ur4l3jHUhSUqcUaIn7kYcazIMk+VN5SeE/CnM1+1Vqzfv2+SDH3HyigbT8XL
+	wN2+AeMDsAVzN+Ov/sOECyFyDVMckc9LpRfRZMDc2QAgAkkoe3EvSxyyaSskdOMWgY1PD+9A==
+X-TMASE-XGENCLOUD: 7f0722c9-a23d-488e-9bea-2fdc98ba01f1-0-0-200-0
+X-TM-Deliver-Signature: 2FB02D8C42C688081AC4470B2AC02FA2
+X-TM-Addin-Auth: bPQussCM3H8d2AQJ4f+AT7k0LR9t4SR6SLykmIdarNfTI6vg0ynJ7SZUfAX
+	RjhNDT8Ff/ejSqn0stzVmSqqZOGe5Zkg30XUQlrWr15xwJs3+85+G4BdieSvjdQYIe/cW950hg4
+	yGXincMcjW2BQm7GSef4awXLyAMyTD6dFMXmzQnzjDW8N4f7xn/IYtS2muOXsj3XbBRmLtX269d
+	qcH4Gg7VpyOuAeHm2mcKfOKT2evF/0l0tDw7q+M5NXk1ELCveAZYcGXDoxmcESnopm2dSFBwuF2
+	k0EjWXu6zabzz3g=.OO9U42TrfaEutwaF3eE9KK+NgSOh4T0hDPlFYy8nz3K04PCfrRRGOpg4Pt
+	BmAcqXE599Yai34hdoTQF49lXohZbN02dyQCKS8UOPkrXJnhg350rwsFEzPWBUdcKr5pfs/8kMr
+	92fQh9GLMfhaootf/ckDPP8kOMOf6phd2b367AzwPdsM9dSt3xhACtsYC7V6MK4D7wT7ZwT3ZMe
+	zzzNc/D1v/IqgT6fP9BfnAKEJyND888UVaSODdvFnEBHVuemFuLdop2oiCPEz++5VtB9L0DP1E6
+	qUqnqtG7XZPa+aTvQvrh6MGc0NXdp5GEY7PGaBqficqi29CG6NafbjvZsiQ==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] Re: [v2 PATCH 0/1] ALSA: virtio: add support for audio controls
 
-On Mon, Feb 19, 2024 at 03:46:37PM +0900, David Stevens wrote:
-> On Fri, Feb 16, 2024 at 5:56 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Fri, Feb 16, 2024 at 05:24:32PM +0900, David Stevens wrote:
-> > > Add a virtio power management PCI capability to allow drivers to suspend
-> > > virtio PCI devices. This allows drivers to suspend devices at the virtio
-> > > level before suspending them at the PCI transport layer. This allows
-> > > drivers to do a two phase suspend, which prevents notifications from
-> > > being ignored or lost if interrupts are reconfigured at the PCI
-> > > transport layer immediately before or after the device is put into the
-> > > PCI PM D3 low power state.
-> > > ---
-> > >  transport-pci.tex | 51 +++++++++++++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 51 insertions(+)
-> > >
-> > > diff --git a/transport-pci.tex b/transport-pci.tex
-> > > index a5c6719ea871..ce77708a9b69 100644
-> > > --- a/transport-pci.tex
-> > > +++ b/transport-pci.tex
-> > > @@ -188,6 +188,8 @@ \subsection{Virtio Structure PCI Capabilities}\label{sec:Virtio Transport Option
-> > >  #define VIRTIO_PCI_CAP_SHARED_MEMORY_CFG 8
-> > >  /* Vendor-specific data */
-> > >  #define VIRTIO_PCI_CAP_VENDOR_CFG        9
-> > > +/* Power management configuration */
-> > > +#define VIRTIO_PCI_CAP_PM_CFG            10
-> > >  \end{lstlisting}
-> > >
-> > >          Any other value is reserved for future use.
-> > > @@ -804,6 +806,55 @@ \subsubsection{PCI configuration access capability}\label{sec:Virtio Transport O
-> > >  specified by some other Virtio Structure PCI Capability
-> > >  of type other than \field{VIRTIO_PCI_CAP_PCI_CFG}.
-> > >
-> > > +\subsubsection{Power management capability}\label{sec:Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Power management capability}
-> > > +
-> > > +The VIRTIO_PCI_CAP_PM_CFG capability refers to a single byte. The
-> > > +driver can write to the byte to set the power state of the device,
-> > > +and it can read from the byte to get the current power state of the
-> > > +device.
-> > > +
-> > > +The valid power states are:
-> > > +
-> > > +\begin{lstlisting}
-> > > +/* Device is operating normally */
-> > > +#define VIRTIO_PM_STATE_ACTIVE    0
-> > > +/* Device operation is suspended */
-> > > +#define VIRTIO_PM_STATE_SUSPENDED 1
-> > > +\end{lstlisting}
-> > > +
-> > > +The device power state has no effect when \field{device status} does
-> > > +not have the DRIVER_OK bit set or does have the DEVICE_NEEDS_RESET bit
-> > > +set.
-> >
-> >
-> > Given this is only after DRIVER_OK, wouldn't a feature bit + status bit
-> > make more sense? This will make it transport-independent and simplify
-> > discovery.
+Hi Marcin,
+
+
+Thanks for the help!
+
+
+
+On 20.02.2024 02:24, Marcin Radomski wrote:
+> Thanks Anton for the reupload.
 > 
-> A feature bit + status bit would work as well. I've posted some
-> questions on Zhu Lingshan's patch.
-
-
-Thanks! I like it that your patch is more specific but maybe something
-can be figure out to get the best of both worlds.
-
-> > > +\devicenormative{\paragraph}{Power management capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Power management capability}
-> > > +
-> > > +A device MUST maintain its state while suspended such that all driver
-> > > +visible state after resuming exactly matches driver visible state
-> > > +before suspending.
-> > > +
-> > > +A device MUST NOT send notifications while suspended.
-> > > +
-> > > +A device MAY operate on any buffers in its virtqueue while suspended.
-> >
-> > How is this reconsiled with state matching exactly? buffers are
-> > driver-visible ...
+> I tested this series with a 6.1 kernel guest on a proprietary hypervisor. The
+> controls exposed by the host (BOOLEAN/INTEGER ones, as that was all I could
+> get) worked as expected when adjusted via ALSA APIs.
 > 
-> Drivers can't atomically access buffers and the PM byte, so the device
-> modifying a buffer while suspended is indistinguishable from the
-> device modifying a buffer in the window between when it is resumed by
-> the driver and when the driver accesses the buffer. But you are right
-> that the wording is contradictory. Maybe the earlier requirement could
-> be better phrased as:
-> 
-> A device MUST maintain its state while suspended such that after the
-> driver resumes the device, the driver can use the device as if it had
-> never been suspended in the first place.
+> Reviewed-by: Marcin Radomski <dextero@google.com>
+> Tested-By: Marcin Radomski <dextero@google.com>
 
+-- 
+Anton Yakovlev
+Senior Software Engineer
 
-I think you wording is fine, just make it clear how is the
-contradiction resolved. E.g. exactly matches ... with the
-exception of using buffers available in one of the virtqueues.
-
-> > > +A device MUST set its power state to VIRTIO_PM_STATE_ACTIVE on reset.
-> > > +
-> > > +A device SHOULD take steps to minimize its resource consumption while
-> > > +suspended, although what this involves is specific to the particular
-> > > +device implementation.
-> > > +
-> > > +\drivernormative{\paragraph}{Power management capability}{Virtio Transport Options / Virtio Over PCI Bus / PCI Device Layout / Power management capability}
-> > > +
-> > > +A driver MUST NOT access a suspended device's BARs corresponding to
-> > > +any virtio structures, except for the power management byte.
-> > > +
-> > > +A driver MAY suspend a device that has buffers in one of its
-> > > +virtqueues, but it MUST NOT modify any such buffers while the device
-> > > +is suspended.
-> > > +
-> > > +A driver MUST read from the power management byte after writing to the
-> > > +byte to verify that the device successfully entered the target power
-> > > +state.
-> >
-> > Verify how? By checking the value returned? And what should it do with the value
-> > does not match?
-> 
-> Yes, comparing the value returned to the one it just wrote. The three
-> options I can think of would be to abort the suspend, reset the
-> device, or retry. Retry only makes sense if suspend/resume might
-> succeed in the future.
-
-Well actually there is a reason to retry even without a timeout -
-has to do with pci rules which limit how quickly device has
-to respond to a read. So if you want to implement suspend
-in firmware and not be bound to any timing limits you need
-retry in software.
-
-
-> An API is really only retry-friendly if it has
-> a way to set a timeout, since the consumer is what should be deciding
-> how long to wait but can't make that decision without a timeout.
-> Personally, I would lean towards not allowing timeouts here, since
-> it's simpler. So maybe something like this:
-> 
-> After the driver writes a new value to the PM byte, if the device can
-> transition to the requested state, then subsequent reads of the PM
-> state byte MUST block until the transition completes. If the device
-> cannot transition to the requested state, it MUST immediately return
-> the prior value of the PM state byte for subsequent reads of the PM
-> state byte.
-
-PCI has timing limitations on how long reads can block though.
-So that could be a reason to retry.
-
-
-> In that case, the only options are to abort the suspension or to reset
-> the device. That's really a policy decision of the driver, so I don't
-> know how it would fit into this spec.
-> 
-> -David
-> 
-> 
-> -David
-
+OpenSynergy GmbH
+Rotherstr. 20, 10245 Berlin
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
