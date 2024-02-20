@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14334-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14335-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DE735C48BC3
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 02:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 588A2C48BC3
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 03:44:53 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 12E078E263
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 02:38:57 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 949D222363
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 03:44:52 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id EA1C8986526
-	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 02:38:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 719259864BB
+	for <virtio-dev@archiver.kernel.org>; Tue, 20 Feb 2024 03:44:52 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id CE857984278; Tue, 20 Feb 2024 02:38:56 +0000 (UTC)
+	id 56FBE98648B; Tue, 20 Feb 2024 03:44:52 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,175 +24,138 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id BE47A9864A1
-	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 02:38:56 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 41EA59864A3
+	for <virtio-dev@lists.oasis-open.org>; Tue, 20 Feb 2024 03:44:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0W0uzzcc_1708396729;
-Message-ID: <c4fd63b3-5bdf-45e7-b846-3d858c3bd8ea@linux.alibaba.com>
-Date: Tue, 20 Feb 2024 10:38:47 +0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="2633501"
+X-IronPort-AV: E=Sophos;i="6.06,171,1705392000"; 
+   d="scan'208";a="2633501"
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,171,1705392000"; 
+   d="scan'208";a="4897426"
+Message-ID: <f9f6e3ac-781e-48e0-a46b-988023c74514@intel.com>
+Date: Tue, 20 Feb 2024 11:44:44 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: Cornelia Huck <cohuck@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>,
- Yuri Benditovich <yuri.benditovich@daynix.com>,
- virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <1704263702-50528-1-git-send-email-hengqi@linux.alibaba.com>
- <1705384341.865516-1-xuanzhuo@linux.alibaba.com>
-From: Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <1705384341.865516-1-xuanzhuo@linux.alibaba.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: jasowang@redhat.com, eperezma@redhat.com, cohuck@redhat.com,
+ stefanha@redhat.com, virtio-comment@lists.oasis-open.org,
+ stevensd@chromium.org, virtio-dev@lists.oasis-open.org
+References: <20240218132306.83456-1-lingshan.zhu@intel.com>
+ <20240218090935-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20240218090935-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] Re: [PATCH v8] virtio-net: correct conditions for
- devices to validate packet checksum
+Subject: [virtio-dev] Re: [PATCH] virtio: introduce SUSPEND bit in device status
 
 
 
-在 2024/1/16 下午1:52, Xuan Zhuo 写道:
-> On Wed,  3 Jan 2024 14:35:02 +0800, Heng Qi <hengqi@linux.alibaba.com> wrote:
->> There is a historical error in virtio spec:
->>    "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST* set flags
->>     to zero and SHOULD supply a fully checksummed packet to the driver."
+On 2/18/2024 10:11 PM, Michael S. Tsirkin wrote:
+> On Sun, Feb 18, 2024 at 09:23:06PM +0800, Zhu Lingshan wrote:
+>> This commit allows the driver to suspend the device by
+>> introducing a new status bit SUSPEND in device_status.
 >>
->> Currently in Linux and virtio-related implementations, the device validates
->> the packet checksum and sets DATA_VALID regardless of whether
->> VIRTIO_NET_F_GUEST_CSUM is negotiated.
+>> This commit also introduce a new feature bit VIRTIO_F_SUSPEND
+>> which indicating whether the device support SUSPEND.
 >>
->> Please refer to the following summary and thread[1] for details and reasons:
+>> This SUSPEND bit is transport-independent.
 >>
->> Summary
->> =============
->> 1. GUEST_CSUM at virtio spec 0.95 is intended to be compatible with partially
->> checksummed packets (NEEDS_CSUM <-> CHECKSUM_PARTIAL). So GUEST_CSUM is mapped
->> to NETIF_F_RXCSUM.
->> GUEST_CSUM only indicates whether the driver handles partially checksummed packets.
->> When XDP is loaded, the GUEST_CSUM's offload will be disabled, which means that
->> packets have NEEDS_CSUM set will be dropped, and packets have DATA_VALID set will
->> still be received.
->>
->> 2. When DATA_VALID was added to Linux in 2011[2] and virtio1.0, it was actually
->> expected that rx checksum offload (the driver can set CHECKSUM_UNNECESSARY) had
->> nothing to do with whether GUEST_CSUM was negotiated. But due to an error, below
->> desctiption was added incorrectly:
->>    "If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device *MUST* set flags
->>     to zero and SHOULD supply a fully checksummed packet to the driver."
->>
->> 3. We now hope to correct this error. Let the setting of DATA_VALID not be
->> controlled by whether GUEST_CSUM is negotiated, but only controlled by whether
->> rx checksum offload is enabled on the OS side. The state of this rx checksum
->> offload is not aware of the device.
->>
->> 4. [Optional] NETIF_F_RXCSUM corresponding to rx checksum offload should be
->> added to dev->hw_features. When the user turns off rx checksum offload through
->> ethtool -K, neither NEEDS_CSUM nor DATA_VALID should be taken care of, that is,
->> all packets will be marked as CHECKSUM_NONE.
->>
->> Related Link
->> =============
->> [1] https://lists.oasis-open.org/archives/virtio-comment/202312/msg00135.html
->> [2] 10a8d94a9574 ("virtio_net: introduce VIRTIO_NET_HDR_F_DATA_VALID")
->>
->> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/185
-
-Hi Cornelia,
-
-Can this proposal be opened for voting?
-
-Thank you very much!
-
->>
->> Suggested-by: Jason Wang <jasowang@redhat.com>
->> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>
+>
+> Could we get some kind of dscription how this has taken into
+> consideration the proposal from David Stevens?
+sure thing, we can work with David together for a solution.
+>
+> I find it really tiring when there are competing patches with authors
+> ignoring each other's work and leaving it up to reviewers to
+> figure out how do the patches compare.
 >
 >> ---
->> v7->v8:
->> - Drop the new FULLY_CSUM feature and optimize the description. @Jason
+>>   content.tex | 34 ++++++++++++++++++++++++++++++++--
+>>   1 file changed, 32 insertions(+), 2 deletions(-)
 >>
->> v6->v7:
->> - FULLY_CSUM no longer depends on GUEST_CSUM.
->> - The description related to DATA_VALID has nothing to do with
->>    whether GUEST_CSUM is negotiated or not. @Jason
->>
->> v5->v6:
->> - Rewrite and clarify patch description. @Michael
->>
->> v4->v5:
->> - Remove the modification to the GUEST_CSUM. @Jason
->> - The description of this feature has been reorganized for greater clarity. @Michael
->>
->> v3->v4:
->> - Streamline some repetitive descriptions. @Jason
->> - Add how features should work, when to be enabled, and overhead. @Jason @Michael
->>
->> v2->v3:
->> - Add a section named "Driver Handles Fully Checksummed Packets"
->>    and more descriptions. @Michael
->>
->> v1->v2:
->> - Modify full checksum functionality as a configurable offload
->>    that is initially turned off. @Jason
->>
->>   device-types/net/description.tex | 14 +++-----------
->>   1 file changed, 3 insertions(+), 11 deletions(-)
->>
->> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
->> index aff5e08..14978c0 100644
->> --- a/device-types/net/description.tex
->> +++ b/device-types/net/description.tex
->> @@ -723,8 +723,7 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->>     \field{num_buffers} is one, then the entire packet will be
->>     contained within this buffer, immediately following the struct
->>     virtio_net_hdr.
->> -\item If the VIRTIO_NET_F_GUEST_CSUM feature was negotiated, the
->> -  VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
->> +\item The VIRTIO_NET_HDR_F_DATA_VALID bit in \field{flags} can be
->>     set: if so, device has validated the packet checksum.
->>     In case of multiple encapsulated protocols, one level of checksums
->>     has been validated.
->> @@ -783,9 +782,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->>   packet together, such that at least \field{num_buffers} are
->>   observed by driver as used.
->>
->> -If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device MUST set
->> -\field{flags} to zero and SHOULD supply a fully checksummed
->> -packet to the driver.
->> +If VIRTIO_NET_F_GUEST_CSUM is not negotiated, the device SHOULD supply
->> +a fully checksummed packet to the driver.
->>
->>   If VIRTIO_NET_F_GUEST_TSO4 is not negotiated, the device MUST NOT set
->>   \field{gso_type} to VIRTIO_NET_HDR_GSO_TCPV4.
->> @@ -842,12 +840,6 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->>   not less than the length of the headers, including the transport
->>   header.
->>
->> -If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
->> -device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
->> -\field{flags}, if so, the device MUST validate the packet
->> -checksum (in case of multiple encapsulated protocols, one level
->> -of checksums is validated).
->> -
->>   \drivernormative{\paragraph}{Processing of Incoming
->>   Packets}{Device Types / Network Device / Device Operation /
->>   Processing of Incoming Packets}
->> --
->> 1.8.3.1
->>
-> This publicly archived list offers a means to provide input to the
-> OASIS Virtual I/O Device (VIRTIO) TC.
->
-> In order to verify user consent to the Feedback License terms and
-> to minimize spam in the list archive, subscription is required
-> before posting.
->
-> Subscribe: virtio-comment-subscribe@lists.oasis-open.org
-> Unsubscribe: virtio-comment-unsubscribe@lists.oasis-open.org
-> List help: virtio-comment-help@lists.oasis-open.org
-> List archive: https://lists.oasis-open.org/archives/virtio-comment/
-> Feedback License: https://www.oasis-open.org/who/ipr/feedback_license.pdf
-> List Guidelines: https://www.oasis-open.org/policies-guidelines/mailing-lists
-> Committee: https://www.oasis-open.org/committees/virtio/
-> Join OASIS: https://www.oasis-open.org/join/
+>> diff --git a/content.tex b/content.tex
+>> index 0a62dce..3d656b5 100644
+>> --- a/content.tex
+>> +++ b/content.tex
+>> @@ -49,6 +49,9 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>>   
+>>   \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
+>>     an error from which it can't recover.
+>> +
+>> +\item[SUSPEND (16)] When VIRTIO_F_SUSPEND is negotiated, indicates that the
+>> +  device has been suspended by the driver.
+>>   \end{description}
+>>   
+>>   The \field{device status} field starts out as 0, and is reinitialized to 0 by
+>> @@ -73,6 +76,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>>   recover by issuing a reset.
+>>   \end{note}
+>>   
+>> +The driver SHOULD NOT set SUSPEND if FEATURES_OK is not set.
+>> +
+>> +When setting SUSPEND, the driver MUST re-read \field{device status} to ensure the SUSPEND bit is set.
+>> +
+>>   \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
+>>   
+>>   The device MUST NOT consume buffers or send any used buffer
+>> @@ -82,6 +89,25 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>>   that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
+>>   MUST send a device configuration change notification to the driver.
+>>   
+>> +The device MUST ignore SUSPEND if FEATURES_OK is not set.
+>> +
+>> +The device MUST ignore SUSPEND if VIRTIO_F_SUSPEND is not negotiated.
+>> +
+>> +The device SHOULD allow settings to \field{device status} even when SUSPEND is set.
+>> +
+>> +If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device SHOULD clear SUSPEND
+>> +and resumes operation upon DRIVER_OK.
+>> +
+>> +If VIRTIO_F_SUSPEND is negotiated, when the driver sets SUSPEND,
+>> +the device SHOULD perform the following actions before presenting SUSPEND bit in the \field{device status}:
+>> +
+>> +\begin{itemize}
+>> +\item Stop consuming buffers of any virtqueues and mark all finished descriptors as used.
+>> +\item Wait until all descriptors that being processed to finish and mark them as used.
+>> +\item Flush all used buffer and send used buffer notifications to the driver.
+>> +\item Pause its operation except \field{device status} and preserve configurations in its Device Configuration Space, see \ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
+>> +\end{itemize}
+>> +
+>>   \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
+>>   
+>>   Each virtio device offers all the features it understands.  During
+>> @@ -99,10 +125,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
+>>   \begin{description}
+>>   \item[0 to 23, and 50 to 127] Feature bits for the specific device type
+>>   
+>> -\item[24 to 41] Feature bits reserved for extensions to the queue and
+>> +\item[24 to 42] Feature bits reserved for extensions to the queue and
+>>     feature negotiation mechanisms
+>>   
+>> -\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
+>> +\item[43 to 49, and 128 and above] Feature bits reserved for future extensions.
+>>   \end{description}
+>>   
+>>   \begin{note}
+>> @@ -872,6 +898,10 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
+>>   	\ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
+>>   	handling features reserved for future use.
+>>   
+>> +  \item[VIRTIO_F_SUSPEND(42)] This feature indicates that the driver can
+>> +   SUSPEND the device.
+>> +   See \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}.
+>> +
+>>   \end{description}
+>>   
+>>   \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+>> -- 
+>> 2.35.3
 
 
 ---------------------------------------------------------------------
