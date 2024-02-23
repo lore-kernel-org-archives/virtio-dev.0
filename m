@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14346-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14347-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 90B95C48BF8
-	for <virtio-dev@archiver.kernel.org>; Thu, 22 Feb 2024 11:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0E023C48BC4
+	for <virtio-dev@archiver.kernel.org>; Fri, 23 Feb 2024 07:44:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id BADDF7A2EA
-	for <virtio-dev@archiver.kernel.org>; Thu, 22 Feb 2024 11:30:46 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 426D52B012
+	for <virtio-dev@archiver.kernel.org>; Fri, 23 Feb 2024 07:44:50 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 9BB059865D0
-	for <virtio-dev@archiver.kernel.org>; Thu, 22 Feb 2024 11:30:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 23262986608
+	for <virtio-dev@archiver.kernel.org>; Fri, 23 Feb 2024 07:44:50 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 825DD986538; Thu, 22 Feb 2024 11:30:46 +0000 (UTC)
+	id 0808F98408C; Fri, 23 Feb 2024 07:44:50 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,333 +24,208 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6F7E798654C
-	for <virtio-dev@lists.oasis-open.org>; Thu, 22 Feb 2024 11:30:46 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id E8A709865B8
+	for <virtio-dev@lists.oasis-open.org>; Fri, 23 Feb 2024 07:44:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-MC-Unique: hki-X-phNseku5EmLRkLfg-1
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708601440; x=1709206240;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rDzaL7dkQKTAnSLCd6E782i4+1z/ltyP67G/xrL3Euc=;
-        b=alxoNczvWn8kjFqMLBY7x9iYu8tL4rIWseE8IMXu4ciBxDTGVglVqYIkWSptkBK0Nl
-         LXpOwMmJrY+dyMz5DQvWT07opK2B6UpLvTCw85jCy7EJIVHZihps/p0wkc3UcK7Ue+wv
-         r8nZsSnRTb0xg86JRfQoDrO8/OAu/+XGO1zYmWUU+zolOg6uR+Kf0IkbVkzjBKLofrGZ
-         5Q9RFxeujrmb1uoGcxM7xYKsi5oZx2MztXyT8uNbmBwqxhVxfUUNovxgF/N5jG+i21SA
-         wr2S4j06olbkULEXfUNOha0a5aGebYOUQoXzf7awjc+ISnoQFhkOiywy6aGxtcr9vT0J
-         wkIA==
-X-Forwarded-Encrypted: i=1; AJvYcCVPP7n+xSiScBRCPcnxYYrTkfjb5LbH0Wg18NY08Ukz6CY4FlEuj950oFJ9KrZaiON8SfgPRsSJli2ofVvZBQd+uPW+rhHNfxXBUIbdivbx
-X-Gm-Message-State: AOJu0YyEWvDJ3yg8pXyP0FuxHimJuf6duei6pzqoyIX5TXJbrFxsovoQ
-	4VSD82N6ufAcUvWsiBUDjra0MnfOi3GUsMhiWZfteJy98rrX/12zLznb/ZpATIekgJIFrL3xyIx
-	0y+U6zGx/mkPfMoVMjoGLHBJuYhieHELWqTQEDS/ckDk7xe0tDZjDFEZNwJMck+puNQ==
-X-Received: by 2002:ac2:4c8a:0:b0:512:cc50:c3e0 with SMTP id d10-20020ac24c8a000000b00512cc50c3e0mr4715136lfl.52.1708601440444;
-        Thu, 22 Feb 2024 03:30:40 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEq+x1REUNVFGd5VtK6cp2OO6c7Y72w/I7ThXIZTRwmdgEx9QjIYZ6RBr5koxNjcRf88ZSbTQ==
-X-Received: by 2002:ac2:4c8a:0:b0:512:cc50:c3e0 with SMTP id d10-20020ac24c8a000000b00512cc50c3e0mr4715117lfl.52.1708601439922;
-        Thu, 22 Feb 2024 03:30:39 -0800 (PST)
-Date: Thu, 22 Feb 2024 12:30:37 +0100
-From: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
-To: Mikhail Golubev-Ciuchea <mikhail.golubev-ciuchea@opensynergy.com>
-Cc: virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
-	linux-can@vger.kernel.org,
-	Harald Mommer <harald.mommer@opensynergy.com>
-Message-ID: <ZdcwXSoc0sxbjS1Z@fedora>
-References: <20230609142243.199074-1-Mikhail.Golubev-Ciuchea@opensynergy.com>
- <ebc57e36-d822-4264-a763-b530482b2669@opensynergy.com>
- <ZdSYtPtn5UzKNhAi@fedora>
- <0874278c-9497-414e-b1e5-4ebdf5db6da7@opensynergy.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="20414771"
+X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
+   d="scan'208";a="20414771"
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
+   d="scan'208";a="5966112"
+Message-ID: <70693394-289e-42d0-a6da-b41bfab28c44@intel.com>
+Date: Fri, 23 Feb 2024 15:44:41 +0800
 MIME-Version: 1.0
-In-Reply-To: <0874278c-9497-414e-b1e5-4ebdf5db6da7@opensynergy.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [virtio-dev] Re: [virtio-comment] [RFC PATCH v3] virtio-can: Device specification.
+User-Agent: Mozilla Thunderbird
+To: David Stevens <stevensd@chromium.org>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, jasowang@redhat.com,
+ eperezma@redhat.com, cohuck@redhat.com, stefanha@redhat.com,
+ virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org
+References: <20240218132306.83456-1-lingshan.zhu@intel.com>
+ <20240218090935-mutt-send-email-mst@kernel.org>
+ <CAD=HUj4b3gLsA2VD4cxmVzLPGRZfaREQcJNb4zfxLH=xv=2X6g@mail.gmail.com>
+ <be09ad18-398e-47c0-abea-3f025df40734@intel.com>
+ <CAD=HUj6iVc=QpA6kGyNhdM-BrD5tuAj1yUkS6gJtU+hi=QmtLg@mail.gmail.com>
+Content-Language: en-US
+From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CAD=HUj6iVc=QpA6kGyNhdM-BrD5tuAj1yUkS6gJtU+hi=QmtLg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [virtio-dev] Re: [PATCH] virtio: introduce SUSPEND bit in device status
 
-On Wed, Feb 21, 2024 at 04:42:18PM +0100, Mikhail Golubev-Ciuchea wrote:
-> Hi Matias,
-> 
-> On 2/20/24 13:19, Matias Ezequiel Vara Larsen wrote:
-> > Hello Mikail,
-> > 
-> > On Mon, Jan 08, 2024 at 06:18:50PM +0100, Mikhail Golubev-Ciuchea wrote:
-> > > Hi all!
-> > > 
-> > > I kindly request a vote.
-> > > 
-> > > Fixes: https://github.com/oasis-tcs/virtio-spec/issues/186
-> > > 
-> > > 
-> > > Best wishes,
-> > > Mikhail Golubev-Ciuchea
-> > > 
-> > > 
-> > > 
-> > > On 6/9/23 16:22, Mikhail Golubev-Ciuchea wrote:
-> > > > From: Harald Mommer <harald.mommer@opensynergy.com>
-> > > > 
-> > > > virtio-can is a virtual CAN device. It provides a way to give access to
-> > > > a CAN controller from a driver guest. The device is aimed to be used by
-> > > > driver guests running a HLOS as well as by driver guests running a
-> > > > typical RTOS as used in controller environments.
-> > > > 
-> > > > Signed-off-by: Harald Mommer <Harald.Mommer@opensynergy.com>
-> > > > Signed-off-by: Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>
-> > > > ---
-> > > > 
-> > > > RFC v3:
-> > > > * Add length fields in CAN RX and TX messages.
-> > > > * Replace bus off indication queue with a config space bit.
-> > > > * Clarify handling of unknown flag bits set in CAN frame.
-> > > > * Remove MISRA C suffixes in constants.
-> > > > * Reserve 16 bits in RX/TX messages for CAN XL priority.
-> > > > * Reserve 8 bits in RX/TX messages for CAN classic DLC.
-> > > > * Rework according to general virtio spec POV.
-> > > > * Implementation:
-> > > >     driver: https://lore.kernel.org/all/20230607145613.133203-1-Mikhail.Golubev-Ciuchea@opensynergy.com/
-> > > >     QEmu device: https://github.com/OpenSynergy/qemu/tree/virtio-can-spec-rfc-v3
-> > > > 
-> > > > RFC v2:
-> > > > * Add CAN classic feature flag.
-> > > > * Add feature flag VIRTIO_CAN_F_LATE_TX_ACK.
-> > > > * Add feature flag VIRTIO_CAN_F_RTR_FRAMES.
-> > > > * Reserve 32 bits in RX/TX messages.
-> > > > * Remove priorities of messages.
-> > > > 
-> > > >    conformance.tex                         |  12 +-
-> > > >    content.tex                             |   1 +
-> > > >    device-types/can/description.tex        | 249 ++++++++++++++++++++++++
-> > > >    device-types/can/device-conformance.tex |   8 +
-> > > >    device-types/can/driver-conformance.tex |   7 +
-> > > >    introduction.tex                        |   2 +
-> > > >    6 files changed, 275 insertions(+), 4 deletions(-)
-> > > >    create mode 100644 device-types/can/description.tex
-> > > >    create mode 100644 device-types/can/device-conformance.tex
-> > > >    create mode 100644 device-types/can/driver-conformance.tex
-> > > > 
-> > > > diff --git a/conformance.tex b/conformance.tex
-> > > > index 01ccd69..a07ef02 100644
-> > > > --- a/conformance.tex
-> > > > +++ b/conformance.tex
-> > > > @@ -32,8 +32,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> > > >    \ref{sec:Conformance / Driver Conformance / Memory Driver Conformance},
-> > > >    \ref{sec:Conformance / Driver Conformance / I2C Adapter Driver Conformance},
-> > > >    \ref{sec:Conformance / Driver Conformance / SCMI Driver Conformance},
-> > > > -\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance} or
-> > > > -\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance}.
-> > > > +\ref{sec:Conformance / Driver Conformance / GPIO Driver Conformance},
-> > > > +\ref{sec:Conformance / Driver Conformance / PMEM Driver Conformance} or
-> > > > +\ref{sec:Conformance / Driver Conformance / CAN Driver Conformance}.
-> > > >        \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
-> > > >      \end{itemize}
-> > > > @@ -59,8 +60,9 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> > > >    \ref{sec:Conformance / Device Conformance / Memory Device Conformance},
-> > > >    \ref{sec:Conformance / Device Conformance / I2C Adapter Device Conformance},
-> > > >    \ref{sec:Conformance / Device Conformance / SCMI Device Conformance},
-> > > > -\ref{sec:Conformance / Device Conformance / GPIO Device Conformance} or
-> > > > -\ref{sec:Conformance / Device Conformance / PMEM Device Conformance}.
-> > > > +\ref{sec:Conformance / Device Conformance / GPIO Device Conformance},
-> > > > +\ref{sec:Conformance / Device Conformance / PMEM Device Conformance} or
-> > > > +\ref{sec:Conformance / Device Conformance / CAN Device Conformance}.
-> > > >        \item Clause \ref{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}.
-> > > >      \end{itemize}
-> > > > @@ -152,6 +154,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> > > >    \input{device-types/scmi/driver-conformance.tex}
-> > > >    \input{device-types/gpio/driver-conformance.tex}
-> > > >    \input{device-types/pmem/driver-conformance.tex}
-> > > > +\input{device-types/can/driver-conformance.tex}
-> > > >    \conformance{\section}{Device Conformance}\label{sec:Conformance / Device Conformance}
-> > > > @@ -238,6 +241,7 @@ \section{Conformance Targets}\label{sec:Conformance / Conformance Targets}
-> > > >    \input{device-types/scmi/device-conformance.tex}
-> > > >    \input{device-types/gpio/device-conformance.tex}
-> > > >    \input{device-types/pmem/device-conformance.tex}
-> > > > +\input{device-types/can/device-conformance.tex}
-> > > >    \conformance{\section}{Legacy Interface: Transitional Device and Transitional Driver Conformance}\label{sec:Conformance / Legacy Interface: Transitional Device and Transitional Driver Conformance}
-> > > >    A conformant implementation MUST be either transitional or
-> > > > diff --git a/content.tex b/content.tex
-> > > > index d2ab9eb..8806b57 100644
-> > > > --- a/content.tex
-> > > > +++ b/content.tex
-> > > > @@ -765,6 +765,7 @@ \chapter{Device Types}\label{sec:Device Types}
-> > > >    \input{device-types/scmi/description.tex}
-> > > >    \input{device-types/gpio/description.tex}
-> > > >    \input{device-types/pmem/description.tex}
-> > > > +\input{device-types/can/description.tex}
-> > > >    \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
-> > > > diff --git a/device-types/can/description.tex b/device-types/can/description.tex
-> > > > new file mode 100644
-> > > > index 0000000..2511d9c
-> > > > --- /dev/null
-> > > > +++ b/device-types/can/description.tex
-> > > > @@ -0,0 +1,249 @@
-> > > > +\section{CAN Device}\label{sec:Device Types / CAN Device}
-> > > > +
-> > > > +virtio-can is a virtio based CAN (Controller Area Network) controller.
-> > > > +It is used to give a virtual machine access to a CAN bus. The CAN bus
-> > > > +might either be a physical CAN bus or a virtual CAN bus between virtual
-> > > > +machines or a combination of both.
-> > > > +
-> > > > +\subsection{Device ID}\label{sec:Device Types / CAN Device / Device ID}
-> > > > +
-> > > > +36
-> > > > +
-> > > > +\subsection{Virtqueues}\label{sec:Device Types / CAN Device / Virtqueues}
-> > > > +
-> > > > +\begin{description}
-> > > > +\item[0] Txq
-> > > > +\item[1] Rxq
-> > > > +\item[2] Controlq
-> > > > +\end{description}
-> > > > +
-> > > > +The \field{Txq} is used to send CAN packets to the CAN bus.
-> > > > +
-> > > > +The \field{Rxq} is used to receive CAN packets from the CAN bus.
-> > > > +
-> > > > +The \field{Controlq} is used to control the state of the CAN controller.
-> > > > +
-> > > > +\subsection{Feature bits}{Device Types / CAN Device / Feature bits}
-> > > > +
-> > > > +Actual CAN controllers support Extended CAN IDs with 29 bits (CAN~2.0B)
-> > > > +as well as Standard CAN IDs with 11 bits (CAN~2.0A). The support of
-> > > > +CAN~2.0B Extended CAN IDs is considered as mandatory for this
-> > > > +specification.
-> > > > +
-> > > > +\begin{description}
-> > > > +
-> > > > +\item[VIRTIO_CAN_F_CAN_CLASSIC (0)]
-> > > > +
-> > > > +The device supports classic CAN frames with a maximum payload size of 8
-> > > > +bytes.
-> > > > +
-> > > > +\item[VIRTIO_CAN_F_CAN_FD (1)]
-> > > > +
-> > > > +The device supports CAN FD frames with a maximum payload size of 64
-> > > > +bytes.
-> > > > +
-> > > > +\item[VIRTIO_CAN_F_RTR_FRAMES (2)]
-> > > > +
-> > > > +The device supports RTR (remote transmission request) frames. RTR frames
-> > > > +are only supported with classic CAN.
-> > > > +
-> > > > +\item[VIRTIO_CAN_F_LATE_TX_ACK (3)]
-> > > > +
-> > > > +The virtio CAN device marks transmission requests from the \field{Txq}
-> > > > +as used after the CAN message has been transmitted on the CAN bus. If
-> > > > +this feature bit has not been negotiated, the device is allowed to mark
-> > > > +transmission requests already as used when the CAN message has been
-> > > > +scheduled for transmission but might not yet have been transmitted on
-> > > > +the CAN bus.
-> > > > +
-> > > > +\end{description}
-> > > > +
-> > > > +\subsubsection{Feature bit requirements}\label{sec:Device Types / CAN Device / Feature bits / Feature bit requirements}
-> > > > +
-> > > > +Some CAN feature bits require other CAN feature bits:
-> > > > +\begin{description}
-> > > > +\item[VIRTIO_CAN_F_RTR_FRAMES] Requires VIRTIO_CAN_F_CAN_CLASSIC.
-> > > > +\end{description}
-> > > > +
-> > > > +It is required that at least one of VIRTIO_CAN_F_CAN_CLASSIC and
-> > > > +VIRTIO_CAN_F_CAN_FD is negotiated.
-> > > > +
-> > > > +\subsection{Device configuration layout}\label{sec:Device Types / CAN Device / Device configuration layout}
-> > > > +
-> > > > +Device configuration fields are listed below, they are read-only for a
-> > > > +driver. The \field{status} always exists. A single read-only bit (for
-> > > > +the driver) is currently defined for \field{status}:
-> > > > +
-> > > > +\begin{lstlisting}
-> > > > +struct virtio_can_config {
-> > > > +#define VIRTIO_CAN_S_CTRL_BUSOFF (1 << 0)
-> > > > +        le16 status;
-> > > > +};
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +The bit VIRTIO_CAN_S_CTRL_BUSOFF in \field{status} is used to indicate
-> > > > +the unsolicited CAN controller state change from started to stopped due
-> > > > +to a detected bus off condition.
-> > > > +
-> > > > +\drivernormative{\subsubsection}{Device Initialization}{Device Types / CAN Device / Device Operation / Initialization}
-> > > > +
-> > > > +The driver MUST populate the \field{Rxq} with empty device-writeable
-> > > > +buffers of at least the size of struct virtio_can_rx, see section
-> > > > +\ref{struct virtio_can_rx}.
-> > > > +
-> > > > +\subsection{Device Operation}\label{sec:Device Types / CAN Device / Device Operation}
-> > > > +
-> > > > +A device operation has an outcome which is described by one of the
-> > > > +following values:
-> > > > +
-> > > > +\begin{lstlisting}
-> > > > +#define VIRTIO_CAN_RESULT_OK     0
-> > > > +#define VIRTIO_CAN_RESULT_NOT_OK 1
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +Other values are to be treated like VIRTIO_CAN_RESULT_NOT_OK.
-> > > > +
-> > > > +\subsubsection{Controller Mode}\label{sec:Device Types / CAN Device / Device Operation / Controller Mode}
-> > > > +
-> > > > +The general format of a request in the \field{Controlq} is
-> > > > +
-> > > > +\begin{lstlisting}
-> > > > +struct virtio_can_control_out {
-> > > > +#define VIRTIO_CAN_SET_CTRL_MODE_START  0x0201
-> > > > +#define VIRTIO_CAN_SET_CTRL_MODE_STOP   0x0202
-> > > > +        le16 msg_type;
-> > > > +};
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +To participate in bus communication the CAN controller is started by
-> > > > +sending a VIRTIO_CAN_SET_CTRL_MODE_START control message, to stop
-> > > > +participating in bus communication it is stopped by sending a
-> > > > +VIRTIO_CAN_SET_CTRL_MODE_STOP control message. Both requests are
-> > > > +confirmed by the result of the operation.
-> > > > +
-> > > > +\begin{lstlisting}
-> > > > +struct virtio_can_control_in {
-> > > > +        u8 result;
-> > > > +};
-> > > > +\end{lstlisting}
-> > > > +
-> > > > +If the transition succeeded the \field{result} is VIRTIO_CAN_RESULT_OK
-> > > > +otherwise it is VIRTIO_CAN_RESULT_NOT_OK. If a status update is
-> > > > +necessary, the device updates the configuration \field{status} before
-> > > > +marking the request used. As the configuration \field{status} change is
-> > > > +caused by a request from the driver the device is allowed to omit the
-> > 
-> > Is this to indicate that when a driver requests a change, the device can
-> > omit notifying of the change? As I understand the specification, the
-> > device can omit the notification, but the change must still occur? Is it
-> > possible for the device to omit the change as well? What else could have
-> > triggered the status change if it wasn't the driver?
-> > 
-> > Thanks.
-> > 
-> 
-> The change request notification OK/NOT_OK for every mode transition request
-> is there in any case. In some cases the device would additionally notify the
-> driver about the controller status via 'virtio_can_config' in config space
-> (config space change notification mechanism), e.g. in case of a BusOff event
-> on the device side. Although, it is possible to omit the config space
-> notification e.g. when transitioning to stopped mode.
-> 
 
-Thanks for the clarification. I think I got confused with the following
-sentence:
 
-`As the configuration status change is caused by a request from the
-driver the device is allowed to omit the configuration change
-notification here.`
+On 2/20/2024 1:09 PM, David Stevens wrote:
+> On Tue, Feb 20, 2024 at 1:06 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>> On 2/19/2024 2:46 PM, David Stevens wrote:
+>>> On Sun, Feb 18, 2024 at 11:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>>>> On Sun, Feb 18, 2024 at 09:23:06PM +0800, Zhu Lingshan wrote:
+>>>>> This commit allows the driver to suspend the device by
+>>>>> introducing a new status bit SUSPEND in device_status.
+>>>>>
+>>>>> This commit also introduce a new feature bit VIRTIO_F_SUSPEND
+>>>>> which indicating whether the device support SUSPEND.
+>>>>>
+>>>>> This SUSPEND bit is transport-independent.
+>>>>>
+>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>>>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>>>> Could we get some kind of dscription how this has taken into
+>>>> consideration the proposal from David Stevens?
+>>>>
+>>>> I find it really tiring when there are competing patches with authors
+>>>> ignoring each other's work and leaving it up to reviewers to
+>>>> figure out how do the patches compare.
+>>> This patch looks like it could be used to implement my use case.
+>>> However, parts of it are a bit vague and imprecise, so it's hard to
+>>> actually say whether my use case would actually be covered by a
+>>> specific implementation of this proposal.
+>> I am on vacation till this Friday. Shall we co-work on this and
+>> post something new together?
+> That works for me.
+Cool! How about two patches in a new series:
+1) a general virtio suspending patch describing suspending behaviors for all
+virtio devices from me, an updating version of this patch
+2) a PCI transport suspending patch from you, describing PCI specific 
+behaviors.
 
-I think this could be rewritten as follows:
+Dose this sound good to you?
+>
+>>> To give specifics on what I'm trying to do, I need to allow a guest
+>>> with virtio-pci devices (including stateful devices like virtio-fs and
+>>> virtio-gpu) to be put into S1/S3, and to allow the virtio-pci devices
+>>> to wake up the guest (currently via an ACPI GPE, but eventually via a
+>>> native PCI PME). This is all done on a consumer device, so there is no
+>>> need for snapshotting or for live migration.
+>> Suspending is not dedicated only for live migration.
+>> For your use case, shall we add a new PCI section like saying: when entering
+>> SUSPEND, the device should get into S1/S3 and other PCI specific steps
+>> in PCI transport charter.
+>>
+>> That is because PCI is a transport layer of virtio, controlling virtio
+>> states by PCI sounds like a layer violation.
+> I don't know if it's really necessary to mandate that in the spec.
+> Sure, most systems are probably going to want to put the virtio-pci
+> device into S1/S3 after suspending virtio operation. But nothing
+> really breaks or goes wrong if we don't do that.
+Yes, maybe not S1/S3, I remember you want to manage power in PCI
+transport when suspend in a cap, S1/S3 is just an example.
 
-`The device may omit the configuration change notification as the
-configuration status change is requested by the driver.`
+>
+>>>>> ---
+>>>>>    content.tex | 34 ++++++++++++++++++++++++++++++++--
+>>>>>    1 file changed, 32 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/content.tex b/content.tex
+>>>>> index 0a62dce..3d656b5 100644
+>>>>> --- a/content.tex
+>>>>> +++ b/content.tex
+>>>>> @@ -49,6 +49,9 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>>>>>
+>>>>>    \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
+>>>>>      an error from which it can't recover.
+>>>>> +
+>>>>> +\item[SUSPEND (16)] When VIRTIO_F_SUSPEND is negotiated, indicates that the
+>>>>> +  device has been suspended by the driver.
+>>>>>    \end{description}
+>>>>>
+>>>>>    The \field{device status} field starts out as 0, and is reinitialized to 0 by
+>>>>> @@ -73,6 +76,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>>>>>    recover by issuing a reset.
+>>>>>    \end{note}
+>>>>>
+>>>>> +The driver SHOULD NOT set SUSPEND if FEATURES_OK is not set.
+>>>>> +
+>>>>> +When setting SUSPEND, the driver MUST re-read \field{device status} to ensure the SUSPEND bit is set.
+>>>>> +
+>>>>>    \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
+>>>>>
+>>>>>    The device MUST NOT consume buffers or send any used buffer
+>>>>> @@ -82,6 +89,25 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
+>>>>>    that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
+>>>>>    MUST send a device configuration change notification to the driver.
+>>>>>
+>>>>> +The device MUST ignore SUSPEND if FEATURES_OK is not set.
+>>>>> +
+>>>>> +The device MUST ignore SUSPEND if VIRTIO_F_SUSPEND is not negotiated.
+>>>>> +
+>>>>> +The device SHOULD allow settings to \field{device status} even when SUSPEND is set.
+>>>>> +
+>>>>> +If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device SHOULD clear SUSPEND
+>>>>> +and resumes operation upon DRIVER_OK.
+>>>>> +
+>>>>> +If VIRTIO_F_SUSPEND is negotiated, when the driver sets SUSPEND,
+>>>>> +the device SHOULD perform the following actions before presenting SUSPEND bit in the \field{device status}:
+>>>>> +
+>>>>> +\begin{itemize}
+>>>>> +\item Stop consuming buffers of any virtqueues and mark all finished descriptors as used.
+>>>>> +\item Wait until all descriptors that being processed to finish and mark them as used.
+>>>>> +\item Flush all used buffer and send used buffer notifications to the driver.
+>>> What's the difference between the previous three lines? They might be
+>>> trying to say different things, but there is a lot of overlap in how
+>>> they're phrased. That makes it hard to figure out exactly what they're
+>>> mandating. Is it something like: "stop processing new buffers",
+>>> "finish processing any buffers that are currently in flight", "mark
+>>> all finished buffers as used and send a used buffer notification"?
+>> sure, the "mark used" parts can merge.
+>>> Also, what does this mean for devices where the driver places empty
+>>> buffers into the virtqueue that the device then holds on to for an
+>>> indeterminate period of time (e.g. network receiveq, balloon statsq,
+>>> etc)?
+>> The device doesn't process them.
+>> Oh, I should add: The driver should not make any more buffers available
+>> to the device.
+>>>>> +\item Pause its operation except \field{device status} and preserve configurations in its Device Configuration Space, see \ref{sec:Basic Facilities of a Virtio Device / Device Configuration Space}
+>>> What does "Pause its operation except device status" mean? The word
+>>> "operation" is vague, what exactly does it include? Also what does
+>>> "operate its device status" mean?
+>> Because we need to resume the device after suspending it by setting
+>> DRIVER_OK, so we need the device status
+>> filed keel alive.
+> This doesn't answer what "Pause its operation" means. If the
+> specification is not precise, then the best that can be implemented is
+> for a specific device to be compatible with a specific driver. If we
+> actually want portable, spec-compliant devices, we need explicitly
+> defined MUST/MUST NOT requirements. Presumably we want something like:
+>
+> A device MUST not send notifications while suspended.
+The device should send a last used buffer notification if
+it has buffers under processing before presenting SUSPEND
+in the device status, but the device should not process
+any new buffers. These are in devicenormative section,
+but they may be vague, I can add more details to make
+it precise, thanks for the tips
+> A device MUST ignore writes to its device configuration while
+> suspended, except for writes to the device status byte.
+> A driver MUST NOT write to a suspended device's configuration space,
+> except for the device status byte.
+sure, we can make it more precise than only pausing.
+>
+> We also need to specify what a suspended device is allowed to do with
+> buffers it owns. For my use case of just suspending/resuming a VM, I
+> don't think it particularly matters if a suspended device writes to
+> buffers or descriptors while it is suspended. But based on what you
+> wrote about finishing any in-flight processing of buffers and not
+> processing any empty buffers, presumably you would prefer that the
+> device not be allowed to access buffer/descriptors while it is
+> suspended? That approach is probably cleaner from a pure specification
+> standpoint, but it's also more restrictive for devices and thus harder
+> to properly implement.
+When the driver sets SUSPEND, the device should finished all buffers that
+already under processing, include the in-flight buffers(or it may lose 
+the buffers).
+And the device should not touch the buffers once it present SUSPEND in the
+device status field, because once it presents SUSPEND, the device state 
+should
+be stable, people may use SUSPEND to debug the device.
 
-This change is, however, minor, so feel free to ignore it.
+The device still can process the buffer before it presenting SUSPEND.
 
-Matias
+Thanks
+Zhu Lingshan
+>
+> -David
 
 
 ---------------------------------------------------------------------
