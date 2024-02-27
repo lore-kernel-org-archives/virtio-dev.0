@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14361-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14362-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4CA7FC54798
-	for <virtio-dev@archiver.kernel.org>; Tue, 27 Feb 2024 08:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 511B0C5478C
+	for <virtio-dev@archiver.kernel.org>; Tue, 27 Feb 2024 09:02:42 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9814771CA6
-	for <virtio-dev@archiver.kernel.org>; Tue, 27 Feb 2024 08:52:08 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9EBC6C6107
+	for <virtio-dev@archiver.kernel.org>; Tue, 27 Feb 2024 09:02:41 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 8986F9865C9
-	for <virtio-dev@archiver.kernel.org>; Tue, 27 Feb 2024 08:52:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 84971986531
+	for <virtio-dev@archiver.kernel.org>; Tue, 27 Feb 2024 09:02:41 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 7C2309863DE; Tue, 27 Feb 2024 08:52:08 +0000 (UTC)
+	id 6BADA9863B6; Tue, 27 Feb 2024 09:02:41 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,234 +24,111 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 6A3509863B6
-	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Feb 2024 08:52:08 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 5C7439863DE
+	for <virtio-dev@lists.oasis-open.org>; Tue, 27 Feb 2024 09:02:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10996"; a="6301642"
-X-IronPort-AV: E=Sophos;i="6.06,187,1705392000"; 
-   d="scan'208";a="6301642"
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,187,1705392000"; 
-   d="scan'208";a="7175177"
-Message-ID: <e4caa5e3-2cd3-465e-aa9c-275b4426d31d@intel.com>
-Date: Tue, 27 Feb 2024 16:51:41 +0800
+X-MC-Unique: Osw8U546MxaX4u1xeKb5dg-1
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709024557; x=1709629357;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FlpacEWacryyrIlJZOoZ2EmsNR8IKw7FDvlRQtzIliY=;
+        b=aHAs9MmuOCmIi4RrPyqNC5wSyVF0AsFIIwGIBSu4jE6L5sF9mSKpuj19IoCjRzstG0
+         7vOv9oKxp9e2oZfOgWsDDRN+ZjMiWswZaaXAfncG8ZYNAj19PO0Q+jPjbe6ZdbfZ+/Wr
+         +GLGHnXBbPYJslIXqse9DNhMdmuqF+4iY4qlNMiS8eVxmqhEK1nzmEtAqQV8RX5nMBt+
+         vuBENmpA95SShyZjiO+ysg9OzgdTx8U90O6UUP55VOe9i663Qy1IPNS+G+aHNtxPrGKk
+         YtmEpAqyrALnROXO67d0hFJhfM3p/9QE5xHFP3crJjlko/BobEDCYab5m6IluCxdn8sk
+         xTjg==
+X-Forwarded-Encrypted: i=1; AJvYcCW7ZtiKbbswnV6TZsWA6WIlBO02PpyD7Dp+8hbHYOKlV5CBUbQjIQ3knbhiBfBGv/JlZk3Ypr4k58Kjr1wFtBbXAT3WFlleaSfUd1phKJDC
+X-Gm-Message-State: AOJu0YygSvrB+ZonFpjBLOR7SCuLqZjyEla2UndoqalMCTkEc9YW2sIt
+	EJFGBC8bMtu4dGn2dEPANsmPbIaw5mqS62LUmim/UFy/X5uIbVa2yc/hkzp9usbH8aqXeNPI7Nr
+	gf09/fQzND0u7+5krazXT/lhQ8Bn98kVGhWenCG/APgCBk7jqRYZQjpqMr+gz2EsCaA==
+X-Received: by 2002:ac8:7cb5:0:b0:42e:71bf:fb92 with SMTP id z21-20020ac87cb5000000b0042e71bffb92mr8237053qtv.40.1709024556884;
+        Tue, 27 Feb 2024 01:02:36 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEktM+QuiKRjrNahkKKCp6g6mPsIdmLJBBljJdl/Jpj1OjlZw9vIz8CtyenrJ+CoAmXDtw3rw==
+X-Received: by 2002:ac8:7cb5:0:b0:42e:71bf:fb92 with SMTP id z21-20020ac87cb5000000b0042e71bffb92mr8237041qtv.40.1709024556554;
+        Tue, 27 Feb 2024 01:02:36 -0800 (PST)
+Date: Tue, 27 Feb 2024 10:02:33 +0100
+From: Matias Ezequiel Vara Larsen <mvaralar@redhat.com>
+To: Cornelia Huck <cohuck@redhat.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>,
+	Mikhail Golubev-Ciuchea <mikhail.golubev-ciuchea@opensynergy.com>,
+	virtio-comment@lists.oasis-open.org,
+	virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
+	Harald Mommer <harald.mommer@opensynergy.com>
+Message-ID: <Zd2lKYLGT8ZEFzZd@fedora>
+References: <20230609142243.199074-1-Mikhail.Golubev-Ciuchea@opensynergy.com>
+ <ebc57e36-d822-4264-a763-b530482b2669@opensynergy.com>
+ <ZdXShopKyMYPTUva@fedora>
+ <20240221-acts-decade-76d3d69e8e4d-mkl@pengutronix.de>
+ <ZdX3xgM36iOVhr3V@fedora>
+ <20240221-juggling-uproar-9518b4901f41-mkl@pengutronix.de>
+ <877circsh3.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: David Stevens <stevensd@chromium.org>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
- parav@nvidia.com
-References: <20240227015345.3614965-1-stevensd@chromium.org>
- <20240227015345.3614965-2-stevensd@chromium.org>
- <e03d003e-ca23-4dd2-aeac-6df79ee5c1e6@intel.com>
- <CAD=HUj6gM5HUp=gGt1u=OcQRBe3A=ig5ws=ZLkJEy=Jr-caAvQ@mail.gmail.com>
-Content-Language: en-US
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <CAD=HUj6gM5HUp=gGt1u=OcQRBe3A=ig5ws=ZLkJEy=Jr-caAvQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: [virtio-dev] Re: [PATCH v5 1/1] Add SUSPEND bit to device status
+In-Reply-To: <877circsh3.fsf@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [virtio-dev] Re: [virtio-comment] [RFC PATCH v3] virtio-can:
+ Device specification.
 
+On Mon, Feb 26, 2024 at 01:36:40PM +0100, Cornelia Huck wrote:
+> On Wed, Feb 21 2024, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> 
+> > On 21.02.2024 14:16:54, Matias Ezequiel Vara Larsen wrote:
+> >> On Wed, Feb 21, 2024 at 01:49:31PM +0100, Marc Kleine-Budde wrote:
+> >> > On 21.02.2024 11:37:58, Matias Ezequiel Vara Larsen wrote:
+> >> > > > > +The length of the \field{sdu} is determined by the \field{length}.
+> >> > > > > +
+> >> > > > > +The type of a CAN message identifier is determined by \field{flags}. The
+> >> > > > > +3 most significant bits of \field{can_id} do not bear the information
+> >> > > > > +about the type of the CAN message identifier and are 0.
+> >> > > > > +
+> >> > > > > +The device MUST reject any CAN frame type for which support has not been
+> >> > > > > +negotiated with VIRTIO_CAN_RESULT_NOT_OK in \field{result} and MUST NOT
+> >> > > > > +schedule the message for transmission. A CAN frame with an undefined bit
+> >> > > > > +set in \field{flags} is treated like a CAN frame for which support has
+> >> > > > > +not been negotiated.
+> >> > > > > +
+> >> > > > > +The device MUST reject any CAN frame for which \field{can_id} or
+> >> > > > > +\field{sdu} length are out of range or the CAN controller is in an
+> >> > > > > +invalid state with VIRTIO_CAN_RESULT_NOT_OK in \field{result} and MUST
+> >> > > > > +NOT schedule the message for transmission.
+> >> > > > > +
+> >> > > I am not very familiar with CAN but how does the device figure out that
+> >> > > the can_id is out of range?
+> >> > 
+> >> > In classical CAN we have the standard CAN frames, which have an 11 bit
+> >> > ID, and there are extended CAN frames, which have 29 bits ID. Extended
+> >> > frames are signaled with VIRTIO_CAN_FLAGS_EXTENDED set.
+> >> > 
+> >> > So if a standard frame uses more than 11 Bits of CAN-ID, it's considered
+> >> > out of range.
+> >
+> > Another option would be an extended frame (VIRTIO_CAN_FLAGS_EXTENDED
+> > set) and using more than 29 bits.
+> >
+> >> Thanks Marc for the explanation. Do you think that it would be
+> >> worthwhile to add that to the spec at some point?
+> >
+> > Yes that makes sense as it clarifies what's meant by out of range for
+> > CAN-IDs, for the valid length a reference to
+> > \item[VIRTIO_CAN_F_CAN_CLASSIC (0)] and \item[VIRTIO_CAN_F_CAN_FD (1)]
+> > might be added.
+> 
+> [virtio mailing lists are supposedly down for migration right now, I
+> hope there's some kind of backfill happening later...]
+> 
+> If the question comes up, it does make sense to add a
+> clarification... as the virtio-can spec is already voted upon and
+> merged, we'd need a patch on top. Not sure if it would qualify as an
+> editorial update or a vote would be needed, best to see it first :)
+> 
+I will submit two patches regarding the changes proposed in this thread.
 
-
-On 2/27/2024 3:59 PM, David Stevens wrote:
-> On Tue, Feb 27, 2024 at 11:22 AM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->> On 2/27/2024 9:53 AM, David Stevens wrote:
->>> Add a SUSPEND bit to the device status field to allow drivers to suspend
->>> virtio devices. On systems where drivers don't directly manage interrupt
->>> routing (e.g. Linux), this allows the drivers to suspend their devices
->>> and prevent interrupts from being sent when the interrupt routing system
->>> does not expect interrupts.
->>> ---
->>>    content.tex | 89 ++++++++++++++++++++++++++++++++++++++++++++++++++---
->>>    1 file changed, 84 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/content.tex b/content.tex
->>> index 0a62dce5f65f..2183c63c45ea 100644
->>> --- a/content.tex
->>> +++ b/content.tex
->>> @@ -49,6 +49,9 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->>>
->>>    \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
->>>      an error from which it can't recover.
->>> +
->>> +\item[SUSPEND (16)] Indicates that the device has been suspended by the
->>> +  driver. Only valid when the VIRTIO_F_SUSPEND feature bit is negotiated.
->>>    \end{description}
->>>
->>>    The \field{device status} field starts out as 0, and is reinitialized to 0 by
->>> @@ -60,9 +63,11 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->>>    initialization sequence specified in
->>>    \ref{sec:General Initialization And Device Operation / Device
->>>    Initialization}.
->>> -The driver MUST NOT clear a
->>> -\field{device status} bit.  If the driver sets the FAILED bit,
->>> -the driver MUST later reset the device before attempting to re-initialize.
->>> +
->>> +The driver MUST NOT clear a \field{device status} bit, except for the
->>> +SUSPEND bit as described in \ref{sec:General Initialization And Device
->>> +Operation / Device Suspend}. If the driver sets the FAILED bit, the
->>> +driver MUST later reset the device before attempting to re-initialize.
->> Comparing to add a new exception, why not just re-setting DRIVER_OK to
->> let the device
->> clearing SUSPEND? This issue has been addressed when Eugenio working on
->> a similar STOP_BIT
->>
->> https://lists.oasis-open.org/archives/virtio-dev/202111/msg00020.html
-> I don't think the device status bit is bit-addressable, so it's not
-> possible to re-set DRIVER_OK without also either re-setting or
-> clearing SUSPEND.
-Please correct me if I misunderstand your point,
-I think it can be addressed, for example, in PCI it is an u8,
-the device can clear a bit in it.
-
-
-It may be easier to let the device to clear the SUSPEND bit.
->
-> The linked series seems to effectively do the same thing as this patch
-> does. Just rather than an exception for SUSPEND, it explicitly lists
-> the bits which shouldn't be cleared. Although on the patch doing that,
-> there was feedback suggesting that it be done the way this patch does
-> it [1]. Personally, I think either an allowlist or a blocklist is
-> fine.
->
-> [1] https://lists.oasis-open.org/archives/virtio-dev/202111/msg00025.html
->
->> Not sure it is my email client bug, it shows the authorship has been
->> reset and
->> all sign-off-by are removed. We have been working on this since 2021,
->> how about
->> just include our updated patch(WIP) in a new series?
-> Oh, sorry. I'm not very familiar with the process of collaboration
-> over email like this. I wasn't sure about adding Signed-off-by for
-> other people that haven't ready the patch yet, but I can add them
-> going forward if that's what's expected. And I'll fix up authorship
-> and add myself as Co-authored-by next time.
-This maps to my Intel assignment.
-So please let me send out a V2 and once the patch passed review process,
-we can add more PCI patches into the series. I will add your sign-off-by
-there.
->
-> -David
->
->> Thanks
->>>    The driver SHOULD NOT rely on completion of operations of a
->>>    device if DEVICE_NEEDS_RESET is set.
->>> @@ -73,6 +78,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->>>    recover by issuing a reset.
->>>    \end{note}
->>>
->>> +If VIRTIO_F_SUSPEND is negotiated, the driver MUST manage the SUSPEND bit
->>> +as described in \ref{sec:General Initialization And Device Operation /
->>> +Device Suspend}. Otherwise, the driver MUST NOT set the SUSPEND bit.
->>> +
->>>    \devicenormative{\subsection}{Device Status Field}{Basic Facilities of a Virtio Device / Device Status Field}
->>>
->>>    The device MUST NOT consume buffers or send any used buffer
->>> @@ -82,6 +91,10 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->>>    that a reset is needed.  If DRIVER_OK is set, after it sets DEVICE_NEEDS_RESET, the device
->>>    MUST send a device configuration change notification to the driver.
->>>
->>> +If VIRTIO_F_SUSPEND is negotiated, the device MUST manage the SUSPEND bit
->>> +as described in \ref{sec:General Initialization And Device Operation /
->>> +Device Suspend}. Otherwise, the device MUST ignore the SUSPEND bit.
->>> +
->>>    \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature Bits}
->>>
->>>    Each virtio device offers all the features it understands.  During
->>> @@ -99,10 +112,10 @@ \section{Feature Bits}\label{sec:Basic Facilities of a Virtio Device / Feature B
->>>    \begin{description}
->>>    \item[0 to 23, and 50 to 127] Feature bits for the specific device type
->>>
->>> -\item[24 to 41] Feature bits reserved for extensions to the queue and
->>> +\item[24 to 42] Feature bits reserved for extensions to the queue and
->>>      feature negotiation mechanisms
->>>
->>> -\item[42 to 49, and 128 and above] Feature bits reserved for future extensions.
->>> +\item[43 to 49, and 128 and above] Feature bits reserved for future extensions.
->>>    \end{description}
->>>
->>>    \begin{note}
->>> @@ -629,6 +642,67 @@ \section{Device Cleanup}\label{sec:General Initialization And Device Operation /
->>>
->>>    Thus a driver MUST ensure a virtqueue isn't live (by device reset) before removing exposed buffers.
->>>
->>> +\section{Device Suspend}\label{sec:General Initialization And Device Operation / Device Suspend}
->>> +
->>> +When the VIRTIO_F_SUSPEND feature is negotiated, the driver can set the
->>> +SUSPEND bit in \field{device status} to suspend a live device, and can
->>> +clear the SUSPEND bit to resume a suspended device. A suspended device
->>> +should pause its operation, but it must maintain it state such that it
->>> +can immediately continue operation upon being resumed.
->>> +
->>> +Suspending a device via the SUSPEND bit is a seperate process from any
->>> +transport-specific suspend mechanism.
->>> +
->>> +\drivernormative{\subsection}{Device Suspend}{General Initialization And Device Operation / Device Suspend}
->>> +
->>> +The driver MUST NOT set the SUSPEND bit if the DRIVER_OK bit is not set.
->>> +
->>> +After writing a new value to the SUSPEND bit, the driver MUST wait for
->>> +the device to acknowledged the transition by reading from \field{device
->>> +status} until the returned value of the SUSPEND bit matches the written
->>> +value. During this period, the driver MAY abort the transition by writing
->>> +a new value to the SUSPEND bit or by resetting the device.
->>> +
->>> +A driver MUST NOT access the device configuration space of a suspended
->>> +device, except for \field{device status}.
->>> +
->>> +A driver MAY suspend a device that has buffers in its virtqueues. While
->>> +the device is suspended, a driver MUST NOT modify any available buffers
->>> +or their descriptors.
->>> +
->>> +A driver MUST NOT make any new buffers available to a suspended device.
->>> +
->>> +If a transport-specific suspend mechanism is available, the driver SHOULD
->>> +use it to put the device into a deeper suspend state after setting the
->>> +SUSPEND bit.
->>> +
->>> +\drivernormative{\subsection}{Device Suspend}{General Initialization And Device Operation / Device Suspend}
->>> +
->>> +A device MUST ignore writes to the SUSPEND bit if the DRIVER_OK bit is
->>> +not set.
->>> +
->>> +A device MUST maintain its state while suspended such that all driver
->>> +visible state after resuming exactly matches driver visible state
->>> +before suspending.
->>> +
->>> +A device MUST ignore all writes to its configuration space while
->>> +suspended, except for writes to \field{device status}.
->>> +
->>> +A device MUST NOT send notifications, access any virtqueues, or modify
->>> +any fields in its configuration space while suspended.
->>> +
->>> +A device MAY send notifications, access any virtqueues, or modify its
->>> +configuration space after the driver writes the SUSPEND bit but before
->>> +the device acknowledges the transition by returning a \field{device
->>> +status} value with the SUSPEND bit set. A device SHOULD finish processing
->>> +and send the used buffer notification for any buffers it is able to
->>> +before acknowledging the transition, but MAY retain buffers that cannot
->>> +be immiedately processed (e.g. empty buffers in a network recieveq).
->>> +
->>> +A device SHOULD take steps to minimize its resource consumption while
->>> +suspended, although what this involves is specific to the particular
->>> +device implementation.
->>> +
->>>    \chapter{Virtio Transport Options}\label{sec:Virtio Transport Options}
->>>
->>>    Virtio can use various different buses, thus the standard is split
->>> @@ -872,6 +946,11 @@ \chapter{Reserved Feature Bits}\label{sec:Reserved Feature Bits}
->>>        \ref{devicenormative:Basic Facilities of a Virtio Device / Feature Bits} for
->>>        handling features reserved for future use.
->>>
->>> +  \item[VIRTIO_F_SUSPEND(42)] This feature indicates that the driver can
->>> +    suspend the device via the SUSPEND bit in \field{device status} (see
->>> +    \ref{sec:Basic Facilities of a Virtio Device / Device Status Field}).
->>> +
->>> +
->>>    \end{description}
->>>
->>>    \drivernormative{\section}{Reserved Feature Bits}{Reserved Feature Bits}
+Matias
 
 
 ---------------------------------------------------------------------
