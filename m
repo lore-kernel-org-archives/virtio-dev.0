@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14372-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14373-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3AF5EC48BF6
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Feb 2024 08:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ADF1DC48BF6
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Feb 2024 14:00:32 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 9145C2A8F2
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Feb 2024 08:55:32 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id ED5222A8EB
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Feb 2024 14:00:31 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 74A8798664F
-	for <virtio-dev@archiver.kernel.org>; Thu, 29 Feb 2024 08:55:32 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id D018098654C
+	for <virtio-dev@archiver.kernel.org>; Thu, 29 Feb 2024 14:00:31 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id 65EDB986542; Thu, 29 Feb 2024 08:55:32 +0000 (UTC)
+	id B0BB3983E93; Thu, 29 Feb 2024 14:00:31 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,177 +24,294 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id 5704D986531
-	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Feb 2024 08:55:28 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id A09C2986530
+	for <virtio-dev@lists.oasis-open.org>; Thu, 29 Feb 2024 14:00:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="4235422"
-X-IronPort-AV: E=Sophos;i="6.06,192,1705392000"; 
-   d="scan'208";a="4235422"
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,192,1705392000"; 
-   d="scan'208";a="12320125"
-Message-ID: <e6424368-f4f9-4f96-9755-06bd9fd1ee2a@intel.com>
-Date: Thu, 29 Feb 2024 16:55:07 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: David Stevens <stevensd@chromium.org>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- virtio-comment@lists.oasis-open.org, virtio-dev@lists.oasis-open.org,
- parav@nvidia.com
-References: <20240227015345.3614965-1-stevensd@chromium.org>
- <20240227015345.3614965-2-stevensd@chromium.org>
- <e03d003e-ca23-4dd2-aeac-6df79ee5c1e6@intel.com>
- <CAD=HUj6gM5HUp=gGt1u=OcQRBe3A=ig5ws=ZLkJEy=Jr-caAvQ@mail.gmail.com>
- <e4caa5e3-2cd3-465e-aa9c-275b4426d31d@intel.com>
- <CAD=HUj66_gBBbf5EZ2dDrc51hKQ83zJotgS8vRanrxbD0oy_vw@mail.gmail.com>
- <7050294e-1d62-4487-b74b-b173bc586776@intel.com>
- <CAD=HUj60Tz6hyparh_iELO-coyszw9zNjrUu86Wgum753sNkgA@mail.gmail.com>
+X-TM-MAIL-RECEIVED-TIME: 1709215227.051000
+X-TM-MAIL-UUID: 28417ad8-535a-42f7-aaff-9d82211e6286
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JEVdImVceopAYGmNn37XBW+kXMs8x3yfTmEB++IsBrJQiiw6XQZLs+A/gUYIf9iKaC8NO3EQOo3XD6UYSuH+Bc+KVGHpYT3hifTZp0RTEwQIBtOhBHJnCj8rdTraHYoxZjrKhFtERSnY9WaICg3SwfmEIMXmTqHh5Qve47kg5Qve4hA4IB66d/SxFL7VAyqkfWHawxz4/RkoBs3EHsaf2mM6dtUkgXRuJIlEirUmxud+ARLjfsctcSzbPjajy2iuok7JxWFHDyU56HHnTN0v2+VASmaiusF/CHKvgvfq5vK2geukAcvhjKMFqLGZkyzsAvzR6Je7N9jkBdDgRHfF/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k5fha9EKPb4DRR82LP2GhVEInRkV71QwQj+kaJO15i0=;
+ b=T6AhCzOtiMO4nDiDI8QALyNh3L/M2nD622ylzEC99LfGKJ9rgsWOy/3qHS/94qzfnFqmdYvnEqWTSLe/5C2lmXs8lwhI8NdvGB2P6/VzUtZdlybnBWCSjbirNPMccLMjKg7InayqwDL/o4zXOa9uuk2uFCQ8luIViOlPym99SkwBXJE2av1JBGboKsEju19+s4DqKGGVxCIIQy0alIN+e0tIHd7wpbQIlzt7IRROGjEDa5PTLu1WflCj4eF8zRCV4cAkkJ7v/qwWjWeVUoWgvwJgAcZmYAabWams+80SPoXHhX6e3bqS8RRn4jTp+9gUXZFkulZs8mlZaS+pPMxCyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <992c3573-f87c-447c-b8d7-d3bb29b0c5f0@opensynergy.com>
+Date: Thu, 29 Feb 2024 15:00:21 +0100
 Content-Language: en-US
-From: "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <CAD=HUj60Tz6hyparh_iELO-coyszw9zNjrUu86Wgum753sNkgA@mail.gmail.com>
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: virtio-dev@lists.oasis-open.org, Haixu Cui <quic_haixcui@quicinc.com>,
+ Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+ linux-kernel@vger.kernel.org, quic_ztu@quicinc.com,
+ Matti Moell <Matti.Moell@opensynergy.com>,
+ Mikhail Golubev <Mikhail.Golubev@opensynergy.com>
+References: <20240228142755.4061-1-Harald.Mommer@opensynergy.com>
+ <20240228142755.4061-4-Harald.Mommer@opensynergy.com>
+ <20240229082224.2kh2scyjpielwx7v@vireshk-i7>
+From: Harald Mommer <harald.mommer@opensynergy.com>
+In-Reply-To: <20240229082224.2kh2scyjpielwx7v@vireshk-i7>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Subject: Re: [virtio-dev] Re: [PATCH v5 1/1] Add SUSPEND bit to device status
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0037.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:4a::21) To BEZP281MB2581.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:2a::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BEZP281MB2581:EE_|BE1P281MB2514:EE_
+X-MS-Office365-Filtering-Correlation-Id: 003f028f-fd49-40a1-fa77-08dc392ec62b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	syIGBwMXUedCpGUPfjITci3ZztoOwg3zI8lNMk0gQ7BBMiTX1C/ipzs4gXAaf6GpyIFfothk/FVO4RmQ1O+TesjQRkZor0Ke5wG+HVGLgot2pRPaS7wzWztVBAnLJfwNMpLTc1sq09CLeaxOySB3+5ioaj9TlJd6LQ2AJIoVIZBPCAjS4Y/MQIFEch5MuppksLkl9hfkr8ZWuTOQANlV90SkgskxrPS4iz5VnJbitpYrXfRbjlsfpGngelZmH0pXSrc9PoO8Zem5umg2x9j3UTiH6RYtdeKmBrmgg7j3fy0gnUQxZumXBU/sg4czMnDffUYidGdtPOw8tcfxMkUq751HB2m+jtgwWRImwgtk6QO6ZhuYuyJmXZm4pF4TFFLrema2BClaxIcJAh90xVwpUI87a8DLlj5kauuQ25RtGHGAVSxAVuU6kUFIo7YA5rhBhsV+fzMu15/WCdhB+39qnLjQphhZGHP5UwjNfuAtGwGlbI6VSp5B0YB689PTtbgvdKFm5aVprPUQYBE5/fwn9CBxdmL8J99O3R9FyRBVhetWq/obMQiNza2kodzzHVgXurE3/rjKfHLaNzMci5L32+DV0dPIiiYD0xVvqVrJqHpYXGyubWWHcFfWhILli3eO
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEZP281MB2581.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZFV4bzZFZ3dXdTBnNGRXWWdPUDc4ZmI4YVo0cTBHK3FVR3k2MU5jNEZoTnBy?=
+ =?utf-8?B?UHVOMDBxbldrT2ViWVVJcDBUc2dVRzQwQlF2Rkl4RkRXcUlKVTI1N2RVcXFX?=
+ =?utf-8?B?MHdIdGtncDg3Vm5iMFYzd3AxZTdHc2RGUVdKRGIwNGNSbUFUQkVCSmpWSUxS?=
+ =?utf-8?B?YkNvckdyeFJDVDBQZkVubXI3ZlkyRFAydnBZdytQZ2g1SktSZkdad3BWdWMz?=
+ =?utf-8?B?UFNNQ24yakEvQzg1WVUwbGNKQ1ZsTUdOekZDbEZKaGN6L3VGTk9ZL0pUVTVq?=
+ =?utf-8?B?emw5a1BJazBsQ1N5enFZeXh2Nm93UHIzaWFBOTJNK3dZWEVMVzJsazE0Mk5B?=
+ =?utf-8?B?YjFwYlEycy9tVHlLMlhkSTdlRG1mSXNGc3hyM2VNSVVMbVdpZFRZOEh3QllW?=
+ =?utf-8?B?NHVrS1oyeWwvSEpLaGs1QVJ0dlFYaXUrZ0pEUzN3TnBaNTdzUHQ4aGx1ZzRC?=
+ =?utf-8?B?bjA1dGhDaEMwRVNTMjBlVzdHa3hpYjBWY014VXNkdm1CQVdzS0lralZ5OHI0?=
+ =?utf-8?B?SldvUWxpSG44Z0k1NkRhTDRVKzNwQy9FRW8xbUpqK1hGbWNoLytKbmZ2WGJj?=
+ =?utf-8?B?WXRoRmZVdkVDd1NOd2czc01Eazllb2o0UHBpQ0daM29DNkg2dFlyNGNiWUpJ?=
+ =?utf-8?B?ejdjRWZoeHpWK245aHh4R3dEaGxrVjF2bVd4YkMydmlNNTU3c0huYWZKdTRq?=
+ =?utf-8?B?WVZMOG9Kd3kyNGQ3TGtKbGs0enZEOXBWNGhHVmV3WWo3S1dlT3BYazFSa0dt?=
+ =?utf-8?B?ZmJtT1oyK3BuTUxUaEIvLzZWSkRxdTRVVGtiVEM1TUk1K2VTOG83YUhucFB1?=
+ =?utf-8?B?eHkrdUFPem1HUWFMMUs3OHlIVzJuYXhlc1NIU2JVYU5sR0xjWTlVdHBLV3M3?=
+ =?utf-8?B?ZVNtR2hPZHpUSVQyTDliSDMvYkZCQ3diblExMG1DTG1SM25ROTAwU0s5ODVF?=
+ =?utf-8?B?QUl4VFg3Z25HWUI4V3daWVNoT1RlNjBvZVUxb0hrbWRNOUF0OVplK0k3Uktl?=
+ =?utf-8?B?d3hoWW9rQ1dOZ1ZNSVQ1MEZGWjB6U0JUVFNxcmR5aEQrck94RTI1ZFRMbUxh?=
+ =?utf-8?B?cng4WHkvd3YyVW1UQy9paUNXR0doU2lwMkY4WXBvVnkwbWFGckRmUGdvNktY?=
+ =?utf-8?B?VHF4OFJzUm1CWFNKWXc1K1VHK3EzemU1SSs2REw3cXdMMVlqZkN1UDA2N0VH?=
+ =?utf-8?B?b2pHYUNpQUlaL2tjZWpuVTN3WWhGei9JTzVKQ1BsVjlBTXBHdWpHZ0FOMGcw?=
+ =?utf-8?B?Q253bFZGbFZvVDlSVzVoTEJjZ0Vwb2FORXgvRWVPaVpoWFZYTTVvamhReDlr?=
+ =?utf-8?B?aDJuZEVHUy9PK3BYdHgzOW9OYVFwMDVpL1UwZHNKUzVicFRhaFN5Rjc4dFBZ?=
+ =?utf-8?B?eE1Mc3JwNmtQV3NWRnRwMFNyb0RUZmpBK3FOV1BiOHlHVHN6VU56ZzhwQ0J5?=
+ =?utf-8?B?NzkwYm5ZdWZzbElRdFNMV1ZwUzlUNnZlbnd6WkhqRStsMCtwTVIvMWZhOS9y?=
+ =?utf-8?B?QUoyV1dKbnJ6TThPTnNxZE1qSEtWbEwra3NXMmdrTUdNVWlQTWVEK1g2Tno0?=
+ =?utf-8?B?MjdRTG5LT1U1TFZCQ3BLOFdKK1FDSTdjZ0ZGNldESzFFaVNxZDdLektIbmVK?=
+ =?utf-8?B?bWM3RmpqbUJjaXBId2czZmo0Uy9GanFOMjlocUlVcFdkNnoxRmJXS2YyYTBs?=
+ =?utf-8?B?blNRelJkcEQ5eVZYOG9GcGhyYndPRmdtZWFGSE5oUThydTZGdDJtYklLSG8z?=
+ =?utf-8?B?RVZGUWNCdWhiV25EWUdpYmRkWEpuNUphQldXdjF2SlpJTndWQjE4NWhScUJx?=
+ =?utf-8?B?Vmx2L1NTMDd6ZDB6b0d1RU1xbXQ5aFk4Vmt3aHR6UDNIUExYbkxGd3BCUXkw?=
+ =?utf-8?B?YjhmWkVZaU1acW5leXNpQ08xYzRia0gyOHJFZjl0MnZaRnBBa0Q0c0pXMlI3?=
+ =?utf-8?B?SWlSb1diWUNxbDV6RU9rek9nM01RemVIeG82c0xQRVpOWWRyRWpnQmlUS1lK?=
+ =?utf-8?B?U2xZNFlQTjNmbHJWTVNrZkNsZzl0dUF6ZWNSVVoyQVJNTzBSUHE1U28xRGo0?=
+ =?utf-8?B?bXFBSEYyL3h2RklnbVo4eEF4VWtNNGVpR3FPSTN1a1BQWm9VVHNiOHU1bTBu?=
+ =?utf-8?Q?ZcCpkTkB+d/BEBOi9QHUmElsj?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 003f028f-fd49-40a1-fa77-08dc392ec62b
+X-MS-Exchange-CrossTenant-AuthSource: BEZP281MB2581.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Feb 2024 14:00:24.6380
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3bTPQnyu5KHbYLqnxwN0ALBWAhSLG77zzriqwZQcRbTgfHiaBS2+hBGZAQgTSqaDF094ww0obCXiQ5ioNCWELA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB2514
+X-TM-AS-ERS: 104.47.7.168-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28222.001
+X-TMASE-Result: 10--12.253100-4.000000
+X-TMASE-MatchedRID: gzVbiXtWD9v5ETspAEX/ngw4DIWv1jSVbU+XbFYs1xLqebRiaUxsfoXV
+	eAzWzPHrLfgCWmpP5eM0D7ajn/07DLMYfD3MHldbsX4aFYAMIYMUj2a787oL4M5XQRbjRW4CUk2
+	exuG3+KhNi6yVot11xAkMI4NypaQrOcofGC8sr9470BtMXRaQwhWhK9n3L3nu4r1+OqI5EVylQY
+	EJ026DTyFGe20yyE/YIJV4xGzpWxVnoo1oYxaDbjakEkBtr136cl04K9ffdkmZtwBUcPZK1u1xQ
+	wyw61Rv290JqglW7rRmXN8BhN6Pgbbf6Wd0MJvo+DE5zr5ahdy+UXZnp3CKAIuVG0d8rk2ToBsr
+	bVwe9zqCMzVIrqrlxmTrXJp3VogEqCSeJKqSmf5zoxCmHXb7+kTrh3TFw9fFl2KBmLXt0epdepT
+	/WVsxv79vAEPEGgb3bcGwqh63LX/socQd7WY5yEI9AEPfED/dqvJX/aNGr9cSCDdzAMeX/Wp2VX
+	UuZsR8A/lH/MvdoiZkzeNs4Fp1DTnxJqun3snzbkV4e2xSge5LTPoT993fI8i5XlcsPyP5SLsj7
+	MsUOLSy7SXwkuF1vV8I4oUq5Vga
+X-TMASE-XGENCLOUD: 27ec76b1-01fd-4a1e-8a95-73feae22c57b-0-0-200-0
+X-TM-Deliver-Signature: CB0B4F017EE904CDAEB2C672EBB637D4
+X-TM-Addin-Auth: ooVCJAJjQ32ijFXLrZejrs0OoUx1zVx7hx4ck7JRC69BsIr7cJyuuMIyU1A
+	0QS9cel8q5m+4wwMERK/f6aS+VEO4ddTVsepWRFCrTJNa3KT5k3zRy06Wrcn6z7MYssOq10T+Mj
+	K8nbT1i4IBuGdAT46VqVgVz+T8coMazlNDq//F7Y6ReoIpVDRt3ytBa+liCTkxVFRMWSdy+VKVm
+	C8MyawJTVrGIzXdl0825WWDQFcCPz8hqDP03SiTtYwflmScSoPoTXESknK8Zn5AMoKxn0sYSprH
+	zDo/R/XzMv4YD0I=.npJFFUNg+scJye08jXY/+Jt5OfyESvHmFDwBI4nnBLkRW1nhlgbGLWOmkq
+	1RswjxXLoUC0ZR1ut1CWvagDTUuk/5FYegSi5BoTOmGfdgYMS133bCrXLag8h4oKgHbM9QdLRWl
+	VAc+Vdf/WqLGg5LzaryeQ7eYsEaSqtcm1dVPIOM+v6sJw4jcir4mDZR0FBlSjfzBT2LaXAifoCp
+	Ev2RpgsXWe5QbAOTAQ6d0O0Tbbxsz5DdxfxNH017al5YyIpG4R+ZJXXpp6L5hNFh/Ba8oF6skVz
+	Xna5sBn7hdpz13yxNv8Ts2efQGKrhCvkkaBytpk6i5g2Ucdcxk267TKDRBA==
+X-TM-Addin-ProductCode: EMS
+Subject: [virtio-dev] Re: [PATCH v1 3/3] virtio-spi: Add virtio SPI driver.
+
+On 29.02.24 09:22, Viresh Kumar wrote:
+> On 28-02-24, 15:27, Harald Mommer wrote:
+>> +static int virtio_spi_probe(struct virtio_device *vdev)
+>> +{
+>> +	struct device_node *np = vdev->dev.parent->of_node;
+>> +	struct virtio_spi_priv *priv;
+>> +	struct spi_controller *ctrl;
+>> +	int err;
+>> +	u32 bus_num;
+>> +	u16 csi;
+>> +
+>> +	ctrl = devm_spi_alloc_host(&vdev->dev, sizeof(*priv));
+>> +	if (!ctrl) {
+>> +		dev_err(&vdev->dev, "Kernel memory exhausted in %s()\n",
+>> +			__func__);
+> The print can be dropped I guess.
 
 
+Looked around: It is habit not to do here dev_err() here so the 
+dev_err() is to be removed.
 
-On 2/29/2024 11:20 AM, David Stevens wrote:
-> On Wed, Feb 28, 2024 at 3:45 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->> On 2/28/2024 9:18 AM, David Stevens wrote:
->>> On Tue, Feb 27, 2024 at 5:52 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->>>> On 2/27/2024 3:59 PM, David Stevens wrote:
->>>>> On Tue, Feb 27, 2024 at 11:22 AM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->>>>>> On 2/27/2024 9:53 AM, David Stevens wrote:
->>>>>>> Add a SUSPEND bit to the device status field to allow drivers to suspend
->>>>>>> virtio devices. On systems where drivers don't directly manage interrupt
->>>>>>> routing (e.g. Linux), this allows the drivers to suspend their devices
->>>>>>> and prevent interrupts from being sent when the interrupt routing system
->>>>>>> does not expect interrupts.
->>>>>>> ---
->>>>>>>      content.tex | 89 ++++++++++++++++++++++++++++++++++++++++++++++++++---
->>>>>>>      1 file changed, 84 insertions(+), 5 deletions(-)
->>>>>>>
->>>>>>> diff --git a/content.tex b/content.tex
->>>>>>> index 0a62dce5f65f..2183c63c45ea 100644
->>>>>>> --- a/content.tex
->>>>>>> +++ b/content.tex
->>>>>>> @@ -49,6 +49,9 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->>>>>>>
->>>>>>>      \item[DEVICE_NEEDS_RESET (64)] Indicates that the device has experienced
->>>>>>>        an error from which it can't recover.
->>>>>>> +
->>>>>>> +\item[SUSPEND (16)] Indicates that the device has been suspended by the
->>>>>>> +  driver. Only valid when the VIRTIO_F_SUSPEND feature bit is negotiated.
->>>>>>>      \end{description}
->>>>>>>
->>>>>>>      The \field{device status} field starts out as 0, and is reinitialized to 0 by
->>>>>>> @@ -60,9 +63,11 @@ \section{\field{Device Status} Field}\label{sec:Basic Facilities of a Virtio Dev
->>>>>>>      initialization sequence specified in
->>>>>>>      \ref{sec:General Initialization And Device Operation / Device
->>>>>>>      Initialization}.
->>>>>>> -The driver MUST NOT clear a
->>>>>>> -\field{device status} bit.  If the driver sets the FAILED bit,
->>>>>>> -the driver MUST later reset the device before attempting to re-initialize.
->>>>>>> +
->>>>>>> +The driver MUST NOT clear a \field{device status} bit, except for the
->>>>>>> +SUSPEND bit as described in \ref{sec:General Initialization And Device
->>>>>>> +Operation / Device Suspend}. If the driver sets the FAILED bit, the
->>>>>>> +driver MUST later reset the device before attempting to re-initialize.
->>>>>> Comparing to add a new exception, why not just re-setting DRIVER_OK to
->>>>>> let the device
->>>>>> clearing SUSPEND? This issue has been addressed when Eugenio working on
->>>>>> a similar STOP_BIT
->>>>>>
->>>>>> https://lists.oasis-open.org/archives/virtio-dev/202111/msg00020.html
->>>>> I don't think the device status bit is bit-addressable, so it's not
->>>>> possible to re-set DRIVER_OK without also either re-setting or
->>>>> clearing SUSPEND.
->>>> Please correct me if I misunderstand your point,
->>>> I think it can be addressed, for example, in PCI it is an u8,
->>>> the device can clear a bit in it.
->>>>
->>>> It may be easier to let the device to clear the SUSPEND bit.
->>> If it's a u8, then the driver will be writing all 8 bits at the same
->>> time. So I don't see how it's possible for the driver to set one bit
->>> without also setting/clearing all the other bits at the same time.
->>> When you say the driver can re-set DRIVER_OK, it can either write 0x1F
->>> or 0xF. If we don't allow clearing the suspend bit, then it has to
->>> write 0x1F. But that's exactly what the driver wrote to suspend the
->>> device in the first place - how is the device supposed to tell the
->>> difference? I guess we could add something to the spec saying that's
->>> how the device is supposed to interpret it. But at that point, that's
->>> really the same as allowing the driver to clear the suspend bit, just
->>> with more complexity.
->> Thanks for the explanation, I get your point now.
->> I agree allowing clear a bit can resume the device running. however this
->> makes an exception and require the device to examine every bits that the
->> driver set.
-> It needs to do this anyway to detect the SUSPEND bit being set in the
-> first place, doesn't it? Why is detecting the SUSPEND bit being
-> cleared more difficult than detecting the SUSPEND set being set?
-as explained below, it does examine every bits in device status.
+For curiosity I searched through the kernel whether the kernel already 
+leaves a trace the way down the memory allocation but somehow I landed 
+in the forest. Not important.
+
+
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	priv = spi_controller_get_devdata(ctrl);
+>> +	priv->vdev = vdev;
+>> +	vdev->priv = priv;
+>> +	dev_set_drvdata(&vdev->dev, ctrl);
+>> +
+>> +	init_completion(&priv->spi_req.completion);
+>> +
+>> +	err = of_property_read_u32(np, "spi,bus-num", &bus_num);
+>> +	if (!err && bus_num <= S16_MAX)
+>> +		ctrl->bus_num = (s16)bus_num;
+>> +
+>> +	virtio_spi_read_config(vdev);
+>> +
+>> +	/* Method to do a single SPI transfer */
+> The comments for obvious statements are normally not required. There
+> are a couple of them here.
+
+
+Removing now a few really obvious comments. This "code speaks for 
+itself" sitting in front of a mostly uncommented code desert is not mine 
+so I'm careful with this.
+
+
 >
->> Letting the device clear the SUSPEND bit also require the device to examine
->> every bits. Based on the device status(Init, Running or SUSPENDED), the
->> device
->> can behave differently:
->> +If VIRTIO_F_SUSPEND is negotiated and SUSPEND is set, the device SHOULD
->> clear SUSPEND
->> +and resumes operation upon DRIVER_OK.
->>
->> But no need to make exceptions in the spec. Maybe this is a little less
->> complex?
-> That is also adding an exception, though? It introduces a single
-> situation where the behavior of bits is tied together and a single
-> situation where the device instead of the driver is allowed to clear
-> bits. It would also complicate adding bit to device status that can be
-> set when the device is suspended, since it would be ambiguous as to
-> whether a driver writing 0x3F wants to enable bit 0x20 or wants to
-> enable 0x20 and also disable SUSPEND. I fail to see how that is
-> simpler than just letting the driver clear the SUSPEND bit.
-Not adding a new exception, quite the opposite, this implementation
-tries to re-use current virtio mechanism.
-
-Let setting DRIVER_OK to bring the device back to alive operational:
-"Set the DRIVER_OK status bit. At this point the device is live"
-"DRIVER_OK is set: device operation begins."
-
-The device should behave differently based on its state machine, examples:
-"the device with the VIRTIO_BLK_Z_HM zone model MUST fail to set the 
-FEATURES_OK device status bit when the driver writes the Device Status 
-field."
-"The device MUST NOT consume buffers or send any used buffer 
-notifications to the driver before DRIVER_OK."
+>> +	ctrl->transfer_one = virtio_spi_transfer_one;
+>> +
+>> +	/* Initialize virtqueues */
+>> +	err = virtio_spi_find_vqs(priv);
+>> +	if (err) {
+>> +		dev_err(&vdev->dev, "Cannot setup virtqueues\n");
+> Maybe "Failed to" instead of "Cannot" ?
 
 
-And please take this piece of code as another example:
+I grepped through the kernel for '"Cannot ' which brings all the 
+messages in the kernel which start with "Cannot ": 4123 matches (case 
+insensitive).
 
-void virtio_add_status(struct virtio_device *dev, unsigned int status)
-{
-     might_sleep();
-     dev->config->set_status(dev, dev->config->get_status(dev) | status);
-}
+Did the same with `"Failed to ' which brings all the messages in the 
+kernel which start with "Failed to ": 34746 matches (case insensitive).
 
-Here the code tries to add a status to the device,
-the driver first read the device status, then add a new status,
-at last set the new status to the device.
+Majority uses "Failed to " but "Cannot " is also used. Both wordings 
+seem to be acceptable.
 
-That means it is quite common to re-write the same status bits to the
-device, and the device can behave differently based on its
-device state machine.
+So this is no finding and I keep the code as it is. Otherwise we must 
+look again not only here but also in all other messages especially in 
+virtio_spi_set_delays() reworking more (for no good reason).
 
-So IMHO, this implementation does not introduce more complexities,
-it tries to re-use existing virtio mechanism.
+My wording in virtio_spi_restore() is more unusual, "problem ". Only 111 
+matches.
 
-Thanks
-Zhu Lingshan
+It's not wrong, it's not broken, nobody complained now, we will see.
+
+>> +		return err;
+>> +	}
+>> +
+>> +	err = spi_register_controller(ctrl);
+>> +	if (err) {
+>> +		dev_err(&vdev->dev, "Cannot register controller\n");
+>> +		goto err_return;
+>> +	}
+>> +
+>> +	board_info.max_speed_hz = priv->max_freq_hz;
+>> +	/* spi_new_device() currently does not use bus_num but better set it */
+>> +	board_info.bus_num = (u16)ctrl->bus_num;
+>> +
+>> +	/* Add chip selects to controller */
+>> +	for (csi = 0; csi < ctrl->num_chipselect; csi++) {
+>> +		dev_dbg(&vdev->dev, "Setting up CS=%u\n", csi);
+>> +		board_info.chip_select = csi;
+> Maybe a blank line here.
 >
-> -David
+>> +		/* TODO: Discuss setting of board_info.mode */
+>> +		if (!(priv->mode_func_supported & VIRTIO_SPI_CS_HIGH))
+>> +			board_info.mode = SPI_MODE_0;
+>> +		else
+>> +			board_info.mode = SPI_MODE_0 | SPI_CS_HIGH;
+> and here to improve readability.
+
+
+Yes, code desert without blank lines here.
+
+And while we are here and nobody wanted to discuss: The TODO comment is 
+to be removed now. In the meantime I'm convinced the code below is what 
+really should be done here.
+
+>> +		if (!spi_new_device(ctrl, &board_info)) {
+>> +			dev_err(&vdev->dev, "Cannot setup device %u\n", csi);
+>> +			spi_unregister_controller(ctrl);
+>> +			err = -ENODEV;
+>> +			goto err_return;
+>> +		}
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +err_return:
+>> +	vdev->config->del_vqs(vdev);
+>> +	return err;
+>> +}
+>> +
+>> +static void virtio_spi_remove(struct virtio_device *vdev)
+>> +{
+>> +	struct spi_controller *ctrl = dev_get_drvdata(&vdev->dev);
+>> +
+>> +	/* Order: 1.) unregister controller, 2.) remove virtqueue */
+> Not sure if this comment is required or not, since we don't add
+> similar ones while registering.
+
+
+I got once from you a review comment about the de-initialization order. 
+Now the order is as it should be. This comment is needed to remind me 
+(and others) of the desired de-initialization order in case someone has 
+the idea to replace spi_register_controller() by 
+devm_spi_register_controller() in virtio_spi_probe(). By such a change 
+also the spi_unregister_controller() here would be removed and this 
+would change the de-initialization back to the undesired order.
+
+Now there is the comment above the line being removed asking "Have you 
+thought about this?".
+
+I was already reworking to devm_spi_register_controller() when I 
+realized late the undesired side effect and rolled back. Better we keep 
+this comment.
+
+
+>> +	spi_unregister_controller(ctrl);
+>> +	virtio_spi_del_vq(vdev);
+>> +}
+> Other than that.
 >
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
 >
+No real code changes. Some comments to be removed, some blank lines to 
+be added, nothing urgent even in case the driver is integrated now 
+locally by someone for some need. No re-test will be needed. Let's see 
+what comes in addition. This is for next week, by than also the 
+maintenance of the virtio mailing lists will have been done.
 
 
 ---------------------------------------------------------------------
