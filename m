@@ -1,20 +1,20 @@
-Return-Path: <virtio-dev-return-14374-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
+Return-Path: <virtio-dev-return-14375-virtio-dev=archiver.kernel.org@lists.oasis-open.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from ws5-mx01.kavi.com (ws5-mx01.kavi.com [34.193.7.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D806AC48BF6
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Mar 2024 07:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2E6A1C5478C
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Mar 2024 10:52:37 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis.ws5.connectedcommunity.org [10.110.1.242])
-	by ws5-mx01.kavi.com (Postfix) with ESMTP id 1B4DA2AF82
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Mar 2024 07:11:37 +0000 (UTC)
+	by ws5-mx01.kavi.com (Postfix) with ESMTP id 6352C2AF86
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Mar 2024 10:52:36 +0000 (UTC)
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id F2F50986394
-	for <virtio-dev@archiver.kernel.org>; Mon,  4 Mar 2024 07:11:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 459C19864C6
+	for <virtio-dev@archiver.kernel.org>; Mon,  4 Mar 2024 10:52:36 +0000 (UTC)
 Received: from host09.ws5.connectedcommunity.org (host09.ws5.connectedcommunity.org [10.110.1.97])
 	by lists.oasis-open.org (Postfix) with QMQP
-	id D62D8983D67; Mon,  4 Mar 2024 07:11:36 +0000 (UTC)
+	id 29E29983D67; Mon,  4 Mar 2024 10:52:36 +0000 (UTC)
 Mailing-List: contact virtio-dev-help@lists.oasis-open.org; run by ezmlm
 List-ID: <virtio-dev.lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
@@ -24,57 +24,185 @@ List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Received: from lists.oasis-open.org (oasis-open.org [10.110.1.242])
-	by lists.oasis-open.org (Postfix) with ESMTP id C20D598633F
-	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Mar 2024 07:11:36 +0000 (UTC)
+	by lists.oasis-open.org (Postfix) with ESMTP id 1904198633F
+	for <virtio-dev@lists.oasis-open.org>; Mon,  4 Mar 2024 10:52:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at kavi.com
-Message-ID: <e2e5a7a0-7a2b-40d3-acf7-6f0b91bd5d40@quicinc.com>
-Date: Mon, 4 Mar 2024 15:11:25 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Harald Mommer <Harald.Mommer@opensynergy.com>
-CC: <quic_ztu@quicinc.com>, Matti Moell <Matti.Moell@opensynergy.com>,
-        "Mikhail Golubev" <Mikhail.Golubev@opensynergy.com>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        Viresh Kumar
-	<viresh.kumar@linaro.org>,
-        "Mark Brown" <broonie@kernel.org>,
-        "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+X-TM-MAIL-RECEIVED-TIME: 1709549551.517000
+X-TM-MAIL-UUID: c571b615-3d26-4be7-9446-8e5a1f9e6690
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=irN5RxNzNr+d0qTZQMnbu9Sav5v3gIbXQViwjKWUdFu/gcPb3gqVnhctttQa49oBWeqiHRrFk1ugaDfHpY/Bo0GJh5M0Uj1GM42N2teS9xnu7fG7hZf/JrRAf0yUJ3M1pq9rbv21ymOojqm8F/ueicTuXo6tMN4kIb4FYpMBxnkFeWQT56RfOcTnnhckYG9tq6R7AaFNtLgqisGfbTemBpbIEuIpzLcmw7ygEZaZIhZrZl49KKveNIb33pZZVX2aLOlLGMqr21B2YX7EfBE0lj8SOi8e5URRxRgcqcNOLqNHQKL90mFM/wLN/kXuPfGzvhqRhy0kvG8JeO06+DvJIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y13xfgudq5RtE1JGriLFnoB+HoYinTnjtwqy4s3kbuE=;
+ b=IF6ChjZzV/s+In3j8/UoM7hsbu1P3oumdFq4FzwkDzjFegw1ZkHqiiKOUm4JMRdr4+Z/9zL9ANo/92ipTqTrbNWB9upYIbpr6dXI2GA1xXpmTD/6qs4dmD77D9CjveJDxj6M1pqADehW/m+ta9KgFiQhrxU2r81fDC4QCzWoMK318y5RC8gsB96noQ/e21g7WSKW30dNd/9Tm03NOOGXueCyrPAw1IxonCSsYGwJIvy7FElVaWTxz/h9UaXPP+LjK341sp3vJ976LaKw0Q80xKe1+mT+oufflAnLivTXtazIYGhQ8R4J1pyBJTRu85RbwdhSjayoEt86ViVnjtyIlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <2a911f96-eed9-4adc-9043-27fd1d3a7ca2@opensynergy.com>
+Date: Mon, 4 Mar 2024 11:52:28 +0100
+To: Haixu Cui <quic_haixcui@quicinc.com>
+Cc: quic_ztu@quicinc.com, Matti Moell <Matti.Moell@opensynergy.com>,
+ Mikhail Golubev <Mikhail.Golubev@opensynergy.com>,
+ linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+ Viresh Kumar <viresh.kumar@linaro.org>, Mark Brown <broonie@kernel.org>,
+ "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
 References: <20240213135350.5878-1-Harald.Mommer@opensynergy.com>
  <20240213135350.5878-4-Harald.Mommer@opensynergy.com>
+ <e2e5a7a0-7a2b-40d3-acf7-6f0b91bd5d40@quicinc.com>
 Content-Language: en-US
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <20240213135350.5878-4-Harald.Mommer@opensynergy.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: TRfS_aeVgQMiISkc-z98zurtH--oPIV3
-X-Proofpoint-ORIG-GUID: TRfS_aeVgQMiISkc-z98zurtH--oPIV3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-03-04_02,2024-03-01_03,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- bulkscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
- clxscore=1011 adultscore=0 spamscore=0 mlxlogscore=732 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2402120000 definitions=main-2403040053
-Subject: [virtio-dev] Re: [RFC PATCH v3 3/3] SPI: Add virtio SPI driver.
+From: Harald Mommer <harald.mommer@opensynergy.com>
+In-Reply-To: <e2e5a7a0-7a2b-40d3-acf7-6f0b91bd5d40@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0140.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b8::8) To BEZP281MB2581.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:2a::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BEZP281MB2581:EE_|BE1P281MB2961:EE_
+X-MS-Office365-Filtering-Correlation-Id: d139178f-a587-4d97-4795-08dc3c39301e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	xYfxHmEijm8ZhXMXNCcAgNAyo9EbVQ1IgfS4Gc3Kjcx1CfT40xEHgVlyAGVnC+edEfHdtWGO0Gbyg5aYW2V7EOucK3fzzxXj8j7y3KvfQyeiQWt+wEgt4O5GtJAXtGxw2B+1g/7gwCsntY2jpKQDfy/aqddkfYOydyUAS9+A/QLDzSVbaNg0dHzVkN2FEqX52eRuLo4jnDNHtCinPG2ZoliF6SFlly6MfW0NVt6w4nMoEG+AiRSXUmk7JCYybrluFlJzOkCxwaP3v8bBzMPmWPJPaksa9+/GGfKcwx9MCz8AvGNGkLx9YkRvAKKYiQFNlxeCuCkdTt9FTiL4sijp0fLaRD8mTlX1FeYjnLjpjI+pPexHVa/OFILXzh4IFyZllD/fiCqpSnbN2zL7VlX1gKQV4QOKp4UW6M+cBPcz9LUMvLOJB/FAedW29vGbZ0pc+k7NarOkkw3O681Tnv1HmThT9dTP46A6fugxvXTrzZlgrVKoD/XN7MW45UNK3001zOjBx4+oL4Rxv4w2ClBHUV/N14TjKa4+03dpMcHpPS2D+t2JdHrkMPLMQUCH5daiL2LjTXrwXtakfWkquornYI6OVyypZKudWScFJXPmuMg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BEZP281MB2581.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZHFidkh0b01OM3BtQ3JKTEI4ZThzVkY1U0JNU1pocmlNNGFzYU9SRWtOc0dy?=
+ =?utf-8?B?NU1Oa3pjZGNkdHVqWjBCTkNSc2loYVhMT05QMDRab2YrTFlhbDVrZ0dkSm50?=
+ =?utf-8?B?UkpFL3FCSzUxdGVvd20rRW84c2txUG1uTjd1NWVwTFo3NlU2SnNxZXpGaUxi?=
+ =?utf-8?B?Qk95TjA2WG8rbXo3RTRlQU5OSUh1OFlVTGZPTFYyUFJSalZJaGJGVVNtMzY3?=
+ =?utf-8?B?MDlwcm9QRStHVzNONFFEaWhFTWdRZXVNUHVQWVlqUE52VmtiRUl4dW8wZzlK?=
+ =?utf-8?B?RUZ4amhJZThtS21nbFN4SkExRWpzYW1CdVk2eWU4KzhNVEhRVGdnRWQ0d0hG?=
+ =?utf-8?B?VjlKcUJBd24zUmNCYnVvdnM0cy9QRlRaSnpZL21hUEFpSkVMTHZ4ODlOV2VO?=
+ =?utf-8?B?NlNvNldabUxkTXlkWjFUclJqSVpJUFk4ajZkV01QUk1mSHpIbzF5MUt2ejM5?=
+ =?utf-8?B?VXNzVWVvVHB0cFR4aTdVclY5dlBwVFdPUmtZdmRSTnlLT1ZhbUM4VTM2b0tI?=
+ =?utf-8?B?Z0hiQ0xVbEpTMmhzRlRnME9iVVhoOHpjc3NSdEJOL2djcjl4Wnljb1lIalBG?=
+ =?utf-8?B?aE5vRVNwZVhQTVdlTmFnMFMraWFWbDUxQ2c3VXpFWUM4M0NHaW9leGNKenU3?=
+ =?utf-8?B?bHZZYW9GWmpFZjhldnNLZGlremN1UXZRNVdvY1NQcGRGcUZaVlBYQi94Q0Z6?=
+ =?utf-8?B?d0l1Y09ucDQxWmJtZ3Z2SW80b2djb3BRZUJCMDhvWXQrYk9taDl3cnZmZnAw?=
+ =?utf-8?B?T1BvM0o5UDY3MlZtRVV4SXp1TitZWE5WRU1QbVVtc2tEWjRNcGJua2RyYkRw?=
+ =?utf-8?B?eDhSVDN2dlVVN254VlpHTk1sc2UyUUx6SlBtbnZwQ29FcEd1RFl0Y3NuWXNo?=
+ =?utf-8?B?Nkt6a3dLLy9mM0JZU2tDY0dkOTBSQnd4SHV2T1Jya21FZHgzdWhHdXZqdnJY?=
+ =?utf-8?B?VFE1SkxoVlBEN2dnc2xhd3dtU0NSazlibVh3Rndpdk02L0FZWWVEbGhLamJI?=
+ =?utf-8?B?ZkZuQ2oxdmFmVld6L0hGZEg5YU9TNG0xd3RsOHh3VSs2NEtmTGtmVGgyd1JX?=
+ =?utf-8?B?Yk8yY051b1dEczY3SDNLc25QWGd4S081SFFKN2t1dnVmdGhOb2ZvblpHbTV4?=
+ =?utf-8?B?SXdoNHplZGExK09yRFRqMGJyS3E4MWs5MjdDMzRjaGNJbnZpd3NpZ0NpaXBX?=
+ =?utf-8?B?dDhjU3NyL2FVM0UzUGl0Z3dMQ3huVWhUd0htVENnWk5VTlNRci9WMnh0RXRL?=
+ =?utf-8?B?bUMvUURYTzBSeU9sZmNVcFZIdVZmUitNR2MvcGtzNzlmbmxiVTFFS0M2YzdC?=
+ =?utf-8?B?TDdGLzMveVk5OWxIbER1U3o1dUJOZVE0eTVTTHB6bFZaM3pwdWkvekVlaXRD?=
+ =?utf-8?B?cWZkY0d1UEdKb2poRUZ6K2wyNFU3dE9mbGdwNlMwRlVjeGpmZ0FBUXVOa0pO?=
+ =?utf-8?B?bVFlVFAwRWhoTXhmZEN4amREb0JFSUR2Sk9xZmVRajEzQy95alFBb3FESGo3?=
+ =?utf-8?B?WVUxQm1zU09tNW1xTEdreDlvd0tWRWkyVGJMMDRkR2F1aFY1R2NhS1h4bG1O?=
+ =?utf-8?B?MzhIRFcyYjNPQUFraVpGQU5jdDN0WC9HbVB2ZkY3Y3ZJdldvZDhiOUxQQlA2?=
+ =?utf-8?B?ZUFBbEtiN2pEblYyTU5ZbTk1cUV3Vkl4TzFORmJXNFZQNjNjL1hubEVsd0dF?=
+ =?utf-8?B?cWJZVHdzbVlqcTVqczFyUy8xWHo5ZDJ0eDFsMVB0TEMzV0I1M0ZTR2xVd2hV?=
+ =?utf-8?B?WlRwaU1Ja3FnRThYOWFnUXZ3WGNMWXVLb0JITFdnS1U2VklpOU95elpYMnpB?=
+ =?utf-8?B?dkQ1cm85ck1PZ1pwVHJpMXBVN3pLd3Avc21pWU5BNDk3aVc4cGk1K3VQYnVY?=
+ =?utf-8?B?WVl2UzQyVjRCMHFaR0JYYVFEdmV1RjVvVjRlL0xjazNGb3d4TlkxaXVFQkg1?=
+ =?utf-8?B?ejZ3L1hPM1hPY2tDdWR6UVh6N25ZbDZCNkZUNEZZNUluci91Tm9qblRvZStO?=
+ =?utf-8?B?ajJHWmVGV2FoaC9DWm1KUWt1VE5YR2dJM0dkekZISGJEbGhYRGtsd2t5Q1Fl?=
+ =?utf-8?B?SWlaalByeUcvVkJtMU45dW05TGFXYjJhUkRNZTdtZFFjRk14OXpVcDl2cGto?=
+ =?utf-8?Q?N/MxTfu/bT8aJCjoGpTCpBf0K?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d139178f-a587-4d97-4795-08dc3c39301e
+X-MS-Exchange-CrossTenant-AuthSource: BEZP281MB2581.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2024 10:52:29.9821
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EZnghOUWTYpHdvA4xD6L+ieSsZuL7E9Nw3hW6TCevIRtxrtIG2GGX5h8ssXWccDg7PpzOSGK/nO5y7382yXFbQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB2961
+X-TM-AS-ERS: 104.47.11.169-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1015-28230.007
+X-TMASE-Result: 10--11.003600-4.000000
+X-TMASE-MatchedRID: +f/wAVSGjuj5ETspAEX/nqa5LaHlPm0+lIhi5GPAGePz2Yw1u2rzYale
+	AY/HO21x6XFkdlUCIyAcekl4M+Meg9UjXOu8+oRG0RneM2u5ms8HgEx+rhLN4kEwlAH/PleeFOW
+	EvH47XvNKksLmAkV2MDYtE/masocfd5ZQIOSj8/NFg2HO5lmNEFpMWq1GqY9jK8Ly83vNygKdIg
+	JJy+kP2f68Ru4w4JZQmbbXKzEIQAWt7/EsM7+op0gfObGUdKnY+HAk4j3F9/QB6AbJ4VK4Izftu
+	lYyST+Q58O6RQImIFLKeq/WFUOWj4n8kUCxEWNKQj0AQ98QP92q8lf9o0av1xIIN3MAx5f95aA6
+	lI7RRJqX9+pFwEzDVL/a0nd+hIFCI/NGWt0UYPAoAmkXCg2OrNCP/+P/USJwW8+9+e0PTy/nufk
+	z7SpAiVBvRbisWRPR
+X-TMASE-XGENCLOUD: 4df6127e-d3e0-4011-8791-e500fb1c28cd-0-0-200-0
+X-TM-Deliver-Signature: D38747910904335B18AC42CC3972862B
+X-TM-Addin-Auth: tVhjPLCPYZ05y9/lTU4lyeke1jMH4emRhhCDkcELo3xE6hjYfU6z52sXPr4
+	BPFbTOWUbAJDBe+681rjnbI5Uj5BIjy5HDVaL33IVXLbEtb0UYYOvjiOnPcAHZmOApjumN5EmyI
+	OUG+Ktfh3iYtJ2wTcl1zbScYAem0a7UkvnbG/YJ1L9ijHU6h560QoBVbkdJ3fQr79zO5yIiWrBL
+	ARCDt6JlvdOS6sJ5t7RtOzrKjagy3APTEUvawKWk31g6XOUqIJ9aO1CRlPKlmR0vNW6+YOpUl3m
+	cBREwwHFWMU9fsA=.0bZi6aLUzP44CAP80YmNbndFKIDA3IYdq64Dcz6RhKhun5zrhPkNxeuCWC
+	dmaEN4hIx0l2g2RQDhDwJ7IjcISm9qVJAVgtpIlJMfIl/Y98iEGXFVCL6iOBa1xcaeBFRwHUkxt
+	gMtMCpfbhojKgKqLdizpWGUbsNIoFuvHCUZv+cIZI6KLcfsuKk3LifNQ5FpfYBVLq+yW0YuX67X
+	5Eu4owBxiSpRNMAobYtiDiDTA3g+5ofpqoGH0mMyyJyHrrqottGTjuaCjRQaQ2DwYs6NgjmMslw
+	qZEDa8MsGLijwj42VzSi08hLzph7S1OOBZuHp4I4rRN5H+Kv09eE9o4WtoQ==
+X-TM-Addin-ProductCode: EMS
+Subject: Re: [virtio-dev] Re: [RFC PATCH v3 3/3] SPI: Add virtio SPI driver.
 
+Hello Haixu,
 
+no, I've not touched spidev.c. Nowhere. I took Vanilla next/stable and 
+applied the patches I sent.
 
-On 2/13/2024 9:53 PM, Harald Mommer wrote:
-> +static struct spi_board_info board_info = {
-> +	.modalias = "spi-virtio",
-> +};
+Run the driver as a (somewhat different but comparable) module on 6.5 on 
+hardware over virtio-MMIO. Probes and goes live.
 
-Hi Harald,
-     Do you add "spi-virtio" in spidev_spi_ids in spidev.c when you 
-doing the tests, to probe spidev driver?
+Tested on next/stable using a specially adapted QEMU version which 
+allows the usage of our proprietary virtio SPI device over PCI in qemu. 
+Probes and goes live.
 
-Thanks
+There may be other patches in the setup we're using I'm not aware of but 
+not this one.
+
+Only in case you're using some locally developed virtio SPI device on 
+qemu which uses PCI transport:
+
+SPI has ID 45. Means 0x2d.
+
+https://www.qemu.org/docs/master/specs/pci-ids.html
+
+1af4:1040 to 1af4:10ef
+
+    ID range for modern virtio devices. The PCI device ID is calculated
+    from the virtio device ID by adding the 0x1040 offset. ...
+
+lspci on qemu:
+
+/ # lspci
+...
+00:03.0 Class 00ff: 1af4:106d
+...
+
+/ #
+
+You see something like this?
+
+Regards
+Harald
+
+On 04.03.24 08:11, Haixu Cui wrote:
+>
+>
+> On 2/13/2024 9:53 PM, Harald Mommer wrote:
+>> +static struct spi_board_info board_info = {
+>> +    .modalias = "spi-virtio",
+>> +};
+>
+> Hi Harald,
+>     Do you add "spi-virtio" in spidev_spi_ids in spidev.c when you 
+> doing the tests, to probe spidev driver?
+>
+> Thanks
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+>
 
 ---------------------------------------------------------------------
 To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
