@@ -1,430 +1,474 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 478F6CA40
-	for <virtio-dev@lists.linux.dev>; Tue, 21 May 2024 02:55:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB63D1BF31;
+	Tue, 21 May 2024 02:57:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716260157; cv=none; b=gBQmHN9SornxHTwt5Bk+Pz9z99TYNjijjtDUh0wQDTC0Yh76J6Qb8W2lUwq/9ZnPD86NbBzq/KdLkBstfoCq+mBsz1UW2w1IE9CboEPu76CJWctyJFZpi5KwUVNrhEUFCgPIJGnObtnHNgOdodJf0UwPtaqSCQ12CYHQK0PzYag=
+	t=1716260265; cv=none; b=OBJHv4cU43YmqhSbaG9/V9qdMMJFYXPUsMOpWwIQYm3XzuSdUABaA3iyz0tN7kCz5yja1HGt3qznYjbs+MwN4fXxfgGb4S0x54Vv/RtqwyRNHpO78ytD2fG+tZn8+JVoqmwi8bb+PhjeAs8OfknC9BkowzkyneuUGhrsC+Wawb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716260157; c=relaxed/simple;
-	bh=pJ//mO3ikh6OzFpzBHhPVNTxmu6g/b/wSs7BlkYUE6U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=JM4MSya5f+LwzyjoB3K6fDc7eAwtqJVVwVm2DOmDIBu2e41NW4ttoCOfMyfm96bf+j9xNJvGWgpu+xVPup0xmdgwH/5itPhRpd5eZ0NR9BUJvmNVkrJgL0qzVJAd1TqH4n9ulite+a7+IwcgbwjQotEdZgvvJDv6/N1WFSsDEr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=RbB+8bz6; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1716260265; c=relaxed/simple;
+	bh=LMyrcHaQ9oa9QZHlgW1qY8iyI52X5Np7OE/T+PuKg/Q=;
+	h=Message-ID:Subject:Date:From:To:Cc:References:In-Reply-To:
+	 Content-Type; b=KFoHLwd6e/JOmPr+z8ZVmBKE/dEOM70l51bRP9Ihbo8YdvqAI3bEeY9F6+usvX1gNySuM6ijJ3vlj/khq5mXY+iCsKsRAim0hTkFefm7guYu5n+q65Vvv3ooepdp32H7nLS6KWQMychkkpFUBOvWl2Ac0wYE9uCXytXdBaGL4eQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=YDdRYmAN; arc=none smtp.client-ip=115.124.30.132
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RbB+8bz6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1716260154;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3gBmHZ+q0o3TrlTJxjhPIwHb7b+hAz0jK2Y8P2fAsFo=;
-	b=RbB+8bz6DAEF2mjInEpPpJRIuovbPLFfwlIVGRCX/f01VVSbyF5/aQt2sNacVeWZcdO+vJ
-	PGuqsXdDD1BtRl19vF9dNnJJW1nsNmV2Z0lA2kmBVOohEbgQAt1c4fnqWpUZeDNxhKO4GP
-	Iya7oCRhAKzo0TA26gZ9DXRN6buDuRE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-377-v0tG1_mJOvCVeB2_nyBfrg-1; Mon, 20 May 2024 22:55:49 -0400
-X-MC-Unique: v0tG1_mJOvCVeB2_nyBfrg-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-41ffa918455so57733005e9.3
-        for <virtio-dev@lists.linux.dev>; Mon, 20 May 2024 19:55:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716260148; x=1716864948;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3gBmHZ+q0o3TrlTJxjhPIwHb7b+hAz0jK2Y8P2fAsFo=;
-        b=TeHv8hbmaOzyVb3jBciyHumzat+tSECnckdssyNH/SLBQjGurE0B+Tbp0Q/Elrplyf
-         9iwcBssoNdXelbCD51vOKSXz19rPp3BGv60qU/ibcwcrl/15PyAi5njHtH7RxN6lcoTD
-         +wEluyM5O+gv3HKdrVGWf63OSOjhAHDk4O5MJPDrV11QhxLHOjxGUVBA65zxxh2bk7OK
-         uGX/eVLCdrR17K6cUW452wIpFFJQqkEvIln4YYpWtpwE7nUWVsrwoRQkvQMVvxiIFJmU
-         GBRvcJbwI/NvVusxm3JhFocLxq7BA3DEKu9nxoiPF9lf07JOyjlI/8TAseDS/WzoOgzc
-         aAsA==
-X-Gm-Message-State: AOJu0YxkN7QI3tJDxh7LwsWJiZceM+DuwiXagsK2hc/RJ0SlPu4PgzlY
-	S21PB1eVVwNtxp8XCy+aJr+AB2WbvKuTxSLCqEqsqzUA0NYkuQNEsLfgCzzF4D4bDuxL2dFIALA
-	iMxFZ7CdK0vO1ziLaDtD1aHPvZ0Lv6bfk8p4PMjHFQaqI+tV5rbAECj6bITA=
-X-Received: by 2002:a05:600c:4f92:b0:420:177f:c2a6 with SMTP id 5b1f17b1804b1-420177fc636mr190669215e9.10.1716260148093;
-        Mon, 20 May 2024 19:55:48 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEzHvw9wP/i7+cuxV87tZl2dcidoAuYj0SPRQldm8GMIga4UGgw8fnEMg2IsoIV0b+gbS1Eng==
-X-Received: by 2002:a05:600c:4f92:b0:420:177f:c2a6 with SMTP id 5b1f17b1804b1-420177fc636mr190669055e9.10.1716260147380;
-        Mon, 20 May 2024 19:55:47 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc7:240:5a20:b565:3672:6f2b:3d2d])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-41fa9dbab53sm455826225e9.13.2024.05.20.19.55.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 May 2024 19:55:46 -0700 (PDT)
-Date: Mon, 20 May 2024 22:55:42 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: virtio-dev@lists.linux.dev, maxime.coquelin@redhat.com,
-	Eelco Chaudron <echaudro@redhat.com>,
-	Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v3] virtio-net: define UDP tunnel offload feature
-Message-ID: <20240520225254-mutt-send-email-mst@kernel.org>
-References: <f0bf2db203f8061a3ecb50b7a48cf26d8f3c7f68.1716193086.git.pabeni@redhat.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="YDdRYmAN"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1716260253; h=Message-ID:Subject:Date:From:To:Content-Type;
+	bh=6ewAP595xU2R823E+chSLfBIp0S5hLjyXxnEU5nWBa4=;
+	b=YDdRYmANfm9yiqi4NXD2ybwvVoROZWNgmk8hesB2DzzrnFrcP0CTxYYBB8cPWRqYaSWkI6jZcDQy71AItra5sHHS0OXuyxukpYp/mYuJPwoDVfwdJ95j9ugj3ZqHSq4W2pWpAAC14Q6BQRf6RDdIsbTmnd+h5Wl/28O+HiKCekI=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037067110;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0W6wB5h1_1716260251;
+Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0W6wB5h1_1716260251)
+          by smtp.aliyun-inc.com;
+          Tue, 21 May 2024 10:57:32 +0800
+Message-ID: <1716258261.2936878-1-hengqi@linux.alibaba.com>
+Subject: Re: RE: RE: RE: [PATCH v2] virtio-net: improve description of default coalescing parameters
+Date: Tue, 21 May 2024 10:24:21 +0800
+From: Heng Qi <hengqi@linux.alibaba.com>
+To: Parav Pandit <parav@nvidia.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ "virtio-comment@lists.linux.dev" <virtio-comment@lists.linux.dev>,
+ "virtio-dev@lists.linux.dev" <virtio-dev@lists.linux.dev>,
+ Jason Wang <jasowang@redhat.com>,
+ "Michael S .   Tsirkin" <mst@redhat.com>
+References: <20240513125634.102955-1-hengqi@linux.alibaba.com>
+ <PH0PR12MB54815E887B1010D2AE96CEACDCE32@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1715665954.5198457-1-hengqi@linux.alibaba.com>
+ <PH0PR12MB5481EAD646ECB0CBF979FFC7DCE32@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1715673206.4680686-3-hengqi@linux.alibaba.com>
+ <PH0PR12MB5481CAFB5B39638566238063DCE32@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481CAFB5B39638566238063DCE32@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-In-Reply-To: <f0bf2db203f8061a3ecb50b7a48cf26d8f3c7f68.1716193086.git.pabeni@redhat.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Mon, May 20, 2024 at 10:24:53AM +0200, Paolo Abeni wrote:
-> The VIRTIO_NET_HDR_GSO_UDP_TUNNEL is a gso_type flag allowing GSO over
-> UDP tunnel. It can be negotiated on both the host and guest sides.
-> 
-> UDP tunnel usage is ubiquitous in container deployment, and the ability
-> to offload UDP encapsulated GSO traffic impacts greatly the performances
-> and the CPU utilization of such use cases.
-> 
-> One constraint addressed here is that the virtio side (either device or
-> driver) receiving a UDP tunneled GSO packet must be able to reconstruct
-> completely the inner and outer headers offset - to allow for later GSO.
-> 
-> To accommodate such need, new optional fields are introduced in the
-> virtio_net header: outer_th_offset, inner_protocol, inner_mac_offset,
-> inner_nh_offset. They map directly to the corresponding header
-> information.
-> 
-> Note that the inner transport header is implied by the (inner) checksum
-> offload, if present. Otherwise, it's up to the receiver to detect the
-> inner transport header offset from the provided information, as it's
-> currently the case for plain (not UDP tunneled) GSO packets.
-> 
-> The outer UDP header may carry a second checksum, which can be offloaded
-> independently from the inner one. Since UDP tunnel checksum offload
-> support makes little sense without UDP tunnel GSO support, to avoid
-> unnecessary complex feature negotiation, the
-> VIRTIO_NET_HDR_GSO_UDP_TUNNEL feature implies the support for the outer
-> header checksum offload and the checksum itself is handled similarly to
-> the inner header one.
-> 
-> Note that there is no concept of UDP tunnel type negotiation (e.g.
-> vxlan, geneve, vxlan-gpe, etc.). That is intentional because:
-> - given the information carried by the guest or host kernel, it's
->   impossible to probe reliably the UDP tunnel type. Specifically, the
->   outer UDP port numbers give a hint, but peers could use nonstandard
->   ones.
-> - all the existing UDP tunnel protocols behave the same way WRT GSO
->   offload, carrying an immutable header on top of the outer transport
->   one.
-> - if a new UDP tunnel protocol should surface in the future with
->   different constraints, the host and guest kernels will need explicit
->   support for it, including new, different GSO features. Additional
->   virtio support should be designed separately.
-> 
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+On Tue, 14 May 2024 13:09:32 +0000, Parav Pandit <parav@nvidia.com> wrote:
+>=20
+> > From: Heng Qi <hengqi@linux.alibaba.com>
+> > Sent: Tuesday, May 14, 2024 1:23 PM
+> >=20
+> > On Tue, 14 May 2024 07:48:55 +0000, Parav Pandit <parav@nvidia.com>
+> > wrote:
+> > >
+> > >
+> > > > From: Heng Qi <hengqi@linux.alibaba.com>
+> > > > Sent: Tuesday, May 14, 2024 11:23 AM
+> > > >
+> > > > On Tue, 14 May 2024 03:59:52 +0000, Parav Pandit <parav@nvidia.com>
+> > > > wrote:
+> > > > > Hi Heng,
+> > > > >
+> > > > >
+> > > > > > From: Heng Qi <hengqi@linux.alibaba.com>
+> > > > > > Sent: Monday, May 13, 2024 6:27 PM
+> > > > > >
+> > > > > > Currently, a device may initialize each vq's coalescing
+> > > > > > parameters to empirically non-zero values, so the description of
+> > > > > > this part is supplemented for the virtio spec.
+> > > > > >
+> > > > > Currently the spec says to initialize the vq's coalescing paramet=
+ers to zero.
+> > > > >
+> > > > > Spec snippet: " Upon reset, a device MUST initialize all
+> > > > > coalescing
+> > > > parameters to 0."
+> > > > >
+> > > > > So I didn't understand why you say "current the device may initia=
+lize".
+> > > > >
+> > > > > Do you mean, you want to change the spec to say, by default the
+> > > > > device has
+> > > > chosen to set zero or non-zero default parameter as it likes.
+> > > > > (and not zero).
+> > > >
+> > > > Yes.
+> > > >
+> > > > If a device supports interrupt coalescing moderation, it usually has
+> > > > a non- zero default value to provide better performance.
+> > > When VIRTIO_NET_F_VQ_NOTF_COAL or VIRTIO_NET_F_NOTF_COAL is not
+> > negotiated, the device can apply any notification coalescing value.
+> > > (assuming EVENT_IDX is off).
+> > >
+> > > But when they above features are negotiated, it is expected that
+> > > driver is going to driver it,
+> >=20
+> > The driver drives the runtime parameters without conflicting with the i=
+nitial
+> > default values.
+> > And most users/drivers without dim enable may not drive it.
+> >=20
+> There is no conflict in runtime or default parameters.
+> For driver it starts after 10msec or 4 minutes, both are runtime paramete=
+rs.
+>=20
+> > The device need to be defensive about default performance.
+> >=20
+> The device can surely offer the default performance with non zero default=
+ values.
 
+That's what I'm mentioning.
 
-Paolo,
-when you subscribed to virtio-dev you should have received this:
+>=20
+> > >in such case what is the good motivation to start with some arbitrary =
+value?
+> > >
+> > > > I'm trying to fix this, and
+> > > > we shouldn't force the device to always initialize with 0.
+> > > >
+> > > If driver is in control, driver decides what values to set.
+> > > And hence, arbitrary value is
+> >=20
+> > Then maybe the driver is never set and the device uses a 0 which messes=
+ up
+> > most data scenarios.
+> >=20
+> If driver does not want to set it, why did it enable the feature in first=
+ place?
+> So asking again, is it because driver enabled featured too early in the d=
+river load sequence, and not DIM is also disabled?
 
+I don't see the connection.
 
+>=20
+> If feature is negotiated, than DIM can be enabled by default, and therefo=
+re there is no need for the defaults?
 
-When to use this list:
-- questions and change proposals for Virtio drivers and devices
-  implementing the specification.
+Right. But if DIM is not enabled (pls remember that DIM is just one of the
+application scenarios of VQ_NOTF_COAL, right?), the user can query the init=
+ial
+value of the device, which may be any value.
 
-When not to use this list:
-- questions and change proposals for the Virtio specification,
-  including the specification of basic functionality, transports and
-  devices (please use the virtio-comment mailing list
-  [mailto:virtio-comment@lists.linux.dev] for this).
+>=20
+> Or you are saying, that enabling DIM as default has some issue, and until=
+ that point you prefer to have some default in the device?
 
+Partly true. The complete purpose is that the device can have any default v=
+alues
+(0 or non-zero).
 
-Did you receive this? If yes was this somehow unclear? If no why
-are you sending a Virtio specification change proposal
-to virtio-dev?
+>=20
+> > Cloud vendors cannot do this. And I don=E2=80=99t seem to see any inter=
+ference with
+> > other devices from this proposal?
+> > If the device does not want a non-zero value, a value of 0 can be used =
+as the
+> > default value.
+> >=20
+> I didn=E2=80=99t understand above.
+>=20
+> > >
+> > > > Especially when the DIM is disabled from the enabled state, allowing
+> > > > the driver to restore default parameters for device will prevent
+> > > > occasional performance degradation.
+> > > >
+> > > When DIM is disabled, do you mean driver does not have any good defau=
+lts?
+> >=20
+> > DIM is not guaranteed to have a friendly value when disabled.
+> >=20
+> I didn=E2=80=99t follow.=20
+>=20
+> (a) When DIM is enabled, DIM decides the value.
+> (b) When DIM is disabled, zero is not good default in the device. Did I u=
+nderstand right?
+>=20
+> I agree with (a) and (b).
 
+Right.
 
+>=20
+> > > I guess this issue surfaces from the feature negotiation limitation t=
+hat, it
+> > must be done early enough before DRIVER_OK.
+> > > And DIM is still disabled in driver.
+> >=20
+> > We lack the capability filed of default coalescing parameters, so GET i=
+s used to
+> > alleviate this.
+> >=20
+> When GET is not supported, ethtool should get -ENOSUPP instead of 0.
 
-> ---
-> v2 -> v3:
->  - UDP_TUNNEL -> UDP_TUNNEL_GSO
->  - add explicit fields for the inner meta-data
->  - more verbose changelog
->  https://lists.oasis-open.org/archives/virtio-dev/202206/msg00026.html
-> 
-> v1 -> v2:
->  - explicitly state that the outer header probing is mandatory
->  - explicitly state that GSO_UDP is not allowed with GSO_UDP_TUNNEL
->  - clarify hdr_len usage
->  - clarify UDP_TUNNEL_CSUM bit usage
->  - fix a few typos
->  https://lists.oasis-open.org/archives/virtio-dev/202205/msg00037.html
-> ---
->  device-types/net/description.tex | 118 ++++++++++++++++++++++++++++---
->  1 file changed, 110 insertions(+), 8 deletions(-)
-> 
-> diff --git a/device-types/net/description.tex b/device-types/net/description.tex
-> index 76585b0..2eae797 100644
-> --- a/device-types/net/description.tex
-> +++ b/device-types/net/description.tex
-> @@ -88,6 +88,12 @@ \subsection{Feature bits}\label{sec:Device Types / Network Device / Feature bits
->  \item[VIRTIO_NET_F_CTRL_MAC_ADDR(23)] Set MAC address through control
->      channel.
->  
-> +\item[VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO (49)] Driver can receive GSO packets
-> +  carried by an UDP tunnel and can handle the outer checksum.
-> +
-> +\item[VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO (50)] Device can receive GSO packets
-> +  carried by an UDP tunnel and can handle the outer checksum.
-> +
->  \item[VIRTIO_NET_F_HASH_TUNNEL(51)] Device supports inner header hash for encapsulated packets.
->  
->  \item[VIRTIO_NET_F_VQ_NOTF_COAL(52)] Device supports virtqueue notification coalescing.
-> @@ -133,12 +139,16 @@ \subsubsection{Feature bit requirements}\label{sec:Device Types / Network Device
->  \item[VIRTIO_NET_F_GUEST_UFO] Requires VIRTIO_NET_F_GUEST_CSUM.
->  \item[VIRTIO_NET_F_GUEST_USO4] Requires VIRTIO_NET_F_GUEST_CSUM.
->  \item[VIRTIO_NET_F_GUEST_USO6] Requires VIRTIO_NET_F_GUEST_CSUM.
-> +\item[VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO] Requires VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
-> +   VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6.
->  
->  \item[VIRTIO_NET_F_HOST_TSO4] Requires VIRTIO_NET_F_CSUM.
->  \item[VIRTIO_NET_F_HOST_TSO6] Requires VIRTIO_NET_F_CSUM.
->  \item[VIRTIO_NET_F_HOST_ECN] Requires VIRTIO_NET_F_HOST_TSO4 or VIRTIO_NET_F_HOST_TSO6.
->  \item[VIRTIO_NET_F_HOST_UFO] Requires VIRTIO_NET_F_CSUM.
->  \item[VIRTIO_NET_F_HOST_USO] Requires VIRTIO_NET_F_CSUM.
-> +\item[VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO] Requires VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_TSO6,
-> +   VIRTIO_NET_F_GUEST_USO4 or VIRTIO_NET_F_GUEST_USO6.
->  
->  \item[VIRTIO_NET_F_CTRL_RX] Requires VIRTIO_NET_F_CTRL_VQ.
->  \item[VIRTIO_NET_F_CTRL_VLAN] Requires VIRTIO_NET_F_CTRL_VQ.
-> @@ -374,6 +384,9 @@ \subsection{Device Initialization}\label{sec:Device Types / Network Device / Dev
->    segmentation/fragmentation offload by negotiating the VIRTIO_NET_F_HOST_TSO4 (IPv4
->    TCP), VIRTIO_NET_F_HOST_TSO6 (IPv6 TCP), VIRTIO_NET_F_HOST_UFO
->    (UDP fragmentation) and VIRTIO_NET_F_HOST_USO (UDP segmentation) features.
-> +  Additionally, it can negotiate the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO feature
-> +  to use TCP segmentation or UDP segmentation on top of UDP encapsulation,
-> +  respecting the other negotiated features.
->  
->  \item The converse features are also available: a driver can save
->    the virtual device some work by negotiating these features.\note{For example, a network packet transported between two guests on
-> @@ -382,8 +395,9 @@ \subsection{Device Initialization}\label{sec:Device Types / Network Device / Dev
->     The VIRTIO_NET_F_GUEST_CSUM feature indicates that partially
->    checksummed packets can be received, and if it can do that then
->    the VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6,
-> -  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4
-> -  and VIRTIO_NET_F_GUEST_USO6 are the input equivalents of the features described above.
-> +  VIRTIO_NET_F_GUEST_UFO, VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_USO4,
-> +  VIRTIO_NET_F_GUEST_USO6 and VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO
-> +  are the input equivalents of the features described above.
->    See \ref{sec:Device Types / Network Device / Device Operation /
->  Setting Up Receive Buffers}~\nameref{sec:Device Types / Network
->  Device / Device Operation / Setting Up Receive Buffers} and
-> @@ -407,12 +421,14 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
->  #define VIRTIO_NET_HDR_F_NEEDS_CSUM    1
->  #define VIRTIO_NET_HDR_F_DATA_VALID    2
->  #define VIRTIO_NET_HDR_F_RSC_INFO      4
-> +#define VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM 8
->          u8 flags;
->  #define VIRTIO_NET_HDR_GSO_NONE        0
->  #define VIRTIO_NET_HDR_GSO_TCPV4       1
->  #define VIRTIO_NET_HDR_GSO_UDP         3
->  #define VIRTIO_NET_HDR_GSO_TCPV6       4
->  #define VIRTIO_NET_HDR_GSO_UDP_L4      5
-> +#define VIRTIO_NET_HDR_GSO_UDP_TUNNEL 0x40
->  #define VIRTIO_NET_HDR_GSO_ECN      0x80
->          u8 gso_type;
->          le16 hdr_len;
-> @@ -423,6 +439,10 @@ \subsection{Device Operation}\label{sec:Device Types / Network Device / Device O
->          le32 hash_value;        (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
->          le16 hash_report;       (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
->          le16 padding_reserved;  (Only if VIRTIO_NET_F_HASH_REPORT negotiated)
-> +        le16 outer_th_offset;   (Only if VIRTIO_NET_F_UDP_TUNNEL_GSO negotiated)
-> +        le16 inner_protocol;    (Only if VIRTIO_NET_F_UDP_TUNNEL_GSO negotiated)
-> +        le16 inner_mac_offset;  (Only if VIRTIO_NET_F_UDP_TUNNEL_GSO negotiated)
-> +        le16 inner_nh_offset;   (Only if VIRTIO_NET_F_UDP_TUNNEL_GSO negotiated)
->  };
->  \end{lstlisting}
->  
-> @@ -480,6 +500,8 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  followed by the TCP header (with the TCP checksum field 16 bytes
->  into that header). \field{csum_start} will be 14+20 = 34 (the TCP
->  checksum includes the header), and \field{csum_offset} will be 16.
-> +If the given packets has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit set,
-> +the above checksum fields refer to the inner header checksum.
->  \end{note}
->  
->  \item If the driver negotiated
-> @@ -516,6 +538,30 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  specifically in the protocol.}.
->     \end{itemize}
->  
-> +\item If the driver negotiated the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO feature,
-> +  the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit in \field{gso_type} indicates that
-> +  the GSO protocol is encapsulated in an UDP tunnel.
-> +  The other tunnel-related fields indicate how to replicate the inner packet
-> +  header to cut it into smaller packets:
-> +
-> +  \begin{itemize}
-> +  \item \field{outer_th_offset} field indicates the outer transport header within
-> +      the packet
-> +
-> +  \item \field{inner_protocol} field indicates the ethernet type of the inner
-> +      protocol.
-> +
-> +  \item \field{inner_mac_offset} field indicates the inner mac header within the packet
-> +
-> +  \item \field{inner_nh_offset} field indicates the inner network header within
-> +      the packet
-> +
-> +  \item If the \field{flags} field has the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM set,
-> +    the outer UDP checksum field carries the checksum for the UDP pseudo header
-> +    and the complete UDP checksum can be computed in a similar way to the
-> +    inner TCP.
-> +  \end{itemize}
-> +
->  \item \field{num_buffers} is set to zero.  This field is unused on transmitted packets.
->  
->  \item The header and packet are added as one output descriptor to the
-> @@ -557,6 +603,14 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  driver MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
->  \field{gso_type}.
->  
-> +The driver MUST NOT send to the device TCP or UDP GSO packets over UDP tunnel
-> +requiring segmentation offload, unless the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO is
-> +negotiated, in which case the driver MUST set the VIRTIO_NET_HDR_GSO_UDP_TUNNEL
-> +bit in the \field{gso_type}.
-> +
-> +The driver MUST NOT set the VIRTIO_NET_HDR_GSO_UDP_TUNNEL together with
-> +VIRTIO_NET_HDR_GSO_UDP.
-> +
->  If the VIRTIO_NET_F_CSUM feature has been negotiated, the
->  driver MAY set the VIRTIO_NET_HDR_F_NEEDS_CSUM bit in
->  \field{flags}, if so:
-> @@ -633,6 +687,18 @@ \subsubsection{Packet Transmission}\label{sec:Device Types / Network Device / De
->  	\end{note}
->  \end{itemize}
->  
-> +If the VIRTIO_NET_F_HOST_UDP_TUNNEL_GSO option has been negotiated:
-> +\begin{itemize}
-> +\item If the \field{gso_type} has the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit set
-> +	the device MUST use the \field{outer_th_offset}, \field{inner_protocol},
-> +  \field{inner_mac_offset} and \field{inner_nh_offset} fields to
-> +  locate the corresponding headers inside the packet.
-> +\end{itemize}
-> +
-> +If VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit in \field{gso_type} is not set, the
-> +device MUST NOT use the \field{outer_th_offset}, \field{inner_protocol},
-> +\field{inner_mac_offset} and \field{inner_nh_offset}.
-> +
->  If VIRTIO_NET_HDR_F_NEEDS_CSUM is not set, the device MUST NOT
->  rely on the packet checksum being correct.
->  \paragraph{Packet Transmission Interrupt}\label{sec:Device Types / Network Device / Device Operation / Packet Transmission / Packet Transmission Interrupt}
-> @@ -727,8 +793,8 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->    has been validated.
->  \end{enumerate}
->  
-> -Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP and ECN
-> -features enable receive checksum, large receive offload and ECN
-> +Additionally, VIRTIO_NET_F_GUEST_CSUM, TSO4, TSO6, UDP, UDP_TUNNEL
-> +and ECN features enable receive checksum, large receive offload and ECN
->  support which are the input equivalents of the transmit checksum,
->  transmit segmentation offloading and ECN features, as described
->  in \ref{sec:Device Types / Network Device / Device Operation /
-> @@ -738,6 +804,15 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->    negotiated, then \field{gso_type} MAY be something other than
->    VIRTIO_NET_HDR_GSO_NONE, and \field{gso_size} field indicates the
->    desired MSS (see Packet Transmission point 2).
-> +\item If the VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO option was negotiated and
-> +  \field{gso_type} is not VIRTIO_NET_HDR_GSO_NONE, the VIRTIO_NET_HDR_GSO_UDP_TUNNEL
-> +  bit MAY be set. In such case the \field{outer_th_offset}, \field{inner_protocol},
-> +  \field{inner_mac_offset} and \field{inner_nh_offset} fields indicates corresponding
-> +  header information.
-> +  Additionally, the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM bit in the
-> +  \field{flags} MAY be set, indicating that the outer UDP header
-> +  carries the UDP pseudo header csum and that the driver can compute
-> +  the full UDP checksum on top of it (see Packet Transmission point 3).
->  \item If the VIRTIO_NET_F_RSC_EXT option was negotiated (this
->    implies one of VIRTIO_NET_F_GUEST_TSO4, TSO6), the
->    device processes also duplicated ACK segments, reports
-> @@ -750,8 +825,9 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->    from \field{csum_start} and any preceding checksums
->    have been validated.  The checksum on the packet is incomplete and
->    if bit VIRTIO_NET_HDR_F_RSC_INFO is not set in \field{flags},
-> -  then \field{csum_start} and \field{csum_offset} indicate how to calculate it
-> -  (see Packet Transmission point 1).
-> +  then \field{csum_start} and \field{csum_offset} indicate how to calculate it.
-> +  If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is set, the \field{csum_start} field
-> +  refers to the inner transport header offset (see Packet Transmission point 1).
->  
->  \end{enumerate}
->  
-> @@ -800,6 +876,20 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  which have the Explicit Congestion Notification bit set, unless the
->  VIRTIO_NET_F_GUEST_ECN feature is negotiated, in which case the
->  device MUST set the VIRTIO_NET_HDR_GSO_ECN bit in
-> +
-> +The device SHOULD NOT send to the driver TCP or UDP GSO packets encapsulated in UDP
-> +tunnel and requiring segmentation offload, unless the
-> +VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO is negotiated, in which case the device MUST set
-> +the VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit in \field{gso_type} and MUST set the
-> +\field{outer_th_offset}, \field{inner_protocol}, \field{inner_mac_offset} and
-> +\field{inner_nh_offset}. If the outer UDP header carries a non 0 checksum:
-> +\begin{enumerate}
-> +\item the device MUST set the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM bit in
-> +	\field{flags}
-> +\item the device MUST set the outer UDP header checksum field to the outer
-> +	UDP pseudo header sum
-> +\end{enumerate}
-> +
->  \field{gso_type}.
->  
->  If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
-> @@ -819,6 +909,12 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  	fully checksummed packet;
->  \end{enumerate}
->  
-> +\begin{note}
-> +If the VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO feature is negotiated and the
-> +VIRTIO_NET_HDR_GSO_UDP_TUNNEL bit is set, the VIRTIO_NET_HDR_F_NEEDS_CSUM
-> +bit refers to the inner header checksum.
-> +\end{note}
-> +
->  If none of the VIRTIO_NET_F_GUEST_TSO4, TSO6, UFO, USO4 or USO6 options have
->  been negotiated, the device MUST set \field{gso_type} to
->  VIRTIO_NET_HDR_GSO_NONE.
-> @@ -842,8 +938,9 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  If the VIRTIO_NET_F_GUEST_CSUM feature has been negotiated, the
->  device MAY set the VIRTIO_NET_HDR_F_DATA_VALID bit in
->  \field{flags}, if so, the device MUST validate the packet
-> -checksum (in case of multiple encapsulated protocols, one level
-> -of checksums is validated).
-> +checksum. If the VIRTIO_NET_HDR_F_UDP_TUNNEL_CSUM
-> +bit in \field{flags} is also set, the device MUST additionally validate
-> +the outer UDP header checksum.
->  
->  \drivernormative{\paragraph}{Processing of Incoming
->  Packets}{Device Types / Network Device / Device Operation /
-> @@ -863,6 +960,10 @@ \subsubsection{Processing of Incoming Packets}\label{sec:Device Types / Network
->  This is due to various bugs in implementations.
->  \end{note}
->  
-> +If the VIRTIO_NET_HDR_GSO_UDP_TUNNEL_GSO bit in \field{gso_type} is not set,
-> +the driver MUST NOT use the \field{outer_th_offset}, \field{inner_protocol},
-> +\field{inner_mac_offset} and \field{inner_nh_offset}.
-> +
->  If neither VIRTIO_NET_HDR_F_NEEDS_CSUM nor
->  VIRTIO_NET_HDR_F_DATA_VALID is set, the driver MUST NOT
->  rely on the packet checksum being correct.
-> @@ -1624,6 +1725,7 @@ \subsubsection{Control Virtqueue}\label{sec:Device Types / Network Device / Devi
->  #define VIRTIO_NET_F_GUEST_TSO6       8
->  #define VIRTIO_NET_F_GUEST_ECN        9
->  #define VIRTIO_NET_F_GUEST_UFO        10
-> +#define VIRTIO_NET_F_GUEST_UDP_TUNNEL_GSO 49
->  #define VIRTIO_NET_F_GUEST_USO4       54
->  #define VIRTIO_NET_F_GUEST_USO6       55
->  
-> -- 
-> 2.43.2
-> 
+We don't have a separate feature bit for GET, right? So if VQ_NOTF_COAL is
+negotiated, the device supports the GET command.
 
+>=20
+> > >
+> > > That explains.
+> > >
+> > > Commit log needs to explain this limitation and the gain by relaxing =
+it to be
+> > non-zero.
+> > >
+> > > Any reason DIM is disabled by default in the driver?
+> > > If VQ_NOTF_COAL is supported by device, DIM should be enabled by
+> > default.
+> >=20
+> > virtio-net support for netdim needs to be optimized. Of course, I also =
+found
+> > that other network cards also have optimization points.
+> >=20
+> > I'm trying to enable DIM for upstream by default, after I've done the p=
+rofile list
+> > tuning etc.
+> >=20
+> > >
+> > > > >
+> > > > > > Since the VIRTIO_NET_F_NOTF_COAL feature does not provide a
+> > > > > > related GET command or config field, we still consider its defa=
+ult values
+> > to be 0.
+> > > > > >
+> > > > > The behavior for VIRTIO_NET_F_NOTF_COAL and
+> > > > VIRTIO_NET_F_VQ_NOTF_COAL can stay same for the default value.
+> > > > > Can you please explain the motivation for running different
+> > > > > default values
+> > > > for two different features in this commit log?
+> > > >
+> > > > The current spec leaves coalescing parameters for both features at =
+0.
+> > > >
+> > > > F_VQ_NOTF_COAL provides a GET command, that is, non-zero 0 can be
+> > > > obtained by the driver from the device, but F_NOTF_COAL does not
+> > > > have a similar GET command.
+> > > >
+> > > GET command doesn't give the ability to define the defaults.
+> > > So both can have non zero defaults.
+> >=20
+> > Makes sense.
+> >=20
+> > >
+> > > > So when vq reset occurs or dim is disabled from the enabled state,
+> > > > the driver with F_VQ_NOTF_COAL negotiated has the ability to restore
+> > > > non-zero values, but only when F_NOTF_COAL is negotiated, the driver
+> > > > has no path to obtain the non-zero value, let alone restore non-zero
+> > values.
+> > > >
+> > > When F_NOTF_COAL is negotiated, if the device has its non zero defaul=
+ts,
+> > why does driver need to restore anything?
+> >=20
+> > Yes, device will set these.
+> >
+> Ok. so no restore needed.
+> =20
+> > > > >
+> > > > > > Suggested-by: Jason Wang <jasowang@redhat.com>
+> > > > > > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> > > > > > ---
+> > > > > > v1->v2:
+> > > > > >   - Update description @Jason.
+> > > > > >
+> > > > > >  device-types/net/description.tex | 22 +++++++++++++++-------
+> > > > > >  1 file changed, 15 insertions(+), 7 deletions(-)
+> > > > > >
+> > > > > > diff --git a/device-types/net/description.tex b/device-
+> > > > > > types/net/description.tex index 61cce1f..cf4b12c 100644
+> > > > > > --- a/device-types/net/description.tex
+> > > > > > +++ b/device-types/net/description.tex
+> > > > > > @@ -1805,6 +1805,10 @@ \subsubsection{Control
+> > > > > > Virtqueue}\label{sec:Device Types / Network Device / Devi
+> > > > > >
+> > > > > >  The device may generate notifications more or less frequently
+> > > > > > than specified by set commands of the VIRTIO_NET_CTRL_NOTF_COAL
+> > class.
+> > > > > >
+> > > > > > +If the VIRTIO_NET_F_VQ_NOTF_COAL feature is offered, the device
+> > > > > > +may initialize the coalescing parameters for each transmit or
+> > > > > > +receive virtqueue to non-zero values, otherwise, to 0, which
+> > > > > > +are called default
+> > > > > > coalescing parameters.
+> > > > > > +
+> > > > > Instead of 'offered', it should be 'negotiated'. Because if may be
+> > > > > offered,
+> > > > but driver may not have enabled it.
+> > > >
+> > > > I do not think so.
+> > > >
+> > > > Even if the driver does not negotiate, as long as the device has the
+> > > > ability to adjust coalescing parameters (i.e. offered), the device
+> > > > will initialize any values.
+> > > >
+> > > The device can initialize coalescing parameters regardless of VQ_NOTF=
+_COAL
+> > offered or not.
+> > >
+> >=20
+> > Right.
+> >=20
+> > >
+> > > > >
+> > > > > >  If coalescing parameters are being set, the device applies the
+> > > > > > last coalescing parameters set for a  virtqueue, regardless of
+> > > > > > the command used to set the parameters. Use the following
+> > > > > > command sequence  with two pairs of virtqueues as an example:
+> > > > > > @@ -1873,6 +1877,10 @@ \subsubsection{Control
+> > > > > > Virtqueue}\label{sec:Device Types / Network Device / Devi
+> > > > > >
+> > > > > >  The driver MUST ignore the values of coalescing parameters
+> > > > > > received from the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET command if
+> > > > > > the device responds with VIRTIO_NET_ERR.
+> > > > > >
+> > > > > > +If the VIRTIO_NET_F_VQ_NOTF_COAL feature is negotiated, the
+> > > > > > +driver
+> > > > > > MUST
+> > > > > > +get coalescing parameters for each enabled transmit or receive
+> > > > > > +virtqueue through the VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET
+> > > > command
+> > > > > > after a successful device reset.
+> > > > > > +
+> > > > > The driver is free to not call GET call at all. It can always jus=
+t do set.
+> > > > > So it cannot be must requirement for the driver to get them.
+> > > >
+> > > > This is mainly forced to MUST during the probe phase.
+> > > > Other timings, the existing spec has already described it clearly.
+> > > >
+> > > I don't see it is needed to force driver to read.
+> > > Why is it must for the driver to read it? It can operate without read.
+> >=20
+> > Otherwise the device has a non-zero default value, but users using etht=
+ool -c
+> > see a value of 0.
+> >=20
+> When GET is supported, ethtool callback should query the current value.
+> Driver can read it once at start time, but it is not a MUST requirement.
+> Driver can read it runtime too. It is the driver implementation choice.
+> We don=E2=80=99t need to tell in the spec, when driver MUST read it.
+
+I agree with this.
+
+>=20
+> > >
+> > > > >
+> > > > > The wording should be, the driver MAY get ...
+> > > > >
+> > > > > >  \devicenormative{\subparagraph}{Notifications
+> > > > > > Coalescing}{Device Types / Network Device / Device Operation /
+> > > > > > Control Virtqueue / Notifications Coalescing}
+> > > > > >
+> > > > > >  The device MUST ignore \field{reserved}.
+> > > > > > @@ -1884,18 +1892,18 @@ \subsubsection{Control
+> > > > > > Virtqueue}\label{sec:Device Types / Network Device / Devi  The
+> > > > > > device MUST respond to VIRTIO_NET_CTRL_NOTF_COAL_VQ_SET and
+> > > > > > VIRTIO_NET_CTRL_NOTF_COAL_VQ_GET commands with
+> > > > VIRTIO_NET_ERR if
+> > > > > > the designated virtqueue is not an enabled transmit or receive
+> > virtqueue.
+> > > > > >
+> > > > > > -Upon disabling and re-enabling a transmit virtqueue, the device
+> > > > > > MUST set the coalescing parameters of the virtqueue -to those
+> > > > > > configured through the VIRTIO_NET_CTRL_NOTF_COAL_TX_SET
+> > > > command, or,
+> > > > > > if the driver did not set any TX coalescing parameters, to 0.
+> > > > > > -
+> > > > > > -Upon disabling and re-enabling a receive virtqueue, the device
+> > > > > > MUST set the coalescing parameters of the virtqueue -to those
+> > > > > > configured through the VIRTIO_NET_CTRL_NOTF_COAL_RX_SET
+> > command,
+> > > > > > or, if the driver did not set any RX coalescing parameters, to =
+0.
+> > > > > > -
+> > > > > >  The behavior of the device in response to set commands of the
+> > > > > > VIRTIO_NET_CTRL_NOTF_COAL class is best-effort:
+> > > > > >  the device MAY generate notifications more or less frequently
+> > > > > > than specified.
+> > > > > >
+> > > > > >  A device SHOULD NOT send used buffer notifications to the
+> > > > > > driver if the notifications are suppressed, even if the
+> > > > > > notification conditions are
+> > > > met.
+> > > > > >
+> > > > > > -Upon reset, a device MUST initialize all coalescing parameters=
+ to 0.
+> > > > > > +Upon reset, a device MUST set default coalescing parameters for
+> > > > > > +all transmit or receive virtqueues.
+> > > > > > +
+> > > > > The device MAY set parameters to zero or non zero values..
+> > > >
+> > > > Ok.
+> > > >
+> > > > > I am still missing the motivation part of why to set non zero
+> > > > > value, even if
+> > > > the driver has negotiated the feature.
+> > > >
+> > > > Please see the above description.
+> > > >
+> > > If I understood is right, the case is:
+> > > _VQ_NOTF_COAL is negotiated, and DIM is disabled.
+> > > And device is unable to apply some good non zero defaults.
+> >=20
+> >=20
+> > If _VQ_NOTF_COAL is negotiated, and DIM is disabled:
+> >=20
+> > 1. The device wants to set a non-zero value for good perf,
+> >    but the user sees a value of 0.
+> >=20
+> The only limitation that we want to remove is, on device reset, the devic=
+e may have any default value.
+
+Right, and the driver may query the value using the GET command.
+
+>=20
+> > 2. When the user has not actively modified the value, DIM switches from=
+ the
+> >    enabled state to the disabled state, then the driver expects to issu=
+e a
+> >    setting command with a default value. To avoid performance degradati=
+on
+> >    caused by a bad value.
+> >=20
+> This #2 seems like some hack. Should I read the Linux code in this area?
+
+No. This is some kind of performance optimization at the code level. When D=
+IM is
+turned off, the driver configures default values for the device to avoid an=
+y big
+performance regression.
+
+>=20
+> > We assume that most users do not have the prerequisite knowledge to mod=
+ify
+> > coalecing parameters.
+> >=20
+> Right. Hence the DIM should be used.
+> When DIM is not used, a non zero default is good to have.
+> (without forcing the driver to read it).
+
++1
+
+Thanks.
+
+>=20
+> > Thanks.
+> >=20
+> > >
+> > > Right?
+> > >
+> > >
+> > > > Thanks.
+> > > >
+> > > > >
+> > > > > > +Regardless of whether the coalescing parameters have been
+> > > > > > +overridden by set commands from the
+> > VIRTIO_NET_CTRL_NOTF_COAL
+> > > > > > +class, upon
+> > > > > > disabling
+> > > > > > +and re-enabling a transmit or receive virtqueue, the device
+> > > > > > +MUST set the previous parameters for the virtqueue.
+> > > > > >
+> > > > > >  \paragraph{Device Statistics}\label{sec:Device Types / Network
+> > > > > > Device / Device Operation / Control Virtqueue / Device
+> > > > > > Statistics}
+> > > > > >
+> > > > > > --
+> > > > > > 2.32.0.3.g01195cf9f
+> > > > >
+>=20
