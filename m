@@ -1,150 +1,87 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9176417722
-	for <virtio-dev@lists.linux.dev>; Tue, 21 May 2024 03:50:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19604CE04
+	for <virtio-dev@lists.linux.dev>; Tue, 21 May 2024 06:44:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716263444; cv=none; b=HFjigGNAXyG3DRO3DKtzdSKKYH+78hLE+hqoZJoMgL2daR2QQt4WlOsreuXxVULF7Ah5Tu3MkWQsedjVIBQJfoBUWCb8lVV61X/XsgVFYNlUM6KzxzECX++3GqOdLswQ+Bo7KGTkkfmkU4wA31p1mkp57Pr2TnP+vJOel8ZBcSA=
+	t=1716273865; cv=none; b=B6CVb/KbXB98C/uSHdbESyiz4qQ9FpAprs8/K+ySv8BYKmUgLevJzQIpZjwVrFWKmZOq0jMJBVaksQbXp6Pyotz9V/9AS/7TKa8QQ1lZJ+nLuKr7sjoMnkMUXNRkU9sq8DTGOumKPs6mR0UVh/zmRdGbX6MKltdYWMkcgRu8sRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716263444; c=relaxed/simple;
-	bh=2Ij2mq3Yx4Z/96MDi/kOeK9/8q9A4cKgHjnvldGVITU=;
+	s=arc-20240116; t=1716273865; c=relaxed/simple;
+	bh=ItsQc36XRpl0PlIK2GYXtbbS4kcWyzx+uQSrvybA7uI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=VFcmlad4chQeq7AteiIMyslM1EyW/NeMiIESGp+sHz5puH+o9kMQ916rzE26bx/krKNAuXIqwZYOVJXPoOpHLbh7ASYqN7wRr7kKIToN+29JYMXMhe3WpxRyiqbGU/cq2ovdwdM9aG19KxD9ARNWtUfJ3YczU2IXoOSld8MM4hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Og5zmJA4; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZU2s80lLJbNB7wCS0Wuu3oBnmlULYFD0KdVo2DyVObJ+L20bpiZsDpWF/CD31aqoCTuZ5w6t8kHIjhZOt7qkwKKJvGpkpk0JfO+xshKFC50atMyiGvB1pB3j1OmGxCwdB1Sl5JChdAwRQa9yL5pyWHz2spvrPL5LI2viWU7hROE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=l7vCtU6t; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Og5zmJA4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1716263441;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=T/ckDHkreZnH6ILA7GLh0roDcmeHS6c1vOQASTl41T8=;
-	b=Og5zmJA4ge0TsYS746BoS25s4AX8SXGnoUjZ+0FSbEw5QrLNjzYVT/8Kp0fwBvyHuuAixr
-	fkABnR3vysXfZNxXmHO058L7lJ3nnEYRm9gt63VR5oSooa0OKC4W9D5adADk7PaY/Zm/tJ
-	9KdVl/wo+yhHJW7qaMxsst1yYPYLkC4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-528-DUoOJ4KiPXmWtgfctlwOSg-1; Mon, 20 May 2024 23:50:40 -0400
-X-MC-Unique: DUoOJ4KiPXmWtgfctlwOSg-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-42015260835so42844695e9.0
-        for <virtio-dev@lists.linux.dev>; Mon, 20 May 2024 20:50:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="l7vCtU6t"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1ee954e0aa6so68927715ad.3
+        for <virtio-dev@lists.linux.dev>; Mon, 20 May 2024 23:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1716273863; x=1716878663; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zZJHVvCDSGmfhT+sZ8gumFaCEHqxakUpTmREJbvnKqM=;
+        b=l7vCtU6tbkCGi4Mf7BUsMjgCmuCg5pePOoPLjTAuYgCaOWqzypK7x07c/R97YUx+kJ
+         wuQ/aAVXreKqIj/BTORNxXBQx/cS+cW+yB22GP1KeqgeUgWx4qSS2y1RkcLm9eyhvCmr
+         Y9LU4iFRHavpn/eoE15vsgWZF+ZqF6+kQb/mGwNGhl65/+5hMgFg0H3Zv7RtCoNFrXSS
+         FDycNSBF3ZVMZxQBE44QpZ7JC/qNBdYMcIrpTRfpw0GB4EWH1lIfDor/Z8ag1wOUla3V
+         q9luverDTwl0HYUC2yp3jop1hgAvYqHeJFBXQVFCT4ydIjHz3Sx946kmdh0S1qzEOou1
+         MLKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716263439; x=1716868239;
+        d=1e100.net; s=20230601; t=1716273863; x=1716878663;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T/ckDHkreZnH6ILA7GLh0roDcmeHS6c1vOQASTl41T8=;
-        b=L1CfkOGyj7VaIAV/hmJlL3G7PVxZC/55s01wzvd7mn0edHk4D/EcWJmCDTiiZmYRQB
-         DtlDGMNE+cJVTAzj8YYyuv2k76H2XdzHscMR22iF4TD4KK/Cq7Hwrihe6UgRiplFXCqA
-         +kO/AY2xPyPj5ds9FI1W6Th8rqARlsAY4Ro6D2O3vLJGqBqrQuxJN0sjl2sG/aHQohAl
-         8QnsD7/18FSA9/lxMFjAqOD5g4K4e/HzMtkMO+EVmxSKQEo+rdt+cfvRUqbC2WscgIgC
-         ULntRAUSaJ+NM4TxKetqRjrdqjqPEAljQ+Z+PVq6hBe6RadJQ4EdWa3OdgH0NCaIZmSw
-         XmxQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWzYM5NX+2FK/FLIrdmEpB1t68s45zBkmvqMDIkVwG87/8s44cSpyvicM1/0WS9czLq1JQPAg/H9pdavw7WksWT1wg/K31G8CKQ/Q==
-X-Gm-Message-State: AOJu0YybGewJ2mLis5a/bub1nwHRz8RlavCSPgcHWEGRPdMpvWJwN9Rc
-	lCpYS2zug1VakR1eTwOlUuA6rYHMQuAXVtmVW9Y0sFeaP7st7IgkAWJv8o0TXtRdxprxWlhHMrQ
-	g8AHZgOw3XzoRqigadLptGtcPTUZ/HU5wlYVEZVV0Cct7TNwEqRKQqEDQG3c=
-X-Received: by 2002:a05:600c:198c:b0:420:2a22:bd3e with SMTP id 5b1f17b1804b1-4202a22c4c8mr116838165e9.18.1716263438829;
-        Mon, 20 May 2024 20:50:38 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IF121U3KDg23gso8P5g9H2GIQvRaCsbc6qjkVIIGH9aJNzro874iN1zt8PFrB5Tl8P5d7eosw==
-X-Received: by 2002:a05:600c:198c:b0:420:2a22:bd3e with SMTP id 5b1f17b1804b1-4202a22c4c8mr116838045e9.18.1716263438225;
-        Mon, 20 May 2024 20:50:38 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc7:240:5a20:b565:3672:6f2b:3d2d])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-420e88b71a2sm85257125e9.31.2024.05.20.20.50.36
+        bh=zZJHVvCDSGmfhT+sZ8gumFaCEHqxakUpTmREJbvnKqM=;
+        b=c8NtSF5xYzfTzw8olOuq5IZiqwrYve8vrGzyaqyoWDZVtC8TmnwUu5MYQxI6/0iPC5
+         7ZL93R3lfMxnKdTZCQUDsQIK4F9pxI75//VxkbjdznLjU/oWk6HqaUvWOcgImjt1m6wp
+         9goPo4yxgKNnU51JUuIIKOfM4Rsi4na+YRrjy7hGOMnJ/qdk1LT0pTw0LbPHu8cZUVIl
+         DtScQpHvywMlNmWOLlctrAStvVB0cFEqkoNmoUAKKTXCQujJCT6dcc1lj0afVTfGJPbb
+         tcriTtFAFRrU0ZOJjjraazjqSk4CyxS8A4N4vBPwlttCff295jMJKABYozxG/N/CBQkP
+         OKhw==
+X-Forwarded-Encrypted: i=1; AJvYcCUOmZqFE/dHvs+JT2CIsaIEruVYPHrf0VYiRURCqoAqMb+GAS4RBJBaosiKoFo3cdzMbcW4dsRNY/1xjYa86NxPxbfOegh4FwmhWw==
+X-Gm-Message-State: AOJu0YzL7PGsmcjMBXpowMicG2j2G3uIcAyX1HEgKnpVL0ciL/Tom3EF
+	g6POCifr8BHwcg71fiPgqBeOivhaG8bftISFnvV38Q/hclvlSl3XvlNo6JJ6Phw=
+X-Google-Smtp-Source: AGHT+IFTZTsBVMijqj7bO9HzwK1/QSYtZpEodjF0qHprZiH1/aUgxMe046EbGrCKbsn0zUcuJrFYAg==
+X-Received: by 2002:a17:902:9a0a:b0:1e2:9aa7:fd21 with SMTP id d9443c01a7336-1ef4416150cmr269824585ad.54.1716273862942;
+        Mon, 20 May 2024 23:44:22 -0700 (PDT)
+Received: from localhost ([122.172.82.13])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f2f387318bsm47786715ad.189.2024.05.20.23.44.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 May 2024 20:50:37 -0700 (PDT)
-Date: Mon, 20 May 2024 23:50:33 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: zhenwei pi <pizhenwei@bytedance.com>
-Cc: virtio-comment@lists.linux.dev, virtio-dev@lists.linux.dev,
-	david@redhat.com
-Subject: Re: [PATCH 1/1] balloon: introduce 6 memory statistics
-Message-ID: <20240520234857-mutt-send-email-mst@kernel.org>
-References: <20240513121005.459013-1-pizhenwei@bytedance.com>
- <20240513121005.459013-2-pizhenwei@bytedance.com>
+        Mon, 20 May 2024 23:44:22 -0700 (PDT)
+Date: Tue, 21 May 2024 12:14:20 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Parav Pandit <parav@nvidia.com>,
+	"virtio-comment@lists.linux.dev" <virtio-comment@lists.linux.dev>,
+	"virtio-dev@lists.linux.dev" <virtio-dev@lists.linux.dev>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>,
+	"stratos-dev@op-lists.linaro.org" <stratos-dev@op-lists.linaro.org>,
+	Manos Pitsidianakis <manos.pitsidianakis@linaro.org>,
+	Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH V3 Resend] virtio-transport: Clarify requirements
+Message-ID: <20240521064420.35t7vaavzduwm7q4@vireshk-i7>
+References: <3543c631e29d35a667ca9d9e912d1a6db1feb0ce.1716197180.git.viresh.kumar@linaro.org>
+ <PH0PR12MB54815E4558E7577AC219F5F9DCE92@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20240520082400-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20240513121005.459013-2-pizhenwei@bytedance.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20240520082400-mutt-send-email-mst@kernel.org>
 
-On Mon, May 13, 2024 at 08:10:05PM +0800, zhenwei pi wrote:
-> Expose more memory statistics of the virtual memory subsystem from
-> guest, it's helpful to analyze the memory performance and pressure
-> from host side.
-> 
-> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
+On 20-05-24, 08:25, Michael S. Tsirkin wrote:
+> Well we say "do not do this" in the list subscription form.
+> Viresh, what gives?
 
-zhenwei
+Apologies. I didn't read the page properly.
 
-when subsriving to the lists you should have received this text:
-
-
-Not to do:
-- copy both virtio-dev and virtio-comment mailing lists (instead, pick
-  one)
-
-did you not get this text? was this, somehow, unclear that you copied both
-virtip-comment and virtio-dev on your patch?
-
-
-> ---
->  device-types/balloon/description.tex | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/device-types/balloon/description.tex b/device-types/balloon/description.tex
-> index a1d9603..bc8e109 100644
-> --- a/device-types/balloon/description.tex
-> +++ b/device-types/balloon/description.tex
-> @@ -305,6 +305,12 @@ \subsubsection{Memory Statistics}\label{sec:Device Types / Memory Balloon Device
->  #define VIRTIO_BALLOON_S_CACHES   7
->  #define VIRTIO_BALLOON_S_HTLB_PGALLOC 8
->  #define VIRTIO_BALLOON_S_HTLB_PGFAIL  9
-> +#define VIRTIO_BALLOON_S_OOM_KILL       10
-> +#define VIRTIO_BALLOON_S_ALLOC_STALL    11
-> +#define VIRTIO_BALLOON_S_ASYNC_SCAN     12
-> +#define VIRTIO_BALLOON_S_DIRECT_SCAN    13
-> +#define VIRTIO_BALLOON_S_ASYNC_RECLAIM  14
-> +#define VIRTIO_BALLOON_S_DIRECT_RECLAIM 15
->          le16 tag;
->          le64 val;
->  } __attribute__((packed));
-> @@ -399,6 +405,24 @@ \subsubsection{Memory Statistics Tags}\label{sec:Device Types / Memory Balloon D
->  
->  \item[VIRTIO_BALLOON_S_HTLB_PGFAIL (9)] The number of failed hugetlb page
->    allocations in the guest.
-> +
-> +\item[VIRTIO_BALLOON_S_OOM_KILL (10)] The number of Out-Of-Memory killer
-> +  invocations.
-> +
-> +\item[VIRTIO_BALLOON_S_ALLOC_STALL (11)] The number of stall count on memory
-> +  allocation.
-> +
-> +\item[VIRTIO_BALLOON_S_ASYNC_SCAN (12)] The amount of memory that has been
-> +  scanned asynchronously (in bytes).
-> +
-> +\item[VIRTIO_BALLOON_S_DIRECT_SCAN (13)] The amount of memory that has been
-> +  scanned directly (in bytes).
-> +
-> +\item[VIRTIO_BALLOON_S_ASYNC_RECLAIM (14)] The amount of memory that has been
-> +  reclaimed asynchronously (in bytes).
-> +
-> +\item[VIRTIO_BALLOON_S_DIRECT_RECLAIM (15)] The amount of memory that has been
-> +  reclaimed directly (in bytes).
->  \end{description}
->  
->  \subsubsection{Free Page Hinting}\label{sec:Device Types / Memory Balloon Device / Device Operation / Free Page Hinting}
-> -- 
-> 2.34.1
-> 
-
+-- 
+viresh
