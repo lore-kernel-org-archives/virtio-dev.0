@@ -1,109 +1,176 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from refb02.tmes.trendmicro.eu (refb02.tmes.trendmicro.eu [18.185.115.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B82E615E88
-	for <virtio-dev@lists.linux.dev>; Mon, 27 May 2024 06:41:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716792084; cv=none; b=dhRDXicywTndWstI6DZANUlV/6C2+hdscvbOtgAQO9APaLyJKplniXaA6ih4J8yAYbBsQiqCnEI9b2Nl7MfOzXWNG1ptZrSiK1k5h0l61KZDAsbEXB3WDLhhHWxeNlQPtAwAl+xxhhbsUBeaavsfdvRX4wR1m22Pj9VL5iNLMD4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716792084; c=relaxed/simple;
-	bh=xGgfKTumJCAzyqqV3d2z3/QvdVGnZyfgZdQbXrtZtJ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=hlKSK+8bh//ODkoswLjld7lLK/bfwW4Sa6FpaX4CjQJ8/PqDMM7K0Pc8wgJ5McOvRycrz+zMMnvJANve3KCfS9OKVggJrY+I1qEc2dfARMqOgzXwYisv3fGpBVwe/ptNza2m53IGA+fRFTCg4uOjaogwZg+UN4i8Z8Fk0F52xdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Kdj7ep9a; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AFB41ABE4B
+	for <virtio-dev@lists.linux.dev>; Thu,  6 Jun 2024 14:15:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=18.185.115.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717683307; cv=fail; b=j7XxJ/SgYnzkLmX0IxHH4jCKuy+CJPryyFeXZvDkC+xpjALWk+6CVD2ovRPt5+Ev1zKfpI1H8I22lmCCNo1twG2CIXOxoPrdkvMXQllAW0SAkj8Z1/fTwM/P3J9Tmijao40IPot7IA2qzr1bZMX3fIh7wkZybMz6q6wfCUsyhw8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717683307; c=relaxed/simple;
+	bh=ZXv35xifz+hJm716XeIMbGKw4efsIvlgMuhBrLoADbc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=inN9A4LmK/FU01NCFb0sISY6AJYqqTHvcLmOLwhq/orKSC/iy9k4YHkmgpJuRnd+cX2SYOVD1CicZf6nXSERiS/U7h4edV8J79fJD/spdXZGSRhXO3pS1bJrrt3pB81wXW/OCArzEF9AD99391dCq94DrEnD/tfeLBYp9ayFBpM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensynergy.com; spf=pass smtp.mailfrom=opensynergy.com; dkim=pass (2048-bit key) header.d=opensynergy.com header.i=@opensynergy.com header.b=P9MqYJmj; arc=fail smtp.client-ip=18.185.115.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensynergy.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=opensynergy.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Kdj7ep9a"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1716792081;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=c90bN4bCmxJ96CLf78qxhzeX4X46ooVNld3WbAEMBe4=;
-	b=Kdj7ep9awdLGcMRDxw/g2JO0L598Ke2srx7vsADR/IIBpAiccgA699M6FmyC4QgO1R3CkX
-	pLia5iiXQXi+gX2xbmFAA982lJa7At5/uL0UJ9POOIzI/DpXz0zT+pbf/YozNfJ/UQK80s
-	G2KPluL+yantcllG/05zLigi/oUWbR8=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-88-eyZK-FGEOs6P4dlhXtWgrg-1; Mon, 27 May 2024 02:41:19 -0400
-X-MC-Unique: eyZK-FGEOs6P4dlhXtWgrg-1
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-35507e4c41dso1056696f8f.1
-        for <virtio-dev@lists.linux.dev>; Sun, 26 May 2024 23:41:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716792079; x=1717396879;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c90bN4bCmxJ96CLf78qxhzeX4X46ooVNld3WbAEMBe4=;
-        b=ACJGPBqW+dh1WAf8FR/rIJGb9YnOiZWuHYcgMUyNUNBOteC9P+0fCB6vtezX/Fc9AS
-         k3vK8CarNSUwltWqv00p/zfzUjiBjSopyfjF+Cmv+yYH0cTtkl2sHNlscPFBUxRzwguK
-         Owf5GzlgguANpLpN5KLtfPPzJl9umc3iJHn4tmH5C5e739WgpXfxHlK2iETOLN06i0Bp
-         jRyAimxJ917PewPAaPS3BvcHOvfK9DYt+0xHMuUGS8cugNLGyJV0na1rD9S2YVEt9kao
-         KOOkV1HvbHcX7xiwYxcemHNK1wTbVrfi+Ll78kOfdUx5ml/P+ZQhH19VKDpZ+teC82kO
-         YenQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUnMZQoYbRWPBepWl5XoXf+DvgRE5Bg6nob4CbA8QFbhJVOIyAwtmRNlbPzEFtgxLjShUDCjhk22hBS1wvcZzOM/JB0wgylLIFZHg==
-X-Gm-Message-State: AOJu0YyrVKUBHfoKltxMWX1+H1MjHXc03jx1A7QWPbb8gtM5E4Wg4JrJ
-	6iUiEtRuc4Vf//22zQog1kVbqldU28XIwFi+jCNoEwBpFJ8xYaPEft0Ls7dQ6U9kizX8AFyXZ01
-	4AGgPhKPs1uMJ+pGPPW2Bu/ku3EN+JeIAn0hYy1WNyPswL9HGEk89/UxfONA=
-X-Received: by 2002:a5d:47ab:0:b0:357:a6e3:8748 with SMTP id ffacd0b85a97d-357a6e3877emr3990068f8f.1.1716792078532;
-        Sun, 26 May 2024 23:41:18 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEjtA9kIKx226xQdS/ugV2TUje3Mhx+t2f7c11epYaY2oJwBLNV/841RG7a1zvfu7H3ER9HDw==
-X-Received: by 2002:a5d:47ab:0:b0:357:a6e3:8748 with SMTP id ffacd0b85a97d-357a6e3877emr3990043f8f.1.1716792077954;
-        Sun, 26 May 2024 23:41:17 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc7:342:cd82:9c62:7faf:9d73:ba3f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3557a090805sm7997202f8f.48.2024.05.26.23.41.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 May 2024 23:41:17 -0700 (PDT)
-Date: Mon, 27 May 2024 02:41:14 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: zhenwei pi <pizhenwei@bytedance.com>
-Cc: virtio-comment@lists.linux.dev, virtio-dev@lists.linux.dev,
-	david@redhat.com
-Subject: Re: [PATCH 0/1] balloon: introduce 6 memory statistics
-Message-ID: <20240527023734-mutt-send-email-mst@kernel.org>
-References: <20240513121005.459013-1-pizhenwei@bytedance.com>
+	dkim=pass (2048-bit key) header.d=opensynergy.com header.i=@opensynergy.com header.b="P9MqYJmj"
+Received: from 104.47.11.168_.trendmicro.com (unknown [172.21.10.213])
+	by refb02.tmes.trendmicro.eu (Postfix) with ESMTPS id 610631019EEC5
+	for <virtio-dev@lists.linux.dev>; Thu,  6 Jun 2024 14:13:39 +0000 (UTC)
+Received: from 104.47.11.168_.trendmicro.com (unknown [172.21.163.121])
+	by repost01.tmes.trendmicro.eu (Postfix) with SMTP id CBA8D10001FB2;
+	Thu,  6 Jun 2024 14:13:31 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1717683210.892000
+X-TM-MAIL-UUID: b2d114a7-56b0-42fe-9394-aebe964cfdac
+Received: from DEU01-FR2-obe.outbound.protection.outlook.com (unknown [104.47.11.168])
+	by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id D9E651000031A;
+	Thu,  6 Jun 2024 14:13:30 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f4x+IMA7qCFQ/3YMkVHJE+90gqwnxK1S8ZWj4v81Eq+fzLuE8hNDm4iM6ATTcNXmtXL92PMwBrWP8JorD35jEGg7xSvK7mtfKJX2BV5gLdGr4iDvR58+8yZLdXqtDbsKtQ4BH8iTCd3Ac3h/z6aCoB12Lz521JKVsWDih1VYz5fKF8bZVBlLPKWxwyneKCPkm0YBkolGfL6P/D9DE7rmo1l1rvh4ArVyLoyG22O8Kqpj60qpDRTHAZrfIL0qi5TYEpIXVeL1HiNn5QgDO3rCPJG9Im0vfpT4stLCeoo1LAEtxQT1F1VUynnqtkZ30pPeuSmR+X8eC1w3cpLeCB3DJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4nu7ix7PCGKEAqZGthDLNSCsfM/y6b3m/vUkfP75TGQ=;
+ b=kw+anKL0k5jSiBtaPWFEVShcXapBM7TFP69+95Q+3Huri1Pi4xYPvb9vsBb5gpeLxvAjb8Iys+xiCRO/s5VUVRQwSpp8DzlvAcjv1qnl2lOWk8mvZnTUXvtbmnBXuk6u4FG5ggtkrJ4yWq33Ld3PJHdIk0ZAmjqsBahOrLmmHj4X9//s9py8+KUEGpS9mjvvvDjgS+ZZUhbY7rkGHgUV8dtgw8CrkiWN6+mQ+AWFjIEC0R/2Y8NTGIHFsrECDTsp2zqusGvn8FVPEVyadXSn0VfbLZ93Gp+A/V3/ra9xbkLw1Ma/++ENC//Kc2yU/GY8FzxC9v8Ab9rUi6WTTYdHig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 213.61.166.92) smtp.rcpttodomain=davemloft.net smtp.mailfrom=opensynergy.com;
+ dmarc=fail (p=reject sp=reject pct=100) action=oreject
+ header.from=opensynergy.com; dkim=none (message not signed); arc=none (0)
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 213.61.166.92)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=oreject header.from=opensynergy.com;
+Received-SPF: Fail (protection.outlook.com: domain of opensynergy.com does not
+ designate 213.61.166.92 as permitted sender) receiver=protection.outlook.com;
+ client-ip=213.61.166.92; helo=SR-MAIL-03.open-synergy.com;
+From: Harald Mommer <Harald.Mommer@opensynergy.com>
+To: virtio-dev@lists.linux.dev,
+	linux-can@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Wolfgang Grandegger <wg@grandegger.com>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>,
+	Harald Mommer <Harald.Mommer@opensynergy.com>
+Subject: [PATCH 1/1] virtio-can: Add link to CAN specification from ISO.
+Date: Thu,  6 Jun 2024 16:12:22 +0200
+Message-Id: <20240606141222.11237-1-Harald.Mommer@opensynergy.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20240513121005.459013-1-pizhenwei@bytedance.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB1PEPF0003922E:EE_|BE1P281MB3013:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 482a6911-d7d7-40d0-b68d-08dc8632d56c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|82310400017|7416005|36860700004|1800799015|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?S/USiP98O9D9oMvhHySeHzM5MJ9mhIrxjaHWBmKiWfCr9yaSk7D/mUrUhzFN?=
+ =?us-ascii?Q?Y4ZstUoqFGohPNDkk5NDPEkq2f9/Fz1jzu3VitCeejFrKs9erWLSO9ZHt/T/?=
+ =?us-ascii?Q?AZuR3azZszMyliutO7G6ILZSPIaVdelAU7/RJLkX+lR7lfDdx3hrLvubl03K?=
+ =?us-ascii?Q?R2qI8Tje+OUsYOHnHF443Fr+QQirq6FOnb3SVS8gEerrz68vtcyxktHjNYOV?=
+ =?us-ascii?Q?TDTCnwfG9ljD+LXiXM58mtKteTAAsd+anq5kK78Jd/nPFpsgZ7aQ1uqFihj+?=
+ =?us-ascii?Q?eMtHr9Z+Evr0JXAHm3V6BavBzKAMtCZGyfDQEnVAuhtuIQGlNXermxQuy9Gx?=
+ =?us-ascii?Q?BQbzwHuTG3l/NnOBjvDfmyJzILg6lG+fACGOsQYdWE+ivyfLHW+lSfxPj9Is?=
+ =?us-ascii?Q?yhcPHRbPnldoQ4ZVw31N3yysFSOB3bVGG6ILETJyerDD9dygeMLHJBg9mwkk?=
+ =?us-ascii?Q?TQEf6Y8/HXOo9Gj+ytxwGXlwRJIVRFR6VVpDesRJw2q7fJI+6jNnjiqLyDzK?=
+ =?us-ascii?Q?j5ZSq8vhNeAhx5VB7OMwRzqJW+Y7Mr5nrOGR2BZOr1eDu80C0zyYa5q/jSBo?=
+ =?us-ascii?Q?MBl4xS6HXDhoVp3Fgz5xXmMKrBD2v8UU5WvZBJ36Dr8t3/yaVpZxLsZtZFE4?=
+ =?us-ascii?Q?gyUqvcELlJKMkEGVdLrgc5eXJ7QTnrjYbvQ2tKxkbuU9kU3Qlrx7nGTRQmlC?=
+ =?us-ascii?Q?T+c2xMbEddsiPCXf7+WYk1+xcBUdgoibv+KujoejiktHwulXGApcq5unsMj5?=
+ =?us-ascii?Q?Y3QXHBRhWNiavnVaH0mg/9m/rIyukU5m5DiYYfjCzexHTcjixj8wG1XyGdfA?=
+ =?us-ascii?Q?4JUYcfShyYWVSpaoHdGKAav/QyGA2by+oXt/qPk/W8HSx3vJo+ij8aELYtkw?=
+ =?us-ascii?Q?5nKTAwRGQ3uwq8+V4BMEY7S8iXDrdefSn+n0kd/Ma1kMCjnhyd2qlL7FZ/F+?=
+ =?us-ascii?Q?Lt5Nr+P946JcfwnKR3dDyLVDVNrDthPjq+vFvS2MhoO1EWo8rjlaKslGpfTF?=
+ =?us-ascii?Q?ilkrqlVZOMqI3dlnPxZ/BO52NCgpnDIAVRtHhfqE0SBbxTmjOXGl2scmcmeY?=
+ =?us-ascii?Q?CHqocwX+Wzd7Ti3GfE8Hlf65uyUhJUYEW5C0Ne6v+zaWASJUWt1PyvURrUyY?=
+ =?us-ascii?Q?+FYpwoTijWsDdMfaW7P4T1y60N9sqHecfPelE3mCVXlqnOsMLr5PpmELg2vZ?=
+ =?us-ascii?Q?1zX8OW7SiT9xPajo5x+awbY8D/Y5SOkZJHnp0bZ9BXHtyscHKtHPZca60wpY?=
+ =?us-ascii?Q?0pz4c2SrPNuOh3azFuauS/gdC6MuJSxkraLmLI/TGwBZqLRJ4QkaHSj6JYY7?=
+ =?us-ascii?Q?XE+4ms/mZXY9QZPm2lk5O+hmhQWlw+zOWLK/QCHD02c8SmSA2XsPRpHuhu2S?=
+ =?us-ascii?Q?eGDku0CMASwMwytmaFMjmDa41Xi7EGq1ePCj+M2SweLC0vg40Q=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:213.61.166.92;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:exchangeconnector.opensynergy.com;CAT:NONE;SFS:(13230031)(82310400017)(7416005)(36860700004)(1800799015)(376005);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2024 14:13:26.5832
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 482a6911-d7d7-40d0-b68d-08dc8632d56c
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[213.61.166.92];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB1PEPF0003922E.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB3013
+X-TM-AS-ERS: 104.47.11.168-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1023-28436.000
+X-TMASE-Result: 10-1.047800-4.000000
+X-TMASE-MatchedRID: NGDYxnKYxb3J+P2VFrJmrKdMZMc4JlQbCsYnJzXwRoqL12p7cZqBWIvP
+	iBq/iW91MpPx8OFzfY1Ta75sGuqeWKi8PTAxIaqS7yR/hLt1y2iFU/rz+g+hxFtpNa0o3mGFqXN
+	pl1fc2dczrT87MhOW5dAxdIKEp2hCA3ASNiUtxi2wL+/cgG+7zMn4xfDEuqcVQUZlCPgOIPyF6z
+	UvsSpW6rEDulXIfwn2ckkZYKzf3mGfQEixngIIE2B6KL0WmlgVYppqMItbEgOI/kD+1oWNGb/a0
+	nd+hIFCI/NGWt0UYPAv8kOye9F0ID8aOpcAGK1zWClmBfZH1l0adwCj1QH6tsX55enpC3hi
+X-TMASE-XGENCLOUD: 8fd3d490-e00a-41d7-aab8-a1c43a45ac15-0-0-200-0
+X-TM-Deliver-Signature: C7A16AA34FA8A78513F2FD2AEEEB9E32
+X-TM-Addin-Auth: 1aCZQe/g7OGbQb8gWYKBQTEfmpX+jfFYL+p7mJAt2dl+mksNfThWsLoJMwH
+	Y3cC6H5EdD3EOpURaj8x0aTgfdCbN4kxSaLSWYsv1JnKviCdk7y3uZetMwc4+X0ZrLW05cqJBP5
+	8kEM4zdO2K/sOySFw4BKC10s5Ne4DAydfQ7zdaHT/VNYyij4kbuCpJCMnYyYFWrmQl7IIwIA6rG
+	+gRwYuyPV/l5J1BXIjT1kW4uZinE7dS36U8M7HoH6CweYm5gUGoS50rCvXFGwXkfznrtnakQncD
+	ng/F62CWzbPxX9M=.RKfypBes0KPGz17ya+9pF2Ja1WdanpdhAfiEk9EDYrHcTShZ5KSRkCUf1G
+	FfRjM1+uwYkekMKZyKEUR8m0s02jbQSuGTiFFXuZ4tFBctT4oqsBSMz8TnhVrCHXc01RjWSmCzi
+	Pei4bVMQO9pMaEONDCcRFcQboGBuguh33PwjTxW8XF3iSa9fOGRORDssc3ndRb1/Hv2kXkCDFLs
+	h/pXTPWBnFcozd8bYdQH7scdaBbuKuHOpsvSzK4wOGHiUiGmycfDokZlBP+q5KUQvM33kWJVOls
+	Y5t3tTAA7ms0510rTB0xNc3GXnP4sjLaU+Q7RxTJpSZreURpOzibPitF+Ug==
+X-TM-Addin-ProductCode: EMS
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
+	s=TM-DKIM-20210503141657; t=1717683211;
+	bh=ZXv35xifz+hJm716XeIMbGKw4efsIvlgMuhBrLoADbc=; l=1043;
+	h=From:To:Date;
+	b=P9MqYJmj61pCmqiu8SaWJGOl2I3Gkc8ROrZ4JQ+GeGCkGKx1wrDVmofaunwtE3DeP
+	 z8ubQlcENbwt8esAPbd2hvXgNv7mSplg/k8JEF4CH0YExuT1SdjLBdntj+VzqGdyWP
+	 dB3crvClowBovJBPq5gAN2JR4Q65hSXB2LQnaySFyuNdJDzd7Z0cKq/Q8EXGLH/W5N
+	 HdwHdmU82exyMsKQv5QoAKlmX2UWm/pmGNM0wjZ9ajKlTK/Md0iiOSI71fm5ozzTcR
+	 UYCmRX4h57j7EdS1vMoS6Wrzmvjd+pGyLJNC2vyJpzgVFdm4XS+1FUY6j+z2Bty0Uw
+	 rTJVnoB4qJ/7Q==
 
-On Mon, May 13, 2024 at 08:10:04PM +0800, zhenwei pi wrote:
-> Hi,
-> 
-> There is a previous discussion about the new memory statistics:
-> https://lore.kernel.org/linux-kernel/20240423034109.1552866-1-pizhenwei@bytedance.com/T/
+Add link to the CAN specification in the ISO shop.
 
-> This may be helpful to describe the usage of these counters.
+  ISO 11898-1:2015
+  Road vehicles
+  Controller area network (CAN)
+  Part 1: Data link layer and physical signalling
 
-It's ok to add a link but you really should include the
-motivation with the patch, and preferably in the commit log
-not the cover letter.
+The specification is not freely obtainable there.
+---
+ introduction.tex | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-I think the qemu patches actually include a lot of good info
-about the statistics collected. But they also raise a lot
-of questions that would be of interest to the TC.
-
-
-
-> 
-> zhenwei pi (1):
->   balloon: introduce 6 memory statistics
-> 
->  device-types/balloon/description.tex | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> -- 
-> 2.34.1
-> 
+diff --git a/introduction.tex b/introduction.tex
+index 8bcef03..72573d6 100644
+--- a/introduction.tex
++++ b/introduction.tex
+@@ -142,7 +142,8 @@ \section{Normative References}\label{sec:Normative References}
+     TRANSMISSION CONTROL PROTOCOL
+ 	\newline\url{https://www.rfc-editor.org/rfc/rfc793}\\
+ 	\phantomsection\label{intro:CAN}\textbf{[CAN]} &
+-    ISO 11898-1:2015 Road vehicles -- Controller area network (CAN) -- Part 1: Data link layer and physical signalling\\
++    ISO 11898-1:2015 Road vehicles -- Controller area network (CAN) -- Part 1: Data link layer and physical signalling
++	\newline\url{https://www.iso.org/standard/63648.html}\\
+ \end{longtable}
+ 
+ \section{Non-Normative References}
+-- 
+2.34.1
 
