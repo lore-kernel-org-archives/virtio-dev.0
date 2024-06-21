@@ -1,36 +1,36 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDEA1B14F1;
-	Thu, 20 Jun 2024 16:19:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77E2484E0D;
+	Fri, 21 Jun 2024 08:45:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718900368; cv=none; b=oLCMoskJfa9/UMlvQZqVfQUx4OKrM6WLFX06tNP5UAs0A5ikj+M1U2kbiWO+3wj7Kd/CTV+q27BMoKFeb0K/zKETCuDfQ37Id3yRmzXsxGquod8crs+duHGbDvvQYatoRha51gFTlOjEjhiwP2EMAN3y52QHiDIHPtOJUJcUij0=
+	t=1718959545; cv=none; b=W9V149LTYZwZPBY1nGyNejcR0Am39/pJvCgYKmhmW+D0tRREhBqLc28H7OYM8QH5NbAyUgMBRVxDZv1IaHILCusZmmpEzaz312SpVDF7u0wfNSjXzfC+S08HsBTS4NgmN6poiVjEgQl3wQFZqiqp7bD7MD2QICq+Wcpns7UCh3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718900368; c=relaxed/simple;
-	bh=Es12sheN2y5RU4QdYWGl6BsUJmW7oPdTpSxGocmAOBc=;
+	s=arc-20240116; t=1718959545; c=relaxed/simple;
+	bh=octImp/hbb6hih4Mkyk7R+jtYPhN783CY6AS6qpoGjc=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mRRK9hAeRWcxBCajSfxi46vOROwwNJ/oXXryS1LhGoyMUkQQ09SwP8E6+89aDeW0Z7m/rXBc8NPeAGtwKGt+suhlfbBCk1IyP1rxnElSp3oNPKX+onksQl5ZxB2f8e8DGJXeyvklvLXpvPHwSmzItIWETfiPKUae51ahFqMoLvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=bfv6mNz/; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:MIME-Version; b=P8STFBCg1Lx+TuCmmCVkWJqSd4hdZr36SRfSWR1p3UC8rrEqScCTv8qmmrbWU2RfQaS1VduNYLsbZ6p3Skk7C6nE2tHfmkVcSQjRWqLiPNDWYy/XKNKdVK9t7ArCYDVm80Ei7x2gpa40ag2pAQzbb603/Flj6v5btzwjh6XodXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=HKtZZyum; arc=none smtp.client-ip=90.155.50.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bfv6mNz/"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="HKtZZyum"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
 	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=Es12sheN2y5RU4QdYWGl6BsUJmW7oPdTpSxGocmAOBc=; b=bfv6mNz/fhutHdX5xNiEDQFm5/
-	/ou0E8SM4rlMzPL505IA9eahOqWm+67GxIWyPVImT2AbTXMnsfB8+FMWMaQQTl64g6OjH5lAKfvju
-	RIRdFl/JcfbT4r94mZY6a2X65MCnCkGmvGdygP4dKnSmDzS3Isq3EUgPfp++/S1RR8w5DHEaBnZva
-	cTunK9bAGLSxeZLi9urUVt5qgfPdsupyzz41sFUelHcW04/fJnJ+37V9D7R0J5ZufrDRBDIR80dDd
-	vdR0mtxmJlAluzVroYvL16MJJ803WiPCV7TKgZ6sB4+62PwHaUGRbr1AmQVGUOOwsu+idJ2PnRiMY
-	L/kO1Q1Q==;
-Received: from [2001:8b0:10b:5:e421:dd18:8da5:9cf5] (helo=u3832b3a9db3152.ant.amazon.com)
+	bh=octImp/hbb6hih4Mkyk7R+jtYPhN783CY6AS6qpoGjc=; b=HKtZZyum0/94YbgKn50jGSF+TP
+	nNEuEZJ2F+79HcuhkwG3gwZirNbNzoYdet3BSdpTT4y1rbjelXNBaPF4Wpx9wHIuP5Lf+J9DG0/sb
+	9BlSxsQZZqppfOAmu39n1ZSj0SdNboIMj4KLdVRX3ZRmqk6G9RnZKxqvTSeP2hB441/SXM1RhyE1E
+	R8z0LgWyXQqFBUvKC+aBU5L13zANwdJSRiiXvtOREYBsXiJzSFC6ydbwn5lRb0WNKIPbyYy7h/rRM
+	akzZ2s8oTULtKixjByUdfVs69/JJjIRQNlsgmnRhks660IL0qb3c67tWUATZpBsXXo/Ym2fRxMeyO
+	eMrFbXVw==;
+Received: from [2001:8b0:10b:5:79ed:809d:f17f:46e5] (helo=u3832b3a9db3152.ant.amazon.com)
 	by casper.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sKKVF-00000006F9u-2JSE;
-	Thu, 20 Jun 2024 16:19:13 +0000
-Message-ID: <db594efd5a5774748a9ef07cc86741f5a677bdbf.camel@infradead.org>
+	id 1sKZte-00000006z9e-0ZVX;
+	Fri, 21 Jun 2024 08:45:26 +0000
+Message-ID: <c0ae63fc88365c93d5401972683a41112c094704.camel@infradead.org>
 Subject: Re: [RFC PATCH v3 0/7] Add virtio_rtc module and related changes
 From: David Woodhouse <dwmw2@infradead.org>
 To: Peter Hilber <peter.hilber@opensynergy.com>,
@@ -45,13 +45,14 @@ Cc: "Christopher S. Hall" <christopher.s.hall@intel.com>, Jason Wang
  Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel
  Lezcano <daniel.lezcano@linaro.org>, Alessandro Zummo
  <a.zummo@towertech.it>,  Alexandre Belloni <alexandre.belloni@bootlin.com>
-Date: Thu, 20 Jun 2024 17:19:12 +0100
-In-Reply-To: <671a784b-234f-4be6-80bf-5135e257ed40@opensynergy.com>
+Date: Fri, 21 Jun 2024 09:45:25 +0100
+In-Reply-To: <db594efd5a5774748a9ef07cc86741f5a677bdbf.camel@infradead.org>
 References: <20231218073849.35294-1-peter.hilber@opensynergy.com>
 	 <684eac07834699889fdb67be4cee09319c994a42.camel@infradead.org>
 	 <671a784b-234f-4be6-80bf-5135e257ed40@opensynergy.com>
+	 <db594efd5a5774748a9ef07cc86741f5a677bdbf.camel@infradead.org>
 Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-LGyZ84kc62+QqOi2YXV1"
+	boundary="=-HR2p0POzl1PQKfx5bxjB"
 User-Agent: Evolution 3.44.4-0ubuntu2 
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
@@ -62,150 +63,67 @@ MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
 
---=-LGyZ84kc62+QqOi2YXV1
+--=-HR2p0POzl1PQKfx5bxjB
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2024-06-20 at 14:37 +0200, Peter Hilber wrote:
-> Changing virtio-dev address to the new one. The discussion might also be
-> relevant for virtio-comment, but it is discouraged to forward it to both.
-
-I will happily take it to whichever forum you think is most
-appropriate. (And you have my permission to direct replies to whichever
-you choose.)
-
-> On 15.06.24 10:40, David Woodhouse wrote:
-> > As discussed before, I don't think it makes sense to design a new high-
-> > precision virtual clock which only gets it right *most* of the time. We
-> > absolutely need to address the issue of live migration.
- ...
-> > Here's a first attempt at defining such a memory structure. For now
-> > I've done it as a "vmclock" ACPI device based loosely on vmgenid, but I
-> > think it makes most sense for this to be part of the virtio_rtc spec.
-> > Ultimately it doesn't matter *how* the guest finds the memory region.
+On Thu, 2024-06-20 at 17:19 +0100, David Woodhouse wrote:
 >=20
-> This looks sensible to me. I also think it would be possible to adapt thi=
-s for
-> the virtio-rtc spec. The proposal also supports some other use cases whic=
-h are
-> not in the virtio-rtc RFC spec v4 [2], notably vDSO-style clock reading, =
-and
-> others such as indication of a past leap second.
-
-Right. The vDSO-style clock reading is key to solving the live
-migration problem.
-
-The other key thing this adds is the error bounds, which some
-applications care deeply about. I've been working with the team that
-owns ClockBound on that part: https://github.com/aws/clock-bound
-
-> Compared to the virtio-rtc RFC spec v4 [2], this proposal does not seem t=
-o
-> support leap second smearing.=C2=A0
-
-That's kind of intentional. Leap second smearing should be considered
-the *antithesis* of precise time. Anyone who wants a monotonic realtime
-clock should be using the POSIX CLOCK_TAI.
-
-Part of my motivation for fixing the LM problem is because some
-financial institutions can incur significant penalties for putting
-inaccurate timestamps on transactions =E2=80=94 even the disruption caused =
-by
-live migration is enough to trigger that. So deliberately lying to them
-about what the UTC time is, by up to a second in either direction, is
-not necessarily in their best interest.
-
-As you noted, this proposal does expose leap seconds in the recent
-past, which is all that's needed to allow a guest to generate a smeared
-clock *from* the accurate clock that is provided through this
-mechanism.
-
-(Knowledge of past leap seconds is needed because in some modes,
-smearing adjustments continue for some hours *afte* the leap second
-should have occurred. So the NTP style of leap indicator isn't
-sufficient).
-
-> Also, it would be helpful to allow indicating
-> when some of the fields are not valid (such as leapsecond_counter_value,
-> leapsecond_tai_time, tai_offset_sec, utc_time_maxerror_picosec, ...).
-
-Right. For some of those the answer can just be 'zero means invalid',
-for the max error, perhaps MAX_UINT64. But we should definitely make
-that explicit.
-
-I'm also not entirely sure I understood Julien's insistence that we
-include the leapsecond_counter_value as *well* as the
-leapsecond_tai_time. It seems to me that the implementation would have
-to recalculate that every time the frequency is adjusted.=20
-
-For some of those fields, I was expecting a certain amount of
-bikeshedding to occur and figured it was better to post an early straw
-man and solicit feedback.
-
-> Do you have plans to contribute this to the Virtio specification and Linu=
-x
-> driver implementation?
-
-Yes, absolutely. For now I've implemented it in the Linux guest=C2=B9 and i=
-n
-QEMU=C2=B2 as an ACPI device modelled on vmgenid, but I'd love *not* to hav=
-e
-to do that, and just to do it based on virtio instead.
-
-=C2=B9 https://git.infradead.org/users/dwmw2/linux.git/shortlog/refs/heads/=
-vmclock
-=C2=B2 https://git.infradead.org/users/dwmw2/qemu.git/shortlog/refs/heads/v=
-mclock
-
-
-> > +static const struct ptp_clock_info ptp_vmclock_info =3D {
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.owner=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D THIS_MODULE,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.max_adj=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 0,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.n_ext_ts=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=3D 0,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.n_pins=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 0,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.pps=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D 0,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.adjfine=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D ptp_vmclock_adjfine,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.adjtime=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=3D ptp_vmclock_adjtime,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0.gettime64=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=3D ptp_vmclock_gettime,
+> >=20
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Counter frequency, and =
+error margin. Units of (second >> 64) */
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0uint64_t counter_period_fr=
+ac_sec;
+> >=20
+> > AFAIU this might limit the precision in case of high counter frequencie=
+s.
+> > Could the unit be aligned to the expected frequency band of counters?
 >=20
-> Should implement .gettimex64 instead.
-
-Ack, thanks. I'll go play with that.
-
+> This field indicates the period of a single tick, in units of 1>>64 of
+> a second. That's about 5.4e-20 seconds, or 54 zeptoseconds?=20
 >=20
-> > +
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Counter frequency, and er=
-ror margin. Units of (second >> 64) */
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0uint64_t counter_period_frac=
-_sec;
+> Can you walk me through a calculation where you believe that level of
+> precision is insufficient?
 >=20
-> AFAIU this might limit the precision in case of high counter frequencies.
-> Could the unit be aligned to the expected frequency band of counters?
+> I guess the precision matters if the structure isn't updated for a long
+> period of time, and the delta between the current counter and the
+> snapshot is high? That's a *lot* of 54 zeptosecondses? But you really
+> would need a *lot* of them before you care? And if nobody's been
+> calibrating your counter for that long, surely you have bigger worries?
+>=20
+> Am I missing something there?
 
-This field indicates the period of a single tick, in units of 1>>64 of
-a second. That's about 5.4e-20 seconds, or 54 zeptoseconds?=20
+Hm, that was a bit rushed at the end of the day; let's take a better look..=
+.
 
-Can you walk me through a calculation where you believe that level of
-precision is insufficient?
+Let's take a hypothetical example of a 100GHz counter. That's two
+orders of magnitude more than today's Arm arch counter.
 
-I guess the precision matters if the structure isn't updated for a long
-period of time, and the delta between the current counter and the
-snapshot is high? That's a *lot* of 54 zeptosecondses? But you really
-would need a *lot* of them before you care? And if nobody's been
-calibrating your counter for that long, surely you have bigger worries?
+The period of such a counter would be 10 picoseconds.=20
 
-Am I missing something there?
+(Let's ignore the question of how far light actually travels in that
+time and how *realistic* that example is, for the moment.)
 
+It turns out that at that rate, there *are* a lot of 54 zeptosecondses
+of precision loss in the day. It could be half a millisecond a day, or
+20=C2=B5s an hour.
 
---=-LGyZ84kc62+QqOi2YXV1
+That particular example of 10 picoseconds is 184467440.7370955
+(seconds>>64) which could be truncated to 184467440 =E2=80=94 losing about =
+4PPB
+(a third of a millisecond a day; 14=C2=B5s an hour).
+
+So yeah, I suppose a 'shift' field could make sense. It's easy enough
+to consume on the guest side as it doesn't really perturb the 128-bit
+multiplication very much; especially if we don't let it be negative.
+
+And implementations *can* just set it to zero. It hurts nobody.
+
+Or were you thinking of just using a fixed shift like (seconds>>80)
+instead?
+
+--=-HR2p0POzl1PQKfx5bxjB
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -297,24 +215,24 @@ IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
 dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
 NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
 xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNjIwMTYxOTEyWjAvBgkqhkiG9w0BCQQxIgQgRwgsvTZD
-Yl05/GRrSaGKa7FiAB8sVwP2d8wnaSYGgwowgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNjIxMDg0NTI1WjAvBgkqhkiG9w0BCQQxIgQgFa1+VUXy
+bvd36nqVLYst8a8mfk6937WX6f9fVPlR83kwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
 A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
 dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
 DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
 MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
 Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgBqSVFhJCyRAhcrBsrnkUmIw2EXfteeRiw6
-nw0ezRN6zA1AbBXIm5lRVJQb9HlA4xtduqXEwwit60Xd2pjvgH50MZeLDUO5gHB9n+Xs7jMdXSBk
-FKYGsUYeEM+luTpmfNirx1aih41nXHnScFya7FSDliYVcDtf0HyEdXzSBqAUjgPY49nXBZZx9ZXX
-nR9FJOX+O1ZNsVpcZ0dDDn8sTw9oAiw3VzNggjiKmjlB4clvRUUykb8knNE364D2PXUhBxtf2drQ
-nPGXH7YfczxiUTwvGLSHQeRkxc1wSfVkSBhFpeTcpXpQvKUvhNR3LNzoTQHb/FYSS5CGtUJ+l17L
-DWN3phTXB/FiCyClCEtnctruuCaSjpSFl1riaV0Q4Jxwp3uIDSWhIDk4BysM/Mz1MwWyYF5kCGnP
-s2+payt+I5vtE4uTwK+S4Xmi8NWGE8sw9bSWM/DCbOmGRMndRXQsoN0SDomhZzcjCOutjgxJGM4E
-P24L3AWx7VsEFC5A8sBIvhLqEZL6JmaDeavV4jEbSVnfJj4AuBIlW8+XqA6mwzeJ9Ty6Fegnw6lT
-Do0D3f/IfaAHRqOgIjmeO2Pn27dpQl++8lq01NpgMg31o0HKdb2Z5PIrlYLrgvoOcxQwplRwOLcG
-OnR6mdFLO58ycwe3K28HXCf5tYv8YhiSCFik950fTQAAAAAAAA==
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCa5tbBSK+VqSe6c334kH2p+fRExvEYKNM1
+cksmG5hhPywHjVmb4HFokpVRNXfCEdH1q/aQT415AWmK8jjk2nVNPxQ/cxmwjRqxooKVpoRdWJsh
+e4WexDgJV9dctZ48zZltYwwD3OqQvS7pISPN708a/do6y4BC7Ttx6LhQPMauOec8qz4aO7ruEXpi
+Z09FeyMopAe9pjOa0Ox66s5/TaTF7pEPIJoYrRVLr2IXOFG2BqTS2PhXCsIGJ738vhhLFDPcP0NC
+7RwqPlKdexlrGt0Vt+wAKfbmrEqPgcRJuu2wmXZV+ejKunhIZ5OyO1Nj6eQ7sISwJ7uO5+EDgCBh
+3tR1LrhHOaF9Hmu8VLhmpgtLHdBHMjezTFgFTKngmCX9XADjcqHWIeLQvToC7ScwEN6e/JweKBIs
+orV0Bm9wewSppA9GwZnubc5ZtdRhbgFmbbWZiyXXSSGuSnojr2FEudmHNHKxMfq9lWNpucQnjKT2
+poHU3YFyzHqFytPBh33svfVBvpNHvxoCAClkp8hfGjv//nwrkazmMnuHKEWZ0ZDi0RxLAA0vTEzG
+jfJoctbV+XJJ7m7dRonZ5UPBs4QL+CLqtDRGvuqJfsW+4ht5kfFziZ/7ArSgHoa9QbqF0ymiYO5q
+FrimJKpe/Mhl8mEIf+AGDIG2AeWGWNYAR7uexTg5DAAAAAAAAA==
 
 
---=-LGyZ84kc62+QqOi2YXV1--
+--=-HR2p0POzl1PQKfx5bxjB--
