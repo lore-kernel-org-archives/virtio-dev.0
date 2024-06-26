@@ -1,56 +1,58 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09959143C49;
-	Tue, 25 Jun 2024 21:48:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202CF23BF;
+	Wed, 26 Jun 2024 08:32:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719352112; cv=none; b=K8Ul7017vuQRsRx+Ou2lIa3sR5AW3fS0xOp+6WvkgymT+TxmoqnTTOUOKPK6RBXhw9lKIu7Otgr9vP6Kn4o4gdKuW7Fa5ruOLvekwcZ0nQZPNUxKUvDC3hjriXTF6fmt47WDMhT0moFrPdz2xgd+PkvosZZ4zsz4+f9Vkd/sb6g=
+	t=1719390763; cv=none; b=YwcJlPnvKfLMOTQ5ilhm+rzW1u0KGv5+rAlgYOkSaz5ah18d/Fu7bsTLQh+8+1vB58YKD1pRTa5qYArlrA5Z8BbxW5dqFtlZLoDZlrshZnknuL7IRq8n8qZlw8HuObTlBw7T82hp0DYDoUKak+k9XZPp2t4eGnTOlFyLxTfnipk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719352112; c=relaxed/simple;
-	bh=rjccCCZVYoFOwFG3eKk2pTjWawAgbc+jVcygHkEtXYA=;
+	s=arc-20240116; t=1719390763; c=relaxed/simple;
+	bh=JLfSucvEHpuuXpIlyWN46R9TVxkHIn8qeuwQJkf+gLA=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=i4KKwOlbBnzOC3cG5g1/F3B1bZoR7B/Elx4mGlTGLnAfjOGVZf+Npl3g+OVM7BHKACX7E9Qg3nN8cjd+So5lRUUdyBqJvoqMjUnNBbgRMCl7HSKBEP9kdAFsBj8DGElqpwGLp+p0rchWn+/KoWfWoXdBsu5ZpXPjeCRL5x/qfqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=l2eEyP3B; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:MIME-Version; b=b1dBlddv5+u4cW94v/ZW+9dxo4zzRl32v/AqVk4Efnjdd0eUBSSgzifDR9t5EHdcSGyGjiI2BwxwOoV08Qf56XzQb4hFnwG1ceCbc0WCVzih/v9daVuopkhSsGrU1ZqsTWxFr0MaDCaIK9/Pc56yAIQLCv7Ak/84iRC4Ppq2t1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=EeW/c7ZQ; arc=none smtp.client-ip=90.155.50.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="l2eEyP3B"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="EeW/c7ZQ"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
 	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=6z4GrFZdlFa72RRcBWrR7zRlC+rxAAKOpx5I6a9BTyY=; b=l2eEyP3BJFZzTbfxPjuG0vqV82
-	W5qykggw12qXeJz/iH4O6cFlPuYTLsr2+AYqAOJ0bQWiSR8zB/p/tQIgAIRMzu2sEWfO9guW0Mw8o
-	+GOzopok5Gc60v/jHjmeuf0EyciQM/1QjGVkMjxHIvVCIJNotGqGHQpFWEl3OysOH34z2F1rN73X1
-	bX2dEQM4PIvm8SsvZS1VJL8Cpw5PQsxKap2ij2wLrqoUrnI1gKpX3GEEVdG4vGly2RaLJ7e8kJF70
-	FIZU+06xtf7UD0NO3b+FyVcGIAPT08hsXmChMac12GHKAtEWys9OAaTqhXapwMpuQGlhVyVDw+Ww+
-	zInidPyg==;
-Received: from [2001:8b0:10b:5:4c40:96ca:cd56:bc81] (helo=u3832b3a9db3152.ant.amazon.com)
+	bh=JLfSucvEHpuuXpIlyWN46R9TVxkHIn8qeuwQJkf+gLA=; b=EeW/c7ZQfLNgv86UYshqV0TG+/
+	47KuIwtAHTr3t1aJ5Gj4RfJqpHMsnMZPgob2Kqa26cewuTRTk3PfIxRZImqAFkmyZ2hqR8dSrhS5g
+	qLxi4cbWSJuhtl4jgqNN7B4KfrqMu/wm1oD6zM6Nznx/8HRtsugaQV0qBQkXdmbocUCxqX3VJX2s4
+	bTo0EFfaDoT7r830c3HXsNI5TFeWsNfbJ7pKxMhKzwhoEfbWqeUdA6i5PvFg/1B6e8sa7Hr+LPj4S
+	Yrc2teeOgjvH1SUiIdkQ91p+O0omvYsHRXIulRkEy3OnxCHALKpkSP9UGQNof+sUkkxdkMc1adLW3
+	B47P/EzQ==;
+Received: from [2001:8b0:10b:5:4085:75b2:1737:3c57] (helo=u3832b3a9db3152.ant.amazon.com)
 	by casper.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sME1X-0000000BZAZ-0dlh;
-	Tue, 25 Jun 2024 21:48:23 +0000
-Message-ID: <ea7c5eda8180904a6caf476c56973a06bd4b5e78.camel@infradead.org>
+	id 1sMO4q-0000000C4Mj-0JCI;
+	Wed, 26 Jun 2024 08:32:28 +0000
+Message-ID: <d74847bc28037737e1d470501752215905ec6f9e.camel@infradead.org>
 Subject: Re: [RFC PATCH v2] ptp: Add vDSO-style vmclock support
 From: David Woodhouse <dwmw2@infradead.org>
-To: Thomas Gleixner <tglx@linutronix.de>, Peter Hilber
-	 <peter.hilber@opensynergy.com>, linux-kernel@vger.kernel.org, 
-	virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>, 
-	virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>
-Cc: "Christopher S. Hall" <christopher.s.hall@intel.com>, Jason Wang
- <jasowang@redhat.com>, John Stultz <jstultz@google.com>, "Michael S.
- Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org, Richard Cochran
- <richardcochran@gmail.com>, Stephen Boyd <sboyd@kernel.org>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>, Mark Rutland
- <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+To: John Stultz <jstultz@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Peter Hilber
+ <peter.hilber@opensynergy.com>, linux-kernel@vger.kernel.org, 
+ virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>, 
+ virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>, "Christopher S.
+ Hall" <christopher.s.hall@intel.com>, Jason Wang <jasowang@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org, Richard
+ Cochran <richardcochran@gmail.com>,  Stephen Boyd <sboyd@kernel.org>, Xuan
+ Zhuo <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>,  Mark
+ Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>,
  Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni
  <alexandre.belloni@bootlin.com>
-Date: Tue, 25 Jun 2024 22:48:22 +0100
-In-Reply-To: <87jzic4sgv.ffs@tglx>
+Date: Wed, 26 Jun 2024 09:32:27 +0100
+In-Reply-To: <CANDhNCpi_MyGWH2jZcSRB4RU28Ga08Cqm8cyY_6wkZhNMJsNSQ@mail.gmail.com>
 References: <87jzic4sgv.ffs@tglx>
+	 <ea7c5eda8180904a6caf476c56973a06bd4b5e78.camel@infradead.org>
+	 <CANDhNCpi_MyGWH2jZcSRB4RU28Ga08Cqm8cyY_6wkZhNMJsNSQ@mail.gmail.com>
 Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-4hU7zi4Qr2NAb9DLw6Pr"
+	boundary="=-Otk1zO0DqMplnS4FZWSz"
 User-Agent: Evolution 3.44.4-0ubuntu2 
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
@@ -61,55 +63,114 @@ MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
 
---=-4hU7zi4Qr2NAb9DLw6Pr
+--=-Otk1zO0DqMplnS4FZWSz
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2024-06-25 at 23:34 +0200, Thomas Gleixner wrote:
-> On Tue, Jun 25 2024 at 20:01, David Woodhouse wrote:
-> > From: David Woodhouse <dwmw@amazon.co.uk>
+On Tue, 2024-06-25 at 15:22 -0700, John Stultz wrote:
+> On Tue, Jun 25, 2024 at 2:48=E2=80=AFPM David Woodhouse <dwmw2@infradead.=
+org> wrote:
+> > On Tue, 2024-06-25 at 23:34 +0200, Thomas Gleixner wrote:
+> > > On Tue, Jun 25 2024 at 20:01, David Woodhouse wrote:
+> > > > From: David Woodhouse <dwmw@amazon.co.uk>
+> > > >=20
+> > > > The vmclock "device" provides a shared memory region with precision=
+ clock
+> > > > information. By using shared memory, it is safe across Live Migrati=
+on.
+> > > >=20
+> > > > Like the KVM PTP clock, this can convert TSC-based cross timestamps=
+ into
+> > > > KVM clock values. Unlike the KVM PTP clock, it does so only when su=
+ch is
+> > > > actually helpful.
+> > > >=20
+> > > > The memory region of the device is also exposed to userspace so it =
+can be
+> > > > read or memory mapped by application which need reliable notificati=
+on of
+> > > > clock disruptions.
+> > >=20
+> > > There is effort underway to expose PTP clocks to user space via VDSO.
 > >=20
-> > The vmclock "device" provides a shared memory region with precision clo=
-ck
-> > information. By using shared memory, it is safe across Live Migration.
+> > Ooh, interesting. Got a reference to that please?
 > >=20
-> > Like the KVM PTP clock, this can convert TSC-based cross timestamps int=
-o
-> > KVM clock values. Unlike the KVM PTP clock, it does so only when such i=
-s
-> > actually helpful.
+> > > =C2=A0Can we please not expose an ad hoc interface for that?
 > >=20
-> > The memory region of the device is also exposed to userspace so it can =
-be
-> > read or memory mapped by application which need reliable notification o=
-f
-> > clock disruptions.
+> > Absolutely. I'm explicitly trying to intercept the virtio-rtc
+> > specification here, to *avoid* having to do anything ad hoc.
+> >=20
+> > Note that this is a "vDSO-style" interface from hypervisor to guest via
+> > a shared memory region, not necessarily an actual vDSO.
+> >=20
+> > But yes, it *is* intended to be exposed to userspace, so that userspace
+> > can know the *accurate* time without a system call, and know that it
+> > hasn't been perturbed by live migration.
 >=20
-> There is effort underway to expose PTP clocks to user space via VDSO.
+> Yea, I was going to raise a concern that just defining an mmaped
+> structure means it has to trust the guest logic is as expected. It's
+> good that it's versioned! :)
 
-Ooh, interesting. Got a reference to that please?
+Right. Although it's basically a pvclock, and we've had those for ages.
 
->  Can we please not expose an ad hoc interface for that?
+The main difference here is that we add an indicator that tells the
+guest that it's been live migrated, so any additional NTP/PTP
+refinement that the *guest* has done of its oscillator, should now be
+discarded.
 
-Absolutely. I'm explicitly trying to intercept the virtio-rtc
-specification here, to *avoid* having to do anything ad hoc.
+It's also designed to be useful in "disruption-only" mode, where the
+pvclock information isn't actually populated, so *all* it does is tell
+guests that their clock is now hosed due to live migration.
 
-Note that this is a "vDSO-style" interface from hypervisor to guest via
-a shared memory region, not necessarily an actual vDSO.
+That part is why it needs to be mappable directly to userspace, so that
+userspace can not only get a timestamp but *also* know that it's
+actually valid. All without a system call.
 
-But yes, it *is* intended to be exposed to userspace, so that userspace
-can know the *accurate* time without a system call, and know that it
-hasn't been perturbed by live migration.
+The critical use cases are financial systems where they incur massive
+fines if they submit mis-timestamped transactions, and distributed
+databases which rely on accurate timestamps (and error bounds) for
+eventual coherence. Live migration can screw those completely.
 
-> As you might have heard the sad news, I'm not feeling up to the task to
-> dig deeper into this right now. Give me a couple of days to look at this
-> with working brain.
+I'm open to changing fairly much anything about the proposal as long as
+we can address those use cases (which the existing virtio-rtc and other
+KVM enlightenments do not).
 
-I have not heard any news, although now I'm making inferences.
+> I'd fret a bit about exposing this to userland. It feels very similar
+> to the old powerpc systemcfg implementation that similarly mapped just
+> kernel data out to userland and was difficult to maintain as changes
+> were made. Would including a code page like a proper vdso make sense
+> to make this more flexible of an UABI to maintain?
 
-Wishing you the best!
+I think the structure itself should be stable once we've bikeshedded it
+a bit. But there is certainly some potential for vDSO functions which
+help us expose it to the user...
 
---=-4hU7zi4Qr2NAb9DLw6Pr
+This structure exposes a 'disruption count' which is updated every time
+the TSC/counter is messed with by live migration. But what is userspace
+actually going to *compare* it with?
+
+It basically needs to compare it with the disruption count when the
+clock was last synchronized, so maybe the kernel could export *that* to
+vDSO too, then expose a simple vDSO function which reports whether the
+clock is valid?
+
+The 'invalid' code path could turn into an actual system call which
+makes the kernel (check for itself and) call ntp_clear() when the
+disruption occurs. Or maybe not just ntp_clear() but actually consume
+the pvclock rate information directly and apply the *new* calibration?
+
+That kind of thing would be great, and I've definitely tried to design
+the structure so that it *can* be made a first-class citizen within the
+kernel's timekeeping code and used like that.
+
+But I was going to start with a more modest proposal that it's "just a
+device", and applications which care about reliable time after LM would
+have to /dev/vmclock0 and mmap it and check for themselves. (Which
+would be assisted by things like the ClockBound library).
+
+
+
+--=-Otk1zO0DqMplnS4FZWSz
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -201,24 +262,24 @@ IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
 dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
 NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
 xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNjI1MjE0ODIyWjAvBgkqhkiG9w0BCQQxIgQg6YrTgR8M
-PvrepDuY3UP70VRpeBoXOcjEE0nNOo1zg2owgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNjI2MDgzMjI3WjAvBgkqhkiG9w0BCQQxIgQgZ/Nk13bH
+P4Q45gq19HJ//DAJbV7MnSoygUsJZjMC7UMwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
 A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
 dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
 DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
 MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
 Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCkcX4WU6biuWST8sy9Xh8jtK73ki1k0bdj
-e1ASFpRfTB/wS6Lyr8sgXBf4zOQYpylQC4TTp1cy7lsAK1MLhpJYn5TvbU0m/KhRjmx5URVQ6xC+
-RMzaaHK9QAuhBwfK9ZBDcgwNV4WbjSbotUzfJVWxW00DvLx9MI7EHqY2dE77OTSLcElm8jiWYdPm
-8bPlswuqwcBZBXiK8aPzkyABoUD0Kdk6wovlkfWMMSlPt4cqhI1ByUrmHUbIqhqJosf8U4fx0FN1
-PHCnfSJQZj8sSqSxbjm/ELYiDRSvMfBGBhZuOem+q0p7QdbsaI0Va/I+9LLmZzymqeAZb8XetRcH
-nP4gNrsN7nT0HcH/9IW/hy98+74Miz1/ZuSsvibxLvHquLWxGYzQuNObrPFfFZnf5C4yDjmryr9k
-qBbZqKbFRifCKZ+0P0debBwaTyx9AOnuZ1+SQ+C/F1DE21Cza0AR/+njaZM+A1YZg3yrwuJLEAGf
-CzAXuh8yUqO7NlmqNcra13b2CTcliSErlq5Tc4vxRfeFJSbq+SfyYw23KRGGPW6dVGlRSikcrnKL
-xt8NEGbz79ax74kuYLV3KFEtI1bK0jus01MGgJtMQn1RiKjqWcjRyESCDkdhTHMVWOU+n5LPo/Iz
-NntzVXYsA8Z4dJZZALmvSfkqYjoPOSG3OjaLAATEJQAAAAAAAA==
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCYM49vYhr1YjUs1p7K7xl8RE+CjO0/16RT
+h+EFYCyN2fRuE9m2AsDzyz59Bcg5TdxKliUZkg3cQFOZs7YCWBt4hkE6NqLVnS1qnMxFxI6rnU/S
+30VW30l1UfL/EmP7hfuR9IjZVj/75lSY8R0SOgv89117hRJHWdjbkiiV2LRB4jr7EevWmtknxTSi
+XZ2iejXkN18QiNU3A0Azz0OJZgFmqZKXEuMSWB6rFQ7tOoowpDl4aL06VfHyDE37Rdz78DASp7sM
+lyBE6fY3N3WVWtGYG8uwKqaOpd3IsC6KU1hxGsLXRKfpLHM2CTfvsQRhNvTvvgxs0g7t+cq/8FsQ
+V8TDEgBH5DdEdSk/QlyBV8txF5hRGe19ZTC2VZfLVA6XJqKKr9Ml7ZommT2TAYI3YRsQinsQuQt4
+6Gkd+c1KvK0QHys6o9QzXLVZ2Z8utFuGDv7JSBDxX+Qk1ix2y2SWRogwycEYcaMK8CwcFrZrEYCy
+GuC0KbG32SXT27NFIqco5o5VFy6ZhYQXCBFXbRPdIh9XW2qIlb8Qv1LLVGx730DQ+RaPe6iXD+nj
+pyuaVIafzypheJIlusmVKgwmqoDxy864vyilK+hd+w6i/xbMkLdrvi0HsW9Ql9pqcPHzbqQNzhJd
+Ezdj5ESdTlkBFW5Lw5UvY9Gw+kFkVlqoVv2tDhybhwAAAAAAAA==
 
 
---=-4hU7zi4Qr2NAb9DLw6Pr--
+--=-Otk1zO0DqMplnS4FZWSz--
