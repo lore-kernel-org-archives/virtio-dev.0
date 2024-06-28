@@ -1,322 +1,414 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from repost01.tmes.trendmicro.eu (repost01.tmes.trendmicro.eu [18.185.115.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53BCC1CF8B;
-	Thu, 27 Jun 2024 16:03:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719504200; cv=none; b=iT5glhQt9UepsZuB+1Oce2kOhkcdJsX+Xp4CZAWffxXTtQJQBYp7rSB/+YMspZR/E82hNpIrp669/lxHMvZHKs6kJn4NQrtsOrH9Q6HaeG6bdr/HqMpJTgRGshHxblMX1qd79TxoGfrLy99zJ/KrZoVhebjpSQAgcHkGeC1T0QY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719504200; c=relaxed/simple;
-	bh=W5mfWMjqnh8Ae5P1q/55r8Vr8LRrNp3uvYiKrlWOGHQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=VFKnQmFn4UDP6oNX/XGPlg3yydSuGju1mwdM2mUN7T8bI9usRozu5ZtaiwIO91mWimEriSspqxWjs0UbY83L+fX2SMIOD8KWCNPZuwijpRv/pDhrZtMJ4l/MfV82jT/7IdK0wpwKNze4PfbklCRjLVgoyYZSYZkmDmWXM2C7dV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=uFrl/cBo; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B229E149DE8
+	for <virtio-dev@lists.linux.dev>; Fri, 28 Jun 2024 11:33:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=18.185.115.123
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1719574402; cv=fail; b=D0d/yhL2ZMXXE4M/o9vp8vw36Ppm4gim//sUdjvNDT4MjwI0cUhJoJfjS/jcVp8VNFQjrXqrtN4G20z98JurIOFrIfMNuCOFEFCbWJlsm0zAtQq8KYBNNdsAy408u30cOTc2nPM4j8Q+e734smFyDDh/CUVR1xlaAB1KWLMpFz8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1719574402; c=relaxed/simple;
+	bh=3as4jp5BhbwzLG8fMmHzyxB1i67IM4F3A+Ckd3sdb4I=;
+	h=Message-ID:Date:From:Subject:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=tJzI8ZRXnmKi2xLFda4DQAFF9rPb09k7em3OIzb/97ajIsX9F3m2kyqae1JZnlBMd1r+50I3dGciXaz0X7MvQoI6YFpoxwzJbUEbK164yJjdEJNNhnDkaqJcs93N74NfUGWymhdFuHx5oPbCM6eWEpe5BfDfOyy0egTRBGZuZCg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensynergy.com; spf=pass smtp.mailfrom=opensynergy.com; dkim=pass (2048-bit key) header.d=opensynergy.com header.i=@opensynergy.com header.b=mJMaK5gp; arc=fail smtp.client-ip=18.185.115.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensynergy.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=opensynergy.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="uFrl/cBo"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=cLLCVpzF79P3pGVyz6fLX39GWKm54pt/xt7qPBpIVNo=; b=uFrl/cBoZiIUb4t1i/M/u1UHsE
-	HAUeOnsX1erhA85cmv36hwFaLJZ9T3wpsQ00uYn/pTDQFoEArNNui031IHT/BzFDpAFsZ61VbinGo
-	2ONMzQFphtHo8LBFMk+ca7qPOtspBbDwf9Aj56RunpYnfMRehIty1Oe7snal1ZMrYoe8wVYSgm3x+
-	D9zjVlYlQ/NLb0rPxkG/uAAgSvj5Xek4hUaRbKWUEU4HFp8HsPrw8knTH361cezc+5A+VAJQBggzA
-	S7+/3ViOvNPc2zQIg+mWlS92QWQrtc9pm5albZqmR4RcmD5SAJ/mprDE9Aol+9RQMnFy4L6dk2Rn7
-	zan2/zbA==;
-Received: from [2001:8b0:10b:5:3c45:b7d:c34d:ab5f] (helo=u3832b3a9db3152.ant.amazon.com)
-	by casper.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sMraT-0000000Dht9-1Ktr;
-	Thu, 27 Jun 2024 16:03:05 +0000
-Message-ID: <51dcda5b675fb68c54b74fd19c408a3a086fc412.camel@infradead.org>
+	dkim=pass (2048-bit key) header.d=opensynergy.com header.i=@opensynergy.com header.b="mJMaK5gp"
+Received: from 40.93.78.49_.trendmicro.com (unknown [172.21.186.216])
+	by repost01.tmes.trendmicro.eu (Postfix) with SMTP id EEAE7100004F7;
+	Fri, 28 Jun 2024 11:33:16 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1719574396.327000
+X-TM-MAIL-UUID: 1d2a6381-1dca-49ad-8163-ac2cf5f66ee1
+Received: from FR4P281CU032.outbound.protection.outlook.com (unknown [40.93.78.49])
+	by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 5006D10004C2B;
+	Fri, 28 Jun 2024 11:33:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KXmXRjDyEgvQKgYAHCxVjjpnbU/CV9pt4acNo6kM9y3WCU825ICCiowwfqhvpC2JjBtmlT37kQ7nN/LOLBZxXr9sqErBuLCThPTJst7+dTQyycTE6cLc3hNjFF+J+txXVrMkK9lOj01pRESAC89ZWqv7AguyCM9FGE2asdOMtyBmirhM+7guS2GTIeP4gLp4vbBvF+q16+SKPIjFeMe+vPdO6FEq4xkXKW67/C/iGFhnAljIwPwZJyM2KpnjSq0alsP2GCOTaa2dmxZJYl1h8fkj17ZWUb9XkjZdMCSY6UBjAdUew+R/CI6O00ghEmdw+/lHgbyl6T4TG/EYyUd+Tw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1edANRXE74ZxPQ9FOR+mwAWvPqSHB8T4bgInxkZsfa4=;
+ b=CD4718XdeUa+W3JfJ3LmB0H8AtW5ApPGh9AtnwizZP1mKbmkdg4Esm7CKkPLh4/0QFsmAEt8Bhk3OvB7r0/czd3Njq6XfEDt7xdSZK+Ju+dgvh0ozgf14ZFousExM4oVkTKp9c5RQLgdySJIjMNXWLiTGlb8tzTcr4bE+Q+XuQGDTynkxWAzxt5cxoE2BukLAXnmsTxaR/GbKHvhgN+gSttG0AGJjKoksG8hOwGchhY9unw5qwYOegHInvifB/tB9O/4UvdOyit0Pz+T2DJ8Fk4V/inG8DP2o10ToiNF8fytWRRBFJPc2p8n+YG6m1NHTP0Tcoaxw43j0/bTnBTyGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <db1113d5-a427-4eb7-b5d1-8174a71e63b6@opensynergy.com>
+Date: Fri, 28 Jun 2024 13:33:13 +0200
+From: Peter Hilber <peter.hilber@opensynergy.com>
 Subject: Re: [RFC PATCH v2] ptp: Add vDSO-style vmclock support
-From: David Woodhouse <dwmw2@infradead.org>
-To: Peter Hilber <peter.hilber@opensynergy.com>,
- linux-kernel@vger.kernel.org,  virtualization@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org,  linux-rtc@vger.kernel.org, "Ridoux,
- Julien" <ridouxj@amazon.com>,  virtio-dev@lists.linux.dev, "Luu, Ryan"
- <rluu@amazon.com>
-Cc: "Christopher S. Hall" <christopher.s.hall@intel.com>, Jason Wang
- <jasowang@redhat.com>, John Stultz <jstultz@google.com>, "Michael S.
- Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org, Richard Cochran
- <richardcochran@gmail.com>, Stephen Boyd <sboyd@kernel.org>, Thomas
- Gleixner <tglx@linutronix.de>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Marc
- Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, Alessandro Zummo
- <a.zummo@towertech.it>,  Alexandre Belloni <alexandre.belloni@bootlin.com>
-Date: Thu, 27 Jun 2024 17:03:04 +0100
-In-Reply-To: <8d9d7ce2-4dd1-4f54-a468-79ef5970a708@opensynergy.com>
+To: David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>,
+ virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>
+Cc: "Christopher S. Hall" <christopher.s.hall@intel.com>,
+ Jason Wang <jasowang@redhat.com>, John Stultz <jstultz@google.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+ Richard Cochran <richardcochran@gmail.com>, Stephen Boyd <sboyd@kernel.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Xuan Zhuo
+ <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Alessandro Zummo <a.zummo@towertech.it>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>
 References: <20231218073849.35294-1-peter.hilber@opensynergy.com>
-	 <684eac07834699889fdb67be4cee09319c994a42.camel@infradead.org>
-	 <671a784b-234f-4be6-80bf-5135e257ed40@opensynergy.com>
-	 <db594efd5a5774748a9ef07cc86741f5a677bdbf.camel@infradead.org>
-	 <c0ae63fc88365c93d5401972683a41112c094704.camel@infradead.org>
-	 <4a0a240dffc21dde4d69179288547b945142259f.camel@infradead.org>
-	 <8d9d7ce2-4dd1-4f54-a468-79ef5970a708@opensynergy.com>
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-GfgCrcNeH7jP/LJeq2X0"
-User-Agent: Evolution 3.44.4-0ubuntu2 
+ <684eac07834699889fdb67be4cee09319c994a42.camel@infradead.org>
+ <671a784b-234f-4be6-80bf-5135e257ed40@opensynergy.com>
+ <db594efd5a5774748a9ef07cc86741f5a677bdbf.camel@infradead.org>
+ <c0ae63fc88365c93d5401972683a41112c094704.camel@infradead.org>
+ <4a0a240dffc21dde4d69179288547b945142259f.camel@infradead.org>
+ <8d9d7ce2-4dd1-4f54-a468-79ef5970a708@opensynergy.com>
+ <bdcafc76ea44db244b52f8a092287cb33950d5d6.camel@infradead.org>
+Content-Language: en-US
+In-Reply-To: <bdcafc76ea44db244b52f8a092287cb33950d5d6.camel@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BE1P281CA0018.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:15::20) To BE1P281MB1906.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:3d::8)
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BE1P281MB1906:EE_|BEYP281MB4460:EE_
+X-MS-Office365-Filtering-Correlation-Id: c4120877-b380-445d-287d-08dc9766193c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|376014|7416014|921020;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?N0FzTlp5UlF3Q2V4emdsdXQzNi9oWm1DUGFCa2hyZ1BpZ21VNmpZOEkrU1Bx?=
+ =?utf-8?B?dmk0emxNVjEwSExPWWZGeGRtbDIxcUx0RnF2VXpLOU9DRHlkK1Fibm1iUXV4?=
+ =?utf-8?B?aCt4dE55MUIwTTBsdGZGQkNRV2poZjIzbDNyQW5aakdhUjZyRXpIOVBHSXhN?=
+ =?utf-8?B?Yk5BanBOWG9sU2FBeGhvQ2xwUmFnL2RxbGpoNU9US0I3NkU2ZjlKZlpQRHA1?=
+ =?utf-8?B?c1lUTmgweGZDOWZhcVRLSzlnRjJpL3M3MGc4ZDk4RjdPMFZWUHhGeEpCRTdK?=
+ =?utf-8?B?Qm1Tcm9XeXFXTmd2ZU5iZG9FbWFjTE41U3V1emlMNUptajRCeDBSaEFrL2My?=
+ =?utf-8?B?WmpadlRKNnY3Sjl5eDdFb3hLb0NrNzlDZWluNXFJUC9paGVSdVQvaElXY1hJ?=
+ =?utf-8?B?aXBqZ1UwN1BaZmtlVFlmS0M1Tk56UlFvMWVYOUJ1enVibmtJY0xvRVRiN2ZU?=
+ =?utf-8?B?SFFSMUZKdFZTZFdSNHhzSVppRGVDQVl6OWZmSmFaOWJUQkk0NVpUREJPMmhx?=
+ =?utf-8?B?RUR1Y2ttSm9WcEpseVZEeVBWUVVJampSMXhaZm1FaWdaNUkzM2lJWVpmaXZZ?=
+ =?utf-8?B?Nm4vN3ZrS3hZNTBQaDhXbC8yUjRXcFFoWkJNQ2MxWTQ4b3NBKzJRdERCczV6?=
+ =?utf-8?B?ajEzTnlyaSsvalNuRjVXcm45VW4zRkswTzVIc2tLTGI5OFppeHdBVitNZ3l1?=
+ =?utf-8?B?VTJhZWdodUxQbHdLbWpObFVNcXQ4VU16cGYwK2JkRENCWnphbDJ0T01yYjY3?=
+ =?utf-8?B?MURjM2pMMkJGdDJUS1JnVXJJVkNWRlpsaEFWYkwzeDk5TkY5Yzh2TXlDM29C?=
+ =?utf-8?B?Vnd5a3N6QmVvczZNUkRkSmpmaWkzV2RuSkZyVFQ1QzY2UnhGRCtMRkJlZk1P?=
+ =?utf-8?B?enh5MU5jcFZtSThMVXZubFdHVWV4VTM3VW9NSTkvbTdXWlJ2dVhFSmp0QmVh?=
+ =?utf-8?B?Z1ZMUjEyU3VCc2RNTzFxRzQvSDJYRVNBVUtJWEwrK3RDZGZRVlFPcGVPQVpC?=
+ =?utf-8?B?UGZRdVUvb3hNQUtybERHbjI5eGlJdFpKc2d1SmlscHlmNGhraUF1VjN4WjE0?=
+ =?utf-8?B?WXFPdzZoMmxlSUx5UUtwZ3Z6ZTE0QnpIanFBNk4xUWNDajdvNjh0Mi9WanFW?=
+ =?utf-8?B?a1RFVU5sN2RwakZvNjUrOWZnMk5OVG02Y0NrTktncldIYWkxWUlxQUJMM0tV?=
+ =?utf-8?B?S0VKcVA3QmR4by9mbkd0VmNmVUtwVHV3cWFJamkwNjIxZmZkaDNtcWNQN2Np?=
+ =?utf-8?B?ekVTM1FTUFZpTGdFdW1TNjJGem9MdTlucC84Ulk0NU5jRU9uTi9kOHVINHFH?=
+ =?utf-8?B?ZExOYnVIbHA4akxKL2xMckJQRW5ENU55OGdidFZ6Qnk0TjdOWDFjRHlWZ3Fo?=
+ =?utf-8?B?U2ZMaEJiVFh6dW9EUmNRcXREUnQ3bGhjMjBxOUpJRmQ1enVyNEtsTTZXRHNv?=
+ =?utf-8?B?bVVwUmxZWmhuS1hnY1RML1dUZisrbWhvNzVOSXpjODRZQVJyL2N0THpKZGRJ?=
+ =?utf-8?B?Q0libUxRWFZxVTJVRlNNZ2Q0NVBOSkVFbkt2VlFuUlRXdjVSbXN4Yi9zZmFK?=
+ =?utf-8?B?SVR4QnBqeHpEd1A1SlpWTUFhTkdYRm1GaTZ5UnNPSkdDN1VJNFVJeFJkYmxO?=
+ =?utf-8?B?Zlo2TEpMZnhYWkZnR0hPbzllV2tiWnJvS0srbmtNM1pQVTQ4eVNjMWJ2QWVX?=
+ =?utf-8?B?NU8rQUl3WHRrdWtNcGxRMFJHSERTdHZCa1cxSy9oNy9kcE0wQ3UzYldmZENE?=
+ =?utf-8?B?Y3dlY0VNekxVaHNVMnpZUHYxSHpwTk1LR0FxNDN5OVNqWi81SnlDdERuazZl?=
+ =?utf-8?B?SU5MTjVIWGRsL2hrOHdzY3pvejhRbDBha2VLMXBETUtPaWIva0EzVWJOem9i?=
+ =?utf-8?Q?z5b8/IJ/CuR9B?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE1P281MB1906.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(921020);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dVVhOFhpUld4M05oNWRqR0FiTlZIcExENHQ1VjRtUXlVd3EycDY4b2NHZFVn?=
+ =?utf-8?B?Q0xpSlc3dmZoaEtiQnkwMU1iVCtidWdZd3FPYTZhZFI1YS9LVWo4cWtXL3c5?=
+ =?utf-8?B?a0dWM3VUQm85aGJ1TmlYcXN2ZzcxRzZpd09hbldaT0d4MjM5RmpMeTZHSjBB?=
+ =?utf-8?B?OW5qWmdJMTJRcU1XUVB1UTNISllmSTNJQk9nVjExbTVObmVFVkJOTXBOeUl2?=
+ =?utf-8?B?dDF0cndWdnBrZ0NlKzlMTDJwbmozK2JNckI1YnFicFJRS3Z6Q1dBWXk4VWlX?=
+ =?utf-8?B?VXNRaEovb2FmNmlCOGdBY3hQdmJTWkJrWE4rdlRUNmFMRER6dVpzaEVheFEv?=
+ =?utf-8?B?UDZQdGJzZ09DN3FRck5LUXVNQUhKOWJ0eTVnNHFzRTVpaHdrZkc5UlZvdHhD?=
+ =?utf-8?B?aDN0aTBGRmdyS1preVNWMWZCaVJxSUVDRlgzQ3VUTlgweVR0dy9CN3VRWHpn?=
+ =?utf-8?B?U0Q4ckxhU01IZkhTbFNJZXVoVERQbFo5QStHYXhoTlNDVno2T2Q3UDJUTXhx?=
+ =?utf-8?B?MW1mWFltT09lUDdNa281SE5lRWJEanM0eUNkQTRhZ2VuRm91d3M1SmJYRktS?=
+ =?utf-8?B?L1d0ekNSRGVkYWxna2VyamtXUW9SWW5NU1dlbE5CYTdQMm9kdFJCV3FGRjJo?=
+ =?utf-8?B?dlRQamRXUGtqZFlDK1AxcFFlNnRhOEZOS0NPVHpmRTZsaEdGb08vRS9XcVVR?=
+ =?utf-8?B?b05DVkJla3RpeENHanhKazFtcHpLc0FMYzN4YzEyc1l2ZStnOXZOUXpaWEpP?=
+ =?utf-8?B?L28vc2VUSzVWOXAzd0dxU20rbzhRTDVPc0NSZVR0elNkR1lyNFJGL1FKeXdk?=
+ =?utf-8?B?UXl1VHloanNCYStLM0gwVzFVY1BWSFprbGQ3c3RaYXJGTnVxMVpiNkN6aDJR?=
+ =?utf-8?B?cmxiNTBSZ09qOW53K08yZmlTdFNRUEE5OFMxR3BBUy9LODlYODJRUHVuMkdm?=
+ =?utf-8?B?eVlBYTZlVWZvVnEvNWlFeUlucUxJZmVUUUI4ZXd2dU1Ma1llYzlQd2kwL1dq?=
+ =?utf-8?B?U2NJcTVLT0NNMFVONUxYK2ZkSmhrUmg3clpMbVRDVGgyaU5KQW16cno5Vm5L?=
+ =?utf-8?B?b2dmVXlEN0NJK0JFMXpoNzBJMkpKR2t6UzJzdzNEMDJsWjNvYkViWEttYi83?=
+ =?utf-8?B?SkxseXhHODFtQXRTdlpBdHN0NzdzZDlyUU52Zk83bjZJY2tRcGJIa1RWOVp1?=
+ =?utf-8?B?MllNa3ZsQVlyZWpVYWRGRkdRK08ya0F4UmhaOXROVi9GNDQ5TUppbllmTlpM?=
+ =?utf-8?B?SS9vMkRueEZVbi9aeGVSYm94NU8rOExoeEdHWVBqTDk4NWs1L2R6WmE4RVpv?=
+ =?utf-8?B?WTFtWkdJMzVFUXhkTWRPSjBGaHZmV0NNSy93djhUaElMdXRwZ3A5Z1BkSmxo?=
+ =?utf-8?B?V3lMQ3ltbFJaRDJHVGRIZzRCeHBZQVA0MHJ3VjhacHlPZWVUN0w4azlpUC9Q?=
+ =?utf-8?B?YVF4QWIzWnJaVC9SSGxlQXdXNFFRQ0drR3haRjR4dVhXOGtJajZBQWRlNk1E?=
+ =?utf-8?B?SVRKeDZqcVdDaEVxWWpZWDAwNEtqM3FsbmZmWDNTYTVuajBaOEpxVkE4TjZH?=
+ =?utf-8?B?KzZYWG5EbllpV1ZWTTBpQmk0dS9yL21aMmdjbEZCcWxhOStReFFYaS9vK2l0?=
+ =?utf-8?B?cmRhbkN4YitLYVJtaC9oYUNPOGZ6TlkvK1l5clZyZTNGczQwYXZ5aEpnVHFC?=
+ =?utf-8?B?UkFLcG5NbzgydWMvSXQ5dGhtTTJkN2xWK0VuOG1VNFluUFdibUFZTDR4eVlI?=
+ =?utf-8?B?QWlLVUg0Y0Jpd2FwV0tmOENLbkVMakxYR21UbCtrRXBscUsvZ0dYM2FFODAy?=
+ =?utf-8?B?TDFUajJXbW9QQzJ4bmZYckJ1Uk9iWiswUzBiSTYrMTZHb0Q4N2xZVW8wQWZu?=
+ =?utf-8?B?VXZRUTMyU3RiVExCeDNOOXkvVnc1SnZTVTBGdUpNMlRRTldFaTVWc09NT3JC?=
+ =?utf-8?B?akdaOS9PRjVISVJuVE4xaWRKU2s1NzJBbFB0TVc0R01VSExVMTBvMkswVTNs?=
+ =?utf-8?B?SXh4S2g4Q2k5SGhJK3BYaXVlWVdxcnhQWDAxb2p6ZHdOZmlVWmN6QTFkY1ZZ?=
+ =?utf-8?B?SW1OcHZ1TWlReHhSZXZjY0k5eWwvNjhBbXE2cGhRczBsTHk5c09tZ1B3Skpv?=
+ =?utf-8?B?K3owcWE5bHZSZmVBL2NJbzFvMkxrazd3ODE3WEdaRDV1MXRwTFloVzVScytJ?=
+ =?utf-8?Q?3L/ydrTdPOBEiPMsg+pCPxkHaE93PQZUiQ0Sipgr+dQF?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4120877-b380-445d-287d-08dc9766193c
+X-MS-Exchange-CrossTenant-AuthSource: BE1P281MB1906.DEUP281.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2024 11:33:14.6716
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KWpWhmttRAV0XrqOJLX1miQMC6DfvrPU0lW/4ccXLjD1gv1+3LWkoUt3peEh/hlvnwXohxtgrT4y+Vg+v+ruBA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BEYP281MB4460
+X-TM-AS-ERS: 40.93.78.49-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1026-28488.001
+X-TMASE-Result: 10--28.888200-4.000000
+X-TMASE-MatchedRID: pS5owHKhBO35ETspAEX/ngw4DIWv1jSVbU+XbFYs1xK3UJJ8+n/4RdDF
+	H3Wq0Hei8/CUaSFEolDtIrpZrVLcYZ5mTKF4TLatoSymbNaqh68JMPex6G5f2r2L79/20sYbTAL
+	CCJPLAA3SZRaS3C7tNYh+byAceuT1Z6/n0AY7xPQHNShWtYdI6eV9Tt4ma042Ui9TYaqpz0x1zo
+	CkuKv3zbiK0dSKauyzQ1CD2mRS3R5YTuGFcYJ4hgn3zfRJfTcDAYrC4DsFSccdsA6+8hSIIWCmv
+	oYG1wln44tQpHELQKRV5JR1kTmgYtdCzQqc1lNW+D1d5hAWlOI7GoGr6+PiiUa2BVGqYXs2292N
+	nW1H/iHubOjYjWcZRjnMduOIb1Jipo9QVV7F6tpJF1UGj9ejec7P4JpFsMVwWB/DYwvfuLVLqVR
+	s6RktuvTEeulZfYMY/qQKNCQv7dKgqCBzFejhV17l57ki0S38Y3ZcLJE+C13vkm4s/anM1a1Ar1
+	ud+VUVP+yPtPPylyxLP8voR8Wz+EwBo2eYZQcCZhL02vM2qdpcRfsAGgyyDbG53EQ9QCTJ4XW4n
+	QxObKFdExq5OlYtNiVOh4fIkrxLS+rxvINMBniK7q7iyFn58SsZXvcCxTRn2is2Jndz3Mql3XIh
+	gaMT15AffJV9H6QnB40vC5e0FmTCC8z82WqP7h10V8fYzFsltDU+oZYcXHLIEVw/tNyThJZgyty
+	iNu2qhYNEGrSdk3g6uXasi6hiM+i1lkUvOtVfawJUqbmGPB3aPuPIIqmcJ/p4OuSy0UFxr54JIx
+	46I6QD+Uf8y92iJhk2bH+n0MonJ3n9e/k5m85WFOy8XosOhlmur05CscKykGUtrowrXLg=
+X-TMASE-XGENCLOUD: f67504d5-09dd-436f-b3a6-68c0a8cb7343-0-0-200-0
+X-TM-Deliver-Signature: D7EB6D0DA891D0624815F436CEBAA951
+X-TM-Addin-Auth: 6/D3UD1WVEQyLZmbbwxcoYXDl+j9zjhdRV4PAGJeOrH5PaWsaqumzhal38Q
+	Yijg0ZgQ1NWjIL+zv/w7O1Ir94gZoMCL40UluMx1YURGckvtV8RfjTjy33yAaBeGqHaEM9CDtmk
+	aNqatiTdQUHEH1t7tPJoPP6Gu6mwoqurMaFm1wrTx/BkvOLRuj0B0d0GSuIo1t2ZCF3bNpDUken
+	HaxjImu2ikReOZ4JMJuISdb+6ffpd/z6j2WAfs/7vuyJHjdELBC++EVAFXzNanNChF6b/3og/0C
+	quj8d7qV9CLcCWM=.YjyxDRXYf7KN7WF86EFkzs3jXBCJoHHG48l/AtZ0rl9ckf5s4YStuMf6dn
+	8urZWdA6mW98My2CXwcuovrWcTNqKm0mI15G8KqxipYkqmogSIvoO2EHoaTR4lEhZKrndms33l6
+	W382zzVgcGdL9pxQ0o35q8/Lz095CW27eaETIciLrkclkMlOf+Rbnj08k+YgjKf05WumtS2rtTr
+	wOvdT+o/041emP3JNZhZuVOo5XfYNKvveEDEMCV+2DvnRD47xV0zDVwpcOjI7mBCDlSRbS7biA+
+	kmOu4yJvcabeJYAjxVDju0dWo/C8nd/ta/0/Ntzisw5up+ROpRF8olHCQdQ==
+X-TM-Addin-ProductCode: EMS
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
+	s=TM-DKIM-20210503141657; t=1719574396;
+	bh=3as4jp5BhbwzLG8fMmHzyxB1i67IM4F3A+Ckd3sdb4I=; l=9582;
+	h=Date:From:To;
+	b=mJMaK5gpENA7/yztc/wGg7CSnLDTRzVax8a9UafnRLFtOlScu0kS0XtLiegsjKKRa
+	 Y3r9ixHB3lhPz2CWXpg8wZVlYL+Lie8SKAS+EQ5e7RqhtiBY+P2BdqKV0x7G+Xy8+t
+	 a4Xgwx9tp4orDrd5jn5zTsyCPDYjppEZ3hYcrpE4gDGjVE7VbmsR4aLuJxHMETb8QJ
+	 hRqYmrckgM0kyhzeXk6xNPCVFJWwApkAzDC5LAWlH7XQkFE+5rDJyuj6RknNTiP9Nb
+	 vss/nBvafkkqS4176Z7UlBHD3e3qOsHnTWR630CfGBSWyi58+tjffsjs5xMaZFm/XC
+	 w2adZdrcOToTg==
+
+On 27.06.24 16:52, David Woodhouse wrote:
+> On Thu, 2024-06-27 at 15:50 +0200, Peter Hilber wrote:
+>> On 25.06.24 21:01, David Woodhouse wrote:
+>>> From: David Woodhouse <dwmw@amazon.co.uk>
+>>>
+>>> The vmclock "device" provides a shared memory region with precision clock
+>>> information. By using shared memory, it is safe across Live Migration.
+>>>
+>>> Like the KVM PTP clock, this can convert TSC-based cross timestamps into
+>>> KVM clock values. Unlike the KVM PTP clock, it does so only when such is
+>>> actually helpful.
+>>>
+>>> The memory region of the device is also exposed to userspace so it can be
+>>> read or memory mapped by application which need reliable notification of
+>>> clock disruptions.
+>>>
+>>> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+>>> ---
+>>>
+>>> v2: 
+>>>  • Add gettimex64() support
+>>>  • Convert TSC values to KVM clock when appropriate
+>>>  • Require int128 support
+>>>  • Add counter_period_shift 
+>>>  • Add timeout when seq_count is invalid
+>>>  • Add flags field
+>>>  • Better comments in vmclock ABI structure
+>>>  • Explicitly forbid smearing (as clock rates would need to change)
+>>
+>> Leap second smearing information could still be conveyed through the
+>> vmclock_abi. AFAIU, to cover the popular smearing variants, it should be
+>> enough to indicate whether the driver should apply linear or cosine
+>> smearing, and the start time and end time.
+> 
+> Yes. The clock information actually conveyed through the {counter,
+> time, rate} tuple should never be smeared, and should only ever be UTC.
+> 
+> But we could provide a hint to the guest operating system about what
+> type of smearing to perform, *if* it chooses to offer a clock other
+> than the standard CLOCK_REALTIME to its users.
+> 
+> I already added a flags field, so this might look something like:
+> 
+>         /*
+>          * Smearing flags. The UTC clock exposed through this structure
+>          * is only ever true UTC, but a guest operating system may
+>          * choose to offer a monotonic smeared clock to its users. This
+>          * merely offers a hint about what kind of smearing to perform,
+>          * for consistency with systems in the nearby environment.
+>          */
+> #define VMCLOCK_FLAGS_SMEAR_UTC_SLS (1<<5) /* draft-kuhn-leapsecond-00.txt */
+> 
+> 
+> (UTC-SLS is probably a bad example but are there formal definitions for
+> anything else?)
+> 
+> 
+
+I think it could also be more generic, like flags for linear smearing,
+cosine smearing(?), and smear_start_sec and smear_end_sec fields (relative
+to the leap second start). That could also represent UTC-SLS, and
+noon-to-noon, and it would be well-defined.
+
+This should reduce the likelihood that the guest doesn't know the smearing
+variant.
 
 
---=-GfgCrcNeH7jP/LJeq2X0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+[...]
 
+>>> diff --git a/include/uapi/linux/vmclock.h b/include/uapi/linux/vmclock.h
+>>> new file mode 100644
+>>> index 000000000000..cf0f22205e79
+>>> --- /dev/null
+>>> +++ b/include/uapi/linux/vmclock.h
+>>> @@ -0,0 +1,138 @@
+>>> +/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-2-Clause) */
+>>> +
+>>> +/*
+>>> + * This structure provides a vDSO-style clock to VM guests, exposing the
+>>> + * relationship (or lack thereof) between the CPU clock (TSC, timebase, arch
+>>> + * counter, etc.) and real time. It is designed to address the problem of
+>>> + * live migration, which other clock enlightenments do not.
+>>> + *
+>>> + * When a guest is live migrated, this affects the clock in two ways.
+>>> + *
+>>> + * First, even between identical hosts the actual frequency of the underlying
+>>> + * counter will change within the tolerances of its specification (typically
+>>> + * ±50PPM, or 4 seconds a day). The frequency also varies over time on the
+>>> + * same host, but can be tracked by NTP as it generally varies slowly. With
+>>> + * live migration there is a step change in the frequency, with no warning.
+>>> + *
+>>> + * Second, there may be a step change in the value of the counter itself, as
+>>> + * its accuracy is limited by the precision of the NTP synchronization on the
+>>> + * source and destination hosts.
+>>> + *
+>>> + * So any calibration (NTP, PTP, etc.) which the guest has done on the source
+>>> + * host before migration is invalid, and needs to be redone on the new host.
+>>> + *
+>>> + * In its most basic mode, this structure provides only an indication to the
+>>> + * guest that live migration has occurred. This allows the guest to know that
+>>> + * its clock is invalid and take remedial action. For applications that need
+>>> + * reliable accurate timestamps (e.g. distributed databases), the structure
+>>> + * can be mapped all the way to userspace. This allows the application to see
+>>> + * directly for itself that the clock is disrupted and take appropriate
+>>> + * action, even when using a vDSO-style method to get the time instead of a
+>>> + * system call.
+>>> + *
+>>> + * In its more advanced mode. this structure can also be used to expose the
+>>> + * precise relationship of the CPU counter to real time, as calibrated by the
+>>> + * host. This means that userspace applications can have accurate time
+>>> + * immediately after live migration, rather than having to pause operations
+>>> + * and wait for NTP to recover. This mode does, of course, rely on the
+>>> + * counter being reliable and consistent across CPUs.
+>>> + *
+>>> + * Note that this must be true UTC, never with smeared leap seconds. If a
+>>> + * guest wishes to construct a smeared clock, it can do so. Presenting a
+>>> + * smeared clock through this interface would be problematic because it
+>>> + * actually messes with the apparent counter *period*. A linear smearing
+>>> + * of 1 ms per second would effectively tweak the counter period by 1000PPM
+>>> + * at the start/end of the smearing period, while a sinusoidal smear would
+>>> + * basically be impossible to represent.
+>>
+>> Clock types other than UTC could also be supported: TAI, monotonic.
+> 
+> This exposes both TAI *and* UTC, by exposing the TAI offset. Or it can
+> expose UTC only, without the TAI offset if that's unknown.
+> 
+> Should we also have a mode for exposing TAI only, for when TAI is known
+> but not the offset from UTC? Is that really a likely scenario? Isn't a
+> host much more likely to know UTC and *not* the TAI offset?
+> 
+> I suppose if we have *hardware* implementations of this, they could be
+> based on an atomic clock and all they'll have is TAI? So OK, maybe that
+> makes sense?
+> 
+> (We'd have to add something like the ART as the counter to pair with
+> over an actual PCI bus, of course.)
+> 
+> We can add a type field like the one you have for virtio-rtc, yes?
+> 
+> 
 
-I've updated the tree at
-https://git.infradead.org/users/dwmw2/linux.git/shortlog/refs/heads/vmclock
-(but not yet the qemu one).
+Ack.
 
-I think I've taken into account all your comments apart from the one
-about non-64-bit counters wrapping. I reduced the seq_count to 32 bit
-to make room for a 32-bit flags field, added the time type
-(UTC/TAI/MONOTONIC) and a smearing hint, with some straw man
-definitions for smearing algorithms for which I could actually find
-definitions.
+>>
+>>> + */
+>>> +
+>>> +#ifndef __VMCLOCK_H__
+>>> +#define __VMCLOCK_H__
+>>> +
+>>> +#ifdef __KERNEL
+>>> +#include <linux/types.h>
+>>> +#else
+>>> +#include <stdint.h>
+>>> +#endif
+>>> +
+>>> +struct vmclock_abi {
+>>> +       uint32_t magic;
+>>> +#define VMCLOCK_MAGIC  0x4b4c4356 /* "VCLK" */
+>>> +       uint16_t size;          /* Size of page containing this structure */
+>>> +       uint16_t version;       /* 1 */
+>>> +
+>>> +       /* Sequence lock. Low bit means an update is in progress. */
+>>> +       uint64_t seq_count;
+>>> +
+>>> +       /*
+>>> +        * This field changes to another non-repeating value when the CPU
+>>> +        * counter is disrupted, for example on live migration.
+>>> +        */
+>>> +       uint64_t disruption_marker;
+>>
+>> The field could also change when the clock is stepped (leap seconds
+>> excepted), or when the clock frequency is slewed.
+> 
+> I'm not sure. The concept of the disruption marker is that it tells the
+> guest to throw away any calibration of the counter that the guest has
+> done for *itself* (with NTP, other PTP devices, etc.).
+> 
+> One mode for this device would be not to populate the clock fields at
+> all, but *only* to signal disruption when it occurs. So the guest can
+> abort transactions until it's resynced its clocks (to avoid incurring
+> fines if breaking databases, etc.).
+> 
+> Exposing the host timekeeping through the structure means that the
+> migrated guest can keep working because it can trust the timekeeping
+> performed by the (new) host and exposed to it.
+> 
+> If the counter is actually varying in frequency over time, and the host
+> is slewing the clock frequency that it reports, that *isn't* a step
+> change and doesn't mean that the guest should throw away any
+> calibration that it's been doing for itself. One hopes that the guest
+> would have detected the *same* frequency change, and be adapting for
+> itself. So I don't think that should indicate a disruption.
+> 
+> I think the same is even true if the clock is stepped by the host. The
+> actual *counter* hasn't changed, so the guest is better off ignoring
+> the vacillating host and continuing to derive its idea of time from the
+> hardware counter itself, as calibrated against some external NTP/PTP
+> sources. Surely we actively *don't* to tell the guest to throw its own
+> calibrations away, in this case?
 
-The structure now looks like this:
+In case the guest is also considering other time sources, it might indeed
+not be a good idea to mix host clock changes into the hardware counter
+disruption marker.
 
-
-struct vmclock_abi {
-	uint32_t magic;
-#define VMCLOCK_MAGIC	0x4b4c4356 /* "VCLK" */
-	uint16_t size;		/* Size of page containing this structure */
-	uint16_t version;	/* 1 */
-
-	/* Sequence lock. Low bit means an update is in progress. */
-	uint32_t seq_count;
-
-	uint32_t flags;
-	/* Indicates that the tai_offset_sec field is valid */
-#define VMCLOCK_FLAG_TAI_OFFSET_VALID		(1 << 0)
-	/*
-	 * Optionally used to notify guests of pending maintenance events.
-	 * A guest may wish to remove itself from service if an event is
-	 * coming up. Two flags indicate the rough imminence of the event.
-	 */
-#define VMCLOCK_FLAG_DISRUPTION_SOON		(1 << 1) /* About a day */
-#define VMCLOCK_FLAG_DISRUPTION_IMMINENT	(1 << 2) /* About an hour */
-	/* Indicates that the utc_time_maxerror_picosec field is valid */
-#define VMCLOCK_FLAG_UTC_MAXERROR_VALID		(1 << 3)
-	/* Indicates counter_period_error_rate_frac_sec is valid */
-#define VMCLOCK_FLAG_PERIOD_ERROR_VALID		(1 << 4)
-
-	/*
-	 * This field changes to another non-repeating value when the CPU
-	 * counter is disrupted, for example on live migration. This lets
-	 * the guest know that it should discard any calibration it has
-	 * performed of the counter against external sources (NTP/PTP/etc.).
-	 */
-	uint64_t disruption_marker;
-
-	uint8_t clock_status;
-#define VMCLOCK_STATUS_UNKNOWN		0
-#define VMCLOCK_STATUS_INITIALIZING	1
-#define VMCLOCK_STATUS_SYNCHRONIZED	2
-#define VMCLOCK_STATUS_FREERUNNING	3
-#define VMCLOCK_STATUS_UNRELIABLE	4
-
-	uint8_t counter_id;
-#define VMCLOCK_COUNTER_INVALID		0
-#define VMCLOCK_COUNTER_X86_TSC		1
-#define VMCLOCK_COUNTER_ARM_VCNT	2
-#define VMCLOCK_COUNTER_X86_ART		3
-
-	/*
-	 * By providing the offset from UTC to TAI, the guest can know both
-	 * UTC and TAI reliably, whichever is indicated in the time_type
-	 * field. Valid if VMCLOCK_FLAG_TAI_OFFSET_VALID is set in flags.
-	 */
-	int16_t tai_offset_sec;
-
-	/*
-	 * The time exposed through this device is never smeaared; if it
-	 * claims to be VMCLOCK_TIME_UTC then it MUST be UTC. This field
-	 * provides a hint to the guest operating system, such that *if*
-	 * the guest OS wants to provide its users with an alternative
-	 * clock which does not follow the POSIX CLOCK_REALTIME standard,
-	 * it may do so in a fashion consistent with the other systems
-	 * in the nearby environment.
-	 */
-	uint8_t leap_second_smearing_hint;
-	/* Provide true UTC to users, unsmeared. */;
-#define VMCLOCK_SMEARING_NONE			0
-	/*
-	 * https://aws.amazon.com/blogs/aws/look-before-you-leap-the-coming-leap-s=
-econd-and-aws/
-	 * From noon on the day before to noon on the day after, smear the
-	 * clock by a linear 1/86400s per second.
-	*/
-#define VMCLOCK_SMEARING_LINEAR_86400		1
-	/*
-	 * draft-kuhn-leapsecond-00
-	 * For the 1000s leading up to the leap second, smear the clock by
-	 * clock by a linear 1ms per second.
-	 */
-#define VMCLOCK_SMEARING_UTC_SLS		2
-
-	/*
-	 * What time is exposed in the time_sec/time_frac_sec fields?
-	 */
-	uint8_t time_type;
-#define VMCLOCK_TIME_UNKNOWN		0	/* Invalid / no time exposed */
-#define VMCLOCK_TIME_UTC		1	/* Since 1970-01-01 00:00:00z */
-#define VMCLOCK_TIME_TAI		2	/* Since 1970-01-01 00:00:00z */
-#define VMCLOCK_TIME_MONOTONIC		3	/* Since undefined epoch */
-
-	/* Bit shift for counter_period_frac_sec and its error rate */
-	uint8_t counter_period_shift;
-
-	/*
-	 * Unlike in NTP, this can indicate a leap second in the past. This
-	 * is needed to allow guests to derive an imprecise clock with
-	 * smeared leap seconds for themselves, as some modes of smearing
-	 * need the adjustments to continue even after the moment at which
-	 * the leap second should have occurred.
-	 */
-	int8_t leapsecond_direction;
-	uint64_t leapsecond_tai_sec; /* Since 1970-01-01 00:00:00z */
-
-	/*
-	 * Paired values of counter and UTC at a given point in time.
-	 */
-	uint64_t counter_value;
-	uint64_t time_sec; /* Since 1970-01-01 00:00:00z */
-	uint64_t time_frac_sec;
-
-	/*
-	 * Counter frequency, and error margin. The unit of these fields is
-	 * seconds >> (64 + counter_period_shift)
-	 */
-	uint64_t counter_period_frac_sec;
-	uint64_t counter_period_error_rate_frac_sec;
-
-	/* Error margin of UTC reading above (=C2=B1 picoseconds) */
-	uint64_t utc_time_maxerror_picosec;
-};
-
-#endif /*  __VMCLOCK_H__ */
-
-
---=-GfgCrcNeH7jP/LJeq2X0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNjI3MTYwMzA0WjAvBgkqhkiG9w0BCQQxIgQgZ4Pkq5lt
-IZkUSgBJFbM8Iwt+zcA5Zuu2sFzLrX5OvFEwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgClNEfFH3zJOWF2IWeZ5KL4HBsKhBT96NXZ
-tljARmiKhkTB6cnAygTx0+8yTdydR5G0KNPmHhb0pQFF+ovL+YpotMfKoKrT78D41Zp1zLi2sSJO
-lJAzl/122VS7YehUU9duU8C5X6PIWOxslswETlAMND3g1NG5yLZNGzmfPQyY+atJiAPUFCMjowRN
-hZmamrxu7ec/YFn6lkSiZQS9a03IFwYTbGj4l6RrlENkD2yM2swUktcAhenlBZGF3wcwJn3M1AjO
-c44SNUsUuUF5BUjMNu40ZKNgTSPW5qszw2CWUDGqPTsjX0aHcGvATsYxjc0WhMkiySxoMi/RaNAU
-4TBNyJR0Z/9uJ2ZIkwt891aWODMlIYltFgArl2DTOmXlwa31CAkw5aUnMDgeSd9vzZDs8CaMh0Ux
-fUo4ShbnODmr+3a2atImA40doQN/FQBt9w2muC+sLIMxhe5oHhC4I7AZMVoMs4WNOy734uN51fLt
-02t1LeIqSXfYQ5UqRV2rOo6OeCMPTQLuEYmI+l2jkzuU6Qg3lgoSKTD6O4GLWbdZaQIE8GroeGYG
-MXFIu08jpdaA4S0Nh59Zn4CZPQVfaqyk663uVXWQqqFJuSOEzp5ly84uJ5fX8ygJZY0e+RqyvpJY
-9zmfWKzs3feDvL/H+bsJF7J860OoSc0kV18DtR+rwwAAAAAAAA==
-
-
---=-GfgCrcNeH7jP/LJeq2X0--
+But if the vmclock is the authoritative source of time, it can still be
+helpful to know about such changes, maybe through another marker.
