@@ -1,105 +1,114 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA9DA1607BB
-	for <virtio-dev@lists.linux.dev>; Mon,  1 Jul 2024 18:44:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475941E49E
+	for <virtio-dev@lists.linux.dev>; Mon,  1 Jul 2024 19:16:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719859481; cv=none; b=miNZTjgcJ9KPi/t4G8leO6J7x/SUb8NTpYo5hTT8YZhJyiERj/eYG0Xp75SmYMTAQe3FCvh+YyXcTG6El46NivXdUb9TIcLPADEO1llhWE+o8zY3xZsm5fXnZJzmpoWAmsqcFKYOr5iUHh9A5e1eidy9yZ+ESB7d5sSDtaJCtLM=
+	t=1719861389; cv=none; b=pNiIT4PmG0T747ySTSAK4OdJrWeKfATKU0QPCdYCeHCZt5yynqB+U481RcYF+XWUKimvAH896hUFNECPPXnYkoQVzLmInmnbMmspeGZF1As6JICXppt5cx0qoOcPhpMFKugYFHdotgjiobyQLwAdZ/tBfHlhMF8p31ownaVlWa8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719859481; c=relaxed/simple;
-	bh=IDQpasIZAYmglhlmAzo2Qxwi9GBbAuhLVhBFkVfCjvA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=E2Q1azZwTrU7urajZCSPMJ1qtr50t65usT4ee+r6OEHhGwFRmGnlXMMNBnH3mjXW9j1Tmq9tNv9CDzwygQMf2TnGdEKdkEhxh0Gh2JYimBnN+gSmhR0eGbr8APQELY6jK0/ICSTcNPxkyekC0+W99tV5HR2P0CqmsxigZvt36/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=QvgHqa9k; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1719861389; c=relaxed/simple;
+	bh=5FCqSLm57XUERk1MFfEF/pd7K3Vr0B/n+GjEp3DnSs8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jzjjXX6bvY01HUSNZEZMuO+ZvE5Za+EBxID2N0ddVbJerBQklVBf3xEEc+3nkw5s73XUN3V675Es10wJtECbM5YYboqqLaG9R8cu/K7USmkDFL7V9sCMpiq72C6Hy0KXWvuq2GQGgwTZe0qNWSl4K4xzwzSZk1JIfxOj46MLpN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=D1ztxYgw; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QvgHqa9k"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1719859478;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bAtx+iWTpTQ78hViwyRlQJ5PRJ4z3TNoFTJ+mZsZELU=;
-	b=QvgHqa9kzPrX9jb9RAr6epr4JzLkgo9XcHrgX7QBoFNxZPEmq1y1raOGN04zawNVYNcswk
-	ANBmAerfgr0l0Te1ms4UZbtlCSL0VY9djJXS5v7y0Oe28iNS+9tFv5Nzlk+OB1WmxdH615
-	bNRBXM3yBGZ04Lhz+iJZo9ADzPOn5uU=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-263-9PnwLa8OO0SFEUB2qLc4BA-1; Mon, 01 Jul 2024 14:44:35 -0400
-X-MC-Unique: 9PnwLa8OO0SFEUB2qLc4BA-1
-Received: by mail-lf1-f69.google.com with SMTP id 2adb3069b0e04-52cd8314430so3266601e87.3
-        for <virtio-dev@lists.linux.dev>; Mon, 01 Jul 2024 11:44:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719859472; x=1720464272;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="D1ztxYgw"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1fad076cd9cso336995ad.1
+        for <virtio-dev@lists.linux.dev>; Mon, 01 Jul 2024 12:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1719861388; x=1720466188; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bAtx+iWTpTQ78hViwyRlQJ5PRJ4z3TNoFTJ+mZsZELU=;
-        b=rCJuKUzXdAD19FnC9pdfuHBvrVloG2atIk+/64/K4YPSvXF8t4kTdA1lZZ0+AYl2ND
-         mcMynxKFfqNvZOyeUADzS1Wcsge7f3cCT0sFIK5ZGD1OqPm16l4eo/AhV66RmD6+zwcf
-         G7hRWt4ZGd5Kw/AGekdbcGNlu5W33/GjIj7HsI9XGy2fXjiCdCs8QstZf05ASP0YBqVl
-         R4e+wGGjRvzh1Nbmt1exLg8ajGhOHtAh9MOTLHXvFdi2bkoH+Rw5ncAueVCk52FgziDQ
-         z6fe7YB5IPPzGFO8m25A9xMrkaNRlUICb6fJJaBeQBhdGzON8OakEyqnqH4PLxV6MLnM
-         WpOA==
-X-Gm-Message-State: AOJu0Yzb49AZZpQv3vsvsb78ofnHG/DB3Vozb0GAoJhm0WtV+dO15dpA
-	tifSVhrTcVeiFbnrfLpEG1pg62gkLeuvzLLTb33wbJAFYYfZMpjsbwAjteB5jM42b5qChiNmBAp
-	hJmK37vAZv8yuH+Ppq4GPjWiykPnX/C6iogx/5MmEROaoh4jifHF8dOuSHig=
-X-Received: by 2002:a05:6512:3b83:b0:52c:a465:c61f with SMTP id 2adb3069b0e04-52e827364cemr5014149e87.56.1719859472496;
-        Mon, 01 Jul 2024 11:44:32 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEPTasNBMe6d/jvoQwFwsdXI01LkupaJDa3pyprd2bWtsHe4G+n3dl77/y6LAWIkVQgvVw81w==
-X-Received: by 2002:a05:6512:3b83:b0:52c:a465:c61f with SMTP id 2adb3069b0e04-52e827364cemr5014133e87.56.1719859471614;
-        Mon, 01 Jul 2024 11:44:31 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc7:55d:614d:9fb:6fdd:72a4:f3d])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4256af55aeasm162135775e9.17.2024.07.01.11.44.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jul 2024 11:44:30 -0700 (PDT)
-Date: Mon, 1 Jul 2024 14:44:27 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Roman Kiryanov <rkir@google.com>
-Cc: virtio-dev@lists.linux.dev, JP Cottin <jpcottin@google.com>
-Subject: Re: VIRTIO_VSOCK_OP_REQUEST with the same src_port from a guest
-Message-ID: <20240701142831-mutt-send-email-mst@kernel.org>
-References: <CAOGAQepPkUDF8vmzRiG41xOGhFdDuq8-EHmdTrdVrK6E346G7A@mail.gmail.com>
+        bh=5FCqSLm57XUERk1MFfEF/pd7K3Vr0B/n+GjEp3DnSs8=;
+        b=D1ztxYgwG1FVnj6xmpDoZ4igaGcoUGcOUYwubWKXkn+joydbkystHH1c8FxsN7JoQP
+         yYlc8Ch38chLVG48kjF8yscpVldFaNld8wP8yb0VWo++lSGm09VX1hYehDu7vEqX1Zpc
+         v8QCnTRSvdA3UYgb6iSuEcYxqJUwlVnZA9EaGMp4OP4XdK6wLnpsTtU37prP9FV/HG0O
+         E2wSQmkaQTXQ5PC0J6UfBFsKgVabkG23pUEg/CHYfyYwe0+J5k0a9iSo3xr5E/69WIDL
+         k+pwbh0y/v9qM80u4RMPWxKiJRVFCqNa2xC9yh1L3VeXmfZhDtc5ExAK0SDwUPhA4tgH
+         kIKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719861388; x=1720466188;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5FCqSLm57XUERk1MFfEF/pd7K3Vr0B/n+GjEp3DnSs8=;
+        b=ZJi8KPIX2oXUBf2GZ4s9ycPP4mhsQwS6k8LL204u94LQaWbDXSVxxHu6DOIYzJi/w6
+         rMz1lWIxnPtoLnZ0znXnWR9hx6DA9R5aLKBoXPPZpfIeHMnuBYOV6EhP+p0lqqy98vkY
+         ppofyeMjX/LnUe0fOMpEoubLAqibtTLAoNaTkHOZXAIuPO7JIzsDU18zVTe1RK8qStC7
+         dwDB03wl7pTPtoxtf8S6aY0Hk7caX/+bSZVwD7Mpe8obrw+6vEEFABeWUg/FJgdCyXAt
+         304Np7et44ewvmlR2EV3GHpxT9ANSdiGHYxFOo3Ah7p6b41i1jqUN6AyaceDdAFvSX7a
+         6DGA==
+X-Gm-Message-State: AOJu0YzhVe5KS1VMUoHOyFaguPF2B8+D7GHXP2Ajsbyb9tsKTFBxFr6T
+	AH/m0bUERk3FvTrl87wBCxtoeIXxh4cTXZfMQ17n0sV8DNJiQ8v2TYaN4KXphnjNQqb+8Y67Sbv
+	4nTIAUm/WmodCVup98CeYhuoHW59lSbZ7FaYU
+X-Google-Smtp-Source: AGHT+IGXqSx0K7FnoCN2KXZP6PVs8n/PMnlAoQvJOT4ZDlWIogWwUozzAy7V6qYwWphn1T0WDlUOJ6s4WUl5HI5mYAs=
+X-Received: by 2002:a17:902:c64b:b0:1fa:191c:fe4e with SMTP id
+ d9443c01a7336-1fad8f2a0d7mr5215365ad.21.1719861387194; Mon, 01 Jul 2024
+ 12:16:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <CAOGAQepPkUDF8vmzRiG41xOGhFdDuq8-EHmdTrdVrK6E346G7A@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <CAOGAQepPkUDF8vmzRiG41xOGhFdDuq8-EHmdTrdVrK6E346G7A@mail.gmail.com>
+ <20240701142831-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20240701142831-mutt-send-email-mst@kernel.org>
+From: Roman Kiryanov <rkir@google.com>
+Date: Mon, 1 Jul 2024 12:16:15 -0700
+Message-ID: <CAOGAQepE5G+yR0FQMFW8oZ24p0DVKZgmkDJsB09hbxF+P7KvCQ@mail.gmail.com>
+Subject: Re: VIRTIO_VSOCK_OP_REQUEST with the same src_port from a guest
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtio-dev@lists.linux.dev, JP Cottin <jpcottin@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 01, 2024 at 10:35:57AM -0700, Roman Kiryanov wrote:
-> Hi virtio-dev,
-> 
-> we (Android Studio Emulator) have our own implementation of
-> virtio-vsock and we recently found that the virtio spec does not cover
-> the situation if a guest sends a VIRTIO_VSOCK_OP_REQUEST packet with
-> the same src_port that is already registered on the device side.
-> 
-> This sounds like an error to me and I don't think I ever saw this
-> happening, but it would be nice if the spec explicitly mentioned how
-> this situation should be handled on the device side.
-> 
-> The spec does mention "A VIRTIO_VSOCK_OP_RST reply is sent if ... the
-> destination has insufficient resources to establish the connection",
-> but I am not sure if this includes the duplicate src_port case. I
-> think this means the previously established connection will be broken.
-> 
-> Thank you.
-> 
-> Regards,
-> Roman.
+Hi Michael, thank you for looking.
 
-Another way is just to forbid this from happening.
+as I mentioned, I have never seen this happening.
 
-How does this happen on the driver side?
--- 
-MST
+But this code path (on the device side) exists (e.g. insertion of
+<dst_port, src_port> to a
+hash table says that the key already exists) even if it is never taken
+and I would be nice
+if the virtio-spec mentioned explicitly what to do there.
 
+Regards,
+Roman.
+
+
+On Mon, Jul 1, 2024 at 11:44=E2=80=AFAM Michael S. Tsirkin <mst@redhat.com>=
+ wrote:
+>
+> On Mon, Jul 01, 2024 at 10:35:57AM -0700, Roman Kiryanov wrote:
+> > Hi virtio-dev,
+> >
+> > we (Android Studio Emulator) have our own implementation of
+> > virtio-vsock and we recently found that the virtio spec does not cover
+> > the situation if a guest sends a VIRTIO_VSOCK_OP_REQUEST packet with
+> > the same src_port that is already registered on the device side.
+> >
+> > This sounds like an error to me and I don't think I ever saw this
+> > happening, but it would be nice if the spec explicitly mentioned how
+> > this situation should be handled on the device side.
+> >
+> > The spec does mention "A VIRTIO_VSOCK_OP_RST reply is sent if ... the
+> > destination has insufficient resources to establish the connection",
+> > but I am not sure if this includes the duplicate src_port case. I
+> > think this means the previously established connection will be broken.
+> >
+> > Thank you.
+> >
+> > Regards,
+> > Roman.
+>
+> Another way is just to forbid this from happening.
+>
+> How does this happen on the driver side?
+> --
+> MST
+>
