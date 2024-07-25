@@ -1,60 +1,60 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36AA31386C0;
-	Thu, 25 Jul 2024 10:00:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30CA012B64;
+	Thu, 25 Jul 2024 11:50:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721901622; cv=none; b=CdnqiuDfox65DLuTGo2ieBZXgmLnCiixZLmUM0ywIo0GZ/+hQOksYbWuWG7v1r5SNYSkIboubfEWUZkxdJJnuJmxrEL8p/dVlenr+528GRjstEXG3tjVV7fnXe+hkX5mjtcZEG+6ETk7NWnP1ZM7vouBkWpA5rzfofEC0t3dOes=
+	t=1721908205; cv=none; b=GnwwK6v4KvGdi+NuWEuK/cxuuFwfkTE3Bgv7GaF/SuzrNWGVC391AZzVlZarcvZDfwlg0CCs3S63SDbvXdATTNhT/D2pSwJShNgFJRflLZAvGIROZRjZ6A1A6oNZGwuvReuznMTwCquej9HLxY41AFO0tOR4fAluVpxQa14ExVk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721901622; c=relaxed/simple;
-	bh=/7IxyE746tB7gLFGUryPRx7FJ/Ne/kURVczteivoMWM=;
+	s=arc-20240116; t=1721908205; c=relaxed/simple;
+	bh=dOMuI0KOfYdadFjPpCQ6nhBfr9GpmTphMFJg3+Rl+/8=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=j55rnWHyYXvmnKNC6wdMRMQxT39cxgQUI5EVtTEYShAfVKHi3L8RaobMHruchI0nAYlcwIqYygtzkk1D7dGlK8UiEb2H0G82lqLse22OZ+8cGjqOIEhrzj28g5Gm25MlyJ73PD5Cpz/mYlbRimfJE8jvDkKhdKiQOziKRCG6Uys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=bpJALwyM; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:MIME-Version; b=OiAi8Oee+DFSbFmahRVXAYCvFIpQeZnAUI7vrS27Xcq9o6+lBZGJGMvXd1fylAcbrjmLfqUXLf5IlqcMH3xnkjr7YJKDvzZfnrYM1tMS/VqiUbwk/ouQxqOJbjbUiACPwkbWxJ941PavBlQoD1b04uptzV2CXOG0RS9wLvmI49E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=JfT4L9OF; arc=none smtp.client-ip=90.155.50.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bpJALwyM"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="JfT4L9OF"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
 	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=/7IxyE746tB7gLFGUryPRx7FJ/Ne/kURVczteivoMWM=; b=bpJALwyMZsq53PsnZIrXIlUtAQ
-	GlFdwp5W+vrYM69gwsbF83dXtsKoI0bE0jFv7hLrllcjxa4ck4U8LWqApf7YXKCr2I1P4UxKzGOHs
-	9BeC34FMYVTq6OSyWZSJBPFIAF+/C17CiQtsa9s45ATAE0Q3UDJ6qLkLirUQKfYgggP9IHkFKcVNc
-	+q/shmWUZUxxazV3QvNYl0FpJgiWxK+x1SdD0tbEi8tsroerdvsGXYVmvOMLZGIH/Te3UqFElLTj7
-	rBz5WNPr5G8HQ+nTlv8X//fAOnxHovAB9bY4v1dcPJjdVXpkhkt+orEe4114RVlECsucd8LQ0nGHV
-	DSzsy2mQ==;
+	bh=dOMuI0KOfYdadFjPpCQ6nhBfr9GpmTphMFJg3+Rl+/8=; b=JfT4L9OFqiYLUWe4Tc4X/S2wu9
+	G6FeTUnd37d6c49pRv36hOW0YHufHP5l+TVzCmwGDsMnFYqu+XGfhNDcASr92xry/bf1BNsjDjD4K
+	OSNamL3oT3PyS4MsMu1Vo48vGv7SKG9devhujr/2IPDR+M9Gq56RA9sCHKb980aBt7y8uhT7KsLkK
+	u3D59Ag8wJeHjbCm/8Zt80hQMpAyZ+/lm+DMZru4qRHV3ZXgp/6ClxIQEBI/LfW1hxWf/QIMRU25i
+	aBGx+qVWKYdSRAp9Ea1C9RTWTwa8HTxPTZ4f3gZJ8cVxNKeu6NxCKofp9zjOuzlW61u6aa6wEtGfb
+	HjXpf6tQ==;
 Received: from [2001:8b0:10b:5:25df:2ae1:4889:ee99] (helo=u3832b3a9db3152.ant.amazon.com)
 	by casper.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sWvGi-00000008mHI-1oqA;
-	Thu, 25 Jul 2024 10:00:16 +0000
-Message-ID: <ebabe603a497391a1671b44ae5579ced281b8333.camel@infradead.org>
+	id 1sWwyn-00000008rrj-2FvO;
+	Thu, 25 Jul 2024 11:49:53 +0000
+Message-ID: <78ae9403ac4f507819c46ed831c714bca966e5a4.camel@infradead.org>
 Subject: Re: [PATCH] ptp: Add vDSO-style vmclock support
 From: David Woodhouse <dwmw2@infradead.org>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Richard Cochran <richardcochran@gmail.com>, Peter Hilber
- <peter.hilber@opensynergy.com>, linux-kernel@vger.kernel.org, 
- virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>, 
- virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>, "Chashper,
- David" <chashper@amazon.com>, "Mohamed Abuelfotoh, Hazem"
- <abuehaze@amazon.com>,  "Christopher S . Hall"
- <christopher.s.hall@intel.com>, Jason Wang <jasowang@redhat.com>, John
- Stultz <jstultz@google.com>,  netdev@vger.kernel.org, Stephen Boyd
- <sboyd@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>, Mark Rutland
+To: Paolo Abeni <pabeni@redhat.com>, Richard Cochran
+ <richardcochran@gmail.com>,  Peter Hilber <peter.hilber@opensynergy.com>,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, linux-rtc@vger.kernel.org, "Ridoux,
+ Julien" <ridouxj@amazon.com>, virtio-dev@lists.linux.dev, "Luu, Ryan"
+ <rluu@amazon.com>,  "Chashper, David" <chashper@amazon.com>, "Mohamed
+ Abuelfotoh, Hazem" <abuehaze@amazon.com>
+Cc: "Christopher S . Hall" <christopher.s.hall@intel.com>, Jason Wang
+ <jasowang@redhat.com>, John Stultz <jstultz@google.com>, "Michael S .
+ Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org, Stephen Boyd
+ <sboyd@kernel.org>,  Thomas Gleixner <tglx@linutronix.de>, Xuan Zhuo
+ <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>,  Mark Rutland
  <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Alessandro Zummo <a.zummo@towertech.it>,  Alexandre Belloni
- <alexandre.belloni@bootlin.com>, qemu-devel <qemu-devel@nongnu.org>, Simon
+ Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>,  qemu-devel <qemu-devel@nongnu.org>, Simon
  Horman <horms@kernel.org>
-Date: Thu, 25 Jul 2024 11:00:15 +0100
-In-Reply-To: <20240725015120-mutt-send-email-mst@kernel.org>
+Date: Thu, 25 Jul 2024 12:49:52 +0100
+In-Reply-To: <541d338f-bffc-4393-a501-92d01e5c8edb@redhat.com>
 References: <14d1626bc9ddae9d8ad19d3c508538d10f5a8e44.camel@infradead.org>
-	 <20240725015120-mutt-send-email-mst@kernel.org>
+	 <541d338f-bffc-4393-a501-92d01e5c8edb@redhat.com>
 Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-mX6aQ5w+mkWSt01+2kjl"
+	boundary="=-SY3unfSx3iaL3ixPrA/+"
 User-Agent: Evolution 3.44.4-0ubuntu2 
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
@@ -65,30 +65,23 @@ MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
 
---=-mX6aQ5w+mkWSt01+2kjl
+--=-SY3unfSx3iaL3ixPrA/+
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2024-07-25 at 01:54 -0400, Michael S. Tsirkin wrote:
-> one other thing worth mentioning is that this design can't work
-> with confidential computing setups. By comparison, mapping e.g. a
-> range in a PCI BAR would work for these setups.
+On Thu, 2024-07-25 at 13:20 +0200, Paolo Abeni wrote:
+>=20
+>=20
+> Just a bunch of 'nits below
 
-Why so? This is just like mapping a PCI BAR, isn't it? It's cacheable
-MMIO space, *not* part of the encrypted guest RAM ranges. It just
-happens to be discovered through the _CRS of an ACPI device, not the
-BAR of a PCI device.
+Thank you. Fixed in
+https://git.infradead.org/users/dwmw2/linux.git/shortlog/refs/heads/vmclock
 
-> Is there a reason this functionality is not interesting for
-> confidential VMs?
-
-It is. In fact, that was one of the reasons for doing it as mappable
-MMIO space, instead of having the guest allocate a portion of its own
-RAM and invoke a hypervisor enlightenment to populate it. (Although the
-latter *can* work with CC too, as demonstrated by e.g. ptp_kvm).
+I'll post a new version once I've finished resolving mst's and any
+other feedback.
 
 
---=-mX6aQ5w+mkWSt01+2kjl
+--=-SY3unfSx3iaL3ixPrA/+
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -180,24 +173,24 @@ IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
 dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
 NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
 xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNzI1MTAwMDE1WjAvBgkqhkiG9w0BCQQxIgQg/Pogwdsa
-I+AQajbR9tZnIybvrBv8lF3CXljBfY6eI/Iwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNzI1MTE0OTUyWjAvBgkqhkiG9w0BCQQxIgQgJr9pTDJ6
+2pqUfwMJ+PXFWtqHecWdxEEUUbpYTArJLv4wgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
 A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
 dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
 DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
 MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
 Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCid0KlEQXamGekc2GM0NJgSFRwlq2qjHFH
-o4c+2XpvTu1xoWlWFdIDo6e3RWD12fNQx7bt7mPFN93Ec1n8lXKA2Rbw51rJUa7PuDgD3cnYXfao
-9jOiVEmp7aQEJ/aa6eo09TycflIlpqqhIbBVx0ivC2OuxXlVxcRHM+RLAosNVGx1tgwDlx7vhY0P
-bUbckZS29YIdJsLlplbW+wTXdTXdhOyw9mti5DMLBCcWQaQpOMvt6hEl/D7Snv83H5z6Vn/ySWE2
-/q5qmkjUAEuUURhr800RlfY+z+eOt5IEn0HQ5aMlDEn+NXZ6BoLFQEQl8C6/lp4feSzYJt4gGsEq
-2eDtBULUphKM3FtHaluhOffhXYPOZMoSorPDKhj6moeyKyOctEMl9st/jdciQ43SQj2tDhdrBEFk
-vqYWe1+Qyi19+p8JbjEBCqN0uxYrIP2skh5x+RE4p1GJ5mwdlaUxMZPQ1ZKGPNof8y2AkdcvtLUJ
-C2Ix41CPJ0Y7rN3VLwyHdgv7I7Q6VYBWfhVXlZmfPq+WRrdvZlYikkUdTRxTOeszYTXcNjjNdeig
-pGUBswjEaOAmOJ7Nnd3EJzRLZYf2Fq1CjpujyfQeajjXl4sf+f7GOv+GJMAfll7SK5odZ/iGyWaH
-aIMAsyOP7Nq3r68A6uiLdDNiCogpZ6WRbQltOetiGwAAAAAAAA==
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgByTwtaYFwJNc1k+De4/GpwAGU/YAXuhXQo
+uiyaHIbnGT6Peo2jHT0dBt4dCUerw27IK1LU1nNmZvBOaCuBxk/aVnyRQYRzB8Qhj3LhUZD5C0u4
+Z3AcWY4YT+Me+i65kiCwuNeYaAGuiVfRVP3lwd8pVexWPFPAaTqCZrvRrPtcbkuqABZaGVdc/QlS
+71KDoBQxqAvt+JcAVG28kAaht8qVPM0Ae0WW8s2rwF8s/mTV2G32JjHPQkkf4an7b0ER9e99/Szi
+F5oLyHXbM+0wVU6q7MXx4Ky6EGOEpatyNzPlK2W/kF0iw8j7uPToOYL2HdbxYULhYLqzXEdjszbF
+Ow5EhzPxRhUlHpmbRj9FUYrheG7CweqH53UOaAOh2ZprcRNuTBiKCXavl+n6Mhx6Q4UC+LLYdzpB
+riXrk5TG35G0WjUsqC+/Puf7aNH0RYHXQ2Y7HdKyDtR3Vh1r7dxBWCiOHqUjqjYbK8sCDdeZXjL0
+ZH2m55GNXvi5nxr7pJUBdUcdNR1uZos3ZEVh08+4dkK+92jTWfEfTo0J+CStkVfU7owPJhtFqu0y
+87DkxVjTY3m90CFSOp/q86L0buEPBhUHbss0IzvlkWpCRnsk3STGLCDMqGS3Zf6IKhEnWEQYPZ6W
+qXXz6+YMla/M9bGEu7punkNzJNj0i9PE4sCvPgBkywAAAAAAAA==
 
 
---=-mX6aQ5w+mkWSt01+2kjl--
+--=-SY3unfSx3iaL3ixPrA/+--
