@@ -1,270 +1,251 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7FB113E8A5;
-	Thu, 25 Jul 2024 22:21:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62D3722611
+	for <virtio-dev@lists.linux.dev>; Fri, 26 Jul 2024 02:48:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721946067; cv=none; b=nSzMJh9Z6+0roqvv8I2Gm9n/Fj3buIDU2xvT3k5qASNIW5He1Cx/dZaz2H7ooS2zPMMB78SvC0awgDfDlU+gZ9nVPaMm14K+oyDYiYQcAjNemuLyfFrvlldHxx9e9iRF0cIv2uclCRMakIiSS0WyA/kK8mocyNhgT38ztXKzOLk=
+	t=1721962102; cv=none; b=lJ6XH9uUFNWR6n/PpQY+2Le4XZRpBN1d55piOBiJsf4GVZwhiFi0DYFKyS+sCXGMTCgxbqdZMJrkL1bXkJtKD8R7nWatyMJkOO39cV06UYMEbSWswE8JnGc2tE1NN/OXv1GSnR+SSmi8ElmTARt8zLRDv4F/5NgTio0Ik5GDW38=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721946067; c=relaxed/simple;
-	bh=Dg7K/417NvApt2K3Da82DhX0FHPQCNOJE+h1X2JsfjM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=lmFSwk77jwe0TN8iVjSnsRCcF7bCQHWmOdSgdkmqyI9r0bqYQ0X/Bl5fbxseYQNztxVYS1lLgEp/GjefvMSGtyCxHRUxedlsr8oJTRDBVCOii1a+U+KrQwI97EyGFjtMlRKXosYrdNmQ7nLz3XWlXjeD2jopxslka6QHHbNjX04=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=nmFWztvg; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
+	s=arc-20240116; t=1721962102; c=relaxed/simple;
+	bh=d8bULL5OlDjO2se6e+60D2DArmYrTX1nstX7roW9G7c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=b21ClJindG2vOu3vDQhCAKLknzuBWaafyT1+rHjmtc1e5vjqZqyIesR61C1h+ESP9Hp7kWBQzHbjhclGvZKTbZBwwHT+3qp7kDPGQX3ZeD02EJI1T6xj6izavs0mo4EflZcpoxGHSCSfg81apvgwks4Ht7CUUJka9QFhiBnxs6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NmGaK/Yw; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="nmFWztvg"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=Dg7K/417NvApt2K3Da82DhX0FHPQCNOJE+h1X2JsfjM=; b=nmFWztvg/vnmJQrfeYMlx9DLDO
-	ag2bmFa2Y1stIL0R2brKxjr5EhRZpCP4V740XmyYtBQgvZsimJcn966hQVaAhTC6pM/pED+Knrl+o
-	ldQdr2Qx3se/kMO5A9tupBy7KOszxoyOqPVZD6lBLrpDaC93vBdgIEY33yzsHZpncN1uFvm8FSMxN
-	/NOBueCJM8TmO/xvrPrL2hCiLLpITXHS1oy2Q1MlL7BomGlzwoLFOkiCYHHrEGa5+OrZ4tepTsPIl
-	/JIADCxjPa3hDEItLY3zr4JlSh6ZCUJqVdfX3H7bZRpxOLtgJJmQQjFPhpcCKeqIAEIG6rhP8xEwZ
-	i/MjumxA==;
-Received: from [2001:8b0:10b:5::bb3] (helo=u3832b3a9db3152.infradead.org)
-	by casper.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sX6pV-00000009RSN-35le;
-	Thu, 25 Jul 2024 22:20:57 +0000
-Message-ID: <9261e393083bcd151a017a5af3345a1364b3e0f3.camel@infradead.org>
-Subject: Re: [PATCH] ptp: Add vDSO-style vmclock support
-From: David Woodhouse <dwmw2@infradead.org>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Richard Cochran <richardcochran@gmail.com>, Peter Hilber
- <peter.hilber@opensynergy.com>, linux-kernel@vger.kernel.org, 
- virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>, 
- virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>, "Chashper,
- David" <chashper@amazon.com>, "Mohamed Abuelfotoh, Hazem"
- <abuehaze@amazon.com>,  "Christopher S . Hall"
- <christopher.s.hall@intel.com>, Jason Wang <jasowang@redhat.com>, John
- Stultz <jstultz@google.com>,  netdev@vger.kernel.org, Stephen Boyd
- <sboyd@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>, Mark Rutland
- <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Alessandro Zummo <a.zummo@towertech.it>,  Alexandre Belloni
- <alexandre.belloni@bootlin.com>, qemu-devel <qemu-devel@nongnu.org>, Simon
- Horman <horms@kernel.org>
-Date: Thu, 25 Jul 2024 23:20:56 +0100
-In-Reply-To: <20240725174327-mutt-send-email-mst@kernel.org>
-References: <20240725083215-mutt-send-email-mst@kernel.org>
-	 <98813a70f6d3377d3a9d502fd175be97334fcc87.camel@infradead.org>
-	 <20240725100351-mutt-send-email-mst@kernel.org>
-	 <2a27205bfc61e19355d360f428a98e2338ff68c3.camel@infradead.org>
-	 <20240725122603-mutt-send-email-mst@kernel.org>
-	 <0959390cad71b451dc19e5f9396d3f4fdb8fd46f.camel@infradead.org>
-	 <20240725163843-mutt-send-email-mst@kernel.org>
-	 <d62925d94a28b4f8e07d14c1639023f3b78b0769.camel@infradead.org>
-	 <20240725170328-mutt-send-email-mst@kernel.org>
-	 <c5a48c032a2788ecd98bbcec71f6f3fb0fb65e8c.camel@infradead.org>
-	 <20240725174327-mutt-send-email-mst@kernel.org>
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-8c3XA+w5NAQzNDyHSpXa"
-User-Agent: Evolution 3.44.4-0ubuntu2 
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NmGaK/Yw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1721962099;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XeSDxtiQmXwuFwReFKz8QuvPcZxIukFuNiAfW92ndEE=;
+	b=NmGaK/Yw3xJAEkGLI9UkifgHr4jxc3LXYWWItYNJbCQFfic+CDV0W/e9yDJE8dv8I69gcQ
+	8Gn2m2AL4LRxmaPJBVSRrQ/F8Wb2ltbRcabfss6njJ9qMq9+bkIr0ITvOs4QTmobZrkjpX
+	eVSQKb7NoE/uhLGaDXsUdamPXFfIAW4=
+Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
+ [209.85.217.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-226-I9Lq-qAHMlCQpGl05WX50A-1; Thu, 25 Jul 2024 22:48:16 -0400
+X-MC-Unique: I9Lq-qAHMlCQpGl05WX50A-1
+Received: by mail-vs1-f72.google.com with SMTP id ada2fe7eead31-48a33435f58so961512137.3
+        for <virtio-dev@lists.linux.dev>; Thu, 25 Jul 2024 19:48:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721962095; x=1722566895;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=XeSDxtiQmXwuFwReFKz8QuvPcZxIukFuNiAfW92ndEE=;
+        b=wbhOEPqJnIHvXzl4TVzM8J4uoec2FD/UdMgh+xL+ABn5gFqrFh7W43+CpUXRSfcfxY
+         ZNc4aTs7HzDOm68R1NxnG4iPUI9K2cpKa9WWDNsHQbuSs+xjZ6x4Xu2yRc1+NFZQnGrr
+         ZCVV95Mt5eeKNsdoBHeg1KvEKpdeF8Tmlfk0PGmaAABFMe5FFM0iYJXWEpGxk/gEcCCb
+         hNpLueAX3Hpwxi2c733FaWT5GAuwsdRPEMEKLhwGqphs+FCU/9bf6B+DpjZH4SgHHz6Y
+         3jaoCzdYXmbvoza+jIDkSCT/uP8oDlH4CTqZpA6ckp84PC1YTP1ZikdMKqtWOUoUGrOW
+         HRcQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVxsxG3qpsEKviEjZqGJTmBtaI/h/fK4kHLgRoq/SdqlpNxlnhn/5ov+nWpOz5jkLF3wKO7bwcRf95EXi3CEeFgmXUuJsQG9zMHDw==
+X-Gm-Message-State: AOJu0Yz3YONUM5LbCfYL6DWW9otP8WvJ/oXzlF0UDu/vagE8qipiPi1T
+	8j67ucp7dxaW1wZjK7aJlsxsseZ6VL2RiyBPIYhdKLxbn9kSpDCWuPt9cLRYWW6Jn3j9036Ypf/
+	8fOdsdOMTiD2gIqntzWm58UpNZBSshXsoq3d9mIg5yc4L02SP+oONVdnatjwlhPDRyORDBLf42U
+	NqJGfsxAASTbr3cXEM96yexKsm81Sl89wP7g==
+X-Received: by 2002:a05:6102:1490:b0:492:ae79:ffbb with SMTP id ada2fe7eead31-493d64b60d7mr6971884137.24.1721962095614;
+        Thu, 25 Jul 2024 19:48:15 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFGJMjJgl3eknXfvv5ap2fhBTc1Cv5wiWyzl5o6/g2CSXpIOpv10cO81GugKlsYlCKMI/brwSe+8C4ESYpD3q4=
+X-Received: by 2002:a05:6102:1490:b0:492:ae79:ffbb with SMTP id
+ ada2fe7eead31-493d64b60d7mr6971863137.24.1721962095151; Thu, 25 Jul 2024
+ 19:48:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
-
-
---=-8c3XA+w5NAQzNDyHSpXa
+References: <20240724033816.GD492231@quicinc.com>
+In-Reply-To: <20240724033816.GD492231@quicinc.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Fri, 26 Jul 2024 10:47:59 +0800
+Message-ID: <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
+Subject: Re: [RFC] vduse config write support
+To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Cc: xieyongji@bytedance.com, stefanha@redhat.com, virtio-dev@lists.linux.dev, 
+	virtualization@lists.linux.dev, quic_mnalajal@quicinc.com, 
+	quic_eberman@quicinc.com, quic_pheragu@quicinc.com, quic_pderrin@quicinc.com, 
+	quic_cvanscha@quicinc.com, quic_pkondeti@quicinc.com, quic_tsoni@quicinc.com, 
+	eperezma <eperezma@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, mst <mst@redhat.com>, 
+	Cindy Lu <lulu@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2024-07-25 at 17:47 -0400, Michael S. Tsirkin wrote:
-> On Thu, Jul 25, 2024 at 10:29:18PM +0100, David Woodhouse wrote:
-> > Those people included me. I wanted to interrupt all the vCPUs, even the
-> > ones which were in userspace at the moment of migration, and have the
-> > kernel deal with passing it on to userspace via a different ABI.
-> >=20
-> > It ends up being complex and intricate, and requiring a lot of new
-> > kernel and userspace support. I gave up on it in the end for snapshots,
-> > and didn't go there again for this.
->=20
-> ok I believe you, I am just curious how come you need userspace
-> support - what I imagine would live completely in kernel ...
+On Wed, Jul 24, 2024 at 11:45=E2=80=AFAM Srivatsa Vaddagiri
+<quic_svaddagi@quicinc.com> wrote:
+>
+> Currently vduse does not seem to support configuration space writes
+> (vduse_vdpa_set_config does nothing). Is there any plan to lift that
+> limitation? I am aware of the discussions that took place here:
+>
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210615141331.407-1=
+1-xieyongji@bytedance.com/
+>
+> Perhaps writes can be supported *selectively* without violating safety co=
+ncerns
+> expressed in the above email discussion?
 
-Userspace doesn't even make a system call for gettimeofday() any more;
-the relevant information is exposed to userspace through the vDSO.
+Adding more relevant people here.
 
-If userspace needs to know that the time has been disrupted by LM, then
-fundamentally that either needs to be exposed directly to it as well,
-or userspace needs to go back to making actual system calls to get the
-time (which is slow, and not acceptable for the same use cases which
-care about it being accurate).
+It can probably be done case by case. The main reason for avoiding
+config writing is
 
-So how do we make it available in a form that's mappable directly to
-userspace?=20
+1) to prevent buggy/malicious userspace from hanging kernel driver for ever
+2) to prevent buggy/malicious userspace device to break the semantic
 
-Well, we could have a hypervisor enlightenment, where the guest kernel
-uses an MSR or hypercall to tell the hypervisor "please write the
-information to <this> GPA", and provides an address within the vDSO
-information page. Which isn't nice for Confidential Compute, and is
-hard to allow for expansion in the size of the structure. And is much
-more complex to support consistently across different hypervisors and
-different architectures.
+Basically, it is the traditional trust model where the kernel doesn't
+trust userspace.
 
-We *could* attempt to contrive a system where we indeed interrupt *all*
-vCPUs and the kernel then updates something in the vDSO page before
-running userspace again. That could work in theory and *might* be a bit
-simpler than what we were trying to do for VMGENID/snapshots, but it's
-still complex and would take an eternity to deploy to actual users, and
-would probably never work for non-Linux. And imposes an even higher
-cost on the guest kernel when LM occurs.
+E.g current virtio-blk has the following codes:
 
-Or there's this method, where the hypervisor puts it in a shared memory
-region which is just a PCI BAR or an ACPI _CRS or attached to virtio
-(we really don't care how it's discovered). There's a nit that it now
-has to be page sized, and a guest which has larger pages than the
-hypervisor expects is going to have to use a small PTE to map it (or
-not support that mode). But I think that's reasonable.
+tatic ssize_t
+cache_type_store(struct device *dev, struct device_attribute *attr,
+         const char *buf, size_t count)
+{
+        struct gendisk *disk =3D dev_to_disk(dev);
+        struct virtio_blk *vblk =3D disk->private_data;
+        struct virtio_device *vdev =3D vblk->vdev;
+        int i;
 
-Having gone around in circles a few times, I'm fairly sure that
-exposing a memory region which the hypervisor updates directly is the
-simplest and cleanest way of doing it and getting it in the hands of
-users.
+        BUG_ON(!virtio_has_feature(vblk->vdev, VIRTIO_BLK_F_CONFIG_WCE));
+        i =3D sysfs_match_string(virtblk_cache_types, buf);
+        if (i < 0)
+        return i;
 
-We're rolling out the AMZNVCLK device for internal use cases, and plan
-to add it in public instances some time later. This is the guest driver
-which consumes that, and I've separately posted the QEMU patch to
-provide the same device. Because I absolutely do want this to be
-standardised across hypervisors, for the reasons you point out. You're
-preaching to the choir there; I even got Microsoft to implement the
-same 15-bit MSI extensions that we added to KVM :)
+        virtio_cwrite8(vdev, offsetof(struct virtio_blk_config, wce), i);
+        virtblk_update_cache_mode(vdev);
+        return count;
+}
 
-Supporting the disruption signal is the critical part, which allows
-applications to abort operations until their clock is good again.
-Providing the actual clock information on the new host, so that
-applications can keep running immediately, is what I'll be working on
-next.
+So basically the question is if we make the config write a posted
+write or non-posted one.
 
-I'd love virtio-rtc to adopt this structure too, and I've done my best
-to ensure that that's feasible, but I can't take a dependency on that
-and wait for it (and as discussed, wouldn't use the virtio form in my
-environment anyway).
+If we make vduse config write a posted one, it means vduse doesn't
+need to wait for the usersapce response. This is much more safe but it
+breaks the above code as it looks like it requires a non-posted
+semantic. We need to filter out virtio-blk or change the code to have
+a read after the write:
 
-> mutt sucks less ;)
+while (virtio_cread8(vdev, offsetof(struct virtio_blk_config, wce) & XXX)
+       /* sleep or other */
 
-So does 'nc' but Evolution can talk to the corporate Exchange calendar
-and email. And I'm used to it and can mostly cope with its quirks :)
+But we may suffer from the userspace who doesn't update the wce bit
+forever, or maybe we can have a timeout there.
 
---=-8c3XA+w5NAQzNDyHSpXa
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+If we make vduse config write a non posted one, it means the vduse
+needs to wait for the response from the userspace. It satisfies the
+above code's assumption but it needs to deal with the buggy userspace
+which might be challenging. Technically, we can have a device
+emulation in the kernel but it looks like overkill for wce (or I don't
+know how it can mandate wce for userspace devices).
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNzI1MjIyMDU2WjAvBgkqhkiG9w0BCQQxIgQgAEiIOJ3h
-BB5/n7N6nqZi/Xk9XKyBYqFDIn22iQ+yBL8wgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgBPqqhFXVaSpEOw7VDjzk6A5WQsS/PL1yqt
-QfgkTzKrEiRwenEuBQwlEcrzc8qq2HyEQpwlm3nKhizHcAvYbjcL416R797v1//+yUrn4nPNRWMJ
-o3AGEzm1FfED1mVJhTnqvloNogm5yu/0h4nDQmEDA/GEehN/nGyveVx/9xBzH8jMe6yAu3jKPM7p
-ggH3yB6RlCxuvI1EMOWicoJp1hepBJcn1D991kAGwUCSiCY9PHO/FQtvyr7jiOX32JbqPZ7O2BG0
-tTkeXX7YVKh8/ycFIrdKYBwrGwyxixCltvsQexEOxju7j1oa2vldu1KLP1l3igKTdltFstm9kdQy
-By6/Qu0+rUQxwsOM2V9DwOWxgnyym782YD7A64DTNrNRnHvnP5iB5DikTMiUV9NdpQP3K+OwahS0
-ijgYCdixNfK1lHk11Wkr20gcaw7L+KfIoaBHe7NVY9cuV8qoP6LtUeEqXIYtTYHh3rKtL9rrkXDs
-5oE3/Cnb+fPI/AnFOnyxZ1PUMAUlJg6ZsRVJGKV600L4TW0ReJRqVxpZgaBzbXT4Yuw6g5nINTNl
-BHWWQ2eUC+KLui07d1lkLV0NIkluWbLrMyHUrWm3wQbjY2K04EQMjWPDKn7hOng4KzNDzWgbWasc
-rDEQ9Glmxol9ZZpq8EGw01SphHcHyT3AERor5coihwAAAAAAAA==
+I feel it might make sense for other devices that only require posted
+write semantics.
 
+>
+> We are thinking of using vduse for hypervisor assisted virtio devices, wh=
+ich
+> may need config write support and hence this question.
+>
+> To provide more details, we have a untrusted host that spins off a protec=
+ted
+> (confidential) guest VM on a Type-1 hypervisor (Gunyah). VMM in untrusted=
+ host
+> leads to couple of issues:
+>
+> 1) Latency of (virtio) register access. VMM can take too long to respond =
+with
+> VCPU stalled all that while. I think vduse shares a similar concern, due =
+to
+> which it maintains a cache of configuratin registers inside kernel.
 
---=-8c3XA+w5NAQzNDyHSpXa--
+Maybe you can give an example for this? We cache the configuration
+space to a faster access to that.
+
+>
+> 2) For PCI pass-through devices, we are concerned of letting VMM be in ch=
+arge of
+> emulating the complete configuration space (how can VM defend against inv=
+alid
+> attributes presented for passthr devices)?
+
+Virtio driver has been hardened for this, for example:
+
+commit 72b5e8958738aaa453db5149e6ca3bcf416023b9
+Author: Jason Wang <jasowang@redhat.com>
+Date:   Fri Jun 4 13:53:50 2021 +0800
+
+    virtio-ring: store DMA metadata in desc_extra for split virtqueue
+
+More hardening work is ongoing.
+
+> I am aware of TDISP, but I think it
+> may not be available for some of the devices on our platform.
+>
+> One option we are considering is for hypervisor to be in charge of virtio=
+-PCI
+> bus emulation, allowing only select devices (with recognized features) to=
+ be
+> registered on the bus. VMM would need to register devices/features with
+> hypervisor, which would verify it (as per some policy) and present them t=
+o VM on
+> the virtio-PCI bus it would emulate. Protected VM should be shielded from
+> invalid device configuration information that it may otherwise read from =
+a
+> compromised VMM.
+>
+> For virtio devices, the hypervisor would also service most register read/=
+writes
+> (to address concern #1), which implies it would need to cache a copy of t=
+he
+> device configuration information (similar to vduse).
+>
+> We think vduse can be leveraged here to initialize the hypervisor cache o=
+f
+> virtio registers. Basically have a vdpa-gunyah driver registered on the v=
+dpa
+> bus to which vduse devices are bound (rather than virtio-vdpa or vhost-vd=
+pa).
+> vdpa-gunyah driver can pull configuration information from vduse and pass=
+ that
+> on to hypervisor. It will also help inject IRQ and pass on queue notifica=
+tions
+> (using hypervisor specific APIs).
+
+Just to make sure I understand the design here, is vdpa-gunyah
+expected to have a dedicated uAPI other than vhost-vDPA? Wonder any
+reason why vhost-vDPA can be used here.
+
+>
+> We will however likely need vduse to support configuration writes (guest =
+VM
+> updating configuration space, for ex: writing to 'events_clear' field in =
+case of
+> virtio-gpu). Would vduse maintainers be willing to accept config_write su=
+pport
+> for select devices/features (as long as the writes don't violate any safe=
+ty
+> concerns we may have)?
+
+I think so, looking at virtio_gpu_config_changed_work_func(), the
+events_clear seems to be fine to have a posted semantic.
+
+Maybe you can post an RFC to support config writing and let's start from th=
+ere?
+
+Thanks
+
+>
+> Thanks
+> vatsa
+>
+
