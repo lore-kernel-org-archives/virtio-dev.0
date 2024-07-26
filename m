@@ -1,124 +1,267 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7D725624
-	for <virtio-dev@lists.linux.dev>; Fri, 26 Jul 2024 06:06:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F6FC2C9A;
+	Fri, 26 Jul 2024 07:03:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721973985; cv=none; b=S7HPhjeqOIIYXln6exSQFx9qbdqLcPjNYiAOrdueYjMd9SZCMrjdwOYeH2FASJGkea5pw26eDYTJc+CX/9qEETdaE+1pjXLHHlZCDqQ0nQEw5D9K5ijpBvOJ67HnP9zPY1oYHex6aTRJo5eVFn1p2f9q1xKpp/GjZSp6YYA+jJE=
+	t=1721977426; cv=none; b=iqfeXLejG9RSCDDfoTDO1sKNYA6pnBApuuwacyHMRYtXG1o43mCMIVojAlnVl6u2bdKcQzumjkosHzpa2gNe4wNVz6eIlfImwn45T4EY0WU8FTq9CBng8Bf5muVyyC51uJrE4SLwYMXI/lsoUCxspUPQm1QhbDGLXAisBq/dM8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721973985; c=relaxed/simple;
-	bh=6a7x76ue8Tb/QiSBhzrn7bO0FzEBds6B8ZU9VxKhPik=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=gN49K5CPPEFM6Zo6Mgu477nRVBGX1pF8JoIF1fn7iUy9YURCGYUlfg0nGByVUv5Q4kfRO0cAN16M3zoNZGezo9mMmL+bgn59wwOUHY2vSl1IHRkiSCmNCqPZ5nxp0rtfAEdqNjLSqC5bNGmK6TvaOJWLlQv8fowm6+g2TviXfIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dBRdlWxi; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1721977426; c=relaxed/simple;
+	bh=tIulMi0NhUrZ2/CQdYf1aFpVG9HLYNaYpMLfEtPiVag=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S6/0IrcrGB7JorFLnE10chcIgCAUbEG31WPXVRMckRO6EM7BRUxJTM/fEGOXThEvc3YJKGBR90+QIMpPpG28bT9gXbwN5LLEU2skFWcSWFzx/lH3MBGrbv3Hemh48w2jNVTn6aEBcXPUWJru51M5wI5tfzrRq8gxinyDrpcxEfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=bMWRN4m0; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dBRdlWxi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1721973983;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SsMd5ReUoNivIVt7CipMVyDPULIY2oYNW6l4qiM7rgQ=;
-	b=dBRdlWxi6JJk9/cdviUy17MtkGMw4Zs38LbH4p2A7OZqiQsGBmStjAKPQcSVQyAaKcCoxh
-	2Tzf0ss7Z7Xrw1pGEVJirW7xVnc2ljgRFNm5HRMVJru4HkdRRRyBaJVujxvytXImRCWhtW
-	zSYLZHsjIiW0OHFwXBWM5iSFJz0K9HY=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-553-Qi7Hga4fM5ipFu3acQk5HA-1; Fri, 26 Jul 2024 02:06:21 -0400
-X-MC-Unique: Qi7Hga4fM5ipFu3acQk5HA-1
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-368374dc565so925648f8f.2
-        for <virtio-dev@lists.linux.dev>; Thu, 25 Jul 2024 23:06:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721973980; x=1722578780;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SsMd5ReUoNivIVt7CipMVyDPULIY2oYNW6l4qiM7rgQ=;
-        b=rEWgH0I36EPjz6peqpAB3V8n2Z5eHxHnRnMuHiAm5TRhrUF9nsNgT1S9H/N08kGFJC
-         tQze7812WaDppk3OI0IJGohk/echJX16PatPRww8oXJF/cYhIIfpU2ppx8QiN/4wJ151
-         sAjpAOft8VEEZhfPNjgA8wmBBap8Wm3HNJQfHiO8mPp13RgLlyqXOWnOqKeE74bYA4IE
-         EpmP4z2AZBR7VZp+WeCiZJ0BIvhtjF0RDNDJ7yJXNUp0aaVpIHo2ArSCqmwlxfmnCiUr
-         OaezKKOfqsgfBWihSYq25dfv3vP5Wcd7FuVGDsMo8DgwS3Oissf6E8IWxtkHGUA2kKK0
-         VuCA==
-X-Forwarded-Encrypted: i=1; AJvYcCVIDhu5uj6X+e+9QXiyOY8WNAOv1kNYvpNdmVSJAXQXr854Pv7WpfEgClaHwlJ4gtJNNlgk/r0YlTmwpP+Asn00p+JDnqJpF3TtrQ==
-X-Gm-Message-State: AOJu0Yx8K0koqBFPwRYv9I3pVkQU5kFT5Efkv+lmnViOJva8SK5Qkvgw
-	O8DHSD/wQLANTPUuyJ0iXsMpafSs+JNTOVUPHZn/ul6RwXVyCatxo/9ZC3SQgzzVdcumOZiH85Q
-	tD9isnpzKJYuMwhSYIh+ashZDQWoZ8oXnt54Rg9CJlUD2G52rwiYoyRhAZ5c=
-X-Received: by 2002:adf:e3d0:0:b0:368:3731:1614 with SMTP id ffacd0b85a97d-36b3639c90cmr2555954f8f.32.1721973980463;
-        Thu, 25 Jul 2024 23:06:20 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IECcqinn2RbOzn7J7peOWcha9uEPwJVbe5Fk8jNLudEw/NhTNHYXX4sldsTgb73GWvF/16VyA==
-X-Received: by 2002:adf:e3d0:0:b0:368:3731:1614 with SMTP id ffacd0b85a97d-36b3639c90cmr2555913f8f.32.1721973979719;
-        Thu, 25 Jul 2024 23:06:19 -0700 (PDT)
-Received: from redhat.com ([2a02:14f:1f7:28ce:f21a:7e1e:6a9:f708])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36b36863aa7sm4031338f8f.109.2024.07.25.23.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jul 2024 23:06:19 -0700 (PDT)
-Date: Fri, 26 Jul 2024 02:06:10 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Richard Cochran <richardcochran@gmail.com>,
-	Peter Hilber <peter.hilber@opensynergy.com>,
-	linux-kernel@vger.kernel.org, virtualization@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-rtc@vger.kernel.org,
-	"Ridoux, Julien" <ridouxj@amazon.com>, virtio-dev@lists.linux.dev,
-	"Luu, Ryan" <rluu@amazon.com>,
-	"Chashper, David" <chashper@amazon.com>,
-	"Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>,
-	"Christopher S . Hall" <christopher.s.hall@intel.com>,
-	Jason Wang <jasowang@redhat.com>, John Stultz <jstultz@google.com>,
-	netdev@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	qemu-devel <qemu-devel@nongnu.org>, Simon Horman <horms@kernel.org>
-Subject: Re: [PATCH] ptp: Add vDSO-style vmclock support
-Message-ID: <20240726015613-mutt-send-email-mst@kernel.org>
-References: <20240725100351-mutt-send-email-mst@kernel.org>
- <2a27205bfc61e19355d360f428a98e2338ff68c3.camel@infradead.org>
- <20240725122603-mutt-send-email-mst@kernel.org>
- <0959390cad71b451dc19e5f9396d3f4fdb8fd46f.camel@infradead.org>
- <20240725163843-mutt-send-email-mst@kernel.org>
- <d62925d94a28b4f8e07d14c1639023f3b78b0769.camel@infradead.org>
- <20240725170328-mutt-send-email-mst@kernel.org>
- <c5a48c032a2788ecd98bbcec71f6f3fb0fb65e8c.camel@infradead.org>
- <20240725174327-mutt-send-email-mst@kernel.org>
- <9261e393083bcd151a017a5af3345a1364b3e0f3.camel@infradead.org>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="bMWRN4m0"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46Q169lt027355;
+	Fri, 26 Jul 2024 07:03:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:to; s=qcppdkim1; bh=Ze7OXJn9hObndV7
+	saPnCXgOYn6rex9sHIrMMVE7aK5U=; b=bMWRN4m0tRBzqsGLdht37r+8Voa0P+t
+	XLWwmL6vzakkW9aetgZOmiQ3E0him7B1fqHog+we4tFFgth2flsAEZ6Zwj470n+U
+	CLUPsQP1t4t2pmWJ5rLBri1Fia7j+Hq6UlOa42t3tKgAYZ5LNKAuDWqXFrRb1FfC
+	eClXCoFfofvgpzTer3Ca1I0EfPlteoipJAM6fo3nhLyf+TgvzeCICQA/TXtd2zu7
+	uT22N1SiT+Y3GsnY3L2D9n7HRmjvqPiWvwosTbwN69p74K78zLbCgDnQXYgH3MQv
+	ukHWggutuJ2Lh78IC2UOvv6l0y6aPA43fjJJpEXJugSyqPmg5lnC1jw==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 40m1tw8mu4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 26 Jul 2024 07:03:35 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA05.qualcomm.com (8.17.1.19/8.17.1.19) with ESMTPS id 46Q73Ypu023688
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 26 Jul 2024 07:03:34 GMT
+Received: from quicinc.com (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 26 Jul
+ 2024 00:03:28 -0700
+Date: Fri, 26 Jul 2024 12:33:24 +0530
+From: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+To: Jason Wang <jasowang@redhat.com>
+CC: <xieyongji@bytedance.com>, <stefanha@redhat.com>,
+        <virtio-dev@lists.linux.dev>, <virtualization@lists.linux.dev>,
+        <quic_mnalajal@quicinc.com>, <quic_eberman@quicinc.com>,
+        <quic_pheragu@quicinc.com>, <quic_pderrin@quicinc.com>,
+        <quic_cvanscha@quicinc.com>, <quic_pkondeti@quicinc.com>,
+        <quic_tsoni@quicinc.com>, eperezma <eperezma@redhat.com>,
+        Stefano Garzarella
+	<sgarzare@redhat.com>, mst <mst@redhat.com>,
+        Cindy Lu <lulu@redhat.com>
+Subject: Re: [RFC] vduse config write support
+Message-ID: <20240726070324.GA723942@quicinc.com>
+Reply-To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+References: <20240724033816.GD492231@quicinc.com>
+ <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <9261e393083bcd151a017a5af3345a1364b3e0f3.camel@infradead.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+In-Reply-To: <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 62RwzwzkiRCfbEwXEfJKdJowB7W6h_3k
+X-Proofpoint-GUID: 62RwzwzkiRCfbEwXEfJKdJowB7W6h_3k
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-26_04,2024-07-25_03,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
+ lowpriorityscore=0 impostorscore=0 phishscore=0 spamscore=0 suspectscore=0
+ priorityscore=1501 mlxscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2407110000
+ definitions=main-2407260045
 
-On Thu, Jul 25, 2024 at 11:20:56PM +0100, David Woodhouse wrote:
-> We're rolling out the AMZNVCLK device for internal use cases, and plan
-> to add it in public instances some time later.
+* Jason Wang <jasowang@redhat.com> [2024-07-26 10:47:59]:
 
-Let's be real. If amazon does something in its own hypervisor, and the
-only way to use that is to expose the interface to userspace, there is
-very little the linux community can do.  Moreover, userspace will be
-written to this ABI, and be locked in to the specific hypervisor. It
-might be a win for amazon short term but long term you will want to
-extend things and it will be a mess.
+> On Wed, Jul 24, 2024 at 11:45???AM Srivatsa Vaddagiri
+> <quic_svaddagi@quicinc.com> wrote:
+> >
+> > Currently vduse does not seem to support configuration space writes
+> > (vduse_vdpa_set_config does nothing). Is there any plan to lift that
+> > limitation? I am aware of the discussions that took place here:
+> >
+> > https://patchwork.kernel.org/project/netdevbpf/patch/20210615141331.407-11-xieyongji@bytedance.com/
+> >
+> > Perhaps writes can be supported *selectively* without violating safety concerns
+> > expressed in the above email discussion?
+> 
+> Adding more relevant people here.
+> 
+> It can probably be done case by case. The main reason for avoiding
+> config writing is
+> 
+> 1) to prevent buggy/malicious userspace from hanging kernel driver for ever
+> 2) to prevent buggy/malicious userspace device to break the semantic
+> 
+> Basically, it is the traditional trust model where the kernel doesn't
+> trust userspace.
+> 
+> E.g current virtio-blk has the following codes:
+> 
+> tatic ssize_t
+> cache_type_store(struct device *dev, struct device_attribute *attr,
+>          const char *buf, size_t count)
+> {
+>         struct gendisk *disk = dev_to_disk(dev);
+>         struct virtio_blk *vblk = disk->private_data;
+>         struct virtio_device *vdev = vblk->vdev;
+>         int i;
+> 
+>         BUG_ON(!virtio_has_feature(vblk->vdev, VIRTIO_BLK_F_CONFIG_WCE));
+>         i = sysfs_match_string(virtblk_cache_types, buf);
+>         if (i < 0)
+>         return i;
+> 
+>         virtio_cwrite8(vdev, offsetof(struct virtio_blk_config, wce), i);
+>         virtblk_update_cache_mode(vdev);
+>         return count;
+> }
+> 
+> So basically the question is if we make the config write a posted
+> write or non-posted one.
+> 
+> If we make vduse config write a posted one, it means vduse doesn't
+> need to wait for the usersapce response. This is much more safe but it
+> breaks the above code as it looks like it requires a non-posted
+> semantic. We need to filter out virtio-blk or change the code to have
+> a read after the write:
+> 
+> while (virtio_cread8(vdev, offsetof(struct virtio_blk_config, wce) & XXX)
+>        /* sleep or other */
+>
+> But we may suffer from the userspace who doesn't update the wce bit
+> forever, or maybe we can have a timeout there.
+> 
+> If we make vduse config write a non posted one, it means the vduse
+> needs to wait for the response from the userspace. 
 
-So I feel you have chosen ACPI badly.  It just does not have the APIs
-that you need. Virtio does, and would not create a userpspace lock-in
-to a specific hypervisor. It's not really virtio specific either,
-you can write a bare pci device with a BAR and a bunch of msix
-vectors and it will get you the same effect.
+I was thinking only a read followed by write will needs to stall on a response
+from userspace, but yes we will have the same issue of dealing with buggy
+userspace. At least for PCI, I think there is provision to use surprise removal
+facility, where guest can be notified of malfunctioning device. In case of
+userspace (vduse daemon) not responding in time, can the surprise removal event
+be injected by VMM (hypervisor in our case)? Guest can decide what to do with it
+next.
 
--- 
-MST
+> It satisfies the
+> above code's assumption but it needs to deal with the buggy userspace
+> which might be challenging.  Technically, we can have a device
+> emulation in the kernel but it looks like overkill for wce (or I don't
+> know how it can mandate wce for userspace devices).
+> 
+> I feel it might make sense for other devices that only require posted
+> write semantics.
+> 
+> >
+> > We are thinking of using vduse for hypervisor assisted virtio devices, which
+> > may need config write support and hence this question.
+> >
+> > To provide more details, we have a untrusted host that spins off a protected
+> > (confidential) guest VM on a Type-1 hypervisor (Gunyah). VMM in untrusted host
+> > leads to couple of issues:
+> >
+> > 1) Latency of (virtio) register access. VMM can take too long to respond with
+> > VCPU stalled all that while. I think vduse shares a similar concern, due to
+> > which it maintains a cache of configuratin registers inside kernel.
+> 
+> Maybe you can give an example for this? We cache the configuration
+> space to a faster access to that.
 
+Yes for the same reason of faster access, we wish to have config information
+cached in hypervisor. In case of VDUSE,
+
+Guest read -> (VM exit) -> VHOST_VDPA_GET_CONFIG -> vduse_vdpa_get_config
+
+Basically a guest read terminates in host kernel, before resuming.
+
+In our case,
+
+Guest read - (VM exit) - Hyp emulates read - (VM resume)
+
+So a guest read would terminate in hypervisor itself, before it is resumed. 
+
+Without this optimization, guest VCPU would have stalled until VMM in host can
+emulate it, which can be long, especially a concern when the read is issued in
+hot path (interrupt handler, w/o MSI_X).
+
+> > 2) For PCI pass-through devices, we are concerned of letting VMM be in charge of
+> > emulating the complete configuration space (how can VM defend against invalid
+> > attributes presented for passthr devices)?
+> 
+> Virtio driver has been hardened for this, for example:
+> 
+> commit 72b5e8958738aaa453db5149e6ca3bcf416023b9
+> Author: Jason Wang <jasowang@redhat.com>
+> Date:   Fri Jun 4 13:53:50 2021 +0800
+> 
+>     virtio-ring: store DMA metadata in desc_extra for split virtqueue
+> 
+> More hardening work is ongoing.
+
+Any additional pointers you can share? I will go over them and revert.
+
+> > I am aware of TDISP, but I think it
+> > may not be available for some of the devices on our platform.
+> >
+> > One option we are considering is for hypervisor to be in charge of virtio-PCI
+> > bus emulation, allowing only select devices (with recognized features) to be
+> > registered on the bus. VMM would need to register devices/features with
+> > hypervisor, which would verify it (as per some policy) and present them to VM on
+> > the virtio-PCI bus it would emulate. Protected VM should be shielded from
+> > invalid device configuration information that it may otherwise read from a
+> > compromised VMM.
+> >
+> > For virtio devices, the hypervisor would also service most register read/writes
+> > (to address concern #1), which implies it would need to cache a copy of the
+> > device configuration information (similar to vduse).
+> >
+> > We think vduse can be leveraged here to initialize the hypervisor cache of
+> > virtio registers. Basically have a vdpa-gunyah driver registered on the vdpa
+> > bus to which vduse devices are bound (rather than virtio-vdpa or vhost-vdpa).
+> > vdpa-gunyah driver can pull configuration information from vduse and pass that
+> > on to hypervisor. It will also help inject IRQ and pass on queue notifications
+> > (using hypervisor specific APIs).
+> 
+> Just to make sure I understand the design here, is vdpa-gunyah
+> expected to have a dedicated uAPI other than vhost-vDPA? 
+
+I didn't think vdpa-gunyah would need to provide any UAPI. VDUSE daemon
+functionality would be inside VMM itself. For example, the virtio-block backend
+in VMM would create a VDUSE device and pass on key configuration information to
+VDUSE kernel module. The vdpa device created subsequently (vdpa dev add ..) 
+will be bound to vdpa-gunyah driver, which pulls the configuration information
+and passes on to hypervisor, which will emulate all further access from VM. 
+
+> Wonder any reason why vhost-vDPA can be used here.
+
+I think vhost-vDPA will imply that VMM still tracks the device on its PCI/MMIO
+transports and will be involved for any register read from VM? We didn't want
+VMM to be involved in emulating register access of VM. Instead hyp will emulate
+most of those accesses.  I need to think more, but I am thinking the VMM will
+not even track this device on its PCI/MMIO transports, but rather on a
+different, vdpa?, transport.
+
+> > We will however likely need vduse to support configuration writes (guest VM
+> > updating configuration space, for ex: writing to 'events_clear' field in case of
+> > virtio-gpu). Would vduse maintainers be willing to accept config_write support
+> > for select devices/features (as long as the writes don't violate any safety
+> > concerns we may have)?
+> 
+> I think so, looking at virtio_gpu_config_changed_work_func(), the
+> events_clear seems to be fine to have a posted semantic.
+> 
+> Maybe you can post an RFC to support config writing and let's start from there?
+
+Ok thanks for your feedback!
+
+- vatsa
