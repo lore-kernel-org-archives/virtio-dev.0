@@ -1,137 +1,140 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B4C22A1C0
-	for <virtio-dev@lists.linux.dev>; Fri, 26 Jul 2024 05:09:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DD2522616
+	for <virtio-dev@lists.linux.dev>; Fri, 26 Jul 2024 05:15:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721970569; cv=none; b=f75wE50dZZjY+0TGOzESkcH2l552b5gc7IWit8RV1nn2w/hUZCyotslvxWj45O+JksbVKUN8KANfgqGjzRklrAcq39YRp+YOzt0L3fZY0JaA2CZPqJmWsEMSExek2WqUuendzqjeXEAc4PY6QeiLNshPjF0YQvj1vfbeRcuhqyI=
+	t=1721970935; cv=none; b=cK2ynvk2glAlxP4M9qJUP9hJcK52C/rcQ8XtXkWzWyUdUudrIfbzC+UUKsUiHtdwuHq+EQwRA/NafDHhqTFelmxzPEUa0yR4NYkyjGpM2zHFjBNgSpi6/GO1wpW5HKw2TWKKkq293U2vJKMw6YcxA/f5VRe9kIAXT37WxtJa6Ow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721970569; c=relaxed/simple;
-	bh=mwBiyQNVoMNybA5O6D7Gx2PdVoETiCkHnYn15H6Goyk=;
+	s=arc-20240116; t=1721970935; c=relaxed/simple;
+	bh=09DOoIifPIR40R/cmm0IPw36wvh1d3gP5Tu6Tj84ZcI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=XtBRyKHtGCV10dzC12fnMjqI1lY0Hl6EFlqZMUzMWdo0tCdAJMD9z2MqEGxa9cmA9qAqN+Ghdyyb6HBgBGvb4QprmiCqKTBAGgkTJMeKqQYzeE22NKf3EIGS1c9BemcAE3o7mkIzTiYT+w2Jivu8Xl2cAa3TRMjiFWhm0fuMdQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=SKEukUIv; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type:Content-Disposition; b=HbC+zzjwcvGvjMRh7XdcZq3L7iIq+lxtkXYQgOvGqP5G6vtAbRSPVWiMiF6TxtHMbfREw4SYWvejqsNfGczKvLapjGB4WMj/gzjPxMq6ZLbnNw4L1MTqRxWcPS4AxvZgtjexFO2ZNo6XoYEm85i+l40gpSSXHAOrSSKuAc1wLSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=QyEZOrmb; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SKEukUIv"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QyEZOrmb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1721970567;
+	s=mimecast20190719; t=1721970932;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DbuOgyAkRILEBrf9MJ+4blSFephMiZi+pxSKWGG3nSg=;
-	b=SKEukUIvZoZ7MUftFPfDHc4zyve7FilFebcoMyg4Miqpyiq+bBQx2t5GGd73+z/AdkXcPO
-	wdPyCqBQ8vi8/mKPIllf+P4uCKhdHNDvktIeNS0Wwi6YeRify4GfyQjvmyjvCuzReh08Ut
-	5S+c3Xvdk9LxJj6AjN+w2eltJ8mErlc=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=47E47Ih20+cHzIi1eIXQ9204FfnEX8ky7z1yVmn+jN0=;
+	b=QyEZOrmbl9eIJWuI0j5bMAJh52oy+4J2kzS2TrQOZb/LJEPa2iLkTVdwxDmZCVnl0ygMu6
+	aVGxih55FrxYDE7QlBEmj1zTZ8lvbQZAtdcIobZt0wykWz97agW7zr1qsHGSAUY3HOgDWP
+	Q9hFuIDICWEK1IdUv4qnlpUKefYYIdA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-595-DRse6ODLNpqyziT6R8vYwg-1; Fri, 26 Jul 2024 01:09:25 -0400
-X-MC-Unique: DRse6ODLNpqyziT6R8vYwg-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-4280645e3e0so10769705e9.1
-        for <virtio-dev@lists.linux.dev>; Thu, 25 Jul 2024 22:09:25 -0700 (PDT)
+ us-mta-37-HsUrLNJXMpiqkW02PDvgcw-1; Fri, 26 Jul 2024 01:15:30 -0400
+X-MC-Unique: HsUrLNJXMpiqkW02PDvgcw-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-42666ed2d5fso11216795e9.3
+        for <virtio-dev@lists.linux.dev>; Thu, 25 Jul 2024 22:15:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721970564; x=1722575364;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DbuOgyAkRILEBrf9MJ+4blSFephMiZi+pxSKWGG3nSg=;
-        b=TY8rwN7L0D4/CpQwK4bFFdwHsg+K/ishgbIv+aq1z3CYeIGgZReTRemVOOHFVkFiBE
-         72w6h8StZo13K7v+tbMsJiVjx3zT8Z+4Y6s/p/HyFyjzJ+jnmDG3+dhPM49Xt/NtkIez
-         Umxzo7uXOOmEW0tOM+VXJsMs7ME4y7FS3d7Z8b3Om1UV6vWKaAXxhhpgi1Bsr+ys+tqZ
-         tWvlWMn1rDho/l5L6SQqBqhJBSir2WwDxnll9hR+4kq5YGJZMHyDR4W4AYq/26AszL4B
-         +PVhRt/6vNFNwdi66VPreOHVMA4FJoNl87saP7+PhVHrJ1myDDxV21Vk4vxrPP7jSX3w
-         hvTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV7W342JXrlVTMIb/bGv9eNgE6GgDz7XZQHnv+YHeKFZMZExZ0dWZYT+sM6prUmT/12A5l5q9GMk/bUb+PJNP1JHQbSCf/saL35sQ==
-X-Gm-Message-State: AOJu0YzFv0MkvLD8nx4fnPYNbXeNvW6Shmg3SUg5n3qXH5PoMm2K+fyy
-	7nxvjqvyIxlRKwSdlpxqGzPugPxbWnnWLydskSG/qIdudIES4UHg6IQQH6+n38igxbgMCQuA1KF
-	9Mamm5aH5pMaJ/lqu8mKjFpDHaVFzqYRltQrMQrZXM1mRPjotc0xyL58IZ1A=
-X-Received: by 2002:a05:600c:1c1f:b0:426:6153:5318 with SMTP id 5b1f17b1804b1-4280570fe50mr29400715e9.19.1721970564587;
-        Thu, 25 Jul 2024 22:09:24 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHLGThAmioKqXVYW1bGCeFOTJCJYjUraPBu1ns0STXkcb4YEMtbOBAAif1jc1w6fYVZOAbSOQ==
-X-Received: by 2002:a05:600c:1c1f:b0:426:6153:5318 with SMTP id 5b1f17b1804b1-4280570fe50mr29400405e9.19.1721970563829;
-        Thu, 25 Jul 2024 22:09:23 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1721970929; x=1722575729;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=47E47Ih20+cHzIi1eIXQ9204FfnEX8ky7z1yVmn+jN0=;
+        b=ZB+58zWMZ+7ivk8MA4TRbfzehRZ5EDVV+yacaAiovTlq+AE6BByBo3sY0GOcK22BqI
+         2NxQ3XCNc45qm2LcrGma5CdSnpcNBg1x78SqLjCHbPtoWtrCa1NcmsDPVgn0590gflb/
+         jlonyndHs0GXi08csWXYD8ZaWXZIjbYgK051CcQcveyWE9iQ2WAM+yVXX9JMdc7qRw4D
+         xyG+xNE9h1dX7SkKwsfjTK/qPR5X063cY6rP8VP9TNrxsrdPq9I0WjMp53DT4dyA2GhP
+         LHIdGirZG5vk2ncpVJvJ7eHVS7q0/sOHZFfuzOyXJrF2txl672ycRWJmBpJvISAuSYJ1
+         HIYQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUdwlrKGECB/CviVz2deXiFmZ7zrB2Vx9RQm1+JG6au7OuoCevqHKUxW9Zt+fI+ChdXl72gG5sEa4APmkDbKJsISKRx7+9Vn/Bg/g==
+X-Gm-Message-State: AOJu0YxT7CSLPwUN6CCFx6ZCkwFRdp3pU+JIp1Ac5kow1eoBVOWEOpN1
+	nxALIR7P13lvzANEfs3TZtLP1No1ac8pl7Q5PXTkIGSBNiE+L2czsn25RsgcqInTUXx5Oeu6BoN
+	YJQOLtldyLIp+VYlLbDHLkmykSrAdwZ4VNPrQ9neXJ6/jGQ3y5oZICA7tVeM=
+X-Received: by 2002:a05:600c:4f14:b0:426:618f:1a31 with SMTP id 5b1f17b1804b1-42805708da8mr29937845e9.34.1721970929018;
+        Thu, 25 Jul 2024 22:15:29 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFPPQzgCEY55kxHciO2AHSa7wqaJtGNw7J7VtkvGDcvq918mcg9vv+Z2rJP/QDcYigYRgbIuw==
+X-Received: by 2002:a05:600c:4f14:b0:426:618f:1a31 with SMTP id 5b1f17b1804b1-42805708da8mr29937685e9.34.1721970928347;
+        Thu, 25 Jul 2024 22:15:28 -0700 (PDT)
 Received: from redhat.com ([2a02:14f:1f7:28ce:f21a:7e1e:6a9:f708])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-427f93e6871sm105269105e9.30.2024.07.25.22.09.15
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-427f93e667bsm102788595e9.29.2024.07.25.22.15.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jul 2024 22:09:23 -0700 (PDT)
-Date: Fri, 26 Jul 2024 01:09:13 -0400
+        Thu, 25 Jul 2024 22:15:27 -0700 (PDT)
+Date: Fri, 26 Jul 2024 01:15:21 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Richard Cochran <richardcochran@gmail.com>,
-	Peter Hilber <peter.hilber@opensynergy.com>,
-	linux-kernel@vger.kernel.org, virtualization@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-rtc@vger.kernel.org,
-	"Ridoux, Julien" <ridouxj@amazon.com>, virtio-dev@lists.linux.dev,
-	"Luu, Ryan" <rluu@amazon.com>,
-	"Chashper, David" <chashper@amazon.com>,
-	"Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>,
-	"Christopher S . Hall" <christopher.s.hall@intel.com>,
-	Jason Wang <jasowang@redhat.com>, John Stultz <jstultz@google.com>,
-	netdev@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	qemu-devel <qemu-devel@nongnu.org>, Simon Horman <horms@kernel.org>
-Subject: Re: [PATCH] ptp: Add vDSO-style vmclock support
-Message-ID: <20240726010511-mutt-send-email-mst@kernel.org>
-References: <20240725083215-mutt-send-email-mst@kernel.org>
- <98813a70f6d3377d3a9d502fd175be97334fcc87.camel@infradead.org>
- <20240725100351-mutt-send-email-mst@kernel.org>
- <2a27205bfc61e19355d360f428a98e2338ff68c3.camel@infradead.org>
- <20240725122603-mutt-send-email-mst@kernel.org>
- <0959390cad71b451dc19e5f9396d3f4fdb8fd46f.camel@infradead.org>
- <20240725163843-mutt-send-email-mst@kernel.org>
- <d62925d94a28b4f8e07d14c1639023f3b78b0769.camel@infradead.org>
- <20240725170328-mutt-send-email-mst@kernel.org>
- <c5a48c032a2788ecd98bbcec71f6f3fb0fb65e8c.camel@infradead.org>
+To: Jason Wang <jasowang@redhat.com>
+Cc: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>, xieyongji@bytedance.com,
+	stefanha@redhat.com, virtio-dev@lists.linux.dev,
+	virtualization@lists.linux.dev, quic_mnalajal@quicinc.com,
+	quic_eberman@quicinc.com, quic_pheragu@quicinc.com,
+	quic_pderrin@quicinc.com, quic_cvanscha@quicinc.com,
+	quic_pkondeti@quicinc.com, quic_tsoni@quicinc.com,
+	eperezma <eperezma@redhat.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	Cindy Lu <lulu@redhat.com>
+Subject: Re: [RFC] vduse config write support
+Message-ID: <20240726011340-mutt-send-email-mst@kernel.org>
+References: <20240724033816.GD492231@quicinc.com>
+ <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <c5a48c032a2788ecd98bbcec71f6f3fb0fb65e8c.camel@infradead.org>
+In-Reply-To: <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jul 25, 2024 at 10:29:18PM +0100, David Woodhouse wrote:
-> > > > Then can't we fix it by interrupting all CPUs right after LM?
-> > > > 
-> > > > To me that seems like a cleaner approach - we then compartmentalize
-> > > > the ABI issue - kernel has its own ABI against userspace,
-> > > > devices have their own ABI against kernel.
-> > > > It'd mean we need a way to detect that interrupt was sent,
-> > > > maybe yet another counter inside that structure.
-> > > > 
-> > > > WDYT?
-> > > > 
-> > > > By the way the same idea would work for snapshots -
-> > > > some people wanted to expose that info to userspace, too.
+On Fri, Jul 26, 2024 at 10:47:59AM +0800, Jason Wang wrote:
+> On Wed, Jul 24, 2024 at 11:45 AM Srivatsa Vaddagiri
+> <quic_svaddagi@quicinc.com> wrote:
+> >
+> > Currently vduse does not seem to support configuration space writes
+> > (vduse_vdpa_set_config does nothing). Is there any plan to lift that
+> > limitation? I am aware of the discussions that took place here:
+> >
+> > https://patchwork.kernel.org/project/netdevbpf/patch/20210615141331.407-11-xieyongji@bytedance.com/
+> >
+> > Perhaps writes can be supported *selectively* without violating safety concerns
+> > expressed in the above email discussion?
 > 
-> Those people included me. I wanted to interrupt all the vCPUs, even the
-> ones which were in userspace at the moment of migration, and have the
-> kernel deal with passing it on to userspace via a different ABI.
+> Adding more relevant people here.
 > 
-> It ends up being complex and intricate, and requiring a lot of new
-> kernel and userspace support. I gave up on it in the end for snapshots,
-> and didn't go there again for this.
+> It can probably be done case by case. The main reason for avoiding
+> config writing is
+> 
+> 1) to prevent buggy/malicious userspace from hanging kernel driver for ever
+> 2) to prevent buggy/malicious userspace device to break the semantic
+> 
+> Basically, it is the traditional trust model where the kernel doesn't
+> trust userspace.
+> 
+> E.g current virtio-blk has the following codes:
+> 
+> tatic ssize_t
+> cache_type_store(struct device *dev, struct device_attribute *attr,
+>          const char *buf, size_t count)
+> {
+>         struct gendisk *disk = dev_to_disk(dev);
+>         struct virtio_blk *vblk = disk->private_data;
+>         struct virtio_device *vdev = vblk->vdev;
+>         int i;
+> 
+>         BUG_ON(!virtio_has_feature(vblk->vdev, VIRTIO_BLK_F_CONFIG_WCE));
+>         i = sysfs_match_string(virtblk_cache_types, buf);
+>         if (i < 0)
+>         return i;
+> 
+>         virtio_cwrite8(vdev, offsetof(struct virtio_blk_config, wce), i);
+>         virtblk_update_cache_mode(vdev);
+>         return count;
+> }
 
-Maybe become you insist on using ACPI?
-I see a fairly simple way to do it. For example, with virtio:
-
-one vq per CPU, with a single outstanding buffer,
-callback copies from the buffer into the userspace
-visible memory.
-
-Want me to show you the code?
+To be fair, I think if you allow a block device in userspace you have already
+allowed said userspace to crash the kernel unless you have
+also restricted the filesystems mounted on this device to FUSE.
 
 -- 
 MST
