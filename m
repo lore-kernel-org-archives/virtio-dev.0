@@ -1,61 +1,61 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1007CA6F
-	for <virtio-dev@lists.linux.dev>; Tue, 30 Jul 2024 02:53:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F88E146D6B
+	for <virtio-dev@lists.linux.dev>; Tue, 30 Jul 2024 03:06:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722308019; cv=none; b=OI/9OIOVd9t+s6h4JranHkDXszAuZoCo7mfFX/zvsQoEwQ48ViNNLfi4omCbrpM58OCrINl5MYW5dGbco+BQzJhexPyerqwW+SKEAYPGf7xrQ152Q0f1RtMYAHJPEAQLWToFJHB6snsxVoagdms8RPnEABJ5LITsi/fDpxbJklU=
+	t=1722308790; cv=none; b=J1IogO7XDhXW4Uirzotn/JzHbSoebrSYc+au/EU5vsZ9Kzruq1Mx7UL47dDShW8CVDqwX1jL7g3h8uEqF9VwcBBBmKuuFvNS3E45t6NthgWS9eJoOq8JwWJkg7+sdyTarU8en0r1A9IFkpka2oTI0EnYOoxAu0CH5OOs37kl3AQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722308019; c=relaxed/simple;
-	bh=UgXyxPACJTmYK1zqo8XzWIxH4H8JZmM3sk4Q+Eo9xko=;
+	s=arc-20240116; t=1722308790; c=relaxed/simple;
+	bh=HyX+3BVaOG7CR9AYkNVWcTm75cFajmUq2m/2q0ImLMs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ATy74apY4hg1zm0AAoeyNNJq2tI7VqdZH52B2n8YyP1xnBD8yX3CsTagV39/32oD3t9rQkz6TWfAJEzHJY2y9buyAobxWu4di5zfV50NfIz+w60XU8Nc1ZoymAwxG1FrKW33xGrUlX5GkcmIzjJwNusMeURMpX5+w1y7CoNGa/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VlMVdZm6; arc=none smtp.client-ip=170.10.133.124
+	 To:Cc:Content-Type; b=MHY9+PRieRIBBe4GNJ2ECT28UCw0gGTSPEfYNXaEW7BWRHbicVXynzhYN9vaFV3OFglG3SKDO1UPdNK9XM5U19EZ0hh3Udw5cezP0xHCtTDw8880TRKhR4PpxiF3LgtS7qug1rGGL49kBznQiOZTCfPQVPsyDdax7vScya9YuO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=YJaoH4QB; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VlMVdZm6"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YJaoH4QB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1722308016;
+	s=mimecast20190719; t=1722308786;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=pf2oNa15UgzsDOJ7PYKJ01ICO7giqCRwFUISFTWMV2c=;
-	b=VlMVdZm6VV6ufx6wrWpKMKU6J3RN+6UiS8fBAeGat62a2T+O2uc1oWrpdqB4Wtpiy7sNLj
-	mkDWydqqtt6Vf2fHvZWViKBVwCaKYQf2s+r+q16zMx+1O8TfMZy4luZSuSVtbuvXn6ci7I
-	pXrv5iub6V0JAonRwWsnLvyG5pjzAys=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=HyX+3BVaOG7CR9AYkNVWcTm75cFajmUq2m/2q0ImLMs=;
+	b=YJaoH4QBweO4zLBqQXQfXEtGXMEaZUptcsfuO7lw9pC5fAIL9AKbjKSaglkvT3GCl7FBPy
+	1NhqpQ8vFv2dorULfmZ5IIF5Gy4tqw5MaasQGzwaSks6leVPWfmVi/7XkslJxbN3oq1qjJ
+	Q1r0r/n/HNF+0cVdexrErhzjdF/d/TQ=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-78-MumVILNrN6GGfoIjlDo1ag-1; Mon, 29 Jul 2024 22:53:34 -0400
-X-MC-Unique: MumVILNrN6GGfoIjlDo1ag-1
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-2cb81c562edso3721251a91.2
-        for <virtio-dev@lists.linux.dev>; Mon, 29 Jul 2024 19:53:34 -0700 (PDT)
+ us-mta-490-bAo5zzoGOnmBn1Z4Wbwmjw-1; Mon, 29 Jul 2024 23:06:24 -0400
+X-MC-Unique: bAo5zzoGOnmBn1Z4Wbwmjw-1
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-7a2a04c79b6so3518885a12.0
+        for <virtio-dev@lists.linux.dev>; Mon, 29 Jul 2024 20:06:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722308014; x=1722912814;
+        d=1e100.net; s=20230601; t=1722308783; x=1722913583;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=pf2oNa15UgzsDOJ7PYKJ01ICO7giqCRwFUISFTWMV2c=;
-        b=PCgmIk6v+9sDcGzuHAXJK4uzTZLDCOz4td37BBguBcs/Vo9NRywpDkz5efBEReFrBW
-         UusNJXDMDJ48/ygdUmFhvR7nzncznPpHofeeFO2Rxvj0EnkirUamt+Q+206+dwimYWdy
-         vA/H1itb+4CwMDTezEVasrOfzuZ27+HVFH/m2TLCiNP+kGcbARpnulixTUZWSl+qFsKU
-         tzx4YRio7cnXsqU3z7fe7UyEBMnLNb0mYHbledDfrE8De6ZrIL+uOtqrqtMjT+lMuYrq
-         y7avcKgcLmQZFMHeTf5XOiIrsdYTyMTBPAXLKQ77+Cs4AhK3JrNS6tg4G2NTyIfin5wQ
-         Iptg==
-X-Forwarded-Encrypted: i=1; AJvYcCX+jMwJ1DiR8FLA9TU3L+ohnDC6QJioFHXSIV8FkoJStB+Q+gXxg72d3Iw7X6RLdThHOf3FEyTWsGvpy6Bbu1su7KV30eT3g7W1fQ==
-X-Gm-Message-State: AOJu0YwKiUVh1g0oP3rw5YZLVshJfUWmt3SN20SmQYnjQO9gwDFoPnbm
-	5o7aY0Q0UGnelAOKqJst6IK8N8unNIqPzcWozVDvzNFz7cgpP1DiFRQcfqUfhcxYh+Qe7QoqAt1
-	Ldn8yYhdku3FKEHJBbxmWRYhmtizY6+nJTjZDLnkchwOWrfpDH7Q7Zx2HVn7lPSA9UGK6aisomP
-	QIuyqYx/TUKiqJm9QaN6CNubqBj6vibyV1oA==
-X-Received: by 2002:a17:90a:f481:b0:2bf:7eb7:373b with SMTP id 98e67ed59e1d1-2cf7e5eee82mr7428393a91.33.1722308013820;
-        Mon, 29 Jul 2024 19:53:33 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHBMYzwmCiSjP8qVr171TTbIYCW39PgB4Y7cr4qfYqHe4U3QCp8OBifcNExr4HI/xSxOXGs6Kn/N+2O/OGqqc8=
-X-Received: by 2002:a17:90a:f481:b0:2bf:7eb7:373b with SMTP id
- 98e67ed59e1d1-2cf7e5eee82mr7428373a91.33.1722308013272; Mon, 29 Jul 2024
- 19:53:33 -0700 (PDT)
+        bh=HyX+3BVaOG7CR9AYkNVWcTm75cFajmUq2m/2q0ImLMs=;
+        b=usdaM3Dnwpgr2nqyxRHxaznMYi3/jJn45EFvwZRGfD/D2U+lrZ5P5GZuN6EqfQSE2R
+         6K1QwVn/qAoQ8lRYFsOM8gG19J0zp4wkES7dSHX0qyCS7Yon4qlhS2jgJyMOUlcar6Hs
+         9ImvtSXzy9l7Ru6H6R/rz9qXC0DwfmNu8fDRZWutIH8ThdjW4sCs6Ewp/uMZiggLwUhR
+         pnTGtk2826XXeDW3/8wOthXnWALABTVUwyZQVqNoULB516ae6mfGvTL2n7KNhsHM48C5
+         YpO3/zStQV+JD5lu+YqHWxgdJewJNPy4tqCP5Q1YhkAgsWDKLzJW1gU5FnPHDYIWu5vZ
+         HjfA==
+X-Forwarded-Encrypted: i=1; AJvYcCXFP+FMc+5UPXOvw7YXpDNP13c5n22EfPElMko0NtWe2qZyJRZeAFqeqi/p4nM7woLjxukV+OeSsz6Ur2yn7CG71+SOqh2vE/APYw==
+X-Gm-Message-State: AOJu0YxJRK0jf+Ig3MTnqXJvLcu74BM0wXO9g5AP748hrpeQpb05SS7x
+	c6bX8vCwlhdijiR+2p7JNh+CjeLX0wFc2A+lBUxvAhBihq0T3hTq61Bp5eyW0CNDYLd9OAo+WfU
+	uJaQNUAyEpSV5G0VrDbUaol4W/6Tw6/ZJ6E5jz6AQeH+4KA4Stnx8wWW2hI8groVZ5XGFWlpLfL
+	zcpe0EV5sCPguC48lW/sqrkg8IyQ1ODJTO/Q==
+X-Received: by 2002:a17:90b:4c03:b0:2ca:f755:1040 with SMTP id 98e67ed59e1d1-2cfcaaec72fmr1120834a91.7.1722308783317;
+        Mon, 29 Jul 2024 20:06:23 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFryUvcqGZpQYTjgqUn1VlxKwR493Yb4lfjVWyYmy1iS1ZVdwKJCPFlCrpqBtot+TLUJS6GFjig5uLn+V4DMps=
+X-Received: by 2002:a17:90b:4c03:b0:2ca:f755:1040 with SMTP id
+ 98e67ed59e1d1-2cfcaaec72fmr1120806a91.7.1722308782849; Mon, 29 Jul 2024
+ 20:06:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
@@ -63,11 +63,12 @@ List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20240724033816.GD492231@quicinc.com> <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
- <20240726124211.GC723942@quicinc.com>
-In-Reply-To: <20240726124211.GC723942@quicinc.com>
+ <20240726070324.GA723942@quicinc.com> <CACGkMEtin7mb=rA_nS6ArinP4k_v-Zsa05tMb_KXXUvfuCMiKw@mail.gmail.com>
+ <20240729060122.GA1542333@quicinc.com>
+In-Reply-To: <20240729060122.GA1542333@quicinc.com>
 From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 30 Jul 2024 10:53:22 +0800
-Message-ID: <CACGkMEu03NQ7ez72Gr5tmBb2+28g-kFC0ADEKx8TQwFFwpn8Fw@mail.gmail.com>
+Date: Tue, 30 Jul 2024 11:06:11 +0800
+Message-ID: <CACGkMEsRtxezU8sEPYiVWSdmEDAZ-7=ZFGO-oHidR1UcS=rgbw@mail.gmail.com>
 Subject: Re: [RFC] vduse config write support
 To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
 Cc: xieyongji@bytedance.com, stefanha@redhat.com, virtio-dev@lists.linux.dev, 
@@ -81,60 +82,63 @@ X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 26, 2024 at 8:42=E2=80=AFPM Srivatsa Vaddagiri
+On Mon, Jul 29, 2024 at 2:03=E2=80=AFPM Srivatsa Vaddagiri
 <quic_svaddagi@quicinc.com> wrote:
 >
-> * Jason Wang <jasowang@redhat.com> [2024-07-26 10:47:59]:
+> * Jason Wang <jasowang@redhat.com> [2024-07-29 10:16:48]:
 >
-> > > 2) For PCI pass-through devices, we are concerned of letting VMM be i=
-n charge of
-> > > emulating the complete configuration space (how can VM defend against=
- invalid
-> > > attributes presented for passthr devices)?
+> > > Without this optimization, guest VCPU would have stalled until VMM in=
+ host can
+> > > emulate it, which can be long, especially a concern when the read is =
+issued in
+> > > hot path (interrupt handler, w/o MSI_X).
 > >
-> > Virtio driver has been hardened for this, for example:
-> >
-> > commit 72b5e8958738aaa453db5149e6ca3bcf416023b9
-> > Author: Jason Wang <jasowang@redhat.com>
-> > Date:   Fri Jun 4 13:53:50 2021 +0800
-> >
-> >     virtio-ring: store DMA metadata in desc_extra for split virtqueue
-> >
-> > More hardening work is ongoing.
+> > I think I agree with Michael, let's try to use MSI-X here where
+> > there's a lot of existing optimizations in various layers.
 >
-> I think above change is not sufficient for what we are looking for. In
-> particular for pass-through PCI devices, we are concerned that a untruste=
-d
-> (compromised?) VMM can return invalid attributes when the confidential VM=
- reads
-> the configuration space.
+> Yes sure. Even if we implement MSI-X, there is a security angle to why we=
+ want
+> hypervisor-hosted PCI bus (have provided details in an earlier reply
+>
+> https://lore.kernel.org/virtio-dev/20240726070609.GB723942@quicinc.com/T/=
+#m84455763d6b4d0d3b8df814b3d64e6e48ec12ae3
+>
+>
+> > > > > We will however likely need vduse to support configuration writes=
+ (guest VM
+> > > > > updating configuration space, for ex: writing to 'events_clear' f=
+ield in case of
+> > > > > virtio-gpu). Would vduse maintainers be willing to accept config_=
+write support
+> > > > > for select devices/features (as long as the writes don't violate =
+any safety
+> > > > > concerns we may have)?
+> > > >
+> > > > I think so, looking at virtio_gpu_config_changed_work_func(), the
+> > > > events_clear seems to be fine to have a posted semantic.
+> > > >
+> > > > Maybe you can post an RFC to support config writing and let's start=
+ from there?
+>
+> Does VDUSE support runtime configuration changes (ex: block device capaci=
+ty
+> changes)?
 
-Yes it is, virtio specific hardening can't cover this, it might need
-help from the PCI core.
+Looks like it can, it has VDUSE_DEV_INJECT_CONFIG_IRQ.
 
-> These are PCI devices that may not support TDISP.
-> Hypervisor, being a trusted entity and controlling the PCI bus emulation
-> can ensure that the confidential VM sees valid attributes for all devices
-> (physical and virtual) that are enumerated on the bus.
+> I am curious how the atomicity of that update is handled. For ex:
+> guest reading config space while concurrent updates are underway (SET_CON=
+FIG).
+> I think the generation count should help there - but it was not clear to =
+me how
+> VDUSE is handling generation_count reads during such concurrent udpates.
 
-I think I need to understand the difference between hypervisor and VMM
-here and which one is trusted and not and why.
-
-> That's a key reason why
-> we want hypervisor to emulate access to configuration space of all PCI de=
-vices
-> enumerated by VM. That I think necessitates that hypervisor handle access=
- to
-> virtio device configuration space as well (even if MSI-X obviates the
-> performance arguments of hypervisor doing so)!
-
-That should be fine, but it means for PCI you need a lot of emulations
-(e.g Qemu emulate q35)
+Similar to the above, we are missing uAPI to do that. Probably just an
+uAPI to update the device generation.
 
 Thanks
 
 >
-> Thanks
-> vatsa
+> - vatsa
 >
 
