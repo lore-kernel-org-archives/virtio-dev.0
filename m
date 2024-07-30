@@ -1,193 +1,140 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45DDB8172D;
-	Mon, 29 Jul 2024 16:16:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1007CA6F
+	for <virtio-dev@lists.linux.dev>; Tue, 30 Jul 2024 02:53:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722269785; cv=none; b=AiowrehwtMg8jDbnq7hM7vbKm1OkURegpYmIZGICh9M24ZoWHQpMQ6Dh5eqY5LCgHktY/SaVd1esjIKKKmp/HdvmTfytmgelGv+VzkqxqtJ+f7dHSeg96CLdqUHWjkB3wcbt3smPmYJzdaEW9L8/6UEeZJ7bge3Cw4m1EWcuHck=
+	t=1722308019; cv=none; b=OI/9OIOVd9t+s6h4JranHkDXszAuZoCo7mfFX/zvsQoEwQ48ViNNLfi4omCbrpM58OCrINl5MYW5dGbco+BQzJhexPyerqwW+SKEAYPGf7xrQ152Q0f1RtMYAHJPEAQLWToFJHB6snsxVoagdms8RPnEABJ5LITsi/fDpxbJklU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722269785; c=relaxed/simple;
-	bh=O5xu19o258Ib04orIyiSUj8L179KeCKaavNUzMnaTCk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=lUU2X9ykLjCLMD+cYSg9fYsV2olj6H3KojZ5DG4zBeMJ0qmGwg5r2fwkUX8Y6u6T2NA+4L4Ae3sUZKff/Kph9w3Y2uKeARQetOBF3jBhujhGZwWHfXpEZroUuZJETpxC++j9vwQ2iVKkICDzcEoyHUdxULyOcbzdpWJvgvXuVr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=i5DUlSjW; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
+	s=arc-20240116; t=1722308019; c=relaxed/simple;
+	bh=UgXyxPACJTmYK1zqo8XzWIxH4H8JZmM3sk4Q+Eo9xko=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ATy74apY4hg1zm0AAoeyNNJq2tI7VqdZH52B2n8YyP1xnBD8yX3CsTagV39/32oD3t9rQkz6TWfAJEzHJY2y9buyAobxWu4di5zfV50NfIz+w60XU8Nc1ZoymAwxG1FrKW33xGrUlX5GkcmIzjJwNusMeURMpX5+w1y7CoNGa/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VlMVdZm6; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="i5DUlSjW"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=O5xu19o258Ib04orIyiSUj8L179KeCKaavNUzMnaTCk=; b=i5DUlSjWGWtpIhmIGok/hhU54z
-	WFjemev1q9Q/drK1OMBqq0pgqMtMLGvd7y6Sso4Xpah7fZ0dY8ebtLzmDhpd6ubopv+74EYXkuTvC
-	iyZOYGjiYn2AhfWQCa1rcbdgSv5xuAer8UYcFDfTFT+Y+FYYGYVPXTExGV4c2tuXB/VzYXTlYK4vZ
-	gbBet/s5qziuK36X8BBUGDgnpPHDi3YUnhaZ8ZbqB756tuFEAG0BbXsMbPmIiYO+KysYmPS+WNsrH
-	IZOiZd1rD2Flw6w0krWvZGnYAdCkOi6bk84wUGQH4Ohszy54gblvOXQzZKLCpr3YczdPVmWU7mhg9
-	9wuC2OnA==;
-Received: from [2001:8b0:10b:5:4b1f:b2b1:6fd8:9dfe] (helo=u3832b3a9db3152.ant.amazon.com)
-	by casper.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sYT2i-0000000DkwQ-3gcu;
-	Mon, 29 Jul 2024 16:16:12 +0000
-Message-ID: <a471215e85b1d59f9214ce081f5ca1f2ed6a75ef.camel@infradead.org>
-Subject: Re: [PATCH v3] ptp: Add vDSO-style vmclock support
-From: David Woodhouse <dwmw2@infradead.org>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Richard Cochran <richardcochran@gmail.com>, Peter Hilber
- <peter.hilber@opensynergy.com>, linux-kernel@vger.kernel.org, 
- virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>, 
- virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>, "Chashper,
- David" <chashper@amazon.com>, "Mohamed Abuelfotoh, Hazem"
- <abuehaze@amazon.com>,  "Christopher S . Hall"
- <christopher.s.hall@intel.com>, Jason Wang <jasowang@redhat.com>, John
- Stultz <jstultz@google.com>,  netdev@vger.kernel.org, Stephen Boyd
- <sboyd@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>, Mark Rutland
- <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Alessandro Zummo <a.zummo@towertech.it>,  Alexandre Belloni
- <alexandre.belloni@bootlin.com>, qemu-devel <qemu-devel@nongnu.org>, Simon
- Horman <horms@kernel.org>
-Date: Mon, 29 Jul 2024 17:16:11 +0100
-In-Reply-To: <20240729113320-mutt-send-email-mst@kernel.org>
-References: <e3164fc80e21336cbf13e24f98c9e5706afb77ab.camel@infradead.org>
-	 <20240729113320-mutt-send-email-mst@kernel.org>
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-VwTlaoX6quXk8Rk7E7vw"
-User-Agent: Evolution 3.44.4-0ubuntu2 
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VlMVdZm6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1722308016;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pf2oNa15UgzsDOJ7PYKJ01ICO7giqCRwFUISFTWMV2c=;
+	b=VlMVdZm6VV6ufx6wrWpKMKU6J3RN+6UiS8fBAeGat62a2T+O2uc1oWrpdqB4Wtpiy7sNLj
+	mkDWydqqtt6Vf2fHvZWViKBVwCaKYQf2s+r+q16zMx+1O8TfMZy4luZSuSVtbuvXn6ci7I
+	pXrv5iub6V0JAonRwWsnLvyG5pjzAys=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-78-MumVILNrN6GGfoIjlDo1ag-1; Mon, 29 Jul 2024 22:53:34 -0400
+X-MC-Unique: MumVILNrN6GGfoIjlDo1ag-1
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-2cb81c562edso3721251a91.2
+        for <virtio-dev@lists.linux.dev>; Mon, 29 Jul 2024 19:53:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722308014; x=1722912814;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pf2oNa15UgzsDOJ7PYKJ01ICO7giqCRwFUISFTWMV2c=;
+        b=PCgmIk6v+9sDcGzuHAXJK4uzTZLDCOz4td37BBguBcs/Vo9NRywpDkz5efBEReFrBW
+         UusNJXDMDJ48/ygdUmFhvR7nzncznPpHofeeFO2Rxvj0EnkirUamt+Q+206+dwimYWdy
+         vA/H1itb+4CwMDTezEVasrOfzuZ27+HVFH/m2TLCiNP+kGcbARpnulixTUZWSl+qFsKU
+         tzx4YRio7cnXsqU3z7fe7UyEBMnLNb0mYHbledDfrE8De6ZrIL+uOtqrqtMjT+lMuYrq
+         y7avcKgcLmQZFMHeTf5XOiIrsdYTyMTBPAXLKQ77+Cs4AhK3JrNS6tg4G2NTyIfin5wQ
+         Iptg==
+X-Forwarded-Encrypted: i=1; AJvYcCX+jMwJ1DiR8FLA9TU3L+ohnDC6QJioFHXSIV8FkoJStB+Q+gXxg72d3Iw7X6RLdThHOf3FEyTWsGvpy6Bbu1su7KV30eT3g7W1fQ==
+X-Gm-Message-State: AOJu0YwKiUVh1g0oP3rw5YZLVshJfUWmt3SN20SmQYnjQO9gwDFoPnbm
+	5o7aY0Q0UGnelAOKqJst6IK8N8unNIqPzcWozVDvzNFz7cgpP1DiFRQcfqUfhcxYh+Qe7QoqAt1
+	Ldn8yYhdku3FKEHJBbxmWRYhmtizY6+nJTjZDLnkchwOWrfpDH7Q7Zx2HVn7lPSA9UGK6aisomP
+	QIuyqYx/TUKiqJm9QaN6CNubqBj6vibyV1oA==
+X-Received: by 2002:a17:90a:f481:b0:2bf:7eb7:373b with SMTP id 98e67ed59e1d1-2cf7e5eee82mr7428393a91.33.1722308013820;
+        Mon, 29 Jul 2024 19:53:33 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHBMYzwmCiSjP8qVr171TTbIYCW39PgB4Y7cr4qfYqHe4U3QCp8OBifcNExr4HI/xSxOXGs6Kn/N+2O/OGqqc8=
+X-Received: by 2002:a17:90a:f481:b0:2bf:7eb7:373b with SMTP id
+ 98e67ed59e1d1-2cf7e5eee82mr7428373a91.33.1722308013272; Mon, 29 Jul 2024
+ 19:53:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
-
-
---=-VwTlaoX6quXk8Rk7E7vw
+References: <20240724033816.GD492231@quicinc.com> <CACGkMEs_FHg6xZAw2V7AKvj5XFCmaA0Xm+ei7z4OFJPNgO5Thw@mail.gmail.com>
+ <20240726124211.GC723942@quicinc.com>
+In-Reply-To: <20240726124211.GC723942@quicinc.com>
+From: Jason Wang <jasowang@redhat.com>
+Date: Tue, 30 Jul 2024 10:53:22 +0800
+Message-ID: <CACGkMEu03NQ7ez72Gr5tmBb2+28g-kFC0ADEKx8TQwFFwpn8Fw@mail.gmail.com>
+Subject: Re: [RFC] vduse config write support
+To: Srivatsa Vaddagiri <quic_svaddagi@quicinc.com>
+Cc: xieyongji@bytedance.com, stefanha@redhat.com, virtio-dev@lists.linux.dev, 
+	virtualization@lists.linux.dev, quic_mnalajal@quicinc.com, 
+	quic_eberman@quicinc.com, quic_pheragu@quicinc.com, quic_pderrin@quicinc.com, 
+	quic_cvanscha@quicinc.com, quic_pkondeti@quicinc.com, quic_tsoni@quicinc.com, 
+	eperezma <eperezma@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>, mst <mst@redhat.com>, 
+	Cindy Lu <lulu@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2024-07-29 at 11:33 -0400, Michael S. Tsirkin wrote:
-> you said you will use __le here?
+On Fri, Jul 26, 2024 at 8:42=E2=80=AFPM Srivatsa Vaddagiri
+<quic_svaddagi@quicinc.com> wrote:
+>
+> * Jason Wang <jasowang@redhat.com> [2024-07-26 10:47:59]:
+>
+> > > 2) For PCI pass-through devices, we are concerned of letting VMM be i=
+n charge of
+> > > emulating the complete configuration space (how can VM defend against=
+ invalid
+> > > attributes presented for passthr devices)?
+> >
+> > Virtio driver has been hardened for this, for example:
+> >
+> > commit 72b5e8958738aaa453db5149e6ca3bcf416023b9
+> > Author: Jason Wang <jasowang@redhat.com>
+> > Date:   Fri Jun 4 13:53:50 2021 +0800
+> >
+> >     virtio-ring: store DMA metadata in desc_extra for split virtqueue
+> >
+> > More hardening work is ongoing.
+>
+> I think above change is not sufficient for what we are looking for. In
+> particular for pass-through PCI devices, we are concerned that a untruste=
+d
+> (compromised?) VMM can return invalid attributes when the confidential VM=
+ reads
+> the configuration space.
 
-I hadn't intended to bother until we add the virtio discovery and
-negotiation paths; it would basically be cosmetic for now.
+Yes it is, virtio specific hardening can't cover this, it might need
+help from the PCI core.
 
-Although I *will* do so with the QEMU side before posting the latest
-version of that patch.
+> These are PCI devices that may not support TDISP.
+> Hypervisor, being a trusted entity and controlling the PCI bus emulation
+> can ensure that the confidential VM sees valid attributes for all devices
+> (physical and virtual) that are enumerated on the bus.
 
---=-VwTlaoX6quXk8Rk7E7vw
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+I think I need to understand the difference between hypervisor and VMM
+here and which one is trusted and not and why.
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwNzI5MTYxNjExWjAvBgkqhkiG9w0BCQQxIgQgdKPpCRc1
-gHz1WeSgswpm9cELCpMPtJwmYfF8cfl+nB8wgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgBoyo9r0qsmA4cyTozUk990cv8s3dQktILe
-YEQhYQuGF5u2fAZW1FH+ynMtJBtEL5VF4aHEBS7BbaK374cB8lHRPS4ttEWb7v0c5FQ2Sm4SaJpK
-Unco1IRKCVNQItxK1X4SSpWwYwqd9qK5d1Ct519BCa0GBK4mUlsD6wP/u5cv+AMHrG1HKqyilYnJ
-BUJ2oXIhO2tSnUM38VauYA5c9VEsRdAHfbsJHSMDGdReFE2ziv5hTaZqCE6mYaQHpueemFviTd9g
-evBegb02EjlUTDrqC1LBWTWP2JJsjHA0fo9Q2t79+OJ84gWnLtY0pjXf7lxfb7GnprDxCHXHXaeg
-nmyjJtI/4qlFhlEcr9U7/psLBS0XyErpRB09cpBbSRMP+Gcmsm5HmIgzNRyoDZGw8yy7yrNZLu08
-CzGJEPY4TqjdfwDo6VMcdN5F2T7HsPDSyF/G6pPylwsecOiZbyjH+QMvAOnkS0Opj2PgBVXGqrMu
-J22+0thau1juVnSxjpwMrpDE52A+VF2bWzv1Igc+SwEGGVCPtnEKcMes1G+9k686Ro4zg1eDucgK
-VCFSAMeJJMMfHSoDzn0DiCshKwCtT1Q7xyNAjAiAF1dyDLMIc/8pb+YkV/Cc/s0CTIdfL4aJ04Zb
-XW2979EhYdbP2LHtr0H1Fay0aLhqymkpyGdC9Ih3FAAAAAAAAA==
+> That's a key reason why
+> we want hypervisor to emulate access to configuration space of all PCI de=
+vices
+> enumerated by VM. That I think necessitates that hypervisor handle access=
+ to
+> virtio device configuration space as well (even if MSI-X obviates the
+> performance arguments of hypervisor doing so)!
 
+That should be fine, but it means for PCI you need a lot of emulations
+(e.g Qemu emulate q35)
 
---=-VwTlaoX6quXk8Rk7E7vw--
+Thanks
+
+>
+> Thanks
+> vatsa
+>
+
