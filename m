@@ -1,616 +1,217 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2053.outbound.protection.outlook.com [40.107.102.53])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B71D91A3BA6
-	for <virtio-dev@lists.linux.dev>; Wed, 25 Sep 2024 23:42:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727307753; cv=fail; b=m+IzcvKRKUpdMnmqtiHTXqIK8/mUwOgUTbYuHcgdvrURAXGqslXTmyfNy9BYHrYHQnI/+qmXAJL7cC5XAdFZaAO3BcBtpHyn1LH85cE27KZSTfaLo2Vwr09h60tfoYWTfR5+aeM1IIuze77CenzNK6xjh/RMEFOZpFsevtUa+Ws=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727307753; c=relaxed/simple;
-	bh=1nY57XtiKa1XJTc9VKHRQ4noNj8BUrEhJfHiqu532fM=;
-	h=Content-Type:Message-ID:Date:Subject:To:Cc:References:From:
-	 In-Reply-To:MIME-Version; b=DXgTwfXCsEia6FeuLesYDx9T8KRG6GZhsKoUFLDzPvMoD0XvKjLs36ZQ3mMKbAa7zCR/d09PH+zqxqYJtFf0x0Nk+yBq2GcN/wAhBaLs3JKGZ7RD4j9XrMOiguOQdPgl1FidkPfY4DGs/vEsW625zy0HJUoefBYmoYrb/cJX3lQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tvi1idY/; arc=fail smtp.client-ip=40.107.102.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F62101EE;
+	Thu, 26 Sep 2024 10:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1727346739; cv=none; b=SElz4MaWIEnFAwlQdop/7eS5FkbUICaS4f7JKhUmipWKwzat621iP9NgZjFGWL4VnAXYRBzCa65cBIP80+B38ahstrv9cCrZI0NSsachjgyc8y2XTgZmxldoSzXGaVs3dBbTJv+ZwzgiSR+CpNZm/0Q6dQP2BaPlc74CbfXPAM8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1727346739; c=relaxed/simple;
+	bh=wrfrf7Fn+jxiFTa1PMAWH5GDj3SnTIZdArt9j/TFPTk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=XGlKivNQYkaHRgA4BZbdzhzRoJD775+E4BSbNY6HhKyDCrgDtBOgwMW7nCUCFVpQ3rfvd9aqKjtU4ZU6qJXvl06KhMZwI2dB2+qX/PEYTwvxdykOmatEQfqfnTHr7qxdIgC89f0ZKSiYLsz7kx2k3LGL4rrQTETlziv7QDHhu+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=PrB8eEL6; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tvi1idY/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TlV1JH0713cvI7T595pvuJrtwVaz4pVLGTCfmEFO/HV63+0sZdQgdF7QUcuwyblsMgFConTmDZezo0PiqnMzbPt46W0MWT44pwgYHObb3rTZQYMqKb0WNsiOIA6fbUL3PGLFBCbtc3s3o+PnBdtA9yYGMKnStc4VxyAdLs37f6BOqD9yz2sAHWGSvpNOmYT/MvNjnH3lKWaV89o+1sZ4H+BJkBBta9pijvbaGrAZ54uxpKr4KcvW46kIl9TApOX8zLJ1mMA4Pdmv/chUOVUEz5uoS71He3bLXPu7YMEp4cJHUOUuZVTjbHXmk4t87AlxZN6SDN7gGgarRm+4Pspagg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lFrxd9PyWVPEhVMqupqEIdV4Otdv+l3zBrstlQlASik=;
- b=GCJKa3DqRmoz8B1O/OCksbJ2xi6arx4xzkOJV7gMFkOUWLF2izNshjhMlnJe/3yyCizoov+AZwk62AAvoM78VHI9xNhCJJlDKNs8u05/MEhl6WiBLNr3YIjHEyDbzX3y9m7UHDGcJmOPxy80cEFFXclSRrTvOcQKe3o1iJ+P7HLOjtUrIiLMQmdGMgyg4J2h1p8tPgUqyxzGG3iw6RNvCrqIjGeWPF76aUuOUnuQhyK9RANYb3yEnciZGB9uiOnLu/eNqhhx17PL9kLc5mYtIKX9rSK5ac+nGiGzkuWn8qfr/w9LGMoNYn75ENq2kWgwQwKhgL7AGnL/DvyNIXUAwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lFrxd9PyWVPEhVMqupqEIdV4Otdv+l3zBrstlQlASik=;
- b=tvi1idY/35OMgi3sIKmb2csBSXbwse8ytO5PJ4/m+VvNersJ4vKJCXtS2jU6ZNkCikSicBLhq95nrhF0AX7lIt7T6IUYMk4lYECOTyBxeuTWOOd/rbnBL0wfLeqlkz1IA8gE6oZVn2EMQECDbbYMfiy56HPXh4MlBhkF2Rpzu42qSmnhfHbXYJCPtrIeXBztU/QM2swAf/a3VseyZ8UI+YD+X0iy/SomRNUtE6fBF+FwQqpek2C7QRMreXh2GOy+ms8xJMqT3CwKP4CnfzAji8aAQDREyDsiLkapTOzEEVzQkufE0Rp8xZy67lYtmltsl2DErJbZal0rZ80cnMbKAg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6369.namprd12.prod.outlook.com (2603:10b6:930:21::10)
- by SA1PR12MB6799.namprd12.prod.outlook.com (2603:10b6:806:25b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.27; Wed, 25 Sep
- 2024 23:42:26 +0000
-Received: from CY5PR12MB6369.namprd12.prod.outlook.com
- ([fe80::d4c1:1fcc:3bff:eea6]) by CY5PR12MB6369.namprd12.prod.outlook.com
- ([fe80::d4c1:1fcc:3bff:eea6%4]) with mapi id 15.20.7982.022; Wed, 25 Sep 2024
- 23:42:23 +0000
-Content-Type: multipart/alternative;
- boundary="------------MIFCgvRqhTe8CcUZx9fSnSbY"
-Message-ID: <ca954af2-4c61-41f5-8cf0-69a1233704ba@nvidia.com>
-Date: Thu, 26 Sep 2024 02:42:18 +0300
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] virtio-blk: Add description for blk_size field
-To: Daniel Verkamp <dverkamp@chromium.org>
-Cc: mst@redhat.com, virtualization@lists.linux-foundation.org,
- stefanha@redhat.com, virtio-dev@lists.linux.dev, oren@nvidia.com,
- parav@nvidia.com
-References: <20240925145228.27953-1-mgurtovoy@nvidia.com>
- <CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com>
-Content-Language: en-US
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-In-Reply-To: <CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com>
-X-ClientProxiedBy: LO4P123CA0641.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:296::7) To CY5PR12MB6369.namprd12.prod.outlook.com
- (2603:10b6:930:21::10)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PrB8eEL6"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=wrfrf7Fn+jxiFTa1PMAWH5GDj3SnTIZdArt9j/TFPTk=; b=PrB8eEL6VO1ujfQnR26kdZkB+A
+	/PH8P529rcWFoeGdptrDS0gRlokhW+5LP61faQxvbQuOoSDVbKBW1uaZ0XkmURM5ZlJ6uz7QKxaVh
+	uBL06R3ZlNnErGR4ZIG+/gE3Yb4mK6MOMVxzAgBzk1qaTyS8z/jJQgCPMfKxtu9MduIqLU4qI0ghN
+	yvapx36keZ2zfqQpA8SHMF3vVB3J0jiMna3Hm3jCOP5gzm/H3d9ZnMa89bsf3UBoMCe5X8g1JlGn8
+	gQzQnm5+/4GEqmoNp3wZrzcdUYPBk5Tw0waNHPDmZTtGFVwIrgBAv3KE2j5nWpqXra4QEEUoR1rsX
+	u08oHEOg==;
+Received: from [2001:8b0:10b:5:16cf:fc6a:25d9:f696] (helo=u3832b3a9db3152.ant.amazon.com)
+	by casper.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
+	id 1stln6-00000006P6m-26UX;
+	Thu, 26 Sep 2024 10:32:09 +0000
+Message-ID: <9ef2c0c758825fa1e9daff9dd74d41c2eb6e5d8f.camel@infradead.org>
+Subject: Re: [PATCH v6] ptp: Add support for the AMZNC10C 'vmclock' device
+From: David Woodhouse <dwmw2@infradead.org>
+To: Paolo Abeni <pabeni@redhat.com>, Richard Cochran
+ <richardcochran@gmail.com>,  Peter Hilber <peter.hilber@opensynergy.com>,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, linux-rtc@vger.kernel.org, "Ridoux,
+ Julien" <ridouxj@amazon.com>, virtio-dev@lists.linux.dev, "Luu, Ryan"
+ <rluu@amazon.com>,  "Chashper, David" <chashper@amazon.com>, "Mohamed
+ Abuelfotoh, Hazem" <abuehaze@amazon.com>
+Cc: "Christopher S . Hall" <christopher.s.hall@intel.com>, Jason Wang
+ <jasowang@redhat.com>, John Stultz <jstultz@google.com>, "Michael S .
+ Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org, Stephen Boyd
+ <sboyd@kernel.org>,  Thomas Gleixner <tglx@linutronix.de>, Xuan Zhuo
+ <xuanzhuo@linux.alibaba.com>, Marc Zyngier <maz@kernel.org>,  Mark Rutland
+ <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>,  qemu-devel <qemu-devel@nongnu.org>, Simon
+ Horman <horms@kernel.org>
+Date: Thu, 26 Sep 2024 11:32:08 +0100
+In-Reply-To: <ec30359e-11a6-48fd-9d06-c030307f970c@redhat.com>
+References: <00fb5876322d2fb77816304b5e2c31731d383b76.camel@infradead.org>
+	 <ec30359e-11a6-48fd-9d06-c030307f970c@redhat.com>
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
+	boundary="=-oj8Z86FuLUB16F3WpaXP"
+User-Agent: Evolution 3.44.4-0ubuntu2 
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6369:EE_|SA1PR12MB6799:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2dd939ef-5963-4f83-e7c2-08dcddbbb442
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TURKVm95bjNPSHFhMVc2OW5rSnlBeTJwQmhkN2ZKeXE4Q3pQODhrcXFLM0Ex?=
- =?utf-8?B?QXh2eGJUWERFRXFEVGpDWXhwZXNHc0ZwWFFwbWMrY2JLcTRFYkl4M01PdXdX?=
- =?utf-8?B?TVd1QThOV0Q3UXlKSS80UDNsTld5SWhOMHYrTjVPRHltbHlrR0d3K2llZWwv?=
- =?utf-8?B?LzdScFZNdHFDSno4UWljSHNuWko2S0g1dWVSMDdIaWZxdmhjbWdKUGtBTHlI?=
- =?utf-8?B?NndvWWR0VTAvOTBJc25hUExoR1BtdFY5MXMvUS9pTWoyOXJOZHMyVzcrMVBI?=
- =?utf-8?B?cTlzQkN0dGx1TUZlQmdYMUFUaWxWL2pUZ25NMmRLTzJTTEFIelhrekU3dnRQ?=
- =?utf-8?B?Slcwb1pRR0dieHpSbWdOSXJtZDcxMWk0bjFjQVVjV1hkbXlQWldxSTkzM0Z5?=
- =?utf-8?B?bHcyUDZSSVkxcUJSbGl2b3NlTWd2c3pBMTFkanVybUhGZjRnSXBiMjRUTThu?=
- =?utf-8?B?THZXM1pjaVRUNFl4SVdDbm5pKzIvR044VkFjQ3ZyRys5N1dLY3VlR0xIaWYv?=
- =?utf-8?B?eHJYV20rREhxNHorTjBuelFoRzI5aTJqaFpqT29vZFJzajhlVWxrSmgxYVRZ?=
- =?utf-8?B?YmFuQWdvVE1JbVBkRUVMYWdaOGFZMUZQMXJTN2NuMnAxM0FaNXZaNGFTVDRq?=
- =?utf-8?B?dS94eWV0MkV3S0dkRGViVGNrbHdsUGNRSVpjeUV0LzMxaVJ0TEs1WVE1TUxB?=
- =?utf-8?B?clNOczFhdm1LTnF0dzhGZGxqQk8vZVhYcGdMOHROdzNGU3FCNWtYVXd5RFcz?=
- =?utf-8?B?RU1HajFHYkZnTVpjM0ljQ21zNEMyZzlpanpCWlVUdVFUZWRtQWpPUitVR1ds?=
- =?utf-8?B?dUh0cVVFU2NNejA0OHowdDlhMjFTSHR6WThlZ01ZaVZVQ0hhbmFSM0xCWnBp?=
- =?utf-8?B?b3kxL2RkRDVpeTNhVTJLRitJVG41WGxBV1VsSVhjZUJ2SlhqWlR3aVVXTldP?=
- =?utf-8?B?emI5OUZORmxJS0hEMFZZQTlZYUd4WHBiMWRBMzdRVERGeXNwb09PbkhmZVdN?=
- =?utf-8?B?RzE2OW44V2VwVE1tZjVEN09Wb1FKQVY1ZlFhVHpXV1NyY0dLUjlYQ2JMLzh3?=
- =?utf-8?B?QTBHdUIydUpFMnNsa3k5bExpUXNudnV3L0xIZEZ5aW13UVFGSHd4SitmM3Fo?=
- =?utf-8?B?SjUxMFV1MlkzUnVBbWZCRmFySU9iZnBQd0daaEVUVjNlRGp2V0I2akdOZ09P?=
- =?utf-8?B?SExsRDhZWUVxcldjdEt3dkdyNC9Hd1ZsaHBpTGxkQUdSRHhhOXc2b1FDaXc2?=
- =?utf-8?B?YlRENWFhMERHdFJ3YlZ2ZW83NnNscFAvUklaa3VIeEIvRHF4MitybkZrSUNX?=
- =?utf-8?B?eW9DYmthTS90NXVRTU9NTTlKME5YRURHazEzVm9KYUtXeGUxTzg2RkZ5cDJa?=
- =?utf-8?B?NXJUTHZ0ZGtyYmpCaVljZng4d2xGSE00ZngyVEJzeVp5NlpMNWJrSzBFWDZu?=
- =?utf-8?B?STFLYitOUERLUURJV29JY3ZuNXVaQitsUDdMeFoyTER5b0VTSm93OHNobjZF?=
- =?utf-8?B?ekFoN3FnTXh0UzIyU1N5MmVuV2d3enNZU2lGMzJEaEdGRzh3UzBKNkZ3T2ZK?=
- =?utf-8?B?cHY2K3hFR2Z0M21OWUR0MWxCQ2ZWUEswMlduRHhHTHVqU0pSVExMelNUeVVq?=
- =?utf-8?B?N2FMRnROK1ZCWlVKSFBVbk8xVFZIejRxSCsra2h5QjVOTkFZUDgrUmdQZ2FM?=
- =?utf-8?B?L0RyRHhrdklCckxkWk0yOEsvdzhXV2Y2akpULzZHZko1WENLNUF5dEtRPT0=?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6369.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Ym10T1F3MnZiZmRId2dHekowclJxVTVQbDFVSGhqRm9PM2ZPOUlkSVNrYnNS?=
- =?utf-8?B?bGtHb3BJalpiODJUVXRRalhXaDY5UGVBUW56Y3VRZ2IwMjBQTWgyRjNvVnFO?=
- =?utf-8?B?d3JwUXUyS082cDlSeWlRRVhyVTcyRVMwNjBpSHZtd2ZRWkpubnpXbEp5a29Y?=
- =?utf-8?B?MzUzakF4NCtaSEh3aURxaFpIT1NDWDBLVlljQW1NRCtnZDhDRVZFQzJ1SVdp?=
- =?utf-8?B?d3hwMU50cTVxaWJxa0ZGZkkrT1FMTUNUN01oTGhSQmhSN1J4ZjV3M2h0UGFp?=
- =?utf-8?B?U09WVWxHV2tSRTVSK01KZ2VDa0o4REh2eFNGM2lMOWN0aVlJNnZ2V3JRK1kz?=
- =?utf-8?B?bldMTjBpTmwrcm5ndGtudTRmTlVVOE9WWU9tMmQyNnpoYmswak8zQVRQWHQw?=
- =?utf-8?B?SHkxODdvSXdvRnFrNGdZVGU4S3BtOHRUSkIyYWN5aDR5SWJ6a05hQVQ2TFEw?=
- =?utf-8?B?TjAvSzBQbzhpMXBiaS84U2RRcFZ5RTZvOFZaUHQvQng5bVg5MzI3Y21TSkdi?=
- =?utf-8?B?N0dCaFAwQ1Rwb21lNmhoMDBpMWxoK3BaWGJDZDQ5elNBQ0hjWUlGUlV5R3o5?=
- =?utf-8?B?Sy9xcSsyeTZtWDFtNjZ4ZGt2TUV0QUVSbjFseGtCVXArWHRsZGJoNmxNNjQ2?=
- =?utf-8?B?QTNpeFRURnhYVHZFcU95cjE2YW5hdy9WSGlSVHZXd05wZXc1MGpybkIrbVMv?=
- =?utf-8?B?ZCtITHp0dkhGZU1FdU9Bb0owZHpZb2VyTWpyS1Rrb0EvdDAzZFJtWkU5N3Rv?=
- =?utf-8?B?bUY5Z2xMdWZEd0QvckpoRk9QdHpadkYxMVpxRElNOEozYVRjNWRweE5YekR2?=
- =?utf-8?B?aWFnT3dEdXMxc05CdStkU3lHWDNlOExlSkZSK2lvWlRHcUl2MUpSNmcwZStN?=
- =?utf-8?B?U2RRMXZkZHl5WlNYeS9tekhsYk0rY1ZISHh4R2VSS3lSM0NZZk52Zm9EL1I0?=
- =?utf-8?B?UHNwQVNLNCtGNXpvM04wL1hyQWFHQkJ0aWg1Z05HcnM3K2dIaWprMWhjTDlz?=
- =?utf-8?B?VnNTdWNOODVqSndTMitCK3h5MHh2dm5rM3hqMmEwTGxKczAveklkYVYxZjVl?=
- =?utf-8?B?a0piQ0dNSndTckNSUVNFSVFwSzNvZHdzNUJFTkFRYk1KYUFLS3VDaTZGNk1y?=
- =?utf-8?B?bmcxUDcwakJnNEhwQVhtNzVaZzhHR2gxVjNxSElZaURRUTZQbUV0M0N3SEl5?=
- =?utf-8?B?NXNoNE14clhxakJEU3FOVXZXRWNDN1pWQm5oSTFMODJ0TWswL2xzbDRHbFVy?=
- =?utf-8?B?SkMyVVF3Q0daY1o3dGxVaU1RQmp4WjIrZmF2eE03TkFBMERZQSszYjhlU1NX?=
- =?utf-8?B?blVoUGlXUDd4OTk0cW1hb0ZyYnZCRlV6TjJqZENMWjVRU0VEMUZGamk5SjhW?=
- =?utf-8?B?K0xZbU45TzNodjdvRXR4SWxPSW5vcFhRNTRFUUFBeGY0dHlOZGFHdVNnSEJj?=
- =?utf-8?B?Vzg2MFpwZmY1cUtORGJ2bXRsSlgvSkVIUUN1cjA5d1QxMGxxc1VzRzdCT0pL?=
- =?utf-8?B?Z2ZMK0QyNDVTeDQ4VDZFK0JaZXpRZDFYRkxmdXRGQWN2ajZpQjYvakRSVXRT?=
- =?utf-8?B?OWphelpxd1ppMTZKbDdtZW1iRXNzNVM1dDJCVDd5aEdtSFdmSThnZThKaCtQ?=
- =?utf-8?B?WFRLdSswYzlDUmdrd3ZJMmt0NDZ1U0NhT09lQjcvRWdwMUZBYVllcDhLWTBS?=
- =?utf-8?B?c3Z2VURSbkc4NnZ5TnZQUEQxbXhweEZ5dlBrUSt6ZjE4U3dSZERrbC91a3dF?=
- =?utf-8?B?eVhlUWNOTjBZei9uUnk1N29HTWtPcDh5TDlVa3RCZ2FYN0x3cXAySGhtNDJK?=
- =?utf-8?B?eUZ6UEUxbU5Iczl5UVpmQXQzM1RlUGhkaFZhZk5oR2thdnh1RHMxT0VzQ0xD?=
- =?utf-8?B?UnhEUkZqZUNtQXBjbVNsYUY1Mm10Rm9tc0lhS2ljZFlhSERmM3ozTit0c3ZW?=
- =?utf-8?B?dHNqQk94eHpXQi9NV29WZ1NrKzlTUHNhbVIza2FSaXJsRGtjQWFmN1NxMS8z?=
- =?utf-8?B?SzUwY1B6VUwrUFA2ZzlPb1prUE9la3Z6UUwybmlleGVvTTJZUThlK0dFSVRp?=
- =?utf-8?B?bWJnS1RTYlZHeDdUQS95czVkMXQwNUVsRUVscnBKYlZEYk1xZUZWMTFjd3hR?=
- =?utf-8?B?RFYybGdHbWFMajl2V3MrUUVBeTR5SStScGdOVXFxcURIWGFKc3pRZE13bGQw?=
- =?utf-8?B?Z2c9PQ==?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2dd939ef-5963-4f83-e7c2-08dcddbbb442
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6369.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2024 23:42:23.5304
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NjnRAkfWx37SGXv1l6QTxzcEwzxxfHsPtIGtg4c3B5D3jvHkxdoRQJ/UysTzdhxOM7fvGt3zCXOpM+vvKVQNrA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6799
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
---------------MIFCgvRqhTe8CcUZx9fSnSbY
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-Hi Daniel,
+--=-oj8Z86FuLUB16F3WpaXP
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 25/09/2024 23:57, Daniel Verkamp wrote:
-> On Wed, Sep 25, 2024 at 8:05 AM Max Gurtovoy<mgurtovoy@nvidia.com> wrote:
->> This field is only valid when the VIRTIO_BLK_F_BLK_SIZE feature bit is
->> set.
->>
->> The blk_size field represents the smallest addressable unit of data that
->> can be read from or written to the device. It is always a power of two
->> and typically ranges from 512 bytes to larger values such as 4 KB.
-> I agree that this is what the blk_size field probably *should* have
-> meant (matching other storage protocols like ATA, SCSI, NVMe, ...),
-> but I believe rewriting the spec like this changes the meaning of the
-> blk_size field in an incompatible way.
+On Thu, 2024-09-26 at 11:22 +0200, Paolo Abeni wrote:
+>=20
+> Please have a better run at checkpatch before your next submission,=20
+> there are still a few ones - most relevant white-space damage.
 
-I believe that this is more of a clarification than a re-write.
+Oops, apparently I missed one. Sorry about that.
 
+I'll also add a MAINTAINERS entry, just to make checkpatch entirely
+silent. I don't think it's particularly important, and things will
+probably change as the virtio-rtc specification hopefully evolves in
+future to provide this same structure, but it doesn't hurt for now.
+
+> Anyway this is net-next material...
+>=20
+> ## Form letter - net-next-closed
+>=20
+> The merge window for v6.12 and therefore net-next is closed for new
+> drivers, features, code refactoring and optimizations. We are currently
+> accepting bug fixes only.
+>=20
+> Please repost when net-next reopens after Sept 30th.
 >
-> Previously, blk_size was described as the "optimal" sector size, so it
-> seems clear that the driver is still allowed to send requests that are
-> not aligned to blk_size ("awareness of the correct value can affect
-> performance" but no mention of correctness). A device may need to do
-> extra work to support this, of course, such as turning an unaligned
-> write into a read-modify-write sequence if the underlying storage
-> device doesn't support such an access directly, but such requests are
-> still valid. It's also perfectly fine for a driver to ignore
-> device-offered features like VIRTIO_BLK_F_BLK_SIZE and still operate
-> correctly.
+> RFC patches sent for review only are obviously welcome at any time.
 
-A device should report its block size (logical) using the 
-VIRTIO_BLK_F_BLK_SIZE feature. For legacy devices that don't report this 
-feature, Linux assumes a 512-byte block size.
+Thanks. I've made those changes at
+https://git.infradead.org/?p=3Dusers/dwmw2/linux.git;a=3Dcommitdiff;h=3Dvmc=
+lock
 
-Drivers should not ignore this feature when it's offered by the device. 
-It's crucial for correct operation IMO.
+Unless you care deeply or have other feedback, I won't bother spamming
+the recipients again for the sake of a single space character; I'll
+just wait until next week.
 
-The statement "driver is still allowed to send requests that are not 
-aligned to blk_size" needs explicit clarification in the spec.
 
- From my understanding of the spec, the driver is not allowed to do so 
-(otherwise error will be returned or the behavior is undefined).
+--=-oj8Z86FuLUB16F3WpaXP
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-In Linux, the reported blk_size is used to set logical_block_size, while 
-physical_block_exp is used to calculate the physical_block_size.
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
+ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
+FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
+aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
+EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
+VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
+ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
+QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
+rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
+ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
+U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
+BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
+dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
+BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
+QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
+CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
+IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
+kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
+eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
+KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
+1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
+OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
+x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
+5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
+DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
+VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
+UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
+MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
+ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
+oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
+SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
+xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
+RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
+bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
+NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
+KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
+5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
+C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
+gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
+VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
+MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
+by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
+b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
+BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
+QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
+c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
+AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
+qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
+v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
+Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
+tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
+Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
+YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
+ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
+IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
+ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
+GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
+h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
+9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
+P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
+2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
+BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
+7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
+lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
+lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
+AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
+Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
+FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
+BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
+cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
+aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
+LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
+BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
+Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
+lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
+WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
+hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
+IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
+NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
+xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQwOTI2MTAzMjA4WjAvBgkqhkiG9w0BCQQxIgQg9B90t3fF
++7AEBDNVMOhOA7zNlhyrxUF0dlR2FaEJB3Uwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
+A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
+dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
+DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
+MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
+Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgB3XI0qyeUmKxNnl9umoFx2d+fvkMeSSU7E
+hVlO8A4cg5nXrs9pbOwtIUnC905+8ckkf2DJTa5+6jgHnKb3MC1g0UsAaSbioNz8QcoVhGcNda4B
+X6TSGAIkfu90uGsrtDJuYSbNNpc2mMd4kB1V6C7+626MR5EDDDm5cQc8yK3WmtZ92G/M+IPrkJOf
+3GR0VGSslS8bIsoMeGeJhu5nf5qUmj8K0syfIUReVf8bx+9myTjkdpDd0wV24yq8NBEUeKR6VR36
+2rf29ZGF6aPE67TTcr2ueh0Y6dC+1BiFfPSW3UtFItiPEEFdlNhb5UFXvEEa0DwVjR3ZZqtb9TNa
+kxv/zhJH1M0ThDfBUMQ0zCPLHl6VIfFFfjDDkYOE12W+1WPNzWcyIPvMPOGxQAvBGcw80iiAWPoQ
+VTE5AoilTvf/Wfqw0tbeKN/fpV2Tr34Sla7AOt5eyRyJb0o+eFXuhn9L14fvaG7OIJ/GBNjEvU1B
+MouvODZ3xyGpYu+1pRQe/2mHqMpSs/qDoyZ6K+xcWOCg+HYitCEQIl3RNpz/lMPeHN8aHn51Lkgo
+9ls+X9DVIVFigIp6b8RTJT0hgVm+No8rYOtTL0jdmePC2GyNMLqLxuqJeRCTLLH8BIkfYTPccIG2
+xePxUoEqPSg+2nc8ZnuYq4827y3Bu6U7xuJHTWXmAAAAAAAAAA==
 
-Regarding the specification statement: "This does not affect the units 
-used in the protocol (always 512 bytes)":
 
-This likely refers to how certain fields in the virtio-blk protocol are 
-expressed, not the actual logical block size used for I/O operations. 
-For example: capacity reporting, max_discard_sectors and Other fields 
-that are expressed in 512 byte units.
-
->> Linux/Windows systems typically use 512-byte/4-KB block sizes.
-> While probably true, this doesn't really have anything to do with the
-> change (and the logical block size is a property of the storage medium
-> and controller, not anything to do with the operating system).
-
-Please ignore it. I'll remove this from v2.
-
->
->> This description provides clarity on the constraints of the blk_size
->> field.
->>
->> Signed-off-by: Max Gurtovoy<mgurtovoy@nvidia.com>
->> ---
->>   device-types/blk/description.tex | 20 ++++++++++++++++++--
->>   1 file changed, 18 insertions(+), 2 deletions(-)
->>
->> diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
->> index 2712ada..88a7591 100644
->> --- a/device-types/blk/description.tex
->> +++ b/device-types/blk/description.tex
->> @@ -3,7 +3,10 @@ \section{Block Device}\label{sec:Device Types / Block Device}
->>   The virtio block device is a simple virtual block device (ie.
->>   disk). Read and write requests (and other exotic requests) are
->>   placed in one of its queues, and serviced (probably out of order) by the
->> -device except where noted.
->> +device except where noted. Each block device consists of a sequence of logical
->> +blocks. A logical block represents the smallest addressable unit of data that
->> +can be read from or written to the device. The logical block size is always a
->> +power of two. Logical block sizes may be 512 bytes, 1KB, 2KB, 4KB, 8KB, etc.
-> Does this imply that a device may return an error for a request where
-> the sector or num_sectors fields are not aligned to the blk_size? If
-> so, it should be called out as a more explicit normative requirement,
-> but that would definitely be an incompatible change.
-
-As mentioned, the logical block size, such as 512 bytes, defines the 
-smallest addressable unit for I/O operations on the storage device.
-This has important implications for I/O requests:
-1. Minimum I/O size: You cannot send I/O requests smaller than the 
-logical block size. For example, with a 512-byte logical block size, 
-requests of 128 bytes are not valid.
-2. I/O alignment: All I/O requests must be aligned to the logical block 
-size. This means the target start address (on the media device) of the 
-I/O must be a multiple of the logical block size (the expressed units in 
-the spec are not relevant).
-3. I/O size granularity: The size of I/O requests must be a multiple of 
-the logical block size. For a 512-byte logical block size, valid I/O 
-sizes would be 512 bytes, 1024 bytes, 1536 bytes, and so on.
-
->
-> The "smallest addressable unit" wording is also more confusing than
-> clarifying here, since in virtio-blk, the "smallest addressable unit"
-> is always 512 bytes, regardless of blk_size (even if a change like
-> this would enforce limits on the sector values that would actually be
-> allowed, it would still be possible to create a request that refers to
-> a smaller unit than blk_size, unlike other storage protocols where
-> logical block size changes the multiplier of the address, making it
-> impossible to address smaller units).
-
-Can you please point me to the place in spec that explicitly say that 
-"in virtio-blk, the smallest addressable unit is always 512 bytes, 
-regardless of blk_size" ?
-
-I didn't find it in the spec and I don't agree with this call if it is 
-implicit.
-
-The implementation of the Linux kernel driver isn't implemented in this 
-manner as well.
-
->
->>   \subsection{Device ID}\label{sec:Device Types / Block Device / Device ID}
->>     2
->> @@ -135,6 +138,9 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
->>   present. The availability of the others all depend on various feature
->>   bits as indicated above.
->>
->> +The field \field{blk_size} exists only if VIRTIO_BLK_F_BLK_SIZE is set. This field
->> +reports the logical block size of the device, expressed in bytes.
-> Not a new problem with this change (see another example right below),
-> but "set" is unclear - does that mean it is present if the device
-> offered the feature, or only if the driver also accepted it?
-
-I just followed the spec wording.
-
-I meant to say "The field \field{blk_size} exists only if 
-VIRTIO_BLK_F_BLK_SIZE is offered by the device.
-
-I can change it in v2.
-
->
->>   The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This field specifies
->>   the number of queues.
->>
->> @@ -228,7 +234,7 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
->>   \item The device size can be read from \field{capacity}.
->>
->>   \item If the VIRTIO_BLK_F_BLK_SIZE feature is negotiated,
->> -  \field{blk_size} can be read to determine the optimal sector size
->> +  \field{blk_size} can be read to determine the logical block size
->>     for the driver to use. This does not affect the units used in
->>     the protocol (always 512 bytes), but awareness of the correct
->>     value can affect performance.
->> @@ -282,6 +288,12 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
->>
->>   \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
->>
->> +Drivers MUST negotiate VIRTIO_BLK_F_BLK_SIZE if the feature is offered by the
->> +device.
-> Why is this a MUST? This is also an incompatible change since there
-> was no such requirement before, and drivers are free to ignore
-> features they don't care about.
-
-I can say SHOULD, but then the driver that is ignoring this feature may 
-guess/assume the logical block size and it can be wrong.
-
-This may lead to an undefined behavior.
-
-We do it for legacy devices that don't offer this feature, because this 
-is the best we can do.
-
->
->> +If the VIRTIO_BLK_F_BLK_SIZE feature is not offered by the device, then drivers
->> +MAY assume that the logical block size is 512 bytes.
->> +
->>   Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
->>   sending VIRTIO_BLK_T_FLUSH commands.
->>
-> [...]
->
-> In my opinion, this change should probably be something more like a
-> non-normative comment, along the lines of "blk_size is often the
-> logical block size of the storage medium", without changing the
-> existing meaning from previous spec versions. If there is a desire to
-> introduce a hard requirement for logical-block-aligned I/O requests,
-> that seems like it would have to be a new field and/or feature bit.
-
-I believe we can use the existing VIRTIO_BLK_F_BLK_SIZE feature.
-
-This patch makes the relationship between blk_size field and the 
-smallest addressable unit (logical block) for READ/WRITE operations clear.
-
->
-> Thanks,
-> -- Daniel
---------------MIFCgvRqhTe8CcUZx9fSnSbY
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-<!DOCTYPE html><html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body>
-    <p>Hi Daniel,<br>
-    </p>
-    <div class="moz-cite-prefix">On 25/09/2024 23:57, Daniel Verkamp
-      wrote:<br>
-    </div>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">On Wed, Sep 25, 2024 at 8:05 AM Max Gurtovoy <a class="moz-txt-link-rfc2396E" href="mailto:mgurtovoy@nvidia.com">&lt;mgurtovoy@nvidia.com&gt;</a> wrote:
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre">
-This field is only valid when the VIRTIO_BLK_F_BLK_SIZE feature bit is
-set.
-
-The blk_size field represents the smallest addressable unit of data that
-can be read from or written to the device. It is always a power of two
-and typically ranges from 512 bytes to larger values such as 4 KB.
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">
-I agree that this is what the blk_size field probably *should* have
-meant (matching other storage protocols like ATA, SCSI, NVMe, ...),
-but I believe rewriting the spec like this changes the meaning of the
-blk_size field in an incompatible way.</pre>
-    </blockquote>
-    <p>I believe that this is more of a clarification than a re-write.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-Previously, blk_size was described as the &quot;optimal&quot; sector size, so it
-seems clear that the driver is still allowed to send requests that are
-not aligned to blk_size (&quot;awareness of the correct value can affect
-performance&quot; but no mention of correctness). A device may need to do
-extra work to support this, of course, such as turning an unaligned
-write into a read-modify-write sequence if the underlying storage
-device doesn't support such an access directly, but such requests are
-still valid. It's also perfectly fine for a driver to ignore
-device-offered features like VIRTIO_BLK_F_BLK_SIZE and still operate
-correctly.
-</pre>
-    </blockquote>
-    <p><span class="fontstyle0">A device should report its block size
-        (logical) using the VIRTIO_BLK_F_BLK_SIZE feature. For legacy
-        devices that don't report this feature, Linux assumes a 512-byte
-        block size.<br>
-      </span></p>
-    <p><span class="fontstyle0">Drivers should not ignore this feature
-        when it's offered by the device. It's crucial for correct
-        operation IMO.</span></p>
-    <p><span class="fontstyle0">The statement &quot;driver is still allowed
-        to send requests that are not aligned to blk_size&quot; needs
-        explicit clarification in the spec.</span></p>
-    <p><span class="fontstyle0">From my understanding of the spec, the
-        driver is not allowed to do so (otherwise error will be returned
-        or the behavior is undefined).<br>
-      </span></p>
-    <p></p>
-    <p>In Linux, the reported blk_size is used to set
-      logical_block_size, while <span class="fontstyle0">physical_block_exp
-        is used to calculate the physical_block_size.</span></p>
-    <p>Regarding the specification statement: &quot;This does not affect the
-      units used in the protocol (always 512 bytes)&quot;:</p>
-    This likely refers to how certain fields in the virtio-blk protocol
-    are expressed, not the actual logical block size used for I/O
-    operations. For example: capacity reporting, max_discard_sectors and
-    Other fields that are expressed in 512 byte units. <br>
-    <p> </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre">Linux/Windows systems typically use 512-byte/4-KB block sizes.
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">
-While probably true, this doesn't really have anything to do with the
-change (and the logical block size is a property of the storage medium
-and controller, not anything to do with the operating system).</pre>
-    </blockquote>
-    <p>Please ignore it. I'll remove this from v2.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre">This description provides clarity on the constraints of the blk_size
-field.
-
-Signed-off-by: Max Gurtovoy <a class="moz-txt-link-rfc2396E" href="mailto:mgurtovoy@nvidia.com">&lt;mgurtovoy@nvidia.com&gt;</a>
----
- device-types/blk/description.tex | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
-index 2712ada..88a7591 100644
---- a/device-types/blk/description.tex
-+++ b/device-types/blk/description.tex
-@@ -3,7 +3,10 @@ \section{Block Device}\label{sec:Device Types / Block Device}
- The virtio block device is a simple virtual block device (ie.
- disk). Read and write requests (and other exotic requests) are
- placed in one of its queues, and serviced (probably out of order) by the
--device except where noted.
-+device except where noted. Each block device consists of a sequence of logical
-+blocks. A logical block represents the smallest addressable unit of data that
-+can be read from or written to the device. The logical block size is always a
-+power of two. Logical block sizes may be 512 bytes, 1KB, 2KB, 4KB, 8KB, etc.
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">
-Does this imply that a device may return an error for a request where
-the sector or num_sectors fields are not aligned to the blk_size? If
-so, it should be called out as a more explicit normative requirement,
-but that would definitely be an incompatible change.</pre>
-    </blockquote>
-    <p>As mentioned, the logical block size, such as 512 bytes, defines
-      the smallest addressable unit for I/O operations on the storage
-      device.<br>
-      This has important implications for I/O requests:<br>
-      1. Minimum I/O size: You cannot send I/O requests smaller than the
-      logical block size. For example, with a 512-byte logical block
-      size, requests of 128 bytes are not valid.<br>
-      2. I/O alignment: All I/O requests must be aligned to the logical
-      block size. This means the target start address (on the media
-      device) of the I/O must be a multiple of the logical block size
-      (the expressed units in the spec are not relevant).<br>
-      3. I/O size granularity: The size of I/O requests must be a
-      multiple of the logical block size. For a 512-byte logical block
-      size, valid I/O sizes would be 512 bytes, 1024 bytes, 1536 bytes,
-      and so on.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-The &quot;smallest addressable unit&quot; wording is also more confusing than
-clarifying here, since in virtio-blk, the &quot;smallest addressable unit&quot;
-is always 512 bytes, regardless of blk_size (even if a change like
-this would enforce limits on the sector values that would actually be
-allowed, it would still be possible to create a request that refers to
-a smaller unit than blk_size, unlike other storage protocols where
-logical block size changes the multiplier of the address, making it
-impossible to address smaller units).</pre>
-    </blockquote>
-    <p>Can you please point me to the place in spec that explicitly say
-      that &quot;<span style="white-space: pre-wrap">in virtio-blk, the smallest addressable unit </span><span style="white-space: pre-wrap">is always 512 bytes, regardless of blk_size&quot; ?</span></p>
-    <p>I didn't find it in the spec and I don't agree with this call if
-      it is implicit.</p>
-    <p>The implementation of the Linux kernel driver isn't implemented
-      in this manner as well.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre"> \subsection{Device ID}\label{sec:Device Types / Block Device / Device ID}
-   2
-@@ -135,6 +138,9 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
- present. The availability of the others all depend on various feature
- bits as indicated above.
-
-+The field \field{blk_size} exists only if VIRTIO_BLK_F_BLK_SIZE is set. This field
-+reports the logical block size of the device, expressed in bytes.
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">
-Not a new problem with this change (see another example right below),
-but &quot;set&quot; is unclear - does that mean it is present if the device
-offered the feature, or only if the driver also accepted it?</pre>
-    </blockquote>
-    <p>I just followed the spec wording.</p>
-    <p>I meant to say &quot;<span style="white-space: pre-wrap">The field \field{blk_size} exists only if VIRTIO_BLK_F_BLK_SIZE is offered by the device.</span></p>
-    <p>I can change it in v2.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre"> The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This field specifies
- the number of queues.
-
-@@ -228,7 +234,7 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
- \item The device size can be read from \field{capacity}.
-
- \item If the VIRTIO_BLK_F_BLK_SIZE feature is negotiated,
--  \field{blk_size} can be read to determine the optimal sector size
-+  \field{blk_size} can be read to determine the logical block size
-   for the driver to use. This does not affect the units used in
-   the protocol (always 512 bytes), but awareness of the correct
-   value can affect performance.
-@@ -282,6 +288,12 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
-
- \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
-
-+Drivers MUST negotiate VIRTIO_BLK_F_BLK_SIZE if the feature is offered by the
-+device.
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">
-Why is this a MUST? This is also an incompatible change since there
-was no such requirement before, and drivers are free to ignore
-features they don't care about.</pre>
-    </blockquote>
-    <p>I can say SHOULD, but then the driver that is ignoring this
-      feature may guess/assume the logical block size and it can be
-      wrong.</p>
-    <p>This may lead to an undefined behavior.</p>
-    <p>We do it for legacy devices that don't offer this feature,
-      because this is the best we can do.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-</pre>
-      <blockquote type="cite">
-        <pre wrap="" class="moz-quote-pre">+If the VIRTIO_BLK_F_BLK_SIZE feature is not offered by the device, then drivers
-+MAY assume that the logical block size is 512 bytes.
-+
- Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
- sending VIRTIO_BLK_T_FLUSH commands.
-
-</pre>
-      </blockquote>
-      <pre wrap="" class="moz-quote-pre">[...]
-
-In my opinion, this change should probably be something more like a
-non-normative comment, along the lines of &quot;blk_size is often the
-logical block size of the storage medium&quot;, without changing the
-existing meaning from previous spec versions. If there is a desire to
-introduce a hard requirement for logical-block-aligned I/O requests,
-that seems like it would have to be a new field and/or feature bit.</pre>
-    </blockquote>
-    <p>I believe we can use the existing <span class="fontstyle0">VIRTIO_BLK_F_BLK_SIZE</span>
-      feature.<br>
-    </p>
-    <p>This patch makes the relationship between blk_size field and the
-      smallest addressable unit (logical block) for READ/WRITE
-      operations clear.<br>
-    </p>
-    <blockquote type="cite" cite="mid:CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com">
-      <pre wrap="" class="moz-quote-pre">
-
-Thanks,
--- Daniel
-</pre>
-    </blockquote>
-  </body>
-</html>
-
---------------MIFCgvRqhTe8CcUZx9fSnSbY--
+--=-oj8Z86FuLUB16F3WpaXP--
