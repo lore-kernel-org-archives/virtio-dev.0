@@ -1,221 +1,103 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBAFE182C5
-	for <virtio-dev@lists.linux.dev>; Tue,  8 Oct 2024 02:15:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8695213EFC
+	for <virtio-dev@lists.linux.dev>; Tue,  8 Oct 2024 20:09:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728353716; cv=none; b=bcNXp3hmvp6Z+4X4Lbfv/zJZn/ZOin1D4C2JjyOX01+uqbOjvlsb+NiTxGBpQEZk50KFaPX3TJCVCbgWEpOkolAVOGwnRqLlFtSqSml/G1qu83MErF7tufudTGK+s8jxWJQde0c1wIu7sY2ofxVkoXxSMe6+sVAPgWXBjgvv0TY=
+	t=1728418189; cv=none; b=F1ekm0umg+qFZGkRu4fJ8zcSnohBHVC9UuP0w2MMEcNbTZmNqjowFVFclffZubaInt6ughcuSOrXozqOXZcuF8+NE1O7X+Oftr/pLQNLK9DHToZQY/KeLTaXc8kNMNspPJuoW7B/oLf4Th+KVT5dAwiStYg3zQAIRQ17rxim+n0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728353716; c=relaxed/simple;
-	bh=vsZQK+8MtGo/bpXC5EnzfEllcfJ1/Dm6odiVEfnznGM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QkF8CWy3/L07Xmm/rQ6DF02gm4fKj487zbdaFV45Lu7Z8fQ2nFN7ECif+TxRIPFQH4Th9XuEp/8YkQntDfmf/uJUsSCHvODbtx7AKTh+FD0+BKHW/+p4XxuRm/Q7bF3rRUBq6xnOdtYFhQtePYiwyaO2eD7tp/PPNKA4XyEcpWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=iizCd7sE; arc=none smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1728418189; c=relaxed/simple;
+	bh=/Eo5GR3F2EuVxfpd26kcMlFXxmpNRe5glMFWaKdfHgU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KI8O/PabNSpgGipGv82tmV+Vb4uevxyyYklfL2bxwEiYhFcAmYwTUxgPHX1JpFRS7+Az4MnEPkoZwOMxmeDw/DrxNc+tQQddFuJy47emBiWNYlHlHSb2EOpRzuhtl1yRK0mnquMxk+YJAlrZmdDXiuI1VSD50gbPmt9HYit2j4E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=aJSASDvH; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iizCd7sE"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a995a0fc401so15789066b.2
-        for <virtio-dev@lists.linux.dev>; Mon, 07 Oct 2024 19:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1728353713; x=1728958513; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RekqTme8wdJ4AVUTH9HdSV0fpbAq2HmemVWIdGYXdHc=;
-        b=iizCd7sEHa78paRM88h2CKay/UuCPfaFXhcRrzOeYpQVJL+B+VYDngbxOTSycBzOxm
-         57JjonOPteMFAHdCWQquM44iq/FZiQbf4wtI607YXyw89H0tIwjgnybgADh68cdQxgHD
-         y3uEgD/uR4SHsq8lDknCR045rtiig971P4CPc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728353713; x=1728958513;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RekqTme8wdJ4AVUTH9HdSV0fpbAq2HmemVWIdGYXdHc=;
-        b=D2WS3F/CG68iSMFY2RMRVr3uODCD8iM04M7mgB/hL2Y1OWKMwY5q7riAEe8gwC+RMn
-         Y77cUXZQZl/HdPX+YFIskXySkp4dooJ9hQrPgaMwMewbilkk6aIUysE9gE8bIq3oeUoT
-         KocyyxQLe76CS64+/grfkNIIL8KIs1ssI7VTIQeHZQdd5RbB9dzElPrxmrVsVFf3vbpl
-         XQwHkF1t6a9Nxoo5bPPoW7ld6DRSx3sssyp/jvfTvuAf5UiLkvg0YVyH6hlujz8ZEYZs
-         LoV7tdvucxUm4OTaCr8rga6Evq6oEvuuEQYGfvuZPbPeIjJF1P0Hf+O/1Vns0ayiiB0y
-         oLyw==
-X-Forwarded-Encrypted: i=1; AJvYcCXhEe9ysFfaBy97qZQF11i385WbFCshUOHIA1Yo2wmnf54wegt1N8D/yhje6OG7bM1Kp25XzQQLZeOX@lists.linux.dev
-X-Gm-Message-State: AOJu0YzGKznDPnIMfAZe3WvZ9xdNQK5qJDBEOUshttlQNiIMTz9Kuf7j
-	KgTDaYOUE5+ZtI+WjMpAAc39oR/n8lOLLBs0qz1IWjexN8HP/xwJzgWs80nBg7Pcy0Zf5+cJpx8
-	=
-X-Google-Smtp-Source: AGHT+IFMhV+NuglQNE/oNL+SRDRe1dqOL0GPTAADqdJuhxQnP1vaMt7FjUddeMNPNkzCxVf1af5I6g==
-X-Received: by 2002:a17:906:29ca:b0:a99:408c:6a0f with SMTP id a640c23a62f3a-a99408c6b71mr351182266b.5.1728353712824;
-        Mon, 07 Oct 2024 19:15:12 -0700 (PDT)
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com. [209.85.218.41])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a996ebc30d6sm37403566b.101.2024.10.07.19.15.10
-        for <virtio-dev@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Oct 2024 19:15:11 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a9950d27234so254749766b.1
-        for <virtio-dev@lists.linux.dev>; Mon, 07 Oct 2024 19:15:10 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWRm1f6+BPUYSb1FGlDErV4FOlhspoymDVw7/RYDYf/9i5wRYl1hRYLPESOrFhH1rPAFzIIl/ck4F6M@lists.linux.dev
-X-Received: by 2002:a17:907:7fa6:b0:a99:61d1:34a2 with SMTP id
- a640c23a62f3a-a9961d14dbcmr257684466b.37.1728353710341; Mon, 07 Oct 2024
- 19:15:10 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="aJSASDvH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1728418186;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/Eo5GR3F2EuVxfpd26kcMlFXxmpNRe5glMFWaKdfHgU=;
+	b=aJSASDvHbbk9EioX8Wdpc9AZRrvw7kc2h7ZNg7klmC2pTYeKNtNYzC1hU/rErkf56kkPaW
+	ijsthbsoyWcOboY4KhOf6GbmE3xIOHc5fEG54f9wsBYGVQDelna0vtZBhIKItJd9DWTyj2
+	pJfZUjraCMMPxxq6TInyWZxE/FSocBA=
+Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-219-QKPEucZ-MVazibRosLH3Fg-1; Tue,
+ 08 Oct 2024 16:09:43 -0400
+X-MC-Unique: QKPEucZ-MVazibRosLH3Fg-1
+Received: from mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.15])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 15EC61956088;
+	Tue,  8 Oct 2024 20:09:42 +0000 (UTC)
+Received: from localhost (unknown [10.2.17.11])
+	by mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 1C7341956088;
+	Tue,  8 Oct 2024 20:09:40 +0000 (UTC)
+Date: Tue, 8 Oct 2024 16:09:34 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+To: Daniel Verkamp <dverkamp@chromium.org>
+Cc: Max Gurtovoy <mgurtovoy@nvidia.com>, mst@redhat.com,
+	virtualization@lists.linux-foundation.org,
+	virtio-dev@lists.linux.dev, oren@nvidia.com, parav@nvidia.com
+Subject: Re: [PATCH 1/1] virtio-blk: Add description for blk_size field
+Message-ID: <20241008200934.GA22682@fedora.redhat.com>
+References: <20240925145228.27953-1-mgurtovoy@nvidia.com>
+ <CABVzXAntBt+5L4a1ntud_7j_EHiB4yG6FuskNaPBirOfLJ7i6w@mail.gmail.com>
+ <ca954af2-4c61-41f5-8cf0-69a1233704ba@nvidia.com>
+ <CABVzXAma4T+=meTSRNKhq70w4imc=A5imy2zofX2ndJz-XVByg@mail.gmail.com>
+ <adf195c4-6d7e-47ff-ac62-dc4c0f463f21@nvidia.com>
+ <CABVzXA=wov8OgADXbDiVVnhncc=zgET4MAGd3H1pr26XS38JBw@mail.gmail.com>
+ <CABVzXAmxuVngKjNvc9AsnkuNcOK+7JeEuBE9CDaMxAA=b3f=fw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241006165609.34953-1-mgurtovoy@nvidia.com>
-In-Reply-To: <20241006165609.34953-1-mgurtovoy@nvidia.com>
-From: Daniel Verkamp <dverkamp@chromium.org>
-Date: Mon, 7 Oct 2024 19:14:44 -0700
-X-Gmail-Original-Message-ID: <CABVzXAkVOV-nYno+oi_KJhaD1cCZMNo6FtoPdHPfUauvnaAw7w@mail.gmail.com>
-Message-ID: <CABVzXAkVOV-nYno+oi_KJhaD1cCZMNo6FtoPdHPfUauvnaAw7w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] virtio-blk: Add description for blk_size field
-To: Max Gurtovoy <mgurtovoy@nvidia.com>
-Cc: mst@redhat.com, virtualization@lists.linux-foundation.org, 
-	stefanha@redhat.com, virtio-dev@lists.linux.dev, oren@nvidia.com, 
-	parav@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="M2LY8j4i0WTGHdhM"
+Content-Disposition: inline
+In-Reply-To: <CABVzXAmxuVngKjNvc9AsnkuNcOK+7JeEuBE9CDaMxAA=b3f=fw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.15
 
-On Sun, Oct 6, 2024 at 9:56=E2=80=AFAM Max Gurtovoy <mgurtovoy@nvidia.com> =
-wrote:
->
-> This field is only valid when the VIRTIO_BLK_F_BLK_SIZE feature bit is
-> offered by the device.
->
-> The blk_size field actually represents the logical block size of the
-> device. It is always a power of two and typically ranges from 512 bytes
-> to larger values such as 4 KB.
->
-> Add description for this field to provide clarity on its constraints.
->
-> Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-> ---
->
-> changes from V1:
->  - Addressed Stefan's and Daniel's comments:
->        1. use SHOULD instead of MUST
->        2. Add a note that devices may return IOERR upon misaligned IO
->  - Add a note that devices may return IOERR if IO size is not following
->    the block size granularity.
-> ---
->  device-types/blk/description.tex | 34 ++++++++++++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
->
-> diff --git a/device-types/blk/description.tex b/device-types/blk/descript=
-ion.tex
-> index 2712ada..77eed80 100644
-> --- a/device-types/blk/description.tex
-> +++ b/device-types/blk/description.tex
-> @@ -135,6 +135,9 @@ \subsection{Device configuration layout}\label{sec:De=
-vice Types / Block Device /
->  present. The availability of the others all depend on various feature
->  bits as indicated above.
->
-> +The field \field{blk_size} exists only if VIRTIO_BLK_F_BLK_SIZE is offer=
-ed by the device.
-> +This field reports the block size of the device, expressed in bytes.
-> +
->  The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This=
- field specifies
->  the number of queues.
->
-> @@ -282,6 +285,13 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->
->  \drivernormative{\subsubsection}{Device Initialization}{Device Types / B=
-lock Device / Device Initialization}
->
-> +Drivers SHOULD negotiate VIRTIO_BLK_F_BLK_SIZE if the feature is offered=
- by the
-> +device. When negotiated, drivers SHOULD interpret the \field{blk_size} a=
-s the
-> +logical block size.
-> +
-> +If the VIRTIO_BLK_F_BLK_SIZE feature is not offered by the device, then =
-drivers
-> +MAY assume that the logical block size is 512 bytes.
-> +
->  Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
->  sending VIRTIO_BLK_T_FLUSH commands.
->
-> @@ -319,6 +329,10 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->
->  \devicenormative{\subsubsection}{Device Initialization}{Device Types / B=
-lock Device / Device Initialization}
->
-> +Devices SHOULD always offer VIRTIO_BLK_F_BLK_SIZE feature. When this fea=
-ture is
-> +offered, devices MUST initialize \field{blk_size} to a power of two grea=
-ter
-> +than or equal to 512.
-> +
->  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
->  if they offer VIRTIO_BLK_F_CONFIG_WCE.
->
-> @@ -879,6 +893,14 @@ \subsection{Device Operation}\label{sec:Device Types=
- / Block Device / Device Ope
->  The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BL=
-K_T_IN
->  and VIRTIO_BLK_T_OUT requests.
->
-> +The length of \field{data} SHOULD be a multiple of \field{blk_size} for =
-VIRTIO_BLK_T_IN
-> +and VIRTIO_BLK_T_OUT requests, when the VIRTIO_BLK_F_BLK_SIZE feature ha=
-s been
-> +offered by the device.
-> +
-> +The value of \field{sector} (multiplied by 512) SHOULD be aligned with
-> +\field{blk_size} for VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests, when=
- the
-> +VIRTIO_BLK_F_BLK_SIZE feature has been offered by the device.
 
-Instead of "aligned", perhaps "SHOULD be a multiple of
-\field{blk_size}" to be consistent with existing spec wording like
-"MUST be a multiple of 512 bytes".
+--M2LY8j4i0WTGHdhM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->  The length of \field{data} MUST be a multiple of the size of struct
->  virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
->  VIRTIO_BLK_T_SECURE_ERASE and VIRTIO_BLK_T_WRITE_ZEROES requests.
-> @@ -966,6 +988,18 @@ \subsection{Device Operation}\label{sec:Device Types=
- / Block Device / Device Ope
->  for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST =
-NOT
->  write any data.
->
-> +A device MAY set the \field{status} to VIRTIO_BLK_S_IOERR for
-> +VIRTIO_BLK_T_IN or VIRTIO_BLK_T_OUT requests if the requested
-> +\field{sector} (multiplied by 512) is not aligned with the device's
-> +\field{blk_size}, when the VIRTIO_BLK_F_BLK_SIZE feature has been offere=
-d by
-> +the device.
-> +
-> +A device MAY set the \field{status} to VIRTIO_BLK_S_IOERR for
-> +VIRTIO_BLK_T_IN or VIRTIO_BLK_T_OUT requests if the length of the
-> +requested \field{data} is not an integer multiple of the device's
-> +\field{blk_size}, when the VIRTIO_BLK_F_BLK_SIZE feature has been offere=
-d by
-> +the device.
-> +
->  The device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP for
->  discard, secure erase and write zeroes commands if any unknown flag is s=
-et.
->  Furthermore, the device MUST set the \field{status} byte to
-> --
-> 2.18.1
->
+On Wed, Oct 02, 2024 at 04:56:10PM -0700, Daniel Verkamp wrote:
+> (Perhaps u-boot's driver does not work with the QEMU's virtio-blk
+> device with certain storage configurations, per Stefan's note, but
+> that is again just one device implementation.)
 
-This all looks reasonable to me, so Reviewed-by: Daniel Verkamp
-<dverkamp@chromium.org> if you'd like.
+Yes, IOERR only happens under certain conditions: when --device
+virtio-blk-pci,logical_block_size=<size> is configured. When that's not
+the case, QEMU buffers as necessary to adjust for guest block size vs
+host block size differences without errors.
 
-One other thought: if a device truly can't handle misaligned I/O
-requests, it could also choose to fail at feature negotiation time if
-it offers VIRTIO_BLK_F_BLK_SIZE and the driver does not accept it. I
-am not sure this is in the spirit of the existing general section
-"Device Requirements: Feature Bits" (it says "any valid subset of
-features", but maybe your device would consider not negotiating
-VIRTIO_BLK_F_BLK_SIZE to be an invalid subset of features?)
+Stefan
 
-Thanks,
--- Daniel
+--M2LY8j4i0WTGHdhM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmcFkX4ACgkQnKSrs4Gr
+c8g8Nwf+NxswDd6552kXJThCUN341HElsAmWxGplhSgPyYC52apw3sMVP2t/ML5L
+QKSi+eJt91MGD/yJjDgD6uA/YFgN4sLEoEP2FqAKD+PFQzkPr23UWQl4hkhUwPxD
+azluLJqTxLcbLBxR+/wibfFPkRo+c5TzKtsbDAk5fpbmc4/FMB0c/nWUXVuge7Oz
+lumhBipb+ia4p76sOZEQuU5GBYgsLEbwaTUjMd3Rvzh3CrY6Bk7S6GOVpgmsKQ3N
+znKsBK0ico0Nf7aMp/olbJtZ4aIoqjA4pFemaYeqriMnnp5Qpe2Q0St/hoRSi2J0
+WrK8gIJ5WwiyTWDZMAC/v4jjvSG4Zw==
+=WbGt
+-----END PGP SIGNATURE-----
+
+--M2LY8j4i0WTGHdhM--
+
