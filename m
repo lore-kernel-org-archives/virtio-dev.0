@@ -1,36 +1,36 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F275231C9A;
-	Mon, 14 Oct 2024 07:25:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C05646EB7D;
+	Sat, 19 Oct 2024 17:49:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728890751; cv=none; b=j/c/HWYtw2q1FPkxaT82Vfq4FKWI9mIrlTq36Twtr7b3/IQOB7ybZ08UUEvW2C4OjRkJw1aw7XE8QA4sxPhWuKUH9b6LWtTlyQAF0DkI1HO0GTRgYycjvNzeETVzLqHtpnFPHgJgqX/mJ7TB9pHfgFeHe/fTZ+RvqZfGEmgIqms=
+	t=1729360174; cv=none; b=obqElISNSfFo7s2kOQvNsWirM/jy5r0CBDJbpbMN+N/XvOX/Q6yt9w2g4yta7K41xy23O7e/qS0jJJtV4HaDVlCD0+IbAT99JpB3x1zcd/sixLLDTdSx+usQ0peEB39BXZaZc8iAoCWXAov5aF3sEr23n30YwMyleIA0PLd8Z8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728890751; c=relaxed/simple;
-	bh=SOxJd0iekhVHcfRMlYrH/homWBB/Rz/xV9TVhOoMg6E=;
+	s=arc-20240116; t=1729360174; c=relaxed/simple;
+	bh=w8Y5lpqYM3xfVxbgiR+/LqeVzQufssW/kjhGjN5kTC0=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=eqhPnLL2jRJHGCHZ/EE0Sg72mqCV6uwXTDrtZOBoOhT2MqRH6uMj0ML1eQ+JJRnqyWV/jXcnVx6QMzlg4qDjtgPCfQ3H+WZsT+G0EqMZXGzs5XKO9XDedf5mKTm9EMCUNZeiBqXOL4k8FbOQTMbyMtES9zkJNbWQC7nK0kU845o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=su2kG2b/; arc=none smtp.client-ip=90.155.50.34
+	 Content-Type:MIME-Version; b=Lt42qET9YOpEfzux67MDmk3eCHceAompjQMf2fC3kfJlsyQStDUnGSyBNy7OKPVoDuAhCbQ+Je7NOWuDbXw9mSkpVaYN+7F5rjJWr119Tc7uOUmMGubCDacWBva3NIBtpIhEMkueavr1QaEeW7VzOZXp3ou2/T3DEka2ft9PXGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ZS8ai37j; arc=none smtp.client-ip=90.155.50.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="su2kG2b/"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ZS8ai37j"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
 	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=SOxJd0iekhVHcfRMlYrH/homWBB/Rz/xV9TVhOoMg6E=; b=su2kG2b/HnRiVNEamuH3seP10/
-	cKojgduZyU0mk1237qMmDUXDYkxfs0hCrj+SZwm5InRKMxl7gX1jtm46bCEnO6MFdkge9kJ1TClRe
-	AvQueZ1enCw4NvbdfnsO3vE0fxU0vVjyF9YaU+05YW9DKD4aLmV5mLIRuisJE5QtNUJtPh0baI7np
-	2sW3bQF6OQuTtdHKOtCFuwiKjxirJ+QePJl/04SUOGqFMbQW7t4AHbecRaH6dFPFgSFEwKoqoyXbY
-	vGo5lnbZHiKCRZh2ZkLEtQ7SlU9xhwCTaCeJugOaz+MtI7jdPW9tHO6lWNb0g2Ohs4NeUoRcUxYB1
-	vC6AcKYg==;
-Received: from [2001:8b0:10b:5:1e7f:3d4d:9ed3:a2c] (helo=u3832b3a9db3152.ant.amazon.com)
+	bh=w8Y5lpqYM3xfVxbgiR+/LqeVzQufssW/kjhGjN5kTC0=; b=ZS8ai37j6ycdYA+mL2u3f8C1eX
+	c73kczc8wEvl3wL7ot/Xby6RVXdkkg1+ynLPcXq1cK8ElWxTEtJj6gcZWhq2bO6x3BcZEc8opai8u
+	pWroDDNYdJ/+wFvDHVSjhBp5bREQ/5Fu944C5FOLdAy2Wwm1H6KW14zisBzpjbd/b3PVAjB1Z/LPz
+	0BxTDGS35jOYcewB9DEz/cJdSiKHH/VZhdVXZSyEfz72oqtWicQuZwMZxfF2mgnUvimgOkJ7kryq7
+	MEtA1mqZ5rhOqXC3mg0Mx8MseWfPmYne6Xh14fjSsxuUfV0l3WyoacQPaBJ3xMbTxBzW9dFF7H/XY
+	Ogwxh+Cg==;
+Received: from [2001:8b0:10b:5:d113:3be8:859d:21d1] (helo=u3832b3a9db3152.ant.amazon.com)
 	by casper.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1t0FSR-00000000wSs-3Dvm;
-	Mon, 14 Oct 2024 07:25:36 +0000
-Message-ID: <c20d5f27c9106f3cb49e2d8467ade680f0092f91.camel@infradead.org>
+	id 1t2DZs-0000000EVy8-2JIh;
+	Sat, 19 Oct 2024 17:49:25 +0000
+Message-ID: <c1eb33ffd66d45af77dea58db8bdca3dcd2468c4.camel@infradead.org>
 Subject: Re: [PATCH net-next v7] ptp: Add support for the AMZNC10C 'vmclock'
  device
 From: David Woodhouse <dwmw2@infradead.org>
@@ -50,12 +50,14 @@ Cc: Richard Cochran <richardcochran@gmail.com>, Peter Hilber
  <daniel.lezcano@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>,
  Alexandre Belloni <alexandre.belloni@bootlin.com>,  qemu-devel
  <qemu-devel@nongnu.org>, Simon Horman <horms@kernel.org>
-Date: Mon, 14 Oct 2024 08:25:35 +0100
-In-Reply-To: <20241009173253.5eb545db@kernel.org>
+Date: Sat, 19 Oct 2024 18:49:24 +0100
+In-Reply-To: <20241014131238.405c1e58@kernel.org>
 References: <78969a39b51ec00e85551b752767be65f6794b46.camel@infradead.org>
 	 <20241009173253.5eb545db@kernel.org>
+	 <c20d5f27c9106f3cb49e2d8467ade680f0092f91.camel@infradead.org>
+	 <20241014131238.405c1e58@kernel.org>
 Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-rliCUXv5tc2GYB9xfb71"
+	boundary="=-4uhuXRaHDvHj0yGejv4T"
 User-Agent: Evolution 3.44.4-0ubuntu2 
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
@@ -66,26 +68,44 @@ MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
 
---=-rliCUXv5tc2GYB9xfb71
+--=-4uhuXRaHDvHj0yGejv4T
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2024-10-09 at 17:32 -0700, Jakub Kicinski wrote:
-> On Sun, 06 Oct 2024 08:17:58 +0100 David Woodhouse wrote:
-> > +config PTP_1588_CLOCK_VMCLOCK
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tristate "Virtual machine PT=
-P clock"
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0depends on X86_TSC || ARM_AR=
-CH_TIMER
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0depends on PTP_1588_CLOCK &&=
- ACPI && ARCH_SUPPORTS_INT128
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0default y
+On Mon, 2024-10-14 at 13:12 -0700, Jakub Kicinski wrote:
+> On Mon, 14 Oct 2024 08:25:35 +0100 David Woodhouse wrote:
+> > On Wed, 2024-10-09 at 17:32 -0700, Jakub Kicinski wrote:
+> > > On Sun, 06 Oct 2024 08:17:58 +0100 David Woodhouse wrote:=C2=A0=20
+> > > > +config PTP_1588_CLOCK_VMCLOCK
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tristate "Virtual machin=
+e PTP clock"
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0depends on X86_TSC || AR=
+M_ARCH_TIMER
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0depends on PTP_1588_CLOC=
+K && ACPI && ARCH_SUPPORTS_INT128
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0default y=C2=A0=20
+> > >=20
+> > > Why default to enabled? Linus will not be happy..=C2=A0=20
+> >=20
+> > Want an incremental patch to change that?
 >=20
-> Why default to enabled? Linus will not be happy..
+> Yes please and thank you! We gotta straighten it out before=20
+> the merge window.
 
-Want an incremental patch to change that?
+Hm, as I (finally) come to do that, I realise that many of the others
+defined in drivers/ptp/Kconfig are also 'default y'. Which is only
+really 'default PTP_1588_CLOCK' in practice since they all depend on
+that.
 
---=-rliCUXv5tc2GYB9xfb71
+Most importantly, PTP_1588_CLOCK_KVM is 'default y'. And that one is
+fundamentally broken (at least in the presence of live migration if
+guests care about their clock suddenly being wrong) which is why it's
+being superseded by the new VMCLOCK thing. We absolutely don't want to
+leave the _KVM one enabled by default and not its _VMCLOCK replacement.
+
+Please advise... I suspect the best answer is to leave it as it is?=20
+
+--=-4uhuXRaHDvHj0yGejv4T
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -177,24 +197,24 @@ IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
 dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
 NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
 xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQxMDE0MDcyNTM1WjAvBgkqhkiG9w0BCQQxIgQgc5Ka008+
-HdOFSRSQaZ2nvF5TO4jBxX5ckp/d+vxGIOUwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQxMDE5MTc0OTI0WjAvBgkqhkiG9w0BCQQxIgQgRq4iA97q
+HGX11+qQ5OSyI2X2cUHvQlfkKG48HtzJdvwwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
 A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
 dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
 DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
 MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
 Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgA6STd2e0FwyM4UR9Y65KQUlpSyR7y5jl/X
-MFZKEI93zOw26Xt/5efZhwGd8hARu9/8X2ZQhq0hD0DHMZM3bbaRzM6F4bjX2f3zvotfnq5cOil2
-aB3SazTOpW+c6Fm3USqN9P9hMyLs0OWjEI1aBfo0PM2uKEfWdFN0nPY30+l3OMzeZoi7pllZxI6M
-0v3Rccb4zayD+2SXt61N/QMSlhturbOQ/7FmSAvSwv39jHoFcGs8KiEGfU2FHMPvwlXGz4tcg56x
-DSZsqPCh28qUbp6ERTehw33omdrvpyS41qB4hRzWDqUdYUosY4Lyncw50cp+0acDBjAvEuXpk1zf
-0rmmpnZkdyBSlfoL814odTSGkUlCcmRZeQEQ8p6ntDV5jjFzVcOikFHREumWbdtLpuRFLh+ke7fX
-r7Mw7Mr7cpdTnTrsCUnTFFINnkOGLMMmZ60wJjpFcFNwGw88lkO8pUrugYAfiLt5+7UrtOhaEZmd
-154Cvln/D0u8LEClXkV0sMErZ5EzVQ71O5GfWpNeMn7Owtn18rvTCwe3HgVKnaIBBmi+vt8qymvy
-5n+/uf7tOyKLfVm+HyuEtIHtNNkLv2AomjiFBQcfYs+mPbe9SQjmDE3dtiTuct4k9xHbC1lUj/OB
-Olur8vdu+xeKD64GBwKuOOqAVx3YqcD6z2QiEa1bgQAAAAAAAA==
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgAOmNqCusnryCeHJepho6ua5FQ4AVjBO075
+VPBF3F2tzkrlyN3h+eo6Pg3x0xwt+HAJfLQsnd1K0gl387/XhIE8ufzgPs79Zzy3Ej29fK4fffwZ
+p40cKLwTXsON4FjBwXHdop1sQLFgvylnLhFYDSXsLWs3x7rDcFpqE2sjSfHYtiJtCbtphN2UqK73
+LLIDArdHSNGs09sbsEMep2SYuVn55kYBlkz4sjpQfcO5Z8iFnKCYR6KiUfnGPgWsjxhvyYDssQX4
+iu0XpYQerb5RJTOg9spoBY+VuqFewfwjni9F82ou/IpYjao2Sv1ugBDw13LRjfmwS0G5VyLj/qfw
+ULawlK8AW7NeUe/MIvukTiLfAFsBVHLPSXsmOh6rSVVzMnmuGvep0ou6LFA1u59AxG6KlcPjfAj4
+pDsax8SnctRA0YTu9taVoDkNIAfJI5yRREOz5+XTOt3nSgqno9kpL5RqoW/wgWb6dDsYeW/vexs/
+nfRDyU3sNgyy0B7j+4MQ+syqGYBkwsF7+YR5sSsbtOUpgxe2dTZVDLWyhaJTCg31d8ISOwWGcd+B
+e7xnUS2uVC42QXFgIwTmtMblHcaq8tgbC+Q19Z+ZGBNsb+/v7r5c729PmxH2KYpiW6NCLrGFIeOn
+r3cAJRJc1a6SGg5bRcgQxQXUWiPsoXDr3ey/2Fz3JwAAAAAAAA==
 
 
---=-rliCUXv5tc2GYB9xfb71--
+--=-4uhuXRaHDvHj0yGejv4T--
