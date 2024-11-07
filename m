@@ -1,219 +1,229 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2055.outbound.protection.outlook.com [40.107.92.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C7D9149C42;
-	Sat,  2 Nov 2024 21:52:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730584363; cv=none; b=FeHv9cBB0Do0GxrZOsq9c66DvK5+/BW2qW3Jab+umdQ2hD16xVsqE3mwGWA30woQ6yH8a2Wz7TLw0a9fxJv5uKVOmr+gTL3ZJbwpT953YW9T4l7VC745TnHtBagnShYHqqNMB1Gw3DZ5MBt/jh9tjcJKftxRuzqDYpowZwPrBzI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730584363; c=relaxed/simple;
-	bh=hXNzZc3eBq1zz7CgXDoRbItbmSHgflC130bi7IRTB84=;
-	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=PAO7S7rzckvQSp4IEzRxv8ub+rTq1JJhFMpBsb9WQ6ysWw0YmihlgzKyE+k1CA7d6KUNAD1yOtRFr1CFF55lSbD062aUMuoo2SmfF8iW+Uk25D2OPoryuR22u2PUC8lokkZ90ILBzcWd+IpfvcjJ+X2QL+afq9eHk2CpbFB+MQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=MGXJoxd8; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C029B1DFE24
+	for <virtio-dev@lists.linux.dev>; Thu,  7 Nov 2024 10:51:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.55
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1730976679; cv=fail; b=cvWY605sUI8EKgzQzdkuGgnn60VAlKuDhecQ4a4KyRiLDZU1vLwrJDowk/MLUnEgDrBWAM1fmTKy4siPeGDNej1D//46nY44c0fifNNb0sayJ/LslXcNl2L6HtdEJvqUVlNjfhMnw5iwEgUAXxXjp2o2onTulqLEB94xZ1ID0LE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1730976679; c=relaxed/simple;
+	bh=pMkwXEPLCwf5KphA+q3ojGPVOrIiaY9y4Iu18bVfFj0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=iR+Vo73iyoV3ak55n67Z1J7fh8/wPMQaXYnTNbnji15uf1k6YYcMU1tCzJBhEOoI+qzkjU6ZY4+odgxHNPxTRaB8XPQ1rKlqrguPmhCLEXo6PNa2PfIwLClem1mIhUvMg+Jk1M9BKlpNk+uBzRxSWazD/8a6u/IchxCkEifUHLY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=G95JL78t; arc=fail smtp.client-ip=40.107.92.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MGXJoxd8"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:Date:Cc:To:
-	From:Subject:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=O+qYEcV6Zo/oc9EEp/w/DPcytGgJzkO9IjpgAtYj+O0=; b=MGXJoxd8P3hpfIACVYMPLRB/BZ
-	KBr1IR3xqoppaJ4XqC6y2PDPE8ZkH9XAFO/t70f/9jIghRLmuzY97PdbisawsnzrfJiBzFAbvhlNw
-	9oRT2C4JaZKrxaVbbu8ZKC/V6ZbANkPuluUGIVOtsIkcksLXapfECTDQFpKKVJD9COS0M3A2a7jVa
-	zRiF4/dT6gWGXLu+8q3ph4OaxHklFGEini5KI1boyaUsEw7DeFKu2fjGNY7ZfB6xAysTHMSF3vBoK
-	edwT9if9npd7KYn6to6slvTobNDkT7wA3j4H0LeOnCSO31yin/2glmrI8uXQxWsxKJyT+e0+AyyJh
-	zR0JmVRg==;
-Received: from [52.94.133.142] (helo=edge-m2-r1-128.e-lax51.amazon.com)
-	by casper.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1t7M2g-0000000HAoP-31ix;
-	Sat, 02 Nov 2024 21:52:24 +0000
-Message-ID: <89955b74d225129d6e3d79b53aa8d81d1b50560f.camel@infradead.org>
-Subject: [PATCH net-next] ptp: Remove 'default y' for VMCLOCK PTP device
-From: David Woodhouse <dwmw2@infradead.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Richard Cochran <richardcochran@gmail.com>, Peter Hilber
- <peter.hilber@opensynergy.com>, linux-kernel@vger.kernel.org, 
- virtualization@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-rtc@vger.kernel.org, "Ridoux, Julien" <ridouxj@amazon.com>, 
- virtio-dev@lists.linux.dev, "Luu, Ryan" <rluu@amazon.com>, "Chashper,
- David" <chashper@amazon.com>, "Mohamed Abuelfotoh, Hazem"
- <abuehaze@amazon.com>,  Paolo Abeni <pabeni@redhat.com>, "Christopher S .
- Hall" <christopher.s.hall@intel.com>, Jason Wang <jasowang@redhat.com>,
- John Stultz <jstultz@google.com>, "Michael S . Tsirkin" <mst@redhat.com>,
- netdev@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,  Thomas Gleixner
- <tglx@linutronix.de>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Marc Zyngier
- <maz@kernel.org>,  Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano
- <daniel.lezcano@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,  qemu-devel
- <qemu-devel@nongnu.org>, Simon Horman <horms@kernel.org>
-Date: Sat, 02 Nov 2024 16:52:17 -0500
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-lxjgWVl+XL9587zQso9P"
-User-Agent: Evolution 3.44.4-0ubuntu2 
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="G95JL78t"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CxIlGFQGjSMlUyrajubLjTmLJdQteEX9h8hxR92/qI0ZShdNv1+HSkJxwviG9SxjfZsa9XSu96FMB4janoxiuZnYSiW+ots7oc3JAE7wBAK4xnjf+zX/KO6XW8MPGopFDg7GJ3C2YNh3pZkUn0bFcA5MSZIZKCU3LOgkPMh+O5l5Aq19bfedzfq48IYE7jE20C4do1KSj2AorkSjRKi5zhZ7xUF7f5YND2KHYBvFSLop5JOH/BIBVWEUVGvZO5aEE6R2pg+qVU2EmLNpu+U1aw5R/VjErByDFdOL3nE757x7kVuptQc3LzPrcXEKnJ4mdkxcfzRYHkIItFnHLO2uKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C0jK5jiKMPvDKWm2KSJCplThClMbyvt6feKcJU3CQKQ=;
+ b=ag5Ya+65uDa3aRg1wnb0FmXDOn1BMFNG2YO0GdnrK5vVLJX2haA4zld1Fftli5j2FH1sZgcRHKnJGMX6yh6xId0vSzx76BniFNestLSulGtec5+G2Ibv4FARzircOC5J+AMQmp0hyefD6PtdREHrD178ZEeFsJ7gHAFqwoeJoMw5/3Eyb67KUNca09LySEv0h4cNmE0rOzsk6PgWJBqmsS4Eu9z7gUQYKKRtEA5TRgKKxY/eKuemab0Raee2EQrfhR1E70DMe1BmZU9trmUkK6MtebwwARdaoo1co/6V62BCiSnfYfYUhCmIge4800taul97E953IC+PkpMCdFWnfA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=chromium.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C0jK5jiKMPvDKWm2KSJCplThClMbyvt6feKcJU3CQKQ=;
+ b=G95JL78tNjABUwT1emNQAwCmAD1n2WwuVC/CIW/FTyqMa5CseM1GdiPxwx155rhl53yOEnMxQcTfQ/zBxJCOWJWLI2IrOFlECIShZUxRv3QdbZMJKFF36ccn7hYZApnI+cKx/20M5TfmytJZs0kgbpmY6E3M6t9l6Ew5cGv20V9hsMKKm2FIa7KzL7UmRm0V3TFEbhRKPYqIorkaKPncGLenWM5L4/BWiTz1nEJvjZguGDvFt667im0nF7k5raqxjB/AfbAc4213BFLTgAkjWo40vl2i50HmL6r1ox7cP6XJHrICZR54Bu6LH12y0mbIkbNfBJn9u0x1/qwVilhxjA==
+Received: from BN9PR03CA0988.namprd03.prod.outlook.com (2603:10b6:408:109::33)
+ by IA1PR12MB8519.namprd12.prod.outlook.com (2603:10b6:208:44c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.20; Thu, 7 Nov
+ 2024 10:51:14 +0000
+Received: from BN2PEPF00004FC1.namprd04.prod.outlook.com
+ (2603:10b6:408:109:cafe::ef) by BN9PR03CA0988.outlook.office365.com
+ (2603:10b6:408:109::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.19 via Frontend
+ Transport; Thu, 7 Nov 2024 10:51:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN2PEPF00004FC1.mail.protection.outlook.com (10.167.243.187) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8137.17 via Frontend Transport; Thu, 7 Nov 2024 10:51:14 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 7 Nov 2024
+ 02:51:06 -0800
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Thu, 7 Nov 2024 02:51:06 -0800
+Received: from r-arch-stor03.mtr.labs.mlnx (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
+ Transport; Thu, 7 Nov 2024 02:51:03 -0800
+From: Max Gurtovoy <mgurtovoy@nvidia.com>
+To: <dverkamp@chromium.org>, <mst@redhat.com>,
+	<virtualization@lists.linux-foundation.org>, <mvaralar@redhat.com>,
+	<stefanha@redhat.com>, <virtio-dev@lists.linux.dev>
+CC: <oren@nvidia.com>, <parav@nvidia.com>, <nitzanc@nvidia.com>,
+	<benwalker@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
+Subject: [PATCH v6 1/1] virtio-blk: Add description for blk_size field
+Date: Thu, 7 Nov 2024 12:51:03 +0200
+Message-ID: <20241107105103.19152-1-mgurtovoy@nvidia.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF00004FC1:EE_|IA1PR12MB8519:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4f6fb686-8ce6-4986-3559-08dcff1a19b0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|82310400026|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?vu1RuLazkE2IcDvC3216n65z4DmlZjbYFk/ZwovDkpWYvaAscOhYYMJLyLVP?=
+ =?us-ascii?Q?98wyyeAzdjnGQZSYsQ5mO4qkKTrKN/5rwtc20VKr/SRg8FQ9PLjc0S8LgzD5?=
+ =?us-ascii?Q?F3cqIjK36GfEeni+FjmsBiCaPovRtYaAHlwuBZlRe/eZmKFBc/5vjm8hZdKJ?=
+ =?us-ascii?Q?OVGPC4nVTCtzBDLbT9krNA6kM/R/6skIf8fFNxBiCiNIyY4kCrfrawTXXJ3c?=
+ =?us-ascii?Q?P16W7g66qGV/Dha2PK9W65d7NsMCFYDFuVHyRuV9qlGUOZB0tPnAxYmBdrzg?=
+ =?us-ascii?Q?ck99IAjDlQYWCga0/5N/DF1HXhSMyGN6ocRbj/Q1H1n16bwpIsjaZgwIkUQh?=
+ =?us-ascii?Q?YJ2V3DggZYFLkarVPfFmFfh0zwv+labZA9Ehy4dZ2N6vo2aygaq135BeMJR3?=
+ =?us-ascii?Q?u2DGeq+pt+2cBXXWMuDgHSpQce+4b1pm87y8FVsLxHR2BnILi8C+oXHMp4z6?=
+ =?us-ascii?Q?qB/wEDbNPRyw4MPI/EwZHiJ11GeQ1ZNWZExastm470Pkw3/I0DKQhR1jDHtt?=
+ =?us-ascii?Q?TkBrI/jssF8dl9wrN2gOYakwKy0JhRBT+TdCwlalS4RmNrEQk4lg7+QGZhbw?=
+ =?us-ascii?Q?U7qunly1dHmmH3NAM365hDiA/Tznxm27Yarhsy0L7YfL69NtZahn9ostvo4b?=
+ =?us-ascii?Q?hpKcLhwZs2BI/6DgqwSoWIqUd8WLBPjetQcH0A5ni5+HBvjHnk5bBVhLZiAn?=
+ =?us-ascii?Q?ouRXjcyKWEb4T1knd/BYtg0Fi7B96g9y9qBFPqnxdVNNDGIQ6UmBrIys5vuF?=
+ =?us-ascii?Q?VctjeZok+jTD0BmeqbCqNaj2Eb5HChasc4C/zndTzTr8kH2ViY2IEZldXU2S?=
+ =?us-ascii?Q?kYo7YbdAqc7RFtPFoL0yw4hPvpJ1kZvuz/3LISDiB4kcky8FYbhUNhZvRNMw?=
+ =?us-ascii?Q?3gfjMpQxdGUlfXP583WtghvVpPkHWiFSt9cexOCBixnJIvZ/9DubQHaASR9y?=
+ =?us-ascii?Q?411K9vPJCIZKXFzS9o2pxCpxMRESdpZ35nNJ2xl/c1X6okiVTkagbo644Cy1?=
+ =?us-ascii?Q?+C5rZ9Q7DvwQKtQ+2G58ANAigNCDupnONDGDLHa0o6GagX6iiXAh7GCN8Cb8?=
+ =?us-ascii?Q?+EG7+eeLwVSJNSl+MKeH7TsnnPzHK1+CvM/fPlatnQT95TNzFqROzkyFkm98?=
+ =?us-ascii?Q?mu90+yH7a8HXZNV0qOfPhIqeUG+4Wikpg0/Ra1s19ipXAxaO2Y9Ez25PIqQd?=
+ =?us-ascii?Q?AT1XUKh/VlLfhlhWIozkUGLh3Wuu+dYuo43rF14ea6lZ3l8hR62BySXmNeCb?=
+ =?us-ascii?Q?u63bU6Nll+5DpAE/1Tmw3KndcbY6XGVLVv5rkzs6G93JEotQ+RpbzDNHX4SM?=
+ =?us-ascii?Q?QJOo3H6ojYuKbFrp6p5diAKsKu68l4PKPRUrJU5tzClpMpo+kJJbLi6ER+YN?=
+ =?us-ascii?Q?k4QVoa/kTmnrQQWBw//ORbYPqkiA7mYpw6bf60UK+GIpwYiF3A=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2024 10:51:14.2947
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f6fb686-8ce6-4986-3559-08dcff1a19b0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF00004FC1.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8519
 
+This field is only valid when the VIRTIO_BLK_F_BLK_SIZE feature bit is
+offered by the device.
 
---=-lxjgWVl+XL9587zQso9P
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The blk_size field actually represents the logical block size of the
+device. It is always a power of two and typically ranges from 512 bytes
+to larger values such as 4 KB.
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+Add description for this field to provide clarity on its constraints.
 
-The VMCLOCK device gives support for accurate timekeeping even across=20
-live migration, unlike the KVM PTP clock. To help ensure that users can
-always use ptp_vmclock where it's available in preference to ptp_kvm,
-set it to 'default PTP_1588_CLOCK_VMCLOCK' instead of 'default y'.
-
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/208
+Reviewed-by: Daniel Verkamp <dverkamp@chromium.org>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 ---
- drivers/ptp/Kconfig | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index e98c9767e0ef..ed087ae75f0e 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -135,12 +135,16 @@ config PTP_1588_CLOCK_VMCLOCK
- 	tristate "Virtual machine PTP clock"
- 	depends on X86_TSC || ARM_ARCH_TIMER
- 	depends on PTP_1588_CLOCK && ACPI && ARCH_SUPPORTS_INT128
--	default y
-+	default PTP_1588_CLOCK_KVM
- 	help
- 	  This driver adds support for using a virtual precision clock
- 	  advertised by the hypervisor. This clock is only useful in virtual
- 	  machines where such a device is present.
-=20
-+	  Unlike the KVM virtual PTP clock, the VMCLOCK device offers support
-+	  for reliable timekeeping even across live migration. So this driver
-+	  is enabled by default whenever the KVM PTP clock is.
+changes from v5:
+ - plural vs. non-plural fixes (Parav)
+
+changes from v4:
+ - reorder paragraphs (MST, Matias)
+---
+ device-types/blk/description.tex | 33 ++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
+index 2712ada..47713ab 100644
+--- a/device-types/blk/description.tex
++++ b/device-types/blk/description.tex
+@@ -135,6 +135,10 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+ present. The availability of the others all depend on various feature
+ bits as indicated above.
+ 
++The field \field{blk_size} reports the block size of the device, expressed in
++bytes. This field exists only if VIRTIO_BLK_F_BLK_SIZE is offered by the
++device.
 +
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called ptp_vmclock.
-=20
---=20
-2.44.0
+ The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This field specifies
+ the number of queues.
+ 
+@@ -282,6 +286,13 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+ 
+ \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+ 
++The driver SHOULD negotiate VIRTIO_BLK_F_BLK_SIZE if the feature is offered by
++the device. When negotiated, the driver SHOULD interpret the \field{blk_size}
++as the logical block size.
++
++If the VIRTIO_BLK_F_BLK_SIZE feature is not offered by the device, then the
++driver MAY assume that the logical block size is 512 bytes.
++
+ Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
+ sending VIRTIO_BLK_T_FLUSH commands.
+ 
+@@ -319,6 +330,10 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+ 
+ \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+ 
++The device SHOULD offer VIRTIO_BLK_F_BLK_SIZE. When this feature is offered,
++the device MUST initialize \field{blk_size} to a power of two greater than or
++equal to 512.
++
+ Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
+ if they offer VIRTIO_BLK_F_CONFIG_WCE.
+ 
+@@ -879,6 +894,14 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+ The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_T_IN
+ and VIRTIO_BLK_T_OUT requests.
+ 
++When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, the length of
++\field{data} SHOULD be a multiple of \field{blk_size} for VIRTIO_BLK_T_IN and
++VIRTIO_BLK_T_OUT requests.
++
++When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, the value of
++\field{sector} (multiplied by 512) SHOULD be a multiple of \field{blk_size} for
++VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests.
++
+ The length of \field{data} MUST be a multiple of the size of struct
+ virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
+ VIRTIO_BLK_T_SECURE_ERASE and VIRTIO_BLK_T_WRITE_ZEROES requests.
+@@ -966,6 +989,16 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+ for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
+ write any data.
+ 
++When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, and the
++requested \field{sector} (multiplied by 512) is not an integer multiple of the
++device's \field{blk_size}, the device MAY set the \field{status} to
++VIRTIO_BLK_S_IOERR for both VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests.
++
++When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, and the
++length of the requested \field{data} is not an integer multiple of the device's
++\field{blk_size}, the device MAY set the \field{status} to VIRTIO_BLK_S_IOERR
++for both VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests.
++
+ The device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP for
+ discard, secure erase and write zeroes commands if any unknown flag is set.
+ Furthermore, the device MUST set the \field{status} byte to
+-- 
+2.18.1
 
-
-
---=-lxjgWVl+XL9587zQso9P
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjQxMTAyMjE1MjE3WjAvBgkqhkiG9w0BCQQxIgQg8iUbbLO0
-ztKikyzeCTMMuLH3qq23oE7Mr2IxrkTU128wgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgCU0iALfljyIYLstL0CAbcu6O8TAX5A0FYO
-x+PxWS1bi3qgwcFfj9Xo8PoHuxNSLpKGAKUQ5vmBAmHaYLt3z2zYTmE64WMx3Fpc6TF3aYSnqSSa
-kGde5S7eAu5RSxKT9onNdWDQjGFq1htv59TjM2LBggmDIwY2Yt56qGTWThHQNhzNxiqqhS2wJnBB
-JlaxGVC//HU2/kYwNQAnwH4E60UtALCBx/ngE0GSzMrZSnd+Bzst8RxZFAatc4OpN79SAEozrAyJ
-fZm5RHAyGFHOyuCj+Gw25oZpO26pgE0y4o+OpHVlIUPE0Z1iXebnrqn6ixCn3Jia59jkF04MU+M7
-5IA0So8h/5Yaa1hb2WO97UpusJ/lz6mswtXbpdEBKkiLYVxtGwNp7t9ZdOkJF+3+JUWYki5NYFi4
-1AxqFj/+HkwhK2Ogzjze8Sd0/uhENUT7pEqOSNkWmnx4FfrJ1TkaqnTLHck+7Hy1mKET26ypBkda
-99yJNScWlpBn1d+cXk61jvUTQKOdG6pORTDB/tmY/gWwqo0mIfSgpC4sFiBJNKagp8gsya1Sxy5v
-pIbYKOLphl/CR/B9VwelYrX6N1U4iJ4W/x96lZqI2WjMqIOHmiEVjPKbNjCgQJvEtEVWP45S4JfI
-s47S/9Og2ttDBdUATVwtQSx2RmzuM3te/JYF50R/XQAAAAAAAA==
-
-
---=-lxjgWVl+XL9587zQso9P--
