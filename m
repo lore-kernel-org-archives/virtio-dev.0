@@ -1,229 +1,304 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2055.outbound.protection.outlook.com [40.107.92.55])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C029B1DFE24
-	for <virtio-dev@lists.linux.dev>; Thu,  7 Nov 2024 10:51:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730976679; cv=fail; b=cvWY605sUI8EKgzQzdkuGgnn60VAlKuDhecQ4a4KyRiLDZU1vLwrJDowk/MLUnEgDrBWAM1fmTKy4siPeGDNej1D//46nY44c0fifNNb0sayJ/LslXcNl2L6HtdEJvqUVlNjfhMnw5iwEgUAXxXjp2o2onTulqLEB94xZ1ID0LE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730976679; c=relaxed/simple;
-	bh=pMkwXEPLCwf5KphA+q3ojGPVOrIiaY9y4Iu18bVfFj0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=iR+Vo73iyoV3ak55n67Z1J7fh8/wPMQaXYnTNbnji15uf1k6YYcMU1tCzJBhEOoI+qzkjU6ZY4+odgxHNPxTRaB8XPQ1rKlqrguPmhCLEXo6PNa2PfIwLClem1mIhUvMg+Jk1M9BKlpNk+uBzRxSWazD/8a6u/IchxCkEifUHLY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=G95JL78t; arc=fail smtp.client-ip=40.107.92.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA74619F13B;
+	Thu, 19 Dec 2024 20:12:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1734639179; cv=none; b=nxYccZnGc0eAofP2Jp/TYtv9wHlimt9kEtt7ikd5gOkvsQqtk7XnvL5F39RBOCwsC8xnXBHcN4mUHMI094BUIrjCjdf6PmIKGnqlR7gwGNY/zLNfOHmKt65WQBJE0Gc4A4qJEXyuFNmSu9sBZ8jrJYYbn/IGSGVBdh9fsyGeZqg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1734639179; c=relaxed/simple;
+	bh=hXJAx07Ldlz6iAw1L1hqk3Q3+8yHrKZY47EuHCaZqJQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fKggXSVwEPtw6MfxgLlqyIrjWPAkGO9rmyRtl4OPUK7eIKqYrV4y0uqv/9S4nWk7RySKrV2eTMSHAcsrugMPSJuz7uFQdCdgtcdPNYEGdHsKQMV4OraSjNCpRZrsLKLNBSHTB0SmIMZEkh+EhmyKZnEgEC7WfTLN3VjvuPtKBV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=fx6d5gzU; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="G95JL78t"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CxIlGFQGjSMlUyrajubLjTmLJdQteEX9h8hxR92/qI0ZShdNv1+HSkJxwviG9SxjfZsa9XSu96FMB4janoxiuZnYSiW+ots7oc3JAE7wBAK4xnjf+zX/KO6XW8MPGopFDg7GJ3C2YNh3pZkUn0bFcA5MSZIZKCU3LOgkPMh+O5l5Aq19bfedzfq48IYE7jE20C4do1KSj2AorkSjRKi5zhZ7xUF7f5YND2KHYBvFSLop5JOH/BIBVWEUVGvZO5aEE6R2pg+qVU2EmLNpu+U1aw5R/VjErByDFdOL3nE757x7kVuptQc3LzPrcXEKnJ4mdkxcfzRYHkIItFnHLO2uKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C0jK5jiKMPvDKWm2KSJCplThClMbyvt6feKcJU3CQKQ=;
- b=ag5Ya+65uDa3aRg1wnb0FmXDOn1BMFNG2YO0GdnrK5vVLJX2haA4zld1Fftli5j2FH1sZgcRHKnJGMX6yh6xId0vSzx76BniFNestLSulGtec5+G2Ibv4FARzircOC5J+AMQmp0hyefD6PtdREHrD178ZEeFsJ7gHAFqwoeJoMw5/3Eyb67KUNca09LySEv0h4cNmE0rOzsk6PgWJBqmsS4Eu9z7gUQYKKRtEA5TRgKKxY/eKuemab0Raee2EQrfhR1E70DMe1BmZU9trmUkK6MtebwwARdaoo1co/6V62BCiSnfYfYUhCmIge4800taul97E953IC+PkpMCdFWnfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=chromium.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C0jK5jiKMPvDKWm2KSJCplThClMbyvt6feKcJU3CQKQ=;
- b=G95JL78tNjABUwT1emNQAwCmAD1n2WwuVC/CIW/FTyqMa5CseM1GdiPxwx155rhl53yOEnMxQcTfQ/zBxJCOWJWLI2IrOFlECIShZUxRv3QdbZMJKFF36ccn7hYZApnI+cKx/20M5TfmytJZs0kgbpmY6E3M6t9l6Ew5cGv20V9hsMKKm2FIa7KzL7UmRm0V3TFEbhRKPYqIorkaKPncGLenWM5L4/BWiTz1nEJvjZguGDvFt667im0nF7k5raqxjB/AfbAc4213BFLTgAkjWo40vl2i50HmL6r1ox7cP6XJHrICZR54Bu6LH12y0mbIkbNfBJn9u0x1/qwVilhxjA==
-Received: from BN9PR03CA0988.namprd03.prod.outlook.com (2603:10b6:408:109::33)
- by IA1PR12MB8519.namprd12.prod.outlook.com (2603:10b6:208:44c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.20; Thu, 7 Nov
- 2024 10:51:14 +0000
-Received: from BN2PEPF00004FC1.namprd04.prod.outlook.com
- (2603:10b6:408:109:cafe::ef) by BN9PR03CA0988.outlook.office365.com
- (2603:10b6:408:109::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8137.19 via Frontend
- Transport; Thu, 7 Nov 2024 10:51:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN2PEPF00004FC1.mail.protection.outlook.com (10.167.243.187) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8137.17 via Frontend Transport; Thu, 7 Nov 2024 10:51:14 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 7 Nov 2024
- 02:51:06 -0800
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Thu, 7 Nov 2024 02:51:06 -0800
-Received: from r-arch-stor03.mtr.labs.mlnx (10.127.8.14) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
- Transport; Thu, 7 Nov 2024 02:51:03 -0800
-From: Max Gurtovoy <mgurtovoy@nvidia.com>
-To: <dverkamp@chromium.org>, <mst@redhat.com>,
-	<virtualization@lists.linux-foundation.org>, <mvaralar@redhat.com>,
-	<stefanha@redhat.com>, <virtio-dev@lists.linux.dev>
-CC: <oren@nvidia.com>, <parav@nvidia.com>, <nitzanc@nvidia.com>,
-	<benwalker@nvidia.com>, Max Gurtovoy <mgurtovoy@nvidia.com>
-Subject: [PATCH v6 1/1] virtio-blk: Add description for blk_size field
-Date: Thu, 7 Nov 2024 12:51:03 +0200
-Message-ID: <20241107105103.19152-1-mgurtovoy@nvidia.com>
-X-Mailer: git-send-email 2.18.1
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="fx6d5gzU"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BJHKq7M015069;
+	Thu, 19 Dec 2024 20:12:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=CJ2fcsj9V4R7PC0Nin0xjt
+	l1yQm4KjIinItATuJT3LA=; b=fx6d5gzUQo0Abkfg9ueWUF4nL42KIXmQeGAUoR
+	0k6SB1LbQms2G+h3CoC2m270Y/kUPoFdhlpFASrmcl019NwpHuHTVNPY5V1pcPlk
+	ehNTjhxzFnGmJpH2oNysvI3xPDKm1RN5X7Du+KLk5kky5D5/Tc9ltWIPnFhbVe3t
+	qzWz08NbZmY7NxArVgSgrIyj1bO+PwTy5bUSxyUb7HcKG6e/0BUeppEBtRwHqN+d
+	HsWYi7ERPuhINC45IPY7FdqmYbJV5kBPhSUm6cs4W6u5vnX6lphbE5DmZy3IZiF9
+	7oNI8+lytlYcIHodNdC40eiTCYSks4oO6WTOn5/oz4NYcizQ==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43mqt80c35-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 19 Dec 2024 20:12:33 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BJKCWuN032369
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 19 Dec 2024 20:12:32 GMT
+Received: from PHILBER.qualcomm.com (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 19 Dec
+ 2024 12:12:27 -0800
+From: Peter Hilber <quic_philber@quicinc.com>
+To: <linux-kernel@vger.kernel.org>, <virtualization@lists.linux.dev>,
+        <virtio-dev@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-rtc@vger.kernel.org>
+CC: Trilok Soni <quic_tsoni@quicinc.com>,
+        Srivatsa Vaddagiri
+	<quic_svaddagi@quicinc.com>,
+        Peter Hilber <quic_philber@quicinc.com>,
+        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+        "Michael S. Tsirkin"
+	<mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Richard Cochran
+	<richardcochran@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, <netdev@vger.kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        "Ridoux,
+ Julien" <ridouxj@amazon.com>, Marc Zyngier <maz@kernel.org>,
+        Mark Rutland
+	<mark.rutland@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+        Parav Pandit
+	<parav@nvidia.com>
+Subject: [RFC PATCH v4 0/4] Add virtio_rtc module
+Date: Thu, 19 Dec 2024 21:11:06 +0100
+Message-ID: <20241219201118.2233-1-quic_philber@quicinc.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF00004FC1:EE_|IA1PR12MB8519:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f6fb686-8ce6-4986-3559-08dcff1a19b0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|82310400026|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?vu1RuLazkE2IcDvC3216n65z4DmlZjbYFk/ZwovDkpWYvaAscOhYYMJLyLVP?=
- =?us-ascii?Q?98wyyeAzdjnGQZSYsQ5mO4qkKTrKN/5rwtc20VKr/SRg8FQ9PLjc0S8LgzD5?=
- =?us-ascii?Q?F3cqIjK36GfEeni+FjmsBiCaPovRtYaAHlwuBZlRe/eZmKFBc/5vjm8hZdKJ?=
- =?us-ascii?Q?OVGPC4nVTCtzBDLbT9krNA6kM/R/6skIf8fFNxBiCiNIyY4kCrfrawTXXJ3c?=
- =?us-ascii?Q?P16W7g66qGV/Dha2PK9W65d7NsMCFYDFuVHyRuV9qlGUOZB0tPnAxYmBdrzg?=
- =?us-ascii?Q?ck99IAjDlQYWCga0/5N/DF1HXhSMyGN6ocRbj/Q1H1n16bwpIsjaZgwIkUQh?=
- =?us-ascii?Q?YJ2V3DggZYFLkarVPfFmFfh0zwv+labZA9Ehy4dZ2N6vo2aygaq135BeMJR3?=
- =?us-ascii?Q?u2DGeq+pt+2cBXXWMuDgHSpQce+4b1pm87y8FVsLxHR2BnILi8C+oXHMp4z6?=
- =?us-ascii?Q?qB/wEDbNPRyw4MPI/EwZHiJ11GeQ1ZNWZExastm470Pkw3/I0DKQhR1jDHtt?=
- =?us-ascii?Q?TkBrI/jssF8dl9wrN2gOYakwKy0JhRBT+TdCwlalS4RmNrEQk4lg7+QGZhbw?=
- =?us-ascii?Q?U7qunly1dHmmH3NAM365hDiA/Tznxm27Yarhsy0L7YfL69NtZahn9ostvo4b?=
- =?us-ascii?Q?hpKcLhwZs2BI/6DgqwSoWIqUd8WLBPjetQcH0A5ni5+HBvjHnk5bBVhLZiAn?=
- =?us-ascii?Q?ouRXjcyKWEb4T1knd/BYtg0Fi7B96g9y9qBFPqnxdVNNDGIQ6UmBrIys5vuF?=
- =?us-ascii?Q?VctjeZok+jTD0BmeqbCqNaj2Eb5HChasc4C/zndTzTr8kH2ViY2IEZldXU2S?=
- =?us-ascii?Q?kYo7YbdAqc7RFtPFoL0yw4hPvpJ1kZvuz/3LISDiB4kcky8FYbhUNhZvRNMw?=
- =?us-ascii?Q?3gfjMpQxdGUlfXP583WtghvVpPkHWiFSt9cexOCBixnJIvZ/9DubQHaASR9y?=
- =?us-ascii?Q?411K9vPJCIZKXFzS9o2pxCpxMRESdpZ35nNJ2xl/c1X6okiVTkagbo644Cy1?=
- =?us-ascii?Q?+C5rZ9Q7DvwQKtQ+2G58ANAigNCDupnONDGDLHa0o6GagX6iiXAh7GCN8Cb8?=
- =?us-ascii?Q?+EG7+eeLwVSJNSl+MKeH7TsnnPzHK1+CvM/fPlatnQT95TNzFqROzkyFkm98?=
- =?us-ascii?Q?mu90+yH7a8HXZNV0qOfPhIqeUG+4Wikpg0/Ra1s19ipXAxaO2Y9Ez25PIqQd?=
- =?us-ascii?Q?AT1XUKh/VlLfhlhWIozkUGLh3Wuu+dYuo43rF14ea6lZ3l8hR62BySXmNeCb?=
- =?us-ascii?Q?u63bU6Nll+5DpAE/1Tmw3KndcbY6XGVLVv5rkzs6G93JEotQ+RpbzDNHX4SM?=
- =?us-ascii?Q?QJOo3H6ojYuKbFrp6p5diAKsKu68l4PKPRUrJU5tzClpMpo+kJJbLi6ER+YN?=
- =?us-ascii?Q?k4QVoa/kTmnrQQWBw//ORbYPqkiA7mYpw6bf60UK+GIpwYiF3A=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2024 10:51:14.2947
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f6fb686-8ce6-4986-3559-08dcff1a19b0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF00004FC1.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8519
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: dxQPlilEb2JKXs0CaW51aZ35haeI952z
+X-Proofpoint-GUID: dxQPlilEb2JKXs0CaW51aZ35haeI952z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ suspectscore=0 priorityscore=1501 spamscore=0 mlxlogscore=999
+ malwarescore=0 impostorscore=0 phishscore=0 clxscore=1011
+ lowpriorityscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2411120000 definitions=main-2412190159
 
-This field is only valid when the VIRTIO_BLK_F_BLK_SIZE feature bit is
-offered by the device.
+This series implements a driver for a virtio-rtc device conforming to spec
+RFC v6 [1]. It includes a PTP clock driver and an RTC class driver with
+alarm.
 
-The blk_size field actually represents the logical block size of the
-device. It is always a power of two and typically ranges from 512 bytes
-to larger values such as 4 KB.
+RFC v4 updates
+==============
 
-Add description for this field to provide clarity on its constraints.
+Important changes compared to the previous driver series [3] are:
 
-Fixes: https://github.com/oasis-tcs/virtio-spec/issues/208
-Reviewed-by: Daniel Verkamp <dverkamp@chromium.org>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Max Gurtovoy <mgurtovoy@nvidia.com>
----
+- Update to spec RFC v6 [1].
 
-changes from v5:
- - plural vs. non-plural fixes (Parav)
+- Distinguish UTC-like clocks by their handling of leap seconds.
 
-changes from v4:
- - reorder paragraphs (MST, Matias)
----
- device-types/blk/description.tex | 33 ++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+- Update RTC class device according to feedback.
 
-diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
-index 2712ada..47713ab 100644
---- a/device-types/blk/description.tex
-+++ b/device-types/blk/description.tex
-@@ -135,6 +135,10 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
- present. The availability of the others all depend on various feature
- bits as indicated above.
- 
-+The field \field{blk_size} reports the block size of the device, expressed in
-+bytes. This field exists only if VIRTIO_BLK_F_BLK_SIZE is offered by the
-+device.
-+
- The field \field{num_queues} only exists if VIRTIO_BLK_F_MQ is set. This field specifies
- the number of queues.
- 
-@@ -282,6 +286,13 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
- 
- \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
- 
-+The driver SHOULD negotiate VIRTIO_BLK_F_BLK_SIZE if the feature is offered by
-+the device. When negotiated, the driver SHOULD interpret the \field{blk_size}
-+as the logical block size.
-+
-+If the VIRTIO_BLK_F_BLK_SIZE feature is not offered by the device, then the
-+driver MAY assume that the logical block size is 512 bytes.
-+
- Drivers SHOULD NOT negotiate VIRTIO_BLK_F_FLUSH if they are incapable of
- sending VIRTIO_BLK_T_FLUSH commands.
- 
-@@ -319,6 +330,10 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
- 
- \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
- 
-+The device SHOULD offer VIRTIO_BLK_F_BLK_SIZE. When this feature is offered,
-+the device MUST initialize \field{blk_size} to a power of two greater than or
-+equal to 512.
-+
- Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
- if they offer VIRTIO_BLK_F_CONFIG_WCE.
- 
-@@ -879,6 +894,14 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
- The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_T_IN
- and VIRTIO_BLK_T_OUT requests.
- 
-+When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, the length of
-+\field{data} SHOULD be a multiple of \field{blk_size} for VIRTIO_BLK_T_IN and
-+VIRTIO_BLK_T_OUT requests.
-+
-+When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, the value of
-+\field{sector} (multiplied by 512) SHOULD be a multiple of \field{blk_size} for
-+VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests.
-+
- The length of \field{data} MUST be a multiple of the size of struct
- virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
- VIRTIO_BLK_T_SECURE_ERASE and VIRTIO_BLK_T_WRITE_ZEROES requests.
-@@ -966,6 +989,16 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
- for a write request if the VIRTIO_BLK_F_RO feature if offered, and MUST NOT
- write any data.
- 
-+When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, and the
-+requested \field{sector} (multiplied by 512) is not an integer multiple of the
-+device's \field{blk_size}, the device MAY set the \field{status} to
-+VIRTIO_BLK_S_IOERR for both VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests.
-+
-+When the VIRTIO_BLK_F_BLK_SIZE feature is offered by the device, and the
-+length of the requested \field{data} is not an integer multiple of the device's
-+\field{blk_size}, the device MAY set the \field{status} to VIRTIO_BLK_S_IOERR
-+for both VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests.
-+
- The device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP for
- discard, secure erase and write zeroes commands if any unknown flag is set.
- Furthermore, the device MUST set the \field{status} byte to
+A dependent series will expose virtio-rtc's leap second and clock
+performance related information to userspace through a novel PTP clock
+ioctl.
+
+Overview
+========
+
+This patch series adds the virtio_rtc module, and related bugfixes. The
+virtio_rtc module implements a driver compatible with the proposed Virtio
+RTC device specification [1]. The Virtio RTC (Real Time Clock) device
+provides information about current time. The device can provide different
+clocks, e.g. for the UTC or TAI time standards, or for physical time
+elapsed since some past epoch. The driver can read the clocks with simple
+or more accurate methods. Optionally, the driver can set an alarm.
+
+For the Virtio RTC device, there is currently a proprietary implementation,
+which has been used for provisional testing.
+
+PTP clock interface
+===================
+
+virtio_rtc exposes clocks as PTP clocks to userspace, similar to ptp_kvm.
+If both the Virtio RTC device and this driver have special support for the
+current clocksource, time synchronization programs can use
+cross-timestamping using ioctl PTP_SYS_OFFSET_PRECISE2 aka
+PTP_SYS_OFFSET_PRECISE. Similar to ptp_kvm, system time synchronization
+with single-digit ns precision is possible with a quiescent reference clock
+(from the Virtio RTC device). This works even when the Virtio device
+response is slow compared to ptp_kvm hypercalls.
+
+The following illustrates a test using PTP_SYS_OFFSET_PRECISE, with
+interspersed strace log and chrony [2] refclocks log, on arm64. In the
+example, chrony tracks a virtio_rtc PTP clock ("PHCV", /dev/ptp0). The raw
+offset between the virtio_rtc clock and CLOCK_REALTIME is 0 to 1 ns. At the
+device side, the Virtio RTC device artificially delays both the clock read
+request, and the response, by 50 ms. Cross-timestamp interpolation still
+works with this delay. chrony also monitors a ptp_kvm clock ("PHCK",
+/dev/ptp3) for comparison, which yields a similar offset.
+
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000329>
+	===============================================================================
+	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
+	===============================================================================
+	2023-06-29 18:49:55.595742 PHCK    0 N 0  1.000000e-09  8.717931e-10  5.500e-08
+	2023-06-29 18:49:55.595742 PHCK    - N -       -        8.717931e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101545>
+	2023-06-29 18:49:56.147766 PHCV    0 N 0  1.000000e-09  8.801870e-10  5.500e-08
+	2023-06-29 18:49:56.147766 PHCV    - N -       -        8.801870e-10  5.500e-08
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000195>
+	2023-06-29 18:49:56.202446 PHCK    0 N 0  1.000000e-09  7.364180e-10  5.500e-08
+	2023-06-29 18:49:56.202446 PHCK    - N -       -        7.364180e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101484>
+	2023-06-29 18:49:56.754641 PHCV    0 N 0  0.000000e+00 -2.617368e-10  5.500e-08
+	2023-06-29 18:49:56.754641 PHCV    - N -       -       -2.617368e-10  5.500e-08
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000270>
+	2023-06-29 18:49:56.809282 PHCK    0 N 0  1.000000e-09  7.779321e-10  5.500e-08
+	2023-06-29 18:49:56.809282 PHCK    - N -       -        7.779321e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101510>
+	2023-06-29 18:49:57.361376 PHCV    0 N 0  0.000000e+00 -2.198794e-10  5.500e-08
+	2023-06-29 18:49:57.361376 PHCV    - N -       -       -2.198794e-10  5.500e-08
+
+This patch series only adds special support for the Arm Generic Timer
+clocksource. At the driver side, it should be easy to support more
+clocksources.
+
+Fallback PTP clock interface
+----------------------------
+
+Without special support for the current clocksource, time synchronization
+programs can still use ioctl PTP_SYS_OFFSET_EXTENDED2 aka
+PTP_SYS_OFFSET_EXTENDED. In this case, precision will generally be worse
+and will depend on the Virtio device response characteristics.
+
+The following illustrates a test using PTP_SYS_OFFSET_EXTENDED, with
+interspersed strace log and chrony refclocks log, on x86-64 (with `ts'
+values omitted):
+
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	===============================================================================
+	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
+	===============================================================================
+	2023-06-28 14:11:26.697782 PHCV    0 N 0  3.318200e-05  3.450891e-05  4.611e-06
+	2023-06-28 14:11:26.697782 PHCV    - N -       -        3.450891e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:27.208763 PHCV    0 N 0 -3.792800e-05 -4.023965e-05  4.611e-06
+	2023-06-28 14:11:27.208763 PHCV    - N -       -       -4.023965e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:27.722818 PHCV    0 N 0 -3.328600e-05 -3.134404e-05  4.611e-06
+	2023-06-28 14:11:27.722818 PHCV    - N -       -       -3.134404e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:28.233572 PHCV    0 N 0 -4.966900e-05 -4.584331e-05  4.611e-06
+	2023-06-28 14:11:28.233572 PHCV    - N -       -       -4.584331e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:28.742737 PHCV    0 N 0  4.902700e-05  5.361388e-05  4.611e-06
+	2023-06-28 14:11:28.742737 PHCV    - N -       -        5.361388e-05  4.611e-06
+
+PTP clock setup
+---------------
+
+The following udev rule can be used to get a symlink /dev/ptp_virtio to the
+UTC clock:
+
+	SUBSYSTEM=="ptp", ATTR{clock_name}=="Virtio PTP type 0, variant 0", SYMLINK += "ptp_virtio"
+
+The following chrony configuration directive can then be added in
+/etc/chrony/chrony.conf to synchronize to the Virtio UTC clock:
+
+	refclock PHC /dev/ptp_virtio refid PHCV poll -1 dpoll -1
+
+RTC interface
+=============
+
+This patch series adds virtio_rtc as a generic Virtio driver, including
+both a PTP clock driver and an RTC class driver.
+
+Feedback is greatly appreciated.
+
+[1] https://lore.kernel.org/virtio-comment/20241206094819.858-1-quic_philber@quicinc.com/T/#t
+[2] https://chrony.tuxfamily.org/
+[3] https://lore.kernel.org/lkml/20231218073849.35294-1-peter.hilber@opensynergy.com/T/#t
+
+Changelog
+=========
+
+v4:
+
+- Update Virtio interface to spec v6.
+
+- Distinguish UTC-like clocks by handling of leap seconds (spec v6).
+
+- Do not create RTC class device for clocks which may step on leap seconds
+  (Alexandre Belloni).
+
+- Clear RTC class feature bit instead of defining reduced ops
+  (Alexandre Belloni).
+
+- For PTP clock name, always use numeric clock type, and numeric variant.
+
+- Use macros for 64-bit divisions.
+
+- Remove unnecessary memory barriers.
+
+- Cosmetic improvements.
+
+- Drop upstreamed timekeeping bugfixes from series.
+
+v3:
+
+- Update to conform to virtio spec RFC v3 (no significant behavioral
+  changes).
+
+- Add RTC class driver with alarm according to virtio spec RFC v3.
+
+- For cross-timestamp corner case fix, switch back to v1 style closed
+  interval test (Thomas Gleixner).
+
+v2:
+
+- Depend on patch series "treewide: Use clocksource id for
+  get_device_system_crosststamp()" to avoid requiring a clocksource pointer
+  with get_device_system_crosststamp().
+
+- Assume Arm Generic Timer will use CP15 virtual counter. Drop
+  arm_arch_timer helper functions (Marc Zyngier).
+
+- Improve cross-timestamp fixes problem description and implementation
+  (John Stultz).
+
+
+Peter Hilber (4):
+  virtio_rtc: Add module and driver core
+  virtio_rtc: Add PTP clocks
+  virtio_rtc: Add Arm Generic Timer cross-timestamping
+  virtio_rtc: Add RTC class driver
+
+ MAINTAINERS                          |    7 +
+ drivers/virtio/Kconfig               |   64 ++
+ drivers/virtio/Makefile              |    5 +
+ drivers/virtio/virtio_rtc_arm.c      |   23 +
+ drivers/virtio/virtio_rtc_class.c    |  268 +++++
+ drivers/virtio/virtio_rtc_driver.c   | 1361 ++++++++++++++++++++++++++
+ drivers/virtio/virtio_rtc_internal.h |  122 +++
+ drivers/virtio/virtio_rtc_ptp.c      |  348 +++++++
+ include/uapi/linux/virtio_rtc.h      |  286 ++++++
+ 9 files changed, 2484 insertions(+)
+ create mode 100644 drivers/virtio/virtio_rtc_arm.c
+ create mode 100644 drivers/virtio/virtio_rtc_class.c
+ create mode 100644 drivers/virtio/virtio_rtc_driver.c
+ create mode 100644 drivers/virtio/virtio_rtc_internal.h
+ create mode 100644 drivers/virtio/virtio_rtc_ptp.c
+ create mode 100644 include/uapi/linux/virtio_rtc.h
+
+
+base-commit: 8503810115fbff903f626adc0788daa048302bc0
 -- 
-2.18.1
+2.43.0
 
