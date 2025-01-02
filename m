@@ -1,46 +1,46 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18E1B190049;
-	Mon, 23 Dec 2024 18:14:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD1B79E1;
+	Thu,  2 Jan 2025 16:11:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734977666; cv=none; b=uS0hKVtSIs7xMLZ2xKz4RKioMoNA6qIOOQ22yEG1Y6JIOT3Xyd6tK9r6TMLUStYpp4kufDkwcRShqCzBQH1RnI7lluU/SYwUDjoerr+dOsl3CTZiYFCF+qdYnQqKVmySKAIXK0XO9HDBod/XFQDb4BxkZec3FYdyLVAYLTQP+HY=
+	t=1735834310; cv=none; b=PJU0XTXN1GBPpyFU+Sj/8EvpKlK6eyuZePdV/dbAxGDASE42cD+FMXIpjchgK4EO1cCJSqEy/tglRYKok6f587Vc6KnzYCEbWCanym27E1q0s4o9YdZkaNZnW7XBfwxx/BoQ4lVk5U2jZCcpsKmnmMWkbFhc9ISFhUm73MdvV/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734977666; c=relaxed/simple;
-	bh=ACi8vxZdg1xtJrN+M3qMtrF4XVnDsm9UPrvFVgwgpFw=;
+	s=arc-20240116; t=1735834310; c=relaxed/simple;
+	bh=SkdBCFy4/NYiYeWlSPzQFSiysAAtTRucOg9v2ucffpU=;
 	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hx9ywIzFmtSw2w8SrtTIEmengnVjffWy0KTdMMbgwepKRhIxXvKclLmkDqNqSObJOcnor0n+hQ6xlhN31QGdebCZB9i144/GV7kdBTB9CVg2HOHbo+KypDtr57ADQI+rGnMwD3rffaEcRRPzxOClga+Xd2LbWC98As3Ol8r7VA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VEpJcF84; arc=none smtp.client-ip=205.220.180.131
+	 Content-Type:Content-Disposition:In-Reply-To; b=th0pEg/eJYRJ0+5GzlRuJ9a4xJxHLg/LE7RiqVUmaF0ZfZGDTuuRxSAHcP4RBRVBCHXPEX4z8jWxAwCnGXns9lMvb8mvg34mJI3GqfORfOc6MM+YFei5pTKZeOSciSyzG9YfUxtsPesfB2+dxYKOdAMnBMkT41wJGCtNDb8i5CE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=GQracyhZ; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VEpJcF84"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BNBw84j019164;
-	Mon, 23 Dec 2024 18:13:58 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="GQracyhZ"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 502G1LTs001672;
+	Thu, 2 Jan 2025 16:11:19 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=+rHQBPfBA3sp/wpNzoOEpYr7
-	By9U3FbqOwM5hpdHtv4=; b=VEpJcF84xE/W+8ybUAkMtJelp+ThEbKlyfO/+zjq
-	mw10ilhp2oF/2hRdYBCTIdd2zyXg17dIVUXvWwn+IOxGdcu7mDQXpP3jdoUS4rF7
-	97opp87KPu9iqoblpYy+jqHvsj5iLFMdZLsHoibVwgsgdbMyG9AN6HaW7GOrS8ON
-	FwIRbWFMjKoZcxJg4N5Du8jOWJOQmC/tECwu58UvVvW6p7xWK6nZllByNfYUlLWV
-	fAfeFDkxnKvY6p8OUfbP0XDPvmtLGXNDJNf0SJ17CtlOXej4NiFRgtj/LW1kZyFJ
-	rCm2DBbKe2PnmQZFvLYUEsJyD7QkeS0DWW9XKKysHpgRfg==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43q7ev1afn-1
+	:references:subject:to; s=qcppdkim1; bh=9lfWFz+UlOJFT1pVZfvVtOpg
+	IDbcrmg5DUrHytsFqfk=; b=GQracyhZ6MwHkhSB7WoQJ5Ton7uenYr2lz4hABem
+	HjdgWa84tVLGDVdtJbkkBzVxdS6U//kZ6jhYFJVrt775TtocRZ6TtkcjamTLEItf
+	Zb5W1fDU4ygzuI1CHmUuBczMgd4cuCps2juxFG9CNhSWAdBhrQx8OIF5NdmRdRNw
+	2WO2z9uvZzx39LlJvQg4J+XbyIDVC1FT6NiMg30JXNoaFHND2cFM8AO2gwbq+qlu
+	jj1PnSfJRqVKQSw9rolqEutHiWA4Orw9RTNbSB+oYb+4IQlNuyD/a6ROTAmtzuJq
+	ZD/qPASsH+6aK2v5+isiT0miNCe9+JtXGECZHUlR6Ubg2w==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43wrefgq0s-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 23 Dec 2024 18:13:57 +0000 (GMT)
+	Thu, 02 Jan 2025 16:11:19 +0000 (GMT)
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BNIDuQd028444
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 502GBBYO015448
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 23 Dec 2024 18:13:56 GMT
+	Thu, 2 Jan 2025 16:11:11 GMT
 Received: from PHILBER.na.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Mon, 23 Dec 2024 10:13:49 -0800
-Date: Mon, 23 Dec 2024 19:13:46 +0100
+ 15.2.1544.9; Thu, 2 Jan 2025 08:11:04 -0800
+Date: Thu, 2 Jan 2025 17:11:01 +0100
 From: Peter Hilber <quic_philber@quicinc.com>
 To: Richard Cochran <richardcochran@gmail.com>
 CC: <linux-kernel@vger.kernel.org>, <virtualization@lists.linux.dev>,
@@ -72,10 +72,12 @@ CC: <linux-kernel@vger.kernel.org>, <virtualization@lists.linux.dev>,
  Behnsen" <anna-maria@linutronix.de>
 Subject: Re: [RFC PATCH 1/2] ptp: add PTP_SYS_OFFSET_STAT for xtstamping with
  status
-Message-ID: <wcxdbqhoe4cppukyy5rvkq5am4ht6wk5u6d6g2k2swqhidjw7i@6nar5vuusm35>
+Message-ID: <a352mltlizneonxazn4bffydn57fyudrc3zougii2rnatg3jga@3yagssaob5sb>
 References: <20241219204208.3160-1-quic_philber@quicinc.com>
  <20241219204208.3160-2-quic_philber@quicinc.com>
  <Z2WLGHRdlsRpT6BL@hoboy.vegasvil.org>
+ <wcxdbqhoe4cppukyy5rvkq5am4ht6wk5u6d6g2k2swqhidjw7i@6nar5vuusm35>
+ <Z2ymZuiFqY8mxihJ@hoboy.vegasvil.org>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
@@ -84,80 +86,102 @@ List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <Z2WLGHRdlsRpT6BL@hoboy.vegasvil.org>
+In-Reply-To: <Z2ymZuiFqY8mxihJ@hoboy.vegasvil.org>
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: lo_CQoVfd-cd2w2zqVfOdmlKGtmptnZ2
-X-Proofpoint-GUID: lo_CQoVfd-cd2w2zqVfOdmlKGtmptnZ2
+X-Proofpoint-GUID: 88onBiDbs699f8ZIpzTSAWzT212S52iY
+X-Proofpoint-ORIG-GUID: 88onBiDbs699f8ZIpzTSAWzT212S52iY
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
  definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- spamscore=0 lowpriorityscore=0 priorityscore=1501 phishscore=0
- mlxlogscore=999 malwarescore=0 adultscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412230162
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 clxscore=1015 impostorscore=0 phishscore=0
+ mlxlogscore=999 bulkscore=0 malwarescore=0 spamscore=0 priorityscore=1501
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501020142
 
-On Fri, Dec 20, 2024 at 07:19:52AM -0800, Richard Cochran wrote:
-> On Thu, Dec 19, 2024 at 09:42:03PM +0100, Peter Hilber wrote:
-> > Ioctl PTP_SYS_OFFSET_PRECISE2 provides cross-timestamping of device time
-> > and system time. This can be used for virtualization where (virtualization)
-> > host and guest refer to the same clocksource. It may be preferred to
-> > indicate UTC time, rather than TAI. It is then useful to indicate when and
-> > how the host processes UTC leap seconds (stepping or smearing on leap
-> > seconds),
+On Wed, Dec 25, 2024 at 04:42:14PM -0800, Richard Cochran wrote:
+> On Mon, Dec 23, 2024 at 07:13:46PM +0100, Peter Hilber wrote:
 > 
-> If the VM host provides TAI, then the guest may freely derive UTC and
-> leap seconds on its own.  Whether to smear leap seconds or not is
-> properly an administrative configuration choice in the VM guest.
+> > The precise synchronization of the VM guest with its immediate
+> > environment can also be important; a VM guest may depend the decision
+> > about leap second smearing on its environment.
 > 
-
-The precise synchronization of the VM guest with its immediate
-environment can also be important; a VM guest may depend the decision
-about leap second smearing on its environment. Also, the administrative
-configuration choice may change over the lifetime of a system.
-
-> Leap seconds are scheduled to be deleted in 2036.  If, between now and
-> then, another one occurs, it will be global event, not determined by a
-> VM host.  The way you find out about leap seconds is through
-> networking using the NTP (or even just downloading the published list
-> once in a while).  VM clients typically have networking, and so
-> they can learn about a leap second all by themselves.
+> I thought that the whole point of using a VM is to isolate the guests
+> from each other and the host.  What you describe is a promiscuous
+> coupling between guest and host, and the kernel shouldn't be in
+> the business of supporting such behavior.
 > 
 
-The intent is to also support (embedded) VM clients which are themselves
-not necessarily internetworked, which do not get a lot of maintenance,
-and which are not guaranteed to get an update within the typically less
-than 6 months between leap second announcement and occurrence. I will
-document this in the patch message.
+Why? There is already ptp_kvm etc. in the kernel.
 
-> > in particular if the guest is not guaranteed to have an
-> > up-to-date Time Zone Database or similar.
+Would it be more acceptable to just announce leap seconds, but not
+whether to smear?
+
+> > Also, the administrative
+> > configuration choice may change over the lifetime of a system.
 > 
-> Time zones are not connected to leap seconds.
+> Right, which is why we should keep those choices out of kernel space.
+> Kernel provides mechanism, not policy.
+>  
+
+As discussed, the policy would be forwarded, not determined, by the
+kernel.
+
+If the policy would be forwarded via NTP (by the NTP server smearing or
+not smearing leap seconds), this would have the following disadvantages:
+
+- need to use an NTP server just for announcing leap seconds
+
+- redundancy of serving time both via NTP and via PTP clocks (for better
+  precision)
+
+- no awareness about leap seconds in case of smearing.
+
+> > The intent is to also support (embedded) VM clients which are themselves
+> > not necessarily internetworked, which do not get a lot of maintenance,
+> > and which are not guaranteed to get an update within the typically less
+> > than 6 months between leap second announcement and occurrence.
+> 
+> Again, I don't think the kernel should be the solution to guests that
+> lack networking.  Instead, the place to fix the problem is at the
+> root, namely in the guests.
 > 
 
-The IANA Time Zone Database includes a leap seconds list.
+I do not understand. Is the point that guests should decide through
+another channel about leap second smearing?
 
-> > Also, a host may have a notion of how accurate its clock is w.r.t. the
-> > hosts' reference clocks.
+> > I agree that a device driver should not determine clock quality metrics.
+> > The intent is that the driver forwards metrics, if such are advertised
+> > by the device. These metrics should describe the accuracy etc. of the
+> > device itself.
 > 
-> I'm opposed to having device drivers try to claim any kind of clock
-> quality.  All of the clock control, servos, statistics, etc, are done
-> in user space, and so only user space software can generate meaningful
-> clock quality metrics.  Putting some kind of hand wavy values into
-> kernel drivers is just plain wrong IMO.
+> Overall, I don't trust devices to tell the truth about their
+> qualities.  But putting that aside, we would need to see some kind of
+> commonality in hardware implementation to advertise their metrics.
+> However, AFAICT there is no such industry practice on the market.
+> 
 
-I agree that a device driver should not determine clock quality metrics.
-The intent is that the driver forwards metrics, if such are advertised
-by the device. These metrics should describe the accuracy etc. of the
-device itself. The patch message should document this more clearly. The
-metrics can be determined e.g. by virtualization host user space
-software. The device driver would just expose the device metrics to user
-space.
+I hope there will be some feedback from third parties (at least related
+to virtualization).
 
-Thanks for the feedback,
+> > The patch message should document this more clearly. The
+> > metrics can be determined e.g. by virtualization host user space
+> > software. The device driver would just expose the device metrics to user
+> > space.
+> 
+> Again, host user space shouldn't misuse the kernel to share random
+> metrics with guest user space.  Isn't there another way to share such
+> info from host to guest?
+> 
+
+For sure. But the aim of this proposal is to have an interoperable time
+synchronization solution for VMs through a Virtio device. So the idea is
+to include metrics, if a consensus on their usefulness can be reached.
+AFAIU it is difficult to bypass the kernel for Virtio devices.
+
+Thanks for the discussion,
 
 Peter
