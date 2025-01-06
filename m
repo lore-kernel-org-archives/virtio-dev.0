@@ -1,46 +1,46 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD1B79E1;
-	Thu,  2 Jan 2025 16:11:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E55013A257;
+	Mon,  6 Jan 2025 17:47:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735834310; cv=none; b=PJU0XTXN1GBPpyFU+Sj/8EvpKlK6eyuZePdV/dbAxGDASE42cD+FMXIpjchgK4EO1cCJSqEy/tglRYKok6f587Vc6KnzYCEbWCanym27E1q0s4o9YdZkaNZnW7XBfwxx/BoQ4lVk5U2jZCcpsKmnmMWkbFhc9ISFhUm73MdvV/A=
+	t=1736185676; cv=none; b=ug50pYsKpmZ5FMpk8zLGMOxWrtr/qoJZlut5ZqfFq+3sk9J+QykPZBJs71RyhHFWy0CBdiiweOL6nyiT+/8VLW6EG5BsZUcSwDYpL9lQM29Xzk5iIjO8FsDC+wiLIH0qr0o3T3KN3H4s3IqEYjyLRMkNDCdZverBC/v1DNvlW1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735834310; c=relaxed/simple;
-	bh=SkdBCFy4/NYiYeWlSPzQFSiysAAtTRucOg9v2ucffpU=;
+	s=arc-20240116; t=1736185676; c=relaxed/simple;
+	bh=dJwLyChi/EnOT24oVuUMdY6a6RUOFaJJrcDRbpRF8XM=;
 	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=th0pEg/eJYRJ0+5GzlRuJ9a4xJxHLg/LE7RiqVUmaF0ZfZGDTuuRxSAHcP4RBRVBCHXPEX4z8jWxAwCnGXns9lMvb8mvg34mJI3GqfORfOc6MM+YFei5pTKZeOSciSyzG9YfUxtsPesfB2+dxYKOdAMnBMkT41wJGCtNDb8i5CE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=GQracyhZ; arc=none smtp.client-ip=205.220.180.131
+	 Content-Type:Content-Disposition:In-Reply-To; b=TKkEdbS9QRdxFij2bViN2kL3/Hq7bxHj7ygriHmUCVrlRdTzVn3yFl5zuVEAXkJbBpw8nf3loeRiwh7w/bLlfm89m5XF09HzNG9BJTl4aXbm6Hj5W0KxYKTV7YHzrzX2F4pG3z4qtkdLy8X+EICvII9Fm+lJ/mUztXjgba4nqxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VdunQCs8; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="GQracyhZ"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 502G1LTs001672;
-	Thu, 2 Jan 2025 16:11:19 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VdunQCs8"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 506G2oDm001290;
+	Mon, 6 Jan 2025 17:47:25 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=9lfWFz+UlOJFT1pVZfvVtOpg
-	IDbcrmg5DUrHytsFqfk=; b=GQracyhZ6MwHkhSB7WoQJ5Ton7uenYr2lz4hABem
-	HjdgWa84tVLGDVdtJbkkBzVxdS6U//kZ6jhYFJVrt775TtocRZ6TtkcjamTLEItf
-	Zb5W1fDU4ygzuI1CHmUuBczMgd4cuCps2juxFG9CNhSWAdBhrQx8OIF5NdmRdRNw
-	2WO2z9uvZzx39LlJvQg4J+XbyIDVC1FT6NiMg30JXNoaFHND2cFM8AO2gwbq+qlu
-	jj1PnSfJRqVKQSw9rolqEutHiWA4Orw9RTNbSB+oYb+4IQlNuyD/a6ROTAmtzuJq
-	ZD/qPASsH+6aK2v5+isiT0miNCe9+JtXGECZHUlR6Ubg2w==
+	:references:subject:to; s=qcppdkim1; bh=g1OlXN+r8fkCZxXYqiGEVezy
+	SBUM+VtpKZlgxYr1d5Q=; b=VdunQCs8SYsDOiv4awx4CrGCyLFTKZsFRoJP5MAs
+	gCXDAYo8FfCFgmVKQSOGuikcwyXQp7GKx8jyPTbvBpePGFyhrjKK2MBm8TMemFnF
+	+KDd7t6oo4tt7qfejoWRUypayNjbrh4xih7GhcHzYv25J9nGNZZisBH9/QtUGFWv
+	9ijqg1PX+tpp4gIe6JosD3AmbZ2EqJuAPjczm37TVwMdbj9DMiM6PrB4QJgNjS22
+	bKWwhpOaUkp9brjRZb2sju2BTglSeZBS/nVEiKoHNzPBZ1UGxIi0DJPbapAvj6hr
+	wVxcxBX/DSlOOsOyBksy90HuSh5oizXO20Xokh8uNIXJiQ==
 Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43wrefgq0s-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 440jbmg7pt-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 02 Jan 2025 16:11:19 +0000 (GMT)
+	Mon, 06 Jan 2025 17:47:25 +0000 (GMT)
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 502GBBYO015448
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 506HlOFm025416
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 2 Jan 2025 16:11:11 GMT
+	Mon, 6 Jan 2025 17:47:24 GMT
 Received: from PHILBER.na.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Thu, 2 Jan 2025 08:11:04 -0800
-Date: Thu, 2 Jan 2025 17:11:01 +0100
+ 15.2.1544.9; Mon, 6 Jan 2025 09:46:28 -0800
+Date: Mon, 6 Jan 2025 18:46:17 +0100
 From: Peter Hilber <quic_philber@quicinc.com>
 To: Richard Cochran <richardcochran@gmail.com>
 CC: <linux-kernel@vger.kernel.org>, <virtualization@lists.linux.dev>,
@@ -72,12 +72,14 @@ CC: <linux-kernel@vger.kernel.org>, <virtualization@lists.linux.dev>,
  Behnsen" <anna-maria@linutronix.de>
 Subject: Re: [RFC PATCH 1/2] ptp: add PTP_SYS_OFFSET_STAT for xtstamping with
  status
-Message-ID: <a352mltlizneonxazn4bffydn57fyudrc3zougii2rnatg3jga@3yagssaob5sb>
+Message-ID: <ae5hdnhewksv2wkshxyyt3262mqi6o45opkl4occ5nt5zidr5e@lii7fgucetvu>
 References: <20241219204208.3160-1-quic_philber@quicinc.com>
  <20241219204208.3160-2-quic_philber@quicinc.com>
  <Z2WLGHRdlsRpT6BL@hoboy.vegasvil.org>
  <wcxdbqhoe4cppukyy5rvkq5am4ht6wk5u6d6g2k2swqhidjw7i@6nar5vuusm35>
  <Z2ymZuiFqY8mxihJ@hoboy.vegasvil.org>
+ <a352mltlizneonxazn4bffydn57fyudrc3zougii2rnatg3jga@3yagssaob5sb>
+ <Z3a892mBOSRl6BlN@hoboy.vegasvil.org>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
@@ -86,102 +88,44 @@ List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <Z2ymZuiFqY8mxihJ@hoboy.vegasvil.org>
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+In-Reply-To: <Z3a892mBOSRl6BlN@hoboy.vegasvil.org>
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 88onBiDbs699f8ZIpzTSAWzT212S52iY
-X-Proofpoint-ORIG-GUID: 88onBiDbs699f8ZIpzTSAWzT212S52iY
+X-Proofpoint-GUID: r9V-M1YzFMt2DWTG4Vxl7gdWGlCaAN0G
+X-Proofpoint-ORIG-GUID: r9V-M1YzFMt2DWTG4Vxl7gdWGlCaAN0G
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
  definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- lowpriorityscore=0 clxscore=1015 impostorscore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 spamscore=0 priorityscore=1501
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501020142
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ impostorscore=0 malwarescore=0 spamscore=0 bulkscore=0 adultscore=0
+ phishscore=0 mlxlogscore=874 priorityscore=1501 lowpriorityscore=0
+ clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501060156
 
-On Wed, Dec 25, 2024 at 04:42:14PM -0800, Richard Cochran wrote:
-> On Mon, Dec 23, 2024 at 07:13:46PM +0100, Peter Hilber wrote:
+On Thu, Jan 02, 2025 at 08:21:11AM -0800, Richard Cochran wrote:
+> On Thu, Jan 02, 2025 at 05:11:01PM +0100, Peter Hilber wrote:
+> > For sure. But the aim of this proposal is to have an interoperable time
+> > synchronization solution for VMs through a Virtio device. So the idea is
+> > to include metrics, if a consensus on their usefulness can be reached.
+> > AFAIU it is difficult to bypass the kernel for Virtio devices.
 > 
-> > The precise synchronization of the VM guest with its immediate
-> > environment can also be important; a VM guest may depend the decision
-> > about leap second smearing on its environment.
+> Providing clock metrics only makes sense when there is some choice to
+> be made based on those metrics.  If the "limited" VM guests don't even
+> have networking, then they have no choice but to accept the time from
+> the VM host, right?  In which case, the metrics do not provide any
+> benefit to the guest.
 > 
-> I thought that the whole point of using a VM is to isolate the guests
-> from each other and the host.  What you describe is a promiscuous
-> coupling between guest and host, and the kernel shouldn't be in
-> the business of supporting such behavior.
-> 
+> Or what am I missing?
 
-Why? There is already ptp_kvm etc. in the kernel.
+The proposal is not limited to guests with no networking.
 
-Would it be more acceptable to just announce leap seconds, but not
-whether to smear?
+Guests *might* not have internet access (might not be "internetworked").
+Even then, guests can still interact with the environment (so metrics
+can be important) and might decide to reduce features when the metrics
+are too bad.
 
-> > Also, the administrative
-> > configuration choice may change over the lifetime of a system.
-> 
-> Right, which is why we should keep those choices out of kernel space.
-> Kernel provides mechanism, not policy.
->  
-
-As discussed, the policy would be forwarded, not determined, by the
-kernel.
-
-If the policy would be forwarded via NTP (by the NTP server smearing or
-not smearing leap seconds), this would have the following disadvantages:
-
-- need to use an NTP server just for announcing leap seconds
-
-- redundancy of serving time both via NTP and via PTP clocks (for better
-  precision)
-
-- no awareness about leap seconds in case of smearing.
-
-> > The intent is to also support (embedded) VM clients which are themselves
-> > not necessarily internetworked, which do not get a lot of maintenance,
-> > and which are not guaranteed to get an update within the typically less
-> > than 6 months between leap second announcement and occurrence.
-> 
-> Again, I don't think the kernel should be the solution to guests that
-> lack networking.  Instead, the place to fix the problem is at the
-> root, namely in the guests.
-> 
-
-I do not understand. Is the point that guests should decide through
-another channel about leap second smearing?
-
-> > I agree that a device driver should not determine clock quality metrics.
-> > The intent is that the driver forwards metrics, if such are advertised
-> > by the device. These metrics should describe the accuracy etc. of the
-> > device itself.
-> 
-> Overall, I don't trust devices to tell the truth about their
-> qualities.  But putting that aside, we would need to see some kind of
-> commonality in hardware implementation to advertise their metrics.
-> However, AFAICT there is no such industry practice on the market.
-> 
-
-I hope there will be some feedback from third parties (at least related
-to virtualization).
-
-> > The patch message should document this more clearly. The
-> > metrics can be determined e.g. by virtualization host user space
-> > software. The device driver would just expose the device metrics to user
-> > space.
-> 
-> Again, host user space shouldn't misuse the kernel to share random
-> metrics with guest user space.  Isn't there another way to share such
-> info from host to guest?
-> 
-
-For sure. But the aim of this proposal is to have an interoperable time
-synchronization solution for VMs through a Virtio device. So the idea is
-to include metrics, if a consensus on their usefulness can be reached.
-AFAIU it is difficult to bypass the kernel for Virtio devices.
-
-Thanks for the discussion,
+Thanks for the comments,
 
 Peter
