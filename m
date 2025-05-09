@@ -1,132 +1,349 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A91861E3769
-	for <virtio-dev@lists.linux.dev>; Mon, 31 Mar 2025 12:20:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E4F23505D;
+	Fri,  9 May 2025 16:08:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743423619; cv=none; b=m7vMMz8RmximQlctyaJA4j09OA54qw/EenhWwILsHoML8u+RkakU7tIA0tfxzK3izwLZ9lC34V/vS0ff/BO+xyIWcYUD7ufdo7qyBAOY9FxT8cu3gTwstbsgyZZ5tlJ05NEs/4/85l+T1IVKNdDt5lDG0x48zxqd6+PyWrvoIv0=
+	t=1746806914; cv=none; b=eMRjSEDpPtknli1dRVIxUmRRD3aHWBAiYr+pVK3mPgi8OVzfvu+ivwrB/mY3lWui1jZxoeC/Xa7Zasf2INWoShzIK50781DNz+/tsT+1UzlbLaZNlV9323YxQEkIcNeaKqwbghNb83zTEhNMLIrJX56/3/rwEFDmHqn9DCa45To=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743423619; c=relaxed/simple;
-	bh=Mcuo82e3bedOnkYCnMSto9KYztISX1z5XNXm5/fMziA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rqfmDENnbN8UFnfnjztu93HcfNgZ5XI5ar/PsQPow28e+gWOTmU4aHgSVeqC1eSUvNOOwS/Dugyqeq1Vd6Z8xUpVoCvOmSb+E2icbYojtr3XuHCXLaatRk1Df4X0Zan7vNva2cbBHR93pDkR/uABL4ByEfiLdUUOUTtjAtVp+A0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TS5rsKj0; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1746806914; c=relaxed/simple;
+	bh=ZwFuEe8DkkWpSbklp9tJMWWdWWEXy5q/e/ChlpnUxK4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TPkACXMUOOjuiNtpKdVOFyqbh81fAsYLHH/KZbQ9x33qgZ+jJxQH1Q0o9bwkGZjYui1HDkGPO3wMyVs1voBgyS/qBn1OeR3JLxfsTH3/sWUrA6yQuPwTvz+hI+FIPrxOOJJqX3XQ7z2jAdf1u56vTbr2wXwaAM7EJXuVOCToRZs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=SZoN0nxa; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TS5rsKj0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1743423615;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CRakDc7PqzvR6cPiRlYWPeF36XguxfG77r5itvmH1Js=;
-	b=TS5rsKj0+geijYtxuYrel7F549LkQAMOT0Q9xIu8TF4qJjDqgZ+AluGhV7m/cKMS8dW1AL
-	Z70Vo7xQ4Gu/RNSJdzAi3/nQAcN8urubXjlc1W23R3aacaERH+XOz+bXp7AcX5hJ43lpXk
-	D11ihgmcjM27EsLBvFMRUuP835nAPxc=
-Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-484-RMo1IX2kPyq0ehHLdWCLJg-1; Mon,
- 31 Mar 2025 08:20:13 -0400
-X-MC-Unique: RMo1IX2kPyq0ehHLdWCLJg-1
-X-Mimecast-MFC-AGG-ID: RMo1IX2kPyq0ehHLdWCLJg_1743423611
-Received: from mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.15])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id DF6DA195608A;
-	Mon, 31 Mar 2025 12:20:10 +0000 (UTC)
-Received: from localhost (unknown [10.2.16.29])
-	by mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id DE5571956094;
-	Mon, 31 Mar 2025 12:20:09 +0000 (UTC)
-Date: Mon, 31 Mar 2025 08:20:08 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@gmail.com>,
-	Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-	Rust VMM <rust-vmm@lists.opendev.org>,
-	QEMU Devel <qemu-devel@nongnu.org>, virtio-comment@lists.linux.dev,
-	VirtIO Dev List <virtio-dev@lists.linux.dev>,
-	Bill Mills <bill.mills@linaro.org>,
-	Manos Pitsidianakis <manos.pitsidianakis@linaro.org>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	David Hildenbrand <david@redhat.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Matias Vara Larsen <mvaralar@redhat.com>,
-	Sergio Lopez <slp@redhat.com>
-Subject: Re: Central repo for VirtIO conformance tests?
-Message-ID: <20250331122008.GA190936@fedora>
-References: <87semtpjrt.fsf@draig.linaro.org>
- <CAJSP0QXX-hpOJ_E1oaR6NcyvBnC2mVAwfd8NYUWTDqPrtctAuQ@mail.gmail.com>
- <Z-qHKUveoHc85koj@redhat.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="SZoN0nxa"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 549Bw1nH016178;
+	Fri, 9 May 2025 16:07:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=x//HoGDvChJRzD+X0fsLWD
+	YpL90eu8WeJV48DlkoUUs=; b=SZoN0nxaWT2USYoaRZXm4fQ3KpwCzTKOeIvZeU
+	aT+wktMur7VUKdwYmLGZ0nG93f0SHr6viBcqV4XeMoXTXsTlNEC/IP53cWmRexX6
+	WFM90x7pTMHHL4SAZVYt70LuhHFvFMqyXDsyFoClvMy5rVJkdp+R6Wu/U9oVq7JS
+	SGFpNCrWglEO8j1+JNSpO8APYocVYiQ5g4K6tA6+kBIddvNgY2hLfIynqEU2Tzor
+	ccpyr4ZrkzhRbsd6rzKlKgvlKQY/6UI1O1l3Glq3ZFSmqIPE9KAFEXWiSgRTN8wD
+	484J8sX6KJos+NhxEH+Fu+xXVdwIyXLaitg2teeGDa6t7v5w==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46gnp8w56f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 09 May 2025 16:07:59 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 549G7wYu028689
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 9 May 2025 16:07:58 GMT
+Received: from PHILBER.na.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Fri, 9 May 2025 09:07:52 -0700
+From: Peter Hilber <quic_philber@quicinc.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+CC: Trilok Soni <quic_tsoni@quicinc.com>,
+        Peter Hilber
+	<quic_philber@quicinc.com>,
+        =?UTF-8?q?Eugenio=20P=C3=A9rez?=
+	<eperezma@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <virtualization@lists.linux.dev>,
+        David Woodhouse <dwmw2@infradead.org>,
+        "Ridoux, Julien" <ridouxj@amazon.com>,
+        Daniel Lezcano
+	<daniel.lezcano@linaro.org>,
+        Alexandre Belloni
+	<alexandre.belloni@bootlin.com>,
+        Parav Pandit <parav@nvidia.com>,
+        "Matias
+ Ezequiel Vara Larsen" <mvaralar@redhat.com>,
+        Cornelia Huck
+	<cohuck@redhat.com>, Simon Horman <horms@kernel.org>,
+        <virtio-dev@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-rtc@vger.kernel.org>
+Subject: [PATCH v7 0/4] Add virtio_rtc module
+Date: Fri, 9 May 2025 18:07:21 +0200
+Message-ID: <20250509160734.1772-1-quic_philber@quicinc.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="1UzjfE4LHL1iuGco"
-Content-Disposition: inline
-In-Reply-To: <Z-qHKUveoHc85koj@redhat.com>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.15
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: wNjG3jqLdb7nYrjnkIHiEtBFTk4lt0oK
+X-Proofpoint-ORIG-GUID: wNjG3jqLdb7nYrjnkIHiEtBFTk4lt0oK
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA5MDE1OSBTYWx0ZWRfX31FMGvnspxZw
+ tFJmNugxL9LJLzwE8vLvUVMpp543K27+Mk6/Q6bHiwV5Nk79wSG4V2eMbe7eI94gi3AH34yKRVE
+ NzK9LUorPKB2/DbQtoaUXoaA+IABcQLv8ZaesC8WDE8pv15GiLmSQIV3nzvAqMKUzcYqc0CN805
+ KVlESk6cFbkxuBkZVWl05SOABX/W2c0HEoz3EqiRyZetHi0OfIovQjXO0popI+GjhXYuotRd4xy
+ A0IDJppHDY+25//ER93FYP7Mcp7/n0Aj4crB7/qFot3Rk86xqE6YmMh6Vs4bdNvyy9Ae6AtKELB
+ Ocz3nxVZ2ArSzVxPTBTweBhdmNKw9z6JHo/KT+KXbAC//gBO/j3Az+CV6k6oG0isicr7arPZc4p
+ 22q3BWAe8eB3z0y981F2qW0Hp7ragj8QMyZrSbfKvno5VRTDC3ROS5nDDcEtKdX03dbKPh6U
+X-Authority-Analysis: v=2.4 cv=e/4GSbp/ c=1 sm=1 tr=0 ts=681e285f cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=GEpy-HfZoHoA:10 a=dt9VzEwgFbYA:10 a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8
+ a=dIu3SnmMAAAA:8 a=nYO1uykr7MxyYb2uiYgA:9 a=TjNXssC_j7lpFel5tvFf:22
+ a=Ua9G7VpiFza3u12uuhVB:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-09_06,2025-05-09_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 adultscore=0 phishscore=0 clxscore=1011
+ mlxlogscore=999 spamscore=0 bulkscore=0 suspectscore=0 lowpriorityscore=0
+ mlxscore=0 malwarescore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505090159
+
+This series implements a driver for a virtio-rtc device conforming to spec
+proposal v9 [1]. It includes a PTP clock driver and an RTC class driver
+with alarm.
+
+v7 updates
+==========
+
+v7 adds a char length printf modifier to avoid a warning with old
+compilers.
+
+The spec v9 changes do not affect this driver implementation.
+
+Overview
+========
+
+This patch series adds the virtio_rtc module. The virtio_rtc module
+implements a driver compatible with the proposed Virtio RTC device
+specification [1]. The Virtio RTC (Real Time Clock) device provides
+information about current time. The device can provide different clocks,
+e.g. for the UTC or TAI time standards, or for physical time elapsed since
+some past epoch. The driver can read the clocks with simple or more
+accurate methods. Optionally, the driver can set an alarm.
+
+For the Virtio RTC device, there is currently a proprietary implementation,
+which has been used for testing.
+
+PTP clock interface
+===================
+
+virtio_rtc exposes clocks as PTP clocks to userspace, similar to ptp_kvm.
+If both the Virtio RTC device and this driver have special support for the
+current clocksource, time synchronization programs can use
+cross-timestamping using ioctl PTP_SYS_OFFSET_PRECISE2 aka
+PTP_SYS_OFFSET_PRECISE. Similar to ptp_kvm, system time synchronization
+with single-digit ns precision is possible with a quiescent reference clock
+(from the Virtio RTC device). This works even when the Virtio device
+response is slow compared to ptp_kvm hypercalls.
+
+The following illustrates a test using PTP_SYS_OFFSET_PRECISE, with
+interspersed strace log and chrony [2] refclocks log, on arm64. In the
+example, chrony tracks a virtio_rtc PTP clock ("PHCV", /dev/ptp0). The raw
+offset between the virtio_rtc clock and CLOCK_REALTIME is 0 to 1 ns. At the
+device side, the Virtio RTC device artificially delays both the clock read
+request, and the response, by 50 ms. Cross-timestamp interpolation still
+works with this delay. chrony also monitors a ptp_kvm clock ("PHCK",
+/dev/ptp3) for comparison, which yields a similar offset.
+
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000329>
+	===============================================================================
+	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
+	===============================================================================
+	2023-06-29 18:49:55.595742 PHCK    0 N 0  1.000000e-09  8.717931e-10  5.500e-08
+	2023-06-29 18:49:55.595742 PHCK    - N -       -        8.717931e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101545>
+	2023-06-29 18:49:56.147766 PHCV    0 N 0  1.000000e-09  8.801870e-10  5.500e-08
+	2023-06-29 18:49:56.147766 PHCV    - N -       -        8.801870e-10  5.500e-08
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000195>
+	2023-06-29 18:49:56.202446 PHCK    0 N 0  1.000000e-09  7.364180e-10  5.500e-08
+	2023-06-29 18:49:56.202446 PHCK    - N -       -        7.364180e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101484>
+	2023-06-29 18:49:56.754641 PHCV    0 N 0  0.000000e+00 -2.617368e-10  5.500e-08
+	2023-06-29 18:49:56.754641 PHCV    - N -       -       -2.617368e-10  5.500e-08
+	ioctl(5</dev/ptp3>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.000270>
+	2023-06-29 18:49:56.809282 PHCK    0 N 0  1.000000e-09  7.779321e-10  5.500e-08
+	2023-06-29 18:49:56.809282 PHCK    - N -       -        7.779321e-10  5.500e-08
+	ioctl(6</dev/ptp0>, PTP_SYS_OFFSET_PRECISE, 0xffffe86691c8) = 0 <0.101510>
+	2023-06-29 18:49:57.361376 PHCV    0 N 0  0.000000e+00 -2.198794e-10  5.500e-08
+	2023-06-29 18:49:57.361376 PHCV    - N -       -       -2.198794e-10  5.500e-08
+
+This patch series only adds special support for the Arm Generic Timer
+clocksource. At the driver side, it should be easy to support more
+clocksources.
+
+Fallback PTP clock interface
+----------------------------
+
+Without special support for the current clocksource, time synchronization
+programs can still use ioctl PTP_SYS_OFFSET_EXTENDED2 aka
+PTP_SYS_OFFSET_EXTENDED. In this case, precision will generally be worse
+and will depend on the Virtio device response characteristics.
+
+The following illustrates a test using PTP_SYS_OFFSET_EXTENDED, with
+interspersed strace log and chrony refclocks log, on x86-64 (with `ts'
+values omitted):
+
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	===============================================================================
+	   Date (UTC) Time         Refid  DP L P  Raw offset   Cooked offset      Disp.
+	===============================================================================
+	2023-06-28 14:11:26.697782 PHCV    0 N 0  3.318200e-05  3.450891e-05  4.611e-06
+	2023-06-28 14:11:26.697782 PHCV    - N -       -        3.450891e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:27.208763 PHCV    0 N 0 -3.792800e-05 -4.023965e-05  4.611e-06
+	2023-06-28 14:11:27.208763 PHCV    - N -       -       -4.023965e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:27.722818 PHCV    0 N 0 -3.328600e-05 -3.134404e-05  4.611e-06
+	2023-06-28 14:11:27.722818 PHCV    - N -       -       -3.134404e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:28.233572 PHCV    0 N 0 -4.966900e-05 -4.584331e-05  4.611e-06
+	2023-06-28 14:11:28.233572 PHCV    - N -       -       -4.584331e-05  4.611e-06
+	ioctl(5, PTP_SYS_OFFSET_EXTENDED, {n_samples=10, ts=OMITTED}) = 0
+	2023-06-28 14:11:28.742737 PHCV    0 N 0  4.902700e-05  5.361388e-05  4.611e-06
+	2023-06-28 14:11:28.742737 PHCV    - N -       -        5.361388e-05  4.611e-06
+
+PTP clock setup
+---------------
+
+The following udev rule can be used to get a symlink /dev/ptp_virtio to the
+UTC clock:
+
+	SUBSYSTEM=="ptp", ATTR{clock_name}=="Virtio PTP type 0/variant 0", SYMLINK += "ptp_virtio"
+
+The following chrony configuration directive can then be added in
+/etc/chrony/chrony.conf to synchronize to the Virtio UTC clock:
+
+	refclock PHC /dev/ptp_virtio refid PHCV poll -1 dpoll -1
+
+RTC interface
+=============
+
+This patch series adds virtio_rtc as a generic Virtio driver, including
+both a PTP clock driver and an RTC class driver.
+
+Feedback is greatly appreciated.
+
+[1] https://lore.kernel.org/virtio-comment/20250507155036.1489-1-quic_philber@quicinc.com/
+[2] https://chrony.tuxfamily.org/
+
+Changelog
+=========
+
+ v7:
+
+- Use char length printf modifier to avoid truncation warning (kernel test
+  robot).
+
+v6:
+
+- Shorten PTP clock names to always fit into 32 bytes.
+
+- Fix sparse warning about endianness mismatch (Simon Horman).
+
+- Do not mark comments missing parameter documentation as kernel doc (Simon
+  Horman).
+
+- Improve error status computation readability.
+
+- Avoid conditional locking within a block.
+
+v5:
+
+- Update to virtio-rtc spec v7, essentially removing definitions.
+
+- Fix multiple bugs after readying device during probe and restore.
+
+- Actually initialize Virtio clock id for RTC class device.
+
+- Add freeze/restore ops already in first patch.
+
+- Minor changes:
+
+  - Use new APIs devm_device_init_wakeup(), secs_to_jiffies().
+
+  - Fix style issues.
+
+  - Improve logging types and clarity.
+
+  - Drop unnecessary memory barrier pair.
+
+  - Return error status from device, whenever available.
+
+v4:
+
+- Update Virtio interface to spec v6.
+
+- Distinguish UTC-like clocks by handling of leap seconds (spec v6).
+
+- Do not create RTC class device for clocks which may step on leap seconds
+  (Alexandre Belloni).
+
+- Clear RTC class feature bit instead of defining reduced ops
+  (Alexandre Belloni).
+
+- For PTP clock name, always use numeric clock type, and numeric variant.
+
+- Use macros for 64-bit divisions.
+
+- Remove unnecessary memory barriers.
+
+- Cosmetic improvements.
+
+- Drop upstreamed timekeeping bugfixes from series.
+
+v3:
+
+- Update to conform to virtio spec RFC v3 (no significant behavioral
+  changes).
+
+- Add RTC class driver with alarm according to virtio spec RFC v3.
+
+- For cross-timestamp corner case fix, switch back to v1 style closed
+  interval test (Thomas Gleixner).
+
+v2:
+
+- Depend on patch series "treewide: Use clocksource id for
+  get_device_system_crosststamp()" to avoid requiring a clocksource pointer
+  with get_device_system_crosststamp().
+
+- Assume Arm Generic Timer will use CP15 virtual counter. Drop
+  arm_arch_timer helper functions (Marc Zyngier).
+
+- Improve cross-timestamp fixes problem description and implementation
+  (John Stultz).
 
 
---1UzjfE4LHL1iuGco
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Peter Hilber (4):
+  virtio_rtc: Add module and driver core
+  virtio_rtc: Add PTP clocks
+  virtio_rtc: Add Arm Generic Timer cross-timestamping
+  virtio_rtc: Add RTC class driver
 
-On Mon, Mar 31, 2025 at 01:14:33PM +0100, Daniel P. Berrang=C3=A9 wrote:
-> On Mon, Mar 31, 2025 at 07:52:33AM -0400, Stefan Hajnoczi wrote:
-> > On Mon, Mar 31, 2025 at 6:39=E2=80=AFAM Alex Benn=C3=A9e <alex.bennee@l=
-inaro.org> wrote:
-> > > So what do people think? Where would be a good place for common test
-> > > repository to live?
-> >=20
-> > Maintaining the tests alongside the VIRTIO spec seems like a good fit
-> > to me. Here is information on how to create a GitHub repo under the
-> > OASIS VIRTIO Technical Committee:
-> > https://www.oasis-open.org/open-repositories/
-> >=20
-> > I don't see a reason to maintain the tests under QEMU or rust-vmm
-> > unless they provide some unique project infrastructure that an
-> > independent project would lack or need to reinvent.
->=20
-> IMHO opening that very link above illustrates the reason why *NOT* to
-> host this under OASIS. Any potential contributor is faced with a 4 page
-> long blurb of all sorts of rules & legal requirements, including
->=20
->   "Each TC Open Repository shall be subject to a Contributor
->    License Agreement (=E2=80=9CCLA=E2=80=9D) by which all persons making =
-repo
->    contributions into it are bound."
->=20
-> Hosting anywhere else would be better from the POV of removing barriers
-> to potential contribution.
+ MAINTAINERS                          |    7 +
+ drivers/virtio/Kconfig               |   64 ++
+ drivers/virtio/Makefile              |    5 +
+ drivers/virtio/virtio_rtc_arm.c      |   23 +
+ drivers/virtio/virtio_rtc_class.c    |  262 +++++
+ drivers/virtio/virtio_rtc_driver.c   | 1407 ++++++++++++++++++++++++++
+ drivers/virtio/virtio_rtc_internal.h |  122 +++
+ drivers/virtio/virtio_rtc_ptp.c      |  347 +++++++
+ include/uapi/linux/virtio_rtc.h      |  237 +++++
+ 9 files changed, 2474 insertions(+)
+ create mode 100644 drivers/virtio/virtio_rtc_arm.c
+ create mode 100644 drivers/virtio/virtio_rtc_class.c
+ create mode 100644 drivers/virtio/virtio_rtc_driver.c
+ create mode 100644 drivers/virtio/virtio_rtc_internal.h
+ create mode 100644 drivers/virtio/virtio_rtc_ptp.c
+ create mode 100644 include/uapi/linux/virtio_rtc.h
 
-I didn't notice the CLA requirement. I agree, it's better to host it
-elsewhere.
 
-Stefan
-
---1UzjfE4LHL1iuGco
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmfqiHgACgkQnKSrs4Gr
-c8imawgAupoyqxCLxGFaH4fb9FOtzqOvMBpqPWfWZ+2v3WsDyUGU2aVaWS01EwUp
-nGP8qqrN7OO0ykPLqKPlLdNi5KT4reRDC00lZMU5dSmRUjiWpns8GzTvTsI2VLof
-9vih/PdJ5NUPpSvpWfSHVJh6WGKeaqWb1lm03hDx/c4Ce9GUpTbGiGOqlkrDGcNK
-YDe0f9qjGnpHAZB3aa2OPGWj6AAFrRuJn+DLFGsAsi8qJRdZk5ExEkys2s9QjL6y
-l9V697MvY1v6qqUau5maQqUu0+tlIXRST2Y22xJRexwlguivjWDpuJEwGuMS6eBE
-S84Y9haeM5aG78cmjMmBDLJCn01nWw==
-=l7dj
------END PGP SIGNATURE-----
-
---1UzjfE4LHL1iuGco--
+base-commit: 1f69fe75a3286daf4fdaad9c5f72c7ac507d7ff0
+-- 
+2.43.0
 
