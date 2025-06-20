@@ -1,214 +1,135 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAEC121C18E
-	for <virtio-dev@lists.linux.dev>; Thu, 29 May 2025 21:34:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 639591EB5D0
+	for <virtio-dev@lists.linux.dev>; Fri, 20 Jun 2025 04:13:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748554461; cv=none; b=sD6BQIyQB9O1bUYhEpVQ9/gpeqz/B6ySRSmgi02jgbKlBiDgyZZ7+16/A76RA1asNjEX8vAP+inaL4AvsNrdjKvcDMEL5TdcFbbgz1Iq0QYwXc/rFFpwi7WFHxoSIz6wANxec7TUu/k20C9+rap5nzEQf8hHgR1PJxfxNpu5m5k=
+	t=1750392788; cv=none; b=RCtG4TMVHZ3sNj3kXmnWslacp40kEldx9uatp7T/9PWl/qNToMj50P71tFGhD8ZHGlts3Wl5w/gnYJMuAq1An1/9yFgoqvHVwBsyGr5LD9Yiqrl1t+tVO/Kfwr4Mu7TxvQOSxciJcQI+k9qOTUMgR1XfzMlR+Xat87ZUlihUU+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748554461; c=relaxed/simple;
-	bh=kfCpFTFrbdTQIknywtp9Sk0BnfT20KTeofl1Pd7JlBw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=Sbv7MvoH5UEU/VECBeWemft2IrfnMEMn7vk85oeWF1pulV4jmaKJsue7Kkziqj25l943GW4uT7bgOqZ6fEcFHZ94iRsqAEaNXrsp5BKoK0b3E6Got3HfhtLmZVTslmqhSzwwwaY7opKmPT+s7Kh3Gfx+zwqW19wQK6Wq3d4/Q64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VQXTjyls; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1750392788; c=relaxed/simple;
+	bh=Qg6fg+NzuqdMyYShoYlTo9gRbCDKuVtxvxlAQWxQfUI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fi3pJp8A+0hg7DiytP2sSmCS51FRv/pho7tSWuMoFqia2yT4sgr0w/JslBlP5ZRGAMwbdwpyG9fvSzNes4c7jMCbO8YJA1kSIzBXwn238+KuMkevf6nXqpFLIodGJOhNPq+qSLhq406DiwTeSPATUoC77JP5mdfLrp2Sz+fB8mY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=DIFq8ThY; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VQXTjyls"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1748554458;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=T/Hh/yH90kbYQevGGK0fC8DG2lqe7PbfAUHkaT3/my4=;
-	b=VQXTjyls6OADqUPaI8yQBJHyxxGm83y0kPdO8DI4BcnrAxdBgQTf5JTI8ytxCk7v5wFEaU
-	+bp+m3Fb9PgzrRwww7Me9xTyJ6IcXLO8ssvoBikileaiZjEytuEeK3FKEMu1eapSu9/0eg
-	go/tbQ/onKByFfqa8uS3PVyekGL7Mw4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-651-QXj0PDb1POyhH2VdXYfcOA-1; Thu, 29 May 2025 17:34:17 -0400
-X-MC-Unique: QXj0PDb1POyhH2VdXYfcOA-1
-X-Mimecast-MFC-AGG-ID: QXj0PDb1POyhH2VdXYfcOA_1748554456
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-450d57a0641so4190225e9.3
-        for <virtio-dev@lists.linux.dev>; Thu, 29 May 2025 14:34:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748554456; x=1749159256;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=T/Hh/yH90kbYQevGGK0fC8DG2lqe7PbfAUHkaT3/my4=;
-        b=sStWqKPFMLyqHl8DYfYjWp3avhcDGMeBwEqaVm2OakQ9olboMRZR97suXLqBsBMW3T
-         aKFRKhPqC0lQB494XJcoQjK3Im9yUwxfLrhAVm/oeZxAbN7BT/TMmKwMf44E/Y8t3g98
-         /bs7+2HTO+TSQKXqVsroFY50NnDXa+yQHDGyozdZ4R36cAfYB84q7+FrCuq0wxZ8czmR
-         MLWjr5cZFGNPIiNWQ7rBsN670ZK3rNjOi9inpGvOxG2ibuOqEU9yA5Nuo0sNgIWB6A02
-         mioh8BL/hGkIWDe4SLCsMChpc7S5WsvkCEVZa40VbThyK+rdpg0dvvcxRtdgdtAsq7+k
-         60fQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX444or1V8EhdQz5ZZNcvXjBxJZ6kuXFUFQ+GOGUUv09539j7Qwvvy0NbwHDXtkK+M1wiBPYILOO/Qf@lists.linux.dev
-X-Gm-Message-State: AOJu0YztEkg8t5tuvTVdq5ffMFogSNhfCKuwJAIQDfa85adjY90+6fhx
-	d0bC/vs/sdJcpihdFb5A7fPSh5STLi+mPSuIA7tpORS5JQ/BmIUytlGL4kb3mwgvfSNT4956/0N
-	0lv+ugvQ5L10DxGtkESgexGRXunZG+9l8spM2BzJvcdJ/ibsH8DrVHXs8WdCTazI=
-X-Gm-Gg: ASbGncsDCPzllfF5bEYMe916H/IASQCkaM93fQc54sJqKqkh/1PGSgTpwPe69KEzSOH
-	Ije5UyeHxlx2JyM+NwNcignv2gPwAMEMZW+hHcyK6E6TDjCkf4hLPP3/jwd82Vxd9+D1HubOEUR
-	R+xYvFPBk42TEE+vQbAK2G39LtgD0mZZGm1Pn8GO/sS5gNBl6+f9AyckWu7IuxCwphbLJ3ujJY9
-	V3VNSBS+10FmifLwoDb9ZYXpujg9rv1UqI93dFeL0neMw9QrDGc94YOsL28OAO7w32+zX91JyxK
-	7s1buw==
-X-Received: by 2002:a05:600c:474e:b0:43d:878c:7c40 with SMTP id 5b1f17b1804b1-450d64e01d8mr13882255e9.10.1748554456019;
-        Thu, 29 May 2025 14:34:16 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGIvLvhcx1A90sZoU0iqK7W1Ia+ZBkZGiQMs7VA3Nq4z0nk3Itzi5JsQJs1pDj1Oxku+V729A==
-X-Received: by 2002:a05:600c:474e:b0:43d:878c:7c40 with SMTP id 5b1f17b1804b1-450d64e01d8mr13882065e9.10.1748554455579;
-        Thu, 29 May 2025 14:34:15 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc0:1517:1000:ea83:8e5f:3302:3575])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4504e245428sm50678475e9.1.2025.05.29.14.34.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 May 2025 14:34:13 -0700 (PDT)
-Date: Thu, 29 May 2025 17:34:10 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Manos Pitsidianakis <manos.pitsidianakis@linaro.org>
-Cc: virtio-comment@lists.linux.dev,
-	VirtIO Dev List <virtio-dev@lists.linux.dev>,
-	Bill Mills <bill.mills@linaro.org>,
-	David Hildenbrand <david@redhat.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Sergio Lopez <slp@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
-	Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
-Subject: Re: Central repo for VirtIO conformance tests?
-Message-ID: <20250529172335-mutt-send-email-mst@kernel.org>
-References: <87semtpjrt.fsf@draig.linaro.org>
- <CAAjaMXZgeNpExoiDKr3RRms_voE0bU9G033gOmawDqsFbGj2Gw@mail.gmail.com>
- <20250519034810-mutt-send-email-mst@kernel.org>
- <CAAjaMXafNUEk6jAkh-9iY6JNSKzawM+GRJAHAxZ6X9dkwhMyfg@mail.gmail.com>
- <20250519041030-mutt-send-email-mst@kernel.org>
- <CAAjaMXZZX+i86U4_N1_8+czc2kcWP3=NUgLjT8BMemCYBD6uUw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DIFq8ThY"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55JEAOXS015004;
+	Fri, 20 Jun 2025 04:13:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=PMtzEGhSufS4nLaMd0b5SX
+	z4IBNgJ9Xh3vB/9v3FTf0=; b=DIFq8ThYW9nyFwKFlEw/LFhBq/DeNsXywNDei1
+	838KjSjYkYfwFuWrw+rcdHT0edeRHZ7doD5GcdBW/v1FrklTm5LyqA7pByZ7ZxJF
+	15+KSMlfs6pn4hF3Ob/28lWl6yg9zvclhPpeXG3l1mxLefCb1fYzhyPimgcZRr/4
+	O5DoNvxKG4bxeIdVlyXPNjngwb93KWezz8KT/JgSfGq6tcVMV9qcR2KJmH7+OP11
+	FwknHW0VFmn2jm56d2Cesr6R/LCUE62UD3Uz5sPSq/8wN2FE2t3yRfPXLNpS1v0x
+	hlj4k+wjFtfyCIs6Dz2vkoifvyXg/pFOLXrTstvCQwgyWuJw==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4791h9hx9q-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 20 Jun 2025 04:13:01 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 55K4D0Zx008099
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 20 Jun 2025 04:13:00 GMT
+Received: from haixcui1-gv.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Thu, 19 Jun 2025 21:12:57 -0700
+From: Haixu Cui <quic_haixcui@quicinc.com>
+To: <quic_msavaliy@quicinc.com>, <broonie@kernel.org>,
+        <virtio-dev@lists.linux.dev>, <viresh.kumar@linaro.org>,
+        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hdanton@sina.com>, <qiang4.zhang@linux.intel.com>,
+        <alex.bennee@linaro.org>
+CC: <quic_ztu@quicinc.com>
+Subject: [RFC PATCH v5 0/3] Virtio SPI Linux driver
+Date: Fri, 20 Jun 2025 12:12:27 +0800
+Message-ID: <20250620041230.731504-1-quic_haixcui@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <CAAjaMXZZX+i86U4_N1_8+czc2kcWP3=NUgLjT8BMemCYBD6uUw@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: s4cYd0FfiBXD5Arh5Shubb439ma16nsJBvaNE_ZryPg_1748554456
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: X6z2IO_0_QW95-oAIbWrCq2WrozstSvS
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjIwMDAyOSBTYWx0ZWRfX/gfwoQmqgMNU
+ uIm8McDcMPj9fq+Re6XnqevKiBzA6AmgLFLZxiAjNOXhJtDIWn+1cypNpP9rgeGe/ZhfWqdu8MP
+ 2nYQ+MMNYVJyoBjnsAC72UPqRS0LGftN1crsIknueMw+9JZdNOuuasLx15blvMAXy1AvBtxUG72
+ 4+bKtn27mxeFm7op1cL91bZYIBlFQmpTZCyWvmlSb1ZUiBi6xnnCjRBdhefyXLwY9t7adb42/Tc
+ X07hhqjUc3MVLkVUDI1EecPhgy1sma6aWTDysNFZ4q0x+oYRoG4OThvmzXtVq9Lzi1/8+fPOKsz
+ e2ZmNeyzMMY61xTGOgcIrE2O1dc0BkacOgLKwdrjPEISWBPn1HFDn+6Bpj7sMYvqG3vYTIU/kOL
+ gLhgo8abR7WeoyxWpt9Rh89gGBaHHNp8gCT9QEsckdCfZDVc+Rst9fmLoIwY5TfmOw00VdgE
+X-Authority-Analysis: v=2.4 cv=UL/dHDfy c=1 sm=1 tr=0 ts=6854dfcd cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=GEpy-HfZoHoA:10 a=6IFa9wvqVegA:10 a=NEAV23lmAAAA:8 a=FS0OwZJzMusLKYCsq9IA:9
+X-Proofpoint-GUID: X6z2IO_0_QW95-oAIbWrCq2WrozstSvS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-20_01,2025-06-18_03,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxscore=0 clxscore=1011 suspectscore=0 priorityscore=1501 adultscore=0
+ lowpriorityscore=0 bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=999
+ malwarescore=0 impostorscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
+ definitions=main-2506200029
 
-On Mon, May 19, 2025 at 11:18:36AM +0300, Manos Pitsidianakis wrote:
-> On Mon, May 19, 2025 at 11:15 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, May 19, 2025 at 11:03:43AM +0300, Manos Pitsidianakis wrote:
-> > > Hello Michael, thanks for the reply,
-> > >
-> > > On Mon, May 19, 2025 at 10:54 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Mon, May 19, 2025 at 10:43:33AM +0300, Manos Pitsidianakis wrote:
-> > > > > Pinging this thread to ask the OASIS people: Would it be possible to
-> > > > > host a software project (this testsuite) under OASIS but with a
-> > > > > lighter contribution process? We expect everyone to be contributing to
-> > > > > them, from open source/proprietary hypervisor developers, to kernel/OS
-> > > > > developers, hobbyists and professionals alike. So I think a low
-> > > > > barrier of entry would be reasonable here.
-> > > >
-> > > > Take a look here pls:
-> > > > https://www.oasis-open.org/open-repositories/#licensingRules
-> > > >
-> > > >
-> > > >
-> > > > > Seeing as a test suite is essentially tied to the published VIRTIO
-> > > > > spec itself it also makes it a good fit semantically. Having a suite
-> > > > > with multiple VIRTIO implementations including slim images with Linux
-> > > > > would also give a wider frame of reference for downstream consumers of
-> > > > > the spec. Currently, the Linux kernel is the de facto (because it's
-> > > > > also open source) VIRTIO implementation on the frontend side and
-> > > > > oftentimes we end up looking at what Linux does to implement backends.
-> > > > >
-> > > > > We'd like to potentially:
-> > > > >
-> > > > > - Expand the array of rootfs images with more Linux userspace tests
-> > > > > for more devices
-> > > > > - Expand the array of rootfs images with other open source OSes as
-> > > > > they gain VIRTIO functionalities
-> > > > > - Implement missing VIRTIO spec features in our unikernel test and
-> > > > > also exercise realistic but basic VIRTIO command use scenarios for
-> > > > > more devices
-> > > > > - (This is on my personal wishlist) write a VIRTIO fuzzer framework,
-> > > > > similar in spirit to Google's syzkaller project (unsupervised
-> > > > > coverage-guided kernel fuzzer)
-> > > > > - As a stretch goal, provide a reference test runner framework to run
-> > > > > the images with QEMU and rust-vmm vhost-user backends for people to
-> > > > > adapt to their setups.
-> > > > >
-> > > > > PS: The git repositories Alex linked are temporarily inaccessible due
-> > > > > to internal unrelated issues, and will be public again.
-> > > >
-> > > >
-> > > > At the moment, from the above link, and if you want it tied to OASIS
-> > > > open repositories, it has to be one of:
-> > > >
-> > > > BSD-3-Clause License (which shall apply if the TC makes no license selection in its approval action); Apache License v 2.0; CC-BY 2.0; CC-BY 4.0; Eclipse Public License v 1.0.
-> > >
-> > > OK that's doable and completely reasonable.
-> > >
-> > > > I am not a lawyer, but can full OS images we licensed under one of
-> > > > these? If not, you are better off creating the repository itself outside
-> > > > the confines of OASIS.
-> > >
-> > > We'd be hosting essentially build recipes for the images, for tests
-> > > where we use other people's code. The build recipes would have the
-> > > same license.
-> > >
-> > > If I understand the CLA requirement correctly, even if the
-> > > contribution is merged by a maintainer who has signed the CLA, the
-> > > original contributor who has no write access to the repository, has to
-> > > sign the CLA as well?
-> >
-> >
-> > I think is would be the OASIS equivalent of the Linux DCO:
-> >         Each person making a repo contribution must be bound to the terms of the
-> >         CLA, by obtaining their signature (which may be an equivalent electronic
-> >         assent)
-> 
-> So just a Signed-off-by? That massively simplifies things!
-> 
-> > If you like I can reach out to OASIS to confirm.
-> 
-> Yes, that'd be very helpful, thank you.
+This is the 5th RFC version of a virtio SPI Linux driver which is
+intended to be compliant with the upcoming virtio specification
+version 1.4. The specification can be found in repository
+https://github.com/oasis-tcs/virtio-spec.git branch virtio-1.4.
 
+Changes between 4th and 5th virtio SPI driver RFC:
+- Use dev_err_probe instead of dev_err in virtio_spi_probe function
+  to improve error handling.
+- Add comments to virtio_spi_set_delays function and revise several
+  field descriptions in mode_func_supported for improved clarity.
+- Update bitmask definitions from (1 << n) to BIT(n) to enhance code
+  readability.
+ 
+Changes between 3rd and 4th virtio SPI driver RFC:
+- Remove the logic code for statically creating SPI devices through
+  the spi_new_device function.
+- Add ACPI support.
+- According to Hillf Danton's comment, use init_completion instead of
+reinit_completion in virtio_spi_transfer_one function.
+ 
+Changes between 2nd and 3rd virtio SPI driver RFC:
+- Order header inclusion alphabetically.
+- Add Viresh Kumar's "signed-off" to the header files.
+- Rework virtio_spi_one_transfer
+  - Rework the delays according to Haixu Cui's advise. Delays are now
+    handled in a new sub-function virtio_spi_set_delays.
+  - Minor change: Re-formulate arguments of sg_init_one.
+- Rework virtio_spi_probe
+  - Replace some goto in error paths by return.
+  - Add spi_unregister_controller to an error path. Abstained from
+    using devm_spi_register_controller to keep order of
+    de-initialization in virtio_spi_remove.
+  - Add deletion of vqueue to all error paths taken after the virtqueues
+    have been initialized.
+ 
+Changes between 1st and 2nd virtio SPI driver RFC:
+- Update from virtio SPI draft specification V4 to V10.
+- Incorporate review comments gotten from the community.
+- A proposal for a performance enhancement having more than only one SPI
+message in flight had to be kept out. The more complicated code would
+have caused an unacceptable project risk now.
+ 
+The virtio SPI driver was smoke tested on qemu using Qualcomm's
+target hardware providing a physical SPI backend device, based on
+vhost-user protocol. Take vhost-device-spi as the vhost-user backend
+and qemu integrated with vhost-user-spi implementation as the vhost-user
+frontend. The Linux version used for testing is 6.12.
 
-Well OASIS got back to us with the following:
-
-	they have a tool that requires you to create an account then you file
-	a CLA. If using email maintainer needs to check CLA in place.
-	If using github pull requests, it checks automatically.
-	Additionally each employer also has to file a different employer CLA.
-	This last one for now has to just be emailed but at some point
-	they will develop a tool to do that. They said "shortly" but no
-	promises.
-	Until they do, maintainer has to remember to check employer CLA
-	is on file when merging.
-
-If you want to bother with all this let me know I will get you set up.
-
-	Or another option is to just create a repo elsewhere.  If we
-	really want to we can make people accept CLA, then if at some point
-	OASIS has better infra, transition to that.  I'd then use BSD-3-Clause
-	License if that's ok, in case we do want to move to OASIS later.
-
-
-	How do you intend to work, pull requests or email?
-
-
-
-
-
-
-> 
-> -- 
-> Manos Pitsidianakis
-> Emulation and Virtualization Engineer at Linaro Ltd
 
