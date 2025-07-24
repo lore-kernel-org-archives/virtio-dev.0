@@ -1,187 +1,139 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 243781DF246
-	for <virtio-dev@lists.linux.dev>; Fri,  4 Jul 2025 07:46:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888B72798E5
+	for <virtio-dev@lists.linux.dev>; Thu, 24 Jul 2025 09:28:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751615184; cv=none; b=GSmajsLhbX2dbjpfwZh8OZNybCoUxdenaxpX6F+huMM5zZg9ke/G18F1UKcHXE4cAKCvXTJd6sJuTqWTJbUyhmFCrqulbBDAWJZaLikGO/xaCf4TJSc7d4OdWkXEwcZb4x3vbZuNmdYz3SY8BNK4w1RB13NXRoWsZAXfDgBTfgM=
+	t=1753349292; cv=none; b=W6xEbj/wLgg2dpozwZrhkc0VQKvgmLErlcHCzkSREKvwfSyyaTMdtFYXE8WI22jBKuz46N5T4D/eDcZRJtqpwc87FgVeaIHukyjNqio8FEsgMeVTP2dsl4NU13ztTs8gyMDkk1IyH5aFG9GInJK+8iJ3LoRRNZ8FIM06Oo0cK/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751615184; c=relaxed/simple;
-	bh=+uQeYyAF0Rv5FPzwSKaZvjkt6+uke6CjVYhfq5mPwi4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=pJRS4VRpehLKHlSIErxgcVhexlNYPGcnxY4MIthaWRFsKi1c9/k1v4RKawpQxNVjP9tL6FiNcmg93QS6flgV7MS6BykhRUPABhI6vNeLInfYCDlxNpyN+G8dfI0Axi+Oke2iDql1bVkYlb/FZ9ZbV8Go0nUVwmWhStbEREiXYZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=m+30w6o6; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1753349292; c=relaxed/simple;
+	bh=WYMPODQhAsLzoMJrAXAiTpNrsUXzt4F13JZtJ2UOQGc=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=d0JfzhVGOhKN/6H/yCnzSLxSd6BNoCwe5HTOPSFFIXGlBO3zjq74kpZxtfm8AYwNQBpxwbFoO1RHNYl0yVUKa2g/8IdNMzCa6cjJWrh3GI0Cq4wPrxGudLfkhym3TfYkG9n88aIzcCzPemGU6I5IzwpOplQU6UQ2+WIx47CtRUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Oqw/IbvX; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="m+30w6o6"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5641U0kC020529;
-	Fri, 4 Jul 2025 07:46:15 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Oqw/IbvX"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56NMXefN029504;
+	Thu, 24 Jul 2025 09:28:04 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	j3eemu9w9CFQtsyEWTL5rnHCjpDYNOGd60WYH6zP9c0=; b=m+30w6o6YSDtCcF5
-	F2yutAi56QGSdLN9Q/k/UitKepY5D+nB3xEa5GyWn6Ep9M68VQddBgIMRSz5vA3N
-	hnIdb+6G2aVh2Ms0sLOoWwcvXpVFgAWmpoUIEgVYz76fDfEgccjgXCiv981zJg7U
-	p1mMotelq5SbZpmPxsEUVVY6yJxZ4iyc/+qwwmLetuQZr1Lr+ZpYFVQtvVorxGJq
-	T6Da+NQLkCWdUcYzKGYKTvBhpndZ5ueD+xVF+/NynMVUQtnSDu7xDLkivMPUFVw8
-	0CRvXL6vmhRkVM2b8dvRJJRA8kMyRCszpoX6seaCH6kl+NYcvbEek3vmOcJY1sl2
-	H8yl+w==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47mhxn9m2h-1
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=Y2nexYQi+Ay0oUaHgnpoFh
+	CVS9sFIuAbIuDC0AFfVII=; b=Oqw/IbvXo9xXTVWORtY6qcOvnpM04ldQXfTDML
+	ZXlD6S3WKaU+kDE2MB1JPRaF6g3b9gIVnl0PHkjVq80pZEG7YjCxYHuw91x8gDmv
+	ZfwR8+rrfJFN1pJ4tpg7Pn9n8K0TfsVjZuD96i7Dj3IXSS9D5bARoc3O9xyetQRW
+	kmtNtI5VEBKnB9ooDh5mTmXoFDNTFPtp6dEAny2dXQ9itGs04FTwWx/4hIK3KecY
+	G5qWM8XzwTMI2zRlwutwWFS6cMrHtXlBLEuhY3lGQwfAXmWvQx24745SAPf6Qqhq
+	zadlU8jM7Sh+BxRDXIjc9TqmwEW7BBqzmCKwP8src0ijMCxg==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4826t1fh1v-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Jul 2025 07:46:15 +0000 (GMT)
+	Thu, 24 Jul 2025 09:28:04 +0000 (GMT)
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5647kDO7023201
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 56O9S3HM024348
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 4 Jul 2025 07:46:13 GMT
-Received: from [10.239.105.140] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Fri, 4 Jul
- 2025 00:46:11 -0700
-Message-ID: <e61e6d6a-90e8-4ea8-beca-ab441f0eea34@quicinc.com>
-Date: Fri, 4 Jul 2025 15:46:07 +0800
+	Thu, 24 Jul 2025 09:28:03 GMT
+Received: from haixcui1-gv.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.10; Thu, 24 Jul 2025 02:28:00 -0700
+From: Haixu Cui <quic_haixcui@quicinc.com>
+To: <quic_msavaliy@quicinc.com>, <quic_haixcui@quicinc.com>,
+        <broonie@kernel.org>, <virtio-dev@lists.linux.dev>,
+        <viresh.kumar@linaro.org>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <hdanton@sina.com>,
+        <qiang4.zhang@linux.intel.com>, <alex.bennee@linaro.org>
+CC: <quic_ztu@quicinc.com>
+Subject: [RFC PATCH v6 0/3] Virtio SPI Linux driver
+Date: Thu, 24 Jul 2025 17:27:43 +0800
+Message-ID: <20250724092746.1297608-1-quic_haixcui@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v5 3/3] SPI: Add virtio SPI driver.
-To: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>, <broonie@kernel.org>,
-        <virtio-dev@lists.linux.dev>, <viresh.kumar@linaro.org>,
-        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hdanton@sina.com>, <qiang4.zhang@linux.intel.com>,
-        <alex.bennee@linaro.org>
-CC: <quic_ztu@quicinc.com>
-References: <20250620041230.731504-1-quic_haixcui@quicinc.com>
- <20250620041230.731504-4-quic_haixcui@quicinc.com>
- <be751d7b-9216-4564-ad21-2df6a19477fa@quicinc.com>
-Content-Language: en-US
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <be751d7b-9216-4564-ad21-2df6a19477fa@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzA0MDA2MCBTYWx0ZWRfX7vBUgPs+tJqu
- GKErqzu0ERzobWwLChOnxNmdKHwyS8yEnHAkTKRaXJ2fBhNPe/T5V4e9kqhLwm/LjixbdHtw48j
- 04MIAi35fA7BB3ZC7kxmP5VBzPjr37LfUzNFOjVdCwanoEVxSIg2sb1YFwd5Cz3jL4NpaSXGax4
- grlmWrY52byBNpnFEaCRAuG2ptjwC3N07H4T5nyp3xJ24uSnMazc/E4G6L6jYwr9ScdKTK0O40o
- bGSzkQO2TXcxb+mS6HxoKr6NVMlPKfWmcB++4Bc1flESYP8f0AfOuzOa7xETjgeY1H2EAL+f32G
- 8Z6IMgckmkCXuJuEB5BgPkeXMS3mU9rok8D5SaQK7AWgBaflIwb4hn2rbuQEIf707askT2ohB/t
- hLGG67DdhOrvRXQdiF8sDgG8/Wi67br2oE+ex9hcb/8jR4/4UI4R8GN1FfmT6VSqQh/vUbN1
-X-Authority-Analysis: v=2.4 cv=EbvIQOmC c=1 sm=1 tr=0 ts=686786c7 cx=c_pps
+X-Proofpoint-GUID: HoIB_kSiNUcOs8HNI6tieD_P8zuKdshj
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzI0MDA2OCBTYWx0ZWRfX//hJBjmU6fC0
+ oXHNwR4vA2gU3HgugVXM6tK+HLWBYNYeixZ0YiR6sTSoohg/rvlwKfG4C1G6TeRxjqRi2h3faOE
+ X0dH7aEhYBOkOG0vEqliyen/Qc2mhbPeufk6/w1uzL3TTW+/B3zhz85/0lscEPMeqdtZ+hL1iuW
+ 6PjoHgqbIpHXbQ6o3qWC+sdHvO1tXk+6UykGJ4hUkKjk50SHFCDepfwiOhdN72lVkOi5ySJKmT9
+ VCYryWqnBYC44flxFHzsYu9rmOUxuMq0qe9zQrsmVl3EYDaPKvmc+/lya7WG3X8O6BDbHcLVz/T
+ /T7LEuKcI4OcjyEvlOs3JoPyVDKeENfCBBY6eRETQe44UHHQHv27X8GJAgKYi5jwYYlApkEcRTN
+ LcPUUQ46IpX/DQ+n8L7JHvOSruFV/ZC9x8qTmebUU8Sqlzieg1byrHNiGDuZcm8bFXE/BlDw
+X-Authority-Analysis: v=2.4 cv=E8/Npbdl c=1 sm=1 tr=0 ts=6881fca4 cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=COk6AnOGAAAA:8
- a=PtJzcVZEaGJKxAWVt5cA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-ORIG-GUID: EhNRYjCfvG1EAjZZuCcZaIEFpvzisDn5
-X-Proofpoint-GUID: EhNRYjCfvG1EAjZZuCcZaIEFpvzisDn5
+ a=GEpy-HfZoHoA:10 a=Wb1JkmetP80A:10 a=NEAV23lmAAAA:8 a=FS0OwZJzMusLKYCsq9IA:9
+X-Proofpoint-ORIG-GUID: HoIB_kSiNUcOs8HNI6tieD_P8zuKdshj
 X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-04_03,2025-07-02_04,2025-03-28_01
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-07-24_01,2025-07-23_01,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 mlxscore=0 priorityscore=1501 mlxlogscore=999 lowpriorityscore=0
- malwarescore=0 adultscore=0 clxscore=1015 bulkscore=0 impostorscore=0
- spamscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ impostorscore=0 malwarescore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
+ priorityscore=1501 adultscore=0 suspectscore=0 clxscore=1015 phishscore=0
+ mlxlogscore=999 mlxscore=0 classifier=spam authscore=0 authtc=n/a authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507040060
+ definitions=main-2507240068
 
-Hi Mukesh,
+This is the 6th RFC version of a virtio SPI Linux driver which is
+intended to be compliant with the upcoming virtio specification
+version 1.4. The specification can be found in repository
+https://github.com/oasis-tcs/virtio-spec.git branch virtio-1.4.
 
-Thank you for reviewing the patch and providing your feedback. Really
-appreciate your detailed suggestions.
+Changes between 5th and 6th virtio SPI driver RFC:
+- Dynamically allocate the virtio_spi_req structure instead of keeping
+  it as a member of virtio_spi_priv.
+- Remove redundant comments.
 
-On 6/30/2025 2:54 PM, Mukesh Kumar Savaliya wrote:
-> Hi, Haixu, Thanks !
-> 
-> On 6/20/2025 9:42 AM, Haixu Cui wrote:
->> This is the virtio SPI Linux kernel driver.
->>
->> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
->> ---
->>   MAINTAINERS              |   6 +
->>   drivers/spi/Kconfig      |  11 +
->>   drivers/spi/Makefile     |   1 +
->>   drivers/spi/spi-virtio.c | 444 +++++++++++++++++++++++++++++++++++++++
->>   4 files changed, 462 insertions(+)
->>   create mode 100644 drivers/spi/spi-virtio.c
->>
-
->> + * So the corresponding relationship:
->> + * A   <===> cs_setup_ns (after CS asserted)
-> And "before clock start" ? to be added in bracket as comment.
-
-Here I refer to the cs_setup definition in include/linux/spi/spi.h,
-where the cs_setup is described only in terms of delay after CS is
-asserted, without referencing the clock signal.
-
-> 
->> +
->> +static int virtio_spi_transfer_one(struct spi_controller *ctrl,
->> +                   struct spi_device *spi,
->> +                   struct spi_transfer *xfer)
->> +{
-> 
-> [...]
-> 
->> +    wait_for_completion(&priv->spi_req.completion);
->> +
-> I see init_completion(spi_req.completion) is called during probe() but 
-> successive transfer doent have reinit_completion(spi_req.completion). 
-> wondering how is this working for back to back transfers.
-
-In current implementation, each SPI transfer uses the same spi_req
-instance, which is a member of struct virtio_spi_priv.
-
-I'm considering removing spi_req from the virtio_spi_priv structure,
-instead dynamically allocation a new spi_req for each transfer. This
-way, each transfer would have its own completion object, so we could
-simply call init_completion() without worrying about reinitializing a
-shared one. I believe this would make the design cleaner and avoid
-potential issues.
-
-Is this approach okay with you? If so I will update the patch
-accordingly in the next revision.
-
->> +    /* Read result from message and translate return code */
->> +    switch (priv->spi_req.result.result) {
->> +    case VIRTIO_SPI_TRANS_OK:
->> +        /* ret is 0 */
->> +        break;
->> +    case VIRTIO_SPI_PARAM_ERR:
->> +        ret = -EINVAL;
->> +        break;
->> +    case VIRTIO_SPI_TRANS_ERR:
->> +        ret = -EIO;
->> +        break;
->> +    default: /* Protocol violation */
-> Comment in new line ? following same method across.
-
-This comment seems not particularly helpful. I’ll remove it to keep
-the code clean.
-
->> +static void virtio_spi_remove(struct virtio_device *vdev)
->> +{
->> +    struct spi_controller *ctrl = dev_get_drvdata(&vdev->dev);
->> +
->> +    /* Order: 1.) unregister controller, 2.) remove virtqueue */
-> Is this a specific flow for virtio OR generic ? if its generic, we can 
-> remove the comments.
-
-This is generic actually, I will remove it to keep code clean.
->> +    spi_unregister_controller(ctrl);
->> +    virtio_spi_del_vq(vdev);
->> +}
->> +
-
-Thanks
-Haixu Cui
-
+Changes between 4th and 5th virtio SPI driver RFC:
+- Use dev_err_probe instead of dev_err in virtio_spi_probe function
+  to improve error handling.
+- Add comments to virtio_spi_set_delays function and revise several
+  field descriptions in mode_func_supported for improved clarity.
+- Update bitmask definitions from (1 << n) to BIT(n) to enhance code
+  readability.
+ 
+Changes between 3rd and 4th virtio SPI driver RFC:
+- Remove the logic code for statically creating SPI devices through
+  the spi_new_device function.
+- Add ACPI support.
+- According to Hillf Danton's comment, use init_completion instead of
+  reinit_completion in virtio_spi_transfer_one function.
+ 
+Changes between 2nd and 3rd virtio SPI driver RFC:
+- Order header inclusion alphabetically.
+- Add Viresh Kumar's "signed-off" to the header files.
+- Rework virtio_spi_one_transfer
+  - Rework the delays according to Haixu Cui's advise. Delays are now
+    handled in a new sub-function virtio_spi_set_delays.
+  - Minor change: Re-formulate arguments of sg_init_one.
+- Rework virtio_spi_probe
+  - Replace some goto in error paths by return.
+  - Add spi_unregister_controller to an error path. Abstained from
+    using devm_spi_register_controller to keep order of
+    de-initialization in virtio_spi_remove.
+  - Add deletion of vqueue to all error paths taken after the virtqueues
+    have been initialized.
+ 
+Changes between 1st and 2nd virtio SPI driver RFC:
+- Update from virtio SPI draft specification V4 to V10.
+- Incorporate review comments gotten from the community.
+- A proposal for a performance enhancement having more than only one SPI
+  message in flight had to be kept out. The more complicated code would
+  have caused an unacceptable project risk now.
+ 
+The virtio SPI driver was smoke tested on qemu using Qualcomm's
+target hardware providing a physical SPI backend device, based on
+vhost-user protocol. Take vhost-device-spi as the vhost-user backend
+and qemu integrated with vhost-user-spi implementation as the vhost-user
+frontend. The Linux version used for testing is 6.12.
 
