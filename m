@@ -1,112 +1,205 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2831E766F
-	for <virtio-dev@lists.linux.dev>; Thu,  7 Aug 2025 09:16:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9069E2D9ECE
+	for <virtio-dev@lists.linux.dev>; Wed, 20 Aug 2025 08:50:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754558190; cv=none; b=oRaAL11nAY4+REhdGqbU9MEqKVmJ3i2c0EZ2sTJViErgzV0W8Ih4/YQSkMOlZGIJs9s9yDK1THrfjS9EABhq+S+E7rPMHNCivlGmfWk9BLTMvngyc/tSR45wzJcHX+jG05mqaRdy92Nknbr8XJVQgYUpuIDxxdtbSgQLgMfJ9R8=
+	t=1755679845; cv=none; b=snNYsnwOthBAlEBGcDl4wPMTV/lh9qTZlSDjyrdE1YTkTpB4lHbulaZn6X+JyEiH+1uqGtkwqvODuRSyAarFt6WU81rxBnK7hvSWry9h1ZPOm38n/GjAVkWYX+DhkW0/dT836v5i2w4yIWgqpyv4+xLHeEA2RgPOpnCFcgCv62o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754558190; c=relaxed/simple;
-	bh=6iqrnOYYLyzkebV0B++6wAFa+s7dj//oSdXPQIZYi44=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=X5cJ2hSSdcEK2dCriboHMKXi67N2SENGUB4iCrfpvo9ehDHLyj5sNSlZDcb8aU6U+t0VQHo0PTsIdOUQ6AE1jEqwjI5POYJsp9+WZn8JrvrZ0oPWh/kV8ZJaMKMJLor5ZfTTwH21hME4PUsMd/mQ1S+Pr6XkgvdK+puT6/CzKWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=D6Aab23q; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1755679845; c=relaxed/simple;
+	bh=ehVYCFkB5t0mF/nsU2SzY4TR2TXb8M6eASSD4mbakn8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CE/tIOLNcQwE+2cFfFQCQ4siAZbHSDjDmVMl7Sq/S7JXZBUCNJLEZhlxM6612miUavAIxrj6Z5U2uoJZFqyCUpokC1AaEhIdskfNIfSbauvHvc1ZDCoVPdBSsJZgOqfYzuIcjytLGxuwSL/vWAC8+MUxz6UBwK2XE6mYLKVhH8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ELiUjfia; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="D6Aab23q"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5779CtYY011664;
-	Thu, 7 Aug 2025 09:16:25 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ELiUjfia"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57K1otLl002736;
+	Wed, 20 Aug 2025 08:50:36 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	cpP2hSi7/Vhx0v9dxSjlQoY4/hYRFnUAC1G1O8b+8yE=; b=D6Aab23q2LHDnHgq
-	vOfCf3FlxoYZke+09LECx/aGqV1s/sQ/OiUCYsWnpf2TZPPvM7wqW8pTy+DDHwQH
-	lkN3Z5wm8Iq01o8s7bXvgYAlF318fr7s8VJdpZtFgFb8O5O4buMQsdXbpnn9S3tZ
-	Z4l1EivIO3CoaNm7+a8Cehe0jPUZBVmnddUbw+7dTSQQiNJep3vP6wfAAxP/hj/V
-	v1IhJ2jNJvG7Ec9lpV3JpIh4hn9SJkb44VoSM1BYf28XGlHARFbkpF8etBINgFNA
-	lxfJj0f/kgcttx0iTUGfgBO4Ywcad/meNRHDWTtAgZvlne0Dyf5ymoPERu4geLfF
-	ajqmTw==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48cpvy0fyf-1
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=ciC8wumtqoIn0HmL5oTasN
+	31xIu0HXW/ZbnfbWo9HJE=; b=ELiUjfiaphJrDiftzgr3JZDe5NyhUPA8iHaEMG
+	NbK64q9Yix8YlSoAyUkmjlwBzkankg5JSYZhcIk6HwcuSaIBpTH+6L4tkhvitQKg
+	XTJBdCCDSdJrZh2fJIKvvwHaszX8SuSWyFk1NHr0UPRlYf1hcYxa8E37tC4G6Nrj
+	TJ83K5kbFVaptJJ8whvMIEL/rT4cy5+d96HCIncDZeB2ucW6EsxNqq8Vu39ZMTKd
+	nU0+9ZeH13DpFIZfk0mqabqVkXfWFttgYpG8gK8wWU/B558ZiASJenn0nJy0Ygea
+	zNV9k1cXPU/SjoJ/7PsfXLlolvWr74iP8zhAAOQEgvE9siNA==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48n528s1kr-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Aug 2025 09:16:25 +0000 (GMT)
+	Wed, 20 Aug 2025 08:50:36 +0000 (GMT)
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5779GO1L016072
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57K8oZaE004852
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 7 Aug 2025 09:16:24 GMT
-Received: from [10.239.105.140] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Thu, 7 Aug
- 2025 02:16:21 -0700
-Message-ID: <436fc0d5-2959-4364-93b4-7a14d8e2cb99@quicinc.com>
-Date: Thu, 7 Aug 2025 17:16:19 +0800
+	Wed, 20 Aug 2025 08:50:35 GMT
+Received: from haixcui1-gv.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.10; Wed, 20 Aug 2025 01:50:31 -0700
+From: Haixu Cui <quic_haixcui@quicinc.com>
+To: <andriy.shevchenko@intel.com>, <harald.mommer@oss.qualcomm.com>,
+        <quic_msavaliy@quicinc.com>, <quic_haixcui@quicinc.com>,
+        <broonie@kernel.org>, <virtio-dev@lists.linux.dev>,
+        <viresh.kumar@linaro.org>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <hdanton@sina.com>,
+        <qiang4.zhang@linux.intel.com>, <alex.bennee@linaro.org>
+CC: <quic_ztu@quicinc.com>
+Subject: [PATCH v4 0/3] Virtio SPI Linux driver
+Date: Wed, 20 Aug 2025 16:49:41 +0800
+Message-ID: <20250820084944.84505-1-quic_haixcui@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v6 2/3] virtio-spi: Add virtio-spi.h
-To: Harald Mommer <harald.mommer@oss.qualcomm.com>,
-        <quic_msavaliy@quicinc.com>, <broonie@kernel.org>,
-        <virtio-dev@lists.linux.dev>, <viresh.kumar@linaro.org>,
-        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hdanton@sina.com>, <qiang4.zhang@linux.intel.com>,
-        <alex.bennee@linaro.org>
-CC: <quic_ztu@quicinc.com>, <matti@qti.qualcomm.com>
-References: <20250724092746.1297608-1-quic_haixcui@quicinc.com>
- <20250724092746.1297608-3-quic_haixcui@quicinc.com>
- <d962ed41-2566-432d-975d-9bab8d844c70@oss.qualcomm.com>
-Content-Language: en-US
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <d962ed41-2566-432d-975d-9bab8d844c70@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Authority-Analysis: v=2.4 cv=TJpFS0la c=1 sm=1 tr=0 ts=68946ee9 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=fpOFpF4f c=1 sm=1 tr=0 ts=68a58c5c cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10
- a=7kKVInmZTBA3fObjQNwA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-GUID: HPfRBmeH8rVQ3EcCbs9kAurqh1G0Fra1
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODA3MDA0NiBTYWx0ZWRfXwcOe3Gf6kyCe
- zn3oD/H757SFdJiCTaEGRII0/UtWY4r9HLrhX5t6cKwQS7bbs5yr7JlMlEN8/SNxdFxan4rigHB
- cD8DBwMkbbcBUK+iUxDtsJGuh7D4REp8Eu1uhl6rCV08A9sr2h6f65vxokSvf4B8NvChg5eorDb
- D4UsiNtlwm2KFG5gRVvr3xp+s8FE8XGvWCkjDyd5Wz2/gqR+094EJP8Fy/wHoFCkRuddjperpmO
- dBc6fQF5zR4jAOZwOK69rJL5lDzyjSpvefoSyt7NHK5+knGI1GY7EI7coYmVPR6YQnU+VrWIIPf
- h+TKUCcG9RrWba2LQ/7KhRQ4SrpK0p4rXFPIcQurm60/mo4cv4+7wGLTJm45SBRAnuJwCgGWbvu
- u9EJ66J5
-X-Proofpoint-ORIG-GUID: HPfRBmeH8rVQ3EcCbs9kAurqh1G0Fra1
+ a=GEpy-HfZoHoA:10 a=2OwXVqhp2XgA:10 a=NEAV23lmAAAA:8 a=KKAkSRfTAAAA:8
+ a=t_6YCAHnjwCKH755u04A:9 a=cvBusfyB2V15izCimMoJ:22 a=cPQSjfK2_nFv0Q5t_7PE:22
+X-Proofpoint-GUID: GhvHzvRGZ1IuL21qycyg4sPgLobM4k5-
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIwMDAxMyBTYWx0ZWRfX70WXPsCZKEhI
+ +hjT1AJ7kraBO6XBHYPW6JqME0FD1wnNcp/mj35oSoGN3o5+9pv3wx4NEBPaTLudvW4BrA9Dktd
+ u0JvzhV8OqL3zQED2fm3k7qcGUgeq+mkUr7XIwLwJdbvy/AzoVJOxqcQDmCcljlqVMG3vxSW0/G
+ c0AwsEWBt9R5DTaCGjS6gBwG3F8OvtKfesilxMqz9J6yuuqjuvFrRsojh/8C/T9T31RuRFdv/nh
+ DHhwW4T6vOsSnw9xXlYYSuMNO8gy5OBR4+TevyQK5VNqpFTAOz/OvumkQ4mldAw5hr6C8g9gl8h
+ nBxpTNmJkdjBjqfAKILnMiR/S/R9dcuE9EBs3/5/cHCpnBQlcC8VUW0qtvf2o7HLrn4OeyPT8RY
+ Vyakk9Os6JgM5KehjhMaHndGSUGb0A==
+X-Proofpoint-ORIG-GUID: GhvHzvRGZ1IuL21qycyg4sPgLobM4k5-
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-07_01,2025-08-06_01,2025-03-28_01
+ definitions=2025-08-20_03,2025-08-20_01,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 phishscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- adultscore=0 spamscore=0 malwarescore=0 suspectscore=0 classifier=typeunknown
- authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2507300000 definitions=main-2508070046
+ malwarescore=0 priorityscore=1501 spamscore=0 clxscore=1011 adultscore=0
+ suspectscore=0 bulkscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2508110000 definitions=main-2508200013
+
+This is the 4th non-RFC version of a virtio SPI Linux driver which is
+intended to be compliant with the upcoming virtio specification
+version 1.4. The specification can be found in repository:
+https://github.com/oasis-tcs/virtio-spec.git branch virtio-1.4.
+
+This version builds upon the previous non-RFC V3 and RFC V8 versions,
+and incorporates feedback from the community and testing improvements.
+
+Changes between RFC V8 and non-RFC V4:
+- Replaced BUILD_BUG_ON with static_assert for SPI mode constants to
+  improve compile-time validation.
+- Introduced VIRTIO_SPI_MODE_MASK macro to simplify SPI mode bit masking.
+- Removed unnecessary __cacheline_aligned attributes from buffer
+  pointers in virtio_spi_req.
+- Simplified type casting in delay conversions by removing redundant
+  (u32) casts.
+- Replaced manual virtqueue cleanup with devm_add_action_or_reset()
+  for automatic resource management.
+- Migrated controller registration to devm_spi_register_controller()
+  for better lifecycle handling.
+- Updated power management callbacks to use struct device * and
+  added virtio_spi_pm_ops
+- Standardized bit macros in virtio_spi.h from BIT(x) to _BITUL(x) for
+  type safety.
+- Improved documentation comments in virtio_spi_config for clarity
+  and consistency.
+
+Changes between RFC V7 and RFC V8:
+- Restored original Copyright.
+
+Changes between RFC V6 and RFC V7:
+- Restored original MODULE_AUTHOR information in the driver source file.
+- Reinstated the original Signed-off-by tags.
+
+Changes between RFC V5 and RFC V6:
+- Dynamically allocate the virtio_spi_req structure instead of keeping
+  it as a member of virtio_spi_priv.
+- Remove redundant comments.
+
+Changes between RFC V4 and RFC V5:
+- Use dev_err_probe instead of dev_err in virtio_spi_probe function
+  to improve error handling.
+- Add comments to virtio_spi_set_delays function and revise several
+  field descriptions in mode_func_supported for improved clarity.
+- Update bitmask definitions from (1 << n) to BIT(n) to enhance code
+  readability.
+
+Changes between non-RFC V3 and RFC V4
+- Remove the logic code for statically creating SPI devices through
+  the spi_new_device function.
+- Add ACPI support.
+- According to Hillf Danton's comment, use init_completion instead of
+  reinit_completion in virtio_spi_transfer_one function.
+
+Changes between non-RFC V2 and non-RFC V3
+- Child spi device tree nodes are supported now.
+  If a child spi device tree node exists the setup of the user mode SPI
+  device is done by spi_register_controller() and the driver itself does
+  not call spi_new_device() any more to setup the chip selects.
+  If there is no device tree child node the SPI device sets up the user
+  mode SPI devices autonomously as it was before.
+  
+Changes between non-RFC V1 and non-RFC V2
+- Remove some comments stating the obvious
+- Remove error trace when devm_spi_alloc_host() failed as this is habit
+- Add some blank lines to improve readabilty
+- Last TODO comment removed which was used to trigger some discussion.
+  Discussion did not take place, most probably the code below is correct
+  as it is
+- Abstained from replacing "Cannot " by "Failed to " in error messages
+  as the wording "Cannot " is frequently used even when "Failed to " has
+  the majority. Announced this, heard nothing about this, so added the
+  "Reviewed-by" from Viresh Kumar <viresh.kumar@linaro.org> as
+  everything else was done.
+
+Changes between RFC V3 and non-RFC V1:
+- Address kernel test robot comment which revealed an actual bug
+- Rework some comments in the code addressing review comments
+- Remove a TODO comment which has served it's purpose
+- Allocate struct virtio_spi_req spi_req only once at startup
+- Use callback transfer_one instead of transfer_one_message to simplify
+  and shorten code. Due to this rework in the affected function(s) some
+  additional changes:
+  - Do init_completion() only once at startup, for re-initialization
+    now reinit_completion() is used
+  - Translate result codes VIRTIO_SPI_PARAM_ERR and VIRTIO_SPI_TRANS_ERR
+    to appropriate Linux error codes -EINVAL and -EIO
+
+Changes between RFC V2 and RFC V3:
+- Order header inclusion alphabetically.
+- Add Viresh Kumar's "signed-off" to the header files.
+- Rework virtio_spi_one_transfer
+  - Rework the delays according to Haixu Cui's advise. Delays are now
+    handled in a new sub-function virtio_spi_set_delays.
+  - Minor change: Re-formulate arguments of sg_init_one.
+- Rework virtio_spi_probe
+  - Replace some goto in error paths by return.
+  - Add spi_unregister_controller to an error path. Abstained from
+    using devm_spi_register_controller to keep order of
+    de-initialization in virtio_spi_remove.
+  - Add deletion of vqueue to all error paths taken after the virtqueues
+    have been initialized.
+
+Changes between RFC V1 and RFC V2:
+- Update from virtio SPI draft specification V4 to V10.
+- Incorporate review comments gotten from the community.
+- A proposal for a performance enhancement having more than only one SPI
+  message in flight had to be kept out. The more complicated code would
+  have caused an unacceptable project risk now.
+
+The driver was smoke tested on QEMU using:
+- Qualcomm's target hardware with a physical SPI backend device via
+  vhost-user protocol (Linux v6.12).
+- OpenSynergy's proprietary virtio SPI device simulating a SPI backend
+  on top of linux-next.git (v6.8).
+- Regression tested on physical hardware using kernel v6.5.7.
 
 
-
-On 7/30/2025 8:31 PM, Harald Mommer wrote:
-
-> 
-> Policy was to keep the old OpenSynergy copyright notice when up-streaming started when up-streaming started in OpenSynergy times. This is also the case here with those files.
-> 
-> The old "Copyright (C) 2023 OpenSynergy GmbH" still present in V3 must probably be kept on top of the Qualcomm copyright line.
-> 
-> Re-checked this in virtio_rtc_driver.c from my colleague who also transitioned from OpenSynergy to Qualcomm. Virtio RTC has landed in the meantime in the mainline kernel.
-> 
-> What's for sure is that this has not started in 2025.
-
-Hi Harald,
-     I've restored the "Copyright (C) 2023 OpenSynergy GmbH" in latest 
-patch v8, please check, thanks.
-
-Haixu Cui
