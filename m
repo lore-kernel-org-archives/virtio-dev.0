@@ -1,69 +1,69 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2293F2EA73F
-	for <virtio-dev@lists.linux.dev>; Thu, 21 Aug 2025 08:42:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7723E2ECE87
+	for <virtio-dev@lists.linux.dev>; Thu, 21 Aug 2025 08:45:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755765778; cv=none; b=p1HKfJotTh4dvnyMv6WuHaZu6/4iZMEaDCVhaM7A5mLrWptIq3zDOBW8an/NXU9813qjqy3uOW2i9JCxETpgJDzSDFmh1bdb+MxeF3EDCCeMs9m7h1ADRKbwZzRaT7sza905thlQKGSAaVX8O2m63XtAmRPt6p8o5NOYLd3RnA0=
+	t=1755765919; cv=none; b=M+hqoh9FTgHOVN4ocp+n97XXQG9bDJ27z1990L2AL4aUp4yNJyamRzTT2XPh9doXrGxwMaaXh6hPWJqLMp+CzPtcbFHWqfeB9qjy2V70mWyKG67ApqJrkLpG0oBzecHFi23hOE3QvZUNYIBPlKh8bbBk9NgZANNdjcbb0PR7nXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755765778; c=relaxed/simple;
-	bh=I5NofY1I/J3cD2I9Jah37QRoad7PVZJEMc37nY7nYhA=;
+	s=arc-20240116; t=1755765919; c=relaxed/simple;
+	bh=duq6rKrkMJqL8LoMSy2xL5ymwi1uirZbJuypXiZeM4k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=ZhpIc7DAp74gHLceqYBT9lDErenqV6O7SxY2h7LE7IC1tI4gowHco1sL+4vPjkn8Kpdk2j93pbi41Y2mWSFR5WqBNTN6+yTmDGtxD9RmR7hmMyT/hSIgS3TQm4DBjMwiQpDNPkZcu6+a9TSBEprxQurQ6Y9eebmm8Qn97U2mk40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=KhnOeq+4; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type:Content-Disposition; b=n+IiuITEQUllOO354RUe0ktA2pN6TwuQKvAPDL/ZsDH93cQiojWNYVi4FOrwR8WeBizFN8bOEvqS/nDGgwe4Nyu2dZM7hJhYvOGqIaMcR6mmxYXe5iu3XBa1GKnrIrD5T8TSRp5w9Lhv6MV9D/iRaVHTQKpAdJeoYLpDxflMfIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Qe+WL1+i; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KhnOeq+4"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Qe+WL1+i"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1755765776;
+	s=mimecast20190719; t=1755765915;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=BGmAixpDDtSx5//pjZh8mD9uLe+6T7TvnJDxd1HMKKM=;
-	b=KhnOeq+439Je504Nn0UfA31a0+Miac3447z32OzbH6XVVlx8c/kitq8oAkwvGsqRrSW5BQ
-	iXojWqlZpmTgw/Mv0GWojBiyWfQFBgR3QDsO7Owec1valaS3Ta0pq2kinm5Ro5Vc8pwQto
-	DI3V0AO2Jd+8tCvHBxjJxTW8/HWsau0=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=SZULrOxSIKUy6yKPzXzRTN/ZjxbHrKdh/1JYHi0tVqc=;
+	b=Qe+WL1+iqTie/jundpe4mJX4Nb7kDDjErP+DGYhRnOqQLK6X7XX/EJvi4BHF3Bcn/F354+
+	7cWr5P0t2pKMw7ve7k0icsEJAQqogoFMsWIreX/3hARszmw+HbIbA1wsadtXmbnCHAmYzE
+	z/mTeKlJmbvfkcj+wXcSeTjHOQVLyTs=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-515-FTO1oXTdMZW1otlt7tnfFg-1; Thu, 21 Aug 2025 04:42:54 -0400
-X-MC-Unique: FTO1oXTdMZW1otlt7tnfFg-1
-X-Mimecast-MFC-AGG-ID: FTO1oXTdMZW1otlt7tnfFg_1755765773
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-45a1ac1bf0dso4394855e9.0
-        for <virtio-dev@lists.linux.dev>; Thu, 21 Aug 2025 01:42:54 -0700 (PDT)
+ us-mta-296-ifC8QQfQM2GEFO8Btx9uHg-1; Thu, 21 Aug 2025 04:45:12 -0400
+X-MC-Unique: ifC8QQfQM2GEFO8Btx9uHg-1
+X-Mimecast-MFC-AGG-ID: ifC8QQfQM2GEFO8Btx9uHg_1755765911
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-3b9bfe2c601so405299f8f.1
+        for <virtio-dev@lists.linux.dev>; Thu, 21 Aug 2025 01:45:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755765773; x=1756370573;
+        d=1e100.net; s=20230601; t=1755765911; x=1756370711;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BGmAixpDDtSx5//pjZh8mD9uLe+6T7TvnJDxd1HMKKM=;
-        b=SLqvOAyJeT7BZz3ZPgWi6wrR/ZaMPkOAFRh/uApJVXj9Mgz9A6uYMQyW2nG9LEcdSq
-         CJAWkP1E8lWRsG7t6u4DYQDXQq/IkxLYZU9jDrY1BHz9/ukd/bjeIufhWBDeiXrYaQiM
-         qib/fAGQ3x5i5i/SKCYmUBvAOP59nPdK8pr9D5WqflhmGHyLNbNeJB8qN1XVaCkzLXbi
-         +Bd7jakfWAv8T9W5SnMq+zvahiRZbePf3vZcMGdSlRk2pKd046tG68oeM/FIpoMBbGQF
-         xp7rQmpDIx1+Hj06vvGN7JFdgevHnfuzOydq4+ijzZ3U/DXFT52+xT6w/15TEre3etDF
-         2XCQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU0hjEcNjBzGiUNLIvbuu0+hPaz7atbG7xOSm1im7pxFF8T50nKFE0p2skBBQ8qirPIuYJI7u+vripY@lists.linux.dev
-X-Gm-Message-State: AOJu0YwwPVNZLYsji+z4UUT6byRnd9jzPG+djNmHjrb5swMVYU72z6Ro
-	9oLyfxc076q07VagYsP51n6oSCZmAO9r/A36JhTM0tf29D0nJkzblcjm0O/N+D+Nz+c8uHF2UQF
-	VE5/XXyIuF6iWgowHFFbVPtmSpjiusy/1pMV3tKa4jGY0w1BfDFVwzZs9pcHij+I=
-X-Gm-Gg: ASbGncsQbI9+JvhiYMlMDKFbuTA8k5VklekiKDYKRS/HUVCbRn3MLoaU6C5+NRcFfRB
-	Gv4F6avqTxCFCT72e2J/HGfDaUmPqKPQpSe4ROoDfm5OMeHWRVspZshCLhxgA7UEQqkUCg6UQjd
-	jWA/B1S0NQHL740Lzzt5J35gE+G/jaLAiaq6F5QVmNnnlrKL4M6m782gW4OLimGThaqyJEuryKK
-	lDp9s2zTroXNjOd+Kpd9r1gU16oi0M3al3tI7TEHcMJjGu3KxFl75thidhmcgxU/tLoM3vyv3pW
-	TOXL/goysCgFQgME8Stwg4sJe6LThpZZ
-X-Received: by 2002:a05:600c:a07:b0:459:443e:b18a with SMTP id 5b1f17b1804b1-45b4d9f41f4mr14568615e9.14.1755765773197;
-        Thu, 21 Aug 2025 01:42:53 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFwZkrl5fXD20Znm+tAZTWUxfgrHTe58SkGcqEtQUMP3n+ZiDjZ6JOOe6sj+jRr77tMsBIMLg==
-X-Received: by 2002:a05:600c:a07:b0:459:443e:b18a with SMTP id 5b1f17b1804b1-45b4d9f41f4mr14568225e9.14.1755765772624;
-        Thu, 21 Aug 2025 01:42:52 -0700 (PDT)
+        bh=SZULrOxSIKUy6yKPzXzRTN/ZjxbHrKdh/1JYHi0tVqc=;
+        b=QRg46hGgrp+v32yKH1iEFHKtG45/KIjF/BlzWBZY5RGYGitR9ZH7qM4bIsFPKkx31X
+         ZYZ/2K1p3kzFx+pZLbywNJFMnCI1WmjO/p9k9ibqCO3tq/7HUZN9LPEw98eUcR3IxNVO
+         JCT7nIW3Bs6lY78bnKbuV7Qx+z+OfvR1dKNPa1XBSI7dkhQnW1pWopbFWbWg4xa+0nkm
+         DdaXfoBJAW9Kkz4qHur1wK2J6ujIvRw8HmEZHjULJe7RcRy+e7nLBEOTxVDBcrMx86LE
+         9muCpYYNRKsThkvudSSigImPYSKpqILaFPln1XG/lirFZ4xXROF8wDz5T9bzzWASz+z6
+         oVLA==
+X-Forwarded-Encrypted: i=1; AJvYcCV8W2rg4ddk80Xe9VRq2vAWNwRZwdacq38TmL0W0FVh32QEQ2x3TT6+u7lM2hQcymi9L0y3hIFdnNsX@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy8shryx75B6SfZx7zklD7FrN3MZok++D+hjGXxo3t6iG/LKFT/
+	EWm3n0j+2suCcs9hzxtDAPY4rpSUH3pQz300Ilc43cepmvIg6LP1aziGkzLXjrta9Oei+93l6lU
+	d75ybBmJymlW6/yJqeIb2ylSU8Ep0CZYieXp4/D29WzrS+Rqxa09X8f2hGYk0D7c=
+X-Gm-Gg: ASbGncvoMF5DPuhzpETkMM5yOY62eIQUPfab2Ow7tp7+ka4lz38y0AlVfQRjRzwCF3w
+	YjeZjqvGWU00WrsiPrUjmTT7hWPZAFjaMj9+ddyA8U2xb2oLWq7RRAHV3Tb8nxtQwrNorlXsRgx
+	SBQ5pDA64SSDJFCYZdO8iZtgxr0P70HYOZXgQDPMxP4s72rYSN1xfzfmXqxTs1bkaU3KaL8dzcU
+	T+DDpDh9QQLfgrdySg/63j5RagE/f/znmMBEcIhm1iEESPiLortGR6rk44SMSF/iiE2d3s9QWve
+	y/svX+BTN4MERd3dsC6cFTqipnZR6IKR
+X-Received: by 2002:a05:6000:2dc1:b0:3b6:162a:8e08 with SMTP id ffacd0b85a97d-3c4af1eaf2fmr1436787f8f.12.1755765910493;
+        Thu, 21 Aug 2025 01:45:10 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEmyRDUkXvyiK207kLGYgHZitahDSdxSXyG8/LrZYboLy9VLyyTP/ZiY+Wy3PE91kULeiJsbw==
+X-Received: by 2002:a05:6000:2dc1:b0:3b6:162a:8e08 with SMTP id ffacd0b85a97d-3c4af1eaf2fmr1436751f8f.12.1755765909943;
+        Thu, 21 Aug 2025 01:45:09 -0700 (PDT)
 Received: from redhat.com ([2a0d:6fc0:1515:7300:62e6:253a:2a96:5e3])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b4db2ab4asm18352405e9.8.2025.08.21.01.42.51
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b4dc155b8sm19021585e9.19.2025.08.21.01.45.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Aug 2025 01:42:52 -0700 (PDT)
-Date: Thu, 21 Aug 2025 04:42:49 -0400
+        Thu, 21 Aug 2025 01:45:09 -0700 (PDT)
+Date: Thu, 21 Aug 2025 04:45:06 -0400
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Haixu Cui <quic_haixcui@quicinc.com>
 Cc: andriy.shevchenko@intel.com, harald.mommer@oss.qualcomm.com,
@@ -73,7 +73,7 @@ Cc: andriy.shevchenko@intel.com, harald.mommer@oss.qualcomm.com,
 	hdanton@sina.com, qiang4.zhang@linux.intel.com,
 	alex.bennee@linaro.org, quic_ztu@quicinc.com
 Subject: Re: [PATCH v4 2/3] virtio-spi: Add virtio-spi.h
-Message-ID: <20250821044231-mutt-send-email-mst@kernel.org>
+Message-ID: <20250821044351-mutt-send-email-mst@kernel.org>
 References: <20250820084944.84505-1-quic_haixcui@quicinc.com>
  <20250820084944.84505-3-quic_haixcui@quicinc.com>
 Precedence: bulk
@@ -84,7 +84,7 @@ List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 In-Reply-To: <20250820084944.84505-3-quic_haixcui@quicinc.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: bFtAd6EhG4vN5ImuTvAbGIGi3WwVeI6J2jaSc3NdvOs_1755765773
+X-Mimecast-MFC-PROC-ID: BIOVMlvzaZwCbH-RQnHWpSxJz3MXGRkruDu5L6MXbQM_1755765911
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -112,12 +112,6 @@ On Wed, Aug 20, 2025 at 04:49:43PM +0800, Haixu Cui wrote:
 > +S:	Maintained
 > +F:	include/uapi/linux/virtio_spi.h
 > +
-
-I would add a mailing list:
-
-virtualization@lists.linux-foundation.org
-
-
 >  VIRTUAL BOX GUEST DEVICE DRIVER
 >  M:	Hans de Goede <hansg@kernel.org>
 >  M:	Arnd Bergmann <arnd@arndb.de>
@@ -150,6 +144,22 @@ virtualization@lists.linux-foundation.org
 > +#define VIRTIO_SPI_MODE_LSB_FIRST		_BITUL(3)
 > +/* Loopback mode */
 > +#define VIRTIO_SPI_MODE_LOOP			_BITUL(4)
+
+It is generally preferable to have an enum with just bit
+numbers.
+
+
+E.g.
+
+enum {
+VIRTIO_SPI_F_CPHA = 0,
+}
+
+
+Userspace can add _BITUL wrappers itself if it
+wants.
+
+
 > +
 > +/**
 > + * struct virtio_spi_config - All config fields are read-only for the
