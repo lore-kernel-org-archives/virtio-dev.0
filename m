@@ -1,48 +1,48 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7B42C0F76
-	for <virtio-dev@lists.linux.dev>; Mon, 25 Aug 2025 09:12:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E350221726
+	for <virtio-dev@lists.linux.dev>; Mon, 25 Aug 2025 09:19:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756113180; cv=none; b=JnK7zuGk4LTgn3d+vyB4mfytUv6juYFAubIlFAn0oy0Zk3Rgha3dR1CzLmOyv+Qo+X08LU/sVXdxpG6yl29rJUJoPVDWpqx+YbIlm+R3gCwuNnp0lnvAByw5iDiOUgiDhWvFOSu+u/S6ECiXSr7Mg1frkWi4tbrFjA9ySHG3WzU=
+	t=1756113557; cv=none; b=n5Jw+JbprZEItf5pOkH4B0cBgVc7cDaTY6LGwVCcxa1y4LVUJevg+WQfXPCX0mD5om2tJWkrbJy/ZBA6PKij1ZmfN3cXPgoESZIKs8G+jtpIurvS4bQIvCfUIakhfppbpswvkeh5GU7KO10gPXCyH4BWt5gMhLdLUqP8QrkBZ8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756113180; c=relaxed/simple;
-	bh=mVWUtEdz/NSNAg9iYBwu0F2436Dwq18jeTu37FpqBxk=;
+	s=arc-20240116; t=1756113557; c=relaxed/simple;
+	bh=dO75kfDvLNP5Wz6kBuCYf/Gwb1MrErZSkC0XR1qBIAE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=becXX3NXnaxAHRYYK6LzvZ/pHze3UhzZIirgITTuPiqR//239xzW3euWutAVJQh22IrD1AyfGa5dEI7YQgmJrGnW+sadeXJMAxijbJaW8ZA6Ah3IKy7ZAp195ANm9rDk1m/NS8NWOy/GKG0Nh7QLfJVCB8jZfrjs7XdRgBucQ7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=eZjpN/BL; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:Content-Type; b=VSDYkOmGC2daYLg3T9f4x+VENR1SyGAoVwiU8plBp7p8hERh3ZAm8UPdYj/V7DGaz5/rnCjxXfAnRgL72kp9i/xYlrhTj+4dUy+u+DLf5hKpguTx/lC9V+1FH1AbkAhc1MbqVkNN8MjDAFfsP1ineen9IxOBGBbKJINfiOZJYSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Mx8WUkg6; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="eZjpN/BL"
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Mx8WUkg6"
 Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57P8hJGx027329;
-	Mon, 25 Aug 2025 09:12:52 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57P8W7mU025970;
+	Mon, 25 Aug 2025 09:19:10 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	7UlZd2NA1oIFIP3xjkmXUAOxd+BQ3c+04gk0jxHffMk=; b=eZjpN/BLburw/U1a
-	k+10U22/I3h/yaSIB1FKpzCWM5ZxniEOjKFQNrkviRLKi95WkAv2Ida8Mv8mDyh4
-	nVEexcrIfIT4LcUv26o6zn5zhbesBGe25rGB5A4+qE505nYMkOvFYKYN1S1ywqNI
-	bxbpPOPXRmD5dUJ+sV2Tqw9NLZYPipD5zy5bQ22Gd1O5NMo+AGyyjmb2O6Z8xjbh
-	V3P3VfJ/R+XwHLe+qll2z4JFw2KLuaoXlkfPcMJMPKiz3mWcMn7rwHM26gp/YEzF
-	cc0apGPUAVyCrdVcULPRMLTM5v7yrsB99YOiN1jtzAK3nuMr1oPlMqd5XvJg4Rp+
-	i5kUiA==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48q5unmg2a-1
+	Mh220e+g6qgD6S6D71KRNsow1IYrGbMLFS6ZXi3T3E4=; b=Mx8WUkg6NPyU0OWB
+	5VRQgA/ZBdwqGyPyG26yyypdcQQwD4rnKY/jIf9Oi0V0zCCQFY0o7iSHI2dSFkgv
+	+2gYOQHz2PhbYMfSZDgWn0Lqw6jLUzD4DCd3SpYNTNBdLrpGjZymcEI4gk1/Bn3A
+	9RpcQroKlwFrg7CMVrPyMbj41uwEtyNwJ5XsDCMgHVzZzHKb9ce3cCBb0s9mqS/r
+	4GlHYUx1x9AxO6QGUPn0W/Xui9rmN9ww8oE27KDNSP+MSWvOHwzARaZKCkw2ZBH1
+	ujINVIZueyeqiAupi5IHByAN+1FruSlyVd92MIsptjZ+rUW2eBWjy2nXH6w8otMp
+	qN+VZw==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48q5unmgrx-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 25 Aug 2025 09:12:51 +0000 (GMT)
+	Mon, 25 Aug 2025 09:19:09 +0000 (GMT)
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57P9CopC031564
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57P9J88P029731
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 25 Aug 2025 09:12:50 GMT
+	Mon, 25 Aug 2025 09:19:08 GMT
 Received: from [10.239.105.140] (10.80.80.8) by nalasex01b.na.qualcomm.com
  (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.24; Mon, 25 Aug
- 2025 02:12:47 -0700
-Message-ID: <42806aa8-8cf1-476e-b775-50859fe0e7f1@quicinc.com>
-Date: Mon, 25 Aug 2025 17:12:44 +0800
+ 2025 02:19:05 -0700
+Message-ID: <1a63f5f9-add0-4a22-b01c-2f0c8d9efcec@quicinc.com>
+Date: Mon, 25 Aug 2025 17:19:03 +0800
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
@@ -60,30 +60,29 @@ CC: <andriy.shevchenko@intel.com>, <harald.mommer@oss.qualcomm.com>,
         <alex.bennee@linaro.org>, <quic_ztu@quicinc.com>
 References: <20250820084944.84505-1-quic_haixcui@quicinc.com>
  <20250820084944.84505-3-quic_haixcui@quicinc.com>
- <20250821044231-mutt-send-email-mst@kernel.org>
+ <20250821044351-mutt-send-email-mst@kernel.org>
 Content-Language: en-US
 From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <20250821044231-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20250821044351-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: tmB35FfMM6EwZS0epbHQGlYIaL3atDFj
-X-Proofpoint-ORIG-GUID: tmB35FfMM6EwZS0epbHQGlYIaL3atDFj
-X-Authority-Analysis: v=2.4 cv=JJo7s9Kb c=1 sm=1 tr=0 ts=68ac2913 cx=c_pps
+X-Proofpoint-GUID: JNc3JO8P6yjod7406IohdMIl0tBhS0-h
+X-Proofpoint-ORIG-GUID: JNc3JO8P6yjod7406IohdMIl0tBhS0-h
+X-Authority-Analysis: v=2.4 cv=JJo7s9Kb c=1 sm=1 tr=0 ts=68ac2a8e cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10 a=COk6AnOGAAAA:8
- a=Z4Rwk6OoAAAA:8 a=65UapY6Dq9Cd7O_TsGUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=TjNXssC_j7lpFel5tvFf:22 a=HkZW87K1Qel5hWWM3VKY:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIzMDAzMSBTYWx0ZWRfX/RCwqUGj+Twn
- gRrvNkKFXNaO/6q6wM4dghOnf6SvtLFToiUQb8HYPm3euolZFZ7qRj4bwWGipWlhuozq53we7Lj
- YvzME6Gh6UkGplhjSTTdwEHy7trW7y/TvQFF02NVK3QiReUyMKqsl9M82szi4GGfbE+vBO8w0hC
- 86ODO4PgcR4T1QY5HJ74KIPTBydxeF0KN/VwVHnev+NCXOiVZzUvnqKkMjGvdl8WXvQTySdLlXu
- 1MxuMusj/aaWeqh7Ei76s5jJnqbJiy5O8d/yc5X7/U0p36RN7x/zexKOvx7qrpAPp0ztQz5gKNk
- fxqjsOzQGtqf9S4UN2vuBxRwhMwNg8Pnw3bCrE85Imek4Q1PBlava6aWmL/Odp+wRD6szLQmFZS
- hW4UsRXr
+ a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10
+ a=BIS7xV68lBtj0k_KtVcA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIzMDAzMSBTYWx0ZWRfXzblrjuIjS2Lq
+ EAZf3OLxHSfI7cHz5yXYS+00WawSGO8HZUaFkYJCdf6pRC4QAGNH7E/OV6sxLnUVNZtJxcMuGVQ
+ 6o6Tbu5Ys4PoLXiDaKM5LCuS1fRDmsM2cFa+tE89/LnOLzmA5FPodNmWkbKIBquZVjEwxj+XFIA
+ UX4OZs8PCYDmvzjotkgxBsmwgC4SqfaJnj8iHBKl91WEvDW4EjQlBRcrER+GTxzt/wEJ6I1Folq
+ Nm7h4Xll9cHrGO2fWwBWg277l9k40Q9lqTwLIt+bmCkEg4EbcisslPxeYX85OKHReqxtRqSN8Td
+ 2set/aPO7onzslwaebmfmxKhb4oBEyGESj5EFFNsnEIAaXc7DSoD6E/Jqca362I6ldznTiZGW4p
+ xrZPUVJw
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
  definitions=2025-08-25_04,2025-08-20_03,2025-03-28_01
@@ -94,51 +93,49 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508230031
 
 
-On 8/21/2025 4:42 PM, Michael S. Tsirkin wrote:
-> On Wed, Aug 20, 2025 at 04:49:43PM +0800, Haixu Cui wrote:
->> Add virtio-spi.h header for virtio SPI.
->>
->> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
->> ---
->>   MAINTAINERS                     |   5 +
->>   include/uapi/linux/virtio_spi.h | 185 ++++++++++++++++++++++++++++++++
->>   2 files changed, 190 insertions(+)
->>   create mode 100644 include/uapi/linux/virtio_spi.h
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index daf520a13bdf..3e289677ca18 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -26760,6 +26760,11 @@ S:	Maintained
->>   F:	include/uapi/linux/virtio_snd.h
->>   F:	sound/virtio/*
->>   
->> +VIRTIO SPI DRIVER
->> +M:	Haixu Cui <quic_haixcui@quicinc.com>
->> +S:	Maintained
->> +F:	include/uapi/linux/virtio_spi.h
+
+On 8/21/2025 4:45 PM, Michael S. Tsirkin wrote:
+
+
 >> +
+>> +/* Sample data on trailing clock edge */
+>> +#define VIRTIO_SPI_CPHA			_BITUL(0)
+>> +/* Clock is high when IDLE */
+>> +#define VIRTIO_SPI_CPOL			_BITUL(1)
+>> +/* Chip Select is active high */
+>> +#define VIRTIO_SPI_CS_HIGH			_BITUL(2)
+>> +/* Transmit LSB first */
+>> +#define VIRTIO_SPI_MODE_LSB_FIRST		_BITUL(3)
+>> +/* Loopback mode */
+>> +#define VIRTIO_SPI_MODE_LOOP			_BITUL(4)
 > 
-> I would add a mailing list:
+> It is generally preferable to have an enum with just bit
+> numbers.
 > 
-> virtualization@lists.linux-foundation.org
+> 
+> E.g.
+> 
+> enum {
+> VIRTIO_SPI_F_CPHA = 0,
+> }
+> 
+> 
+> Userspace can add _BITUL wrappers itself if it
+> wants.
 > 
 > 
 
 Hi Michael,
 
-Thank you for the suggestion to add a mailing list to the MAINTAINERS entry.
+Thank you for the suggestion regarding the bit definitions.
 
-I noticed that other VIRTIO drivers, such as VIRTIO BALLOON, are 
-currently using virtualization@lists.linux.dev rather than 
-virtualization@lists.linux-foundation.org.
+Would it be acceptable to keep the current macro definitions with 
+_BITUL() because these macros are also used within the virtio SPI driver 
+itself?
 
-Just to confirm—should I use virtualization@lists.linux.dev for 
-consistency, or is virtualization@lists.linux-foundation.org the updated 
-preferred list?
-
-Appreciate your guidance!
+Looking forward to your guidance.
 
 Best regards,
 Haixu Cui
+
 
