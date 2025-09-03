@@ -1,413 +1,161 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9AD25F975
-	for <virtio-dev@lists.linux.dev>; Mon,  1 Sep 2025 12:07:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BE0D2D6E5A
+	for <virtio-dev@lists.linux.dev>; Wed,  3 Sep 2025 06:56:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756728429; cv=none; b=bhtAwNs6uJJWOagMybPY841WE6diRCRSkyQUaa0JqciqpLyLGW6p+TYyeyO5OokGTGyo0K0GBokZOuB+DJqNmYuuuAD4BEAETTZrxj6pj/Qfb5UeAyBVp+CZfPfF8EqFovgXIJM/mGk7h4iDoDGedmkBEZwH5xDqGELv1KLBEzI=
+	t=1756882585; cv=none; b=jUL5p14iehoLV4Jv1MCLggmO50EQPOsVB8Kq1iVq6DA5pjLP6i9TAoPpOm1ZwXQU9fah0B/yvWDiwRusuMKJkXoOGEfYtIoaaTKw3Mcad32w3QaXfzFgUcp8uZeb8KUI1xUGsMIvg9VjrLWqCukB1ADt+QLz5ZPMYBcbuCyEvZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756728429; c=relaxed/simple;
-	bh=NnnVmDOEYrbdmnujn4Lul2TG+QyYkE2QL0d/N5DPfSw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=POJFej5mUiGzaTDN7yXLPfv5ZV+gDh2iMVHC9oAaQpvUQM8Bx8PV1SkKcwEqmo0MsSlA7gvDu5+hz18cz6u2m1YaSXF9lTyrL9pD3WZVORwToxXqfDlQwhBR7RMHD2qeM6uN2qxo7GdnISzPjGxxbPWklywUrIqOFX+eNEr83dk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=klJz7aX5; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1756882585; c=relaxed/simple;
+	bh=2rAWH629rl76XImlLDLPDHuK8WZBa2LW1tWWTqbRllA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=p/4Lr3dUJqRnHZk4P2evjft57OsA1KyHXTyhuxfqThtpJlap0NyH0eWHuZAo0gkmpq9guJQf450xCV3Z9dtuEAWhcTyL2xVcir6KX1VTeH2GfrnnbwblGg0l1t9dVDsiB01Psma87oV36L2tCFAEqo630u4WkVEz1ShDha7LqJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=k8sZGatY; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="klJz7aX5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756728427; x=1788264427;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NnnVmDOEYrbdmnujn4Lul2TG+QyYkE2QL0d/N5DPfSw=;
-  b=klJz7aX5pTvcIX9ZfcW7zfrn1ceiLNnbsVgp+n2vIaPzE8giVIaEOOaw
-   UF/4PC5cC7yacbkJAjEV5Q9K5GvGSo+z0+AMt7ZC2llubjx0H45VoYwT5
-   AiRt+GwlBGeSqrkh+Krhfv6YDu2fG+7KWt0s2xx93rTggQV+O8jW56LAd
-   gHmOKoPCU6rkFEv5ks7onjDbrPbYTsetgcWVajpwTqX4UEPxuzvCsakdF
-   mF6pu8ehXdO4n12EnK9IW6H3IgvavaXmvR7IdtdtJNRFm2fPk8YJPw8Va
-   A1or8KBNA3+Ar8Vsk1MX9kV+iGvAlKVagixclxChKcteXTMzPD/O/xKGc
-   g==;
-X-CSE-ConnectionGUID: O6g/FgkNQ8aTiMQF/ZKZaQ==
-X-CSE-MsgGUID: eOhOqr4JRmiVK8+tj5mjTw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11539"; a="76433055"
-X-IronPort-AV: E=Sophos;i="6.18,225,1751266800"; 
-   d="scan'208";a="76433055"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2025 05:07:07 -0700
-X-CSE-ConnectionGUID: FTm+C/DoTSCAJrkzgjTPkQ==
-X-CSE-MsgGUID: UJA0ZIAkSLyy6Wv9SAaDdA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,225,1751266800"; 
-   d="scan'208";a="175380316"
-Received: from smile.fi.intel.com ([10.237.72.52])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2025 05:07:04 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1ut3JN-0000000APIW-105E;
-	Mon, 01 Sep 2025 15:07:01 +0300
-Date: Mon, 1 Sep 2025 15:07:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Haixu Cui <quic_haixcui@quicinc.com>
-Cc: harald.mommer@oss.qualcomm.com, quic_msavaliy@quicinc.com,
-	broonie@kernel.org, virtio-dev@lists.linux.dev,
-	viresh.kumar@linaro.org, linux-spi@vger.kernel.org,
-	linux-kernel@vger.kernel.org, hdanton@sina.com,
-	qiang4.zhang@linux.intel.com, alex.bennee@linaro.org,
-	quic_ztu@quicinc.com, virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v9 3/3] SPI: Add virtio SPI driver
-Message-ID: <aLWMZH3NTfM8qOUy@smile.fi.intel.com>
-References: <20250828093451.2401448-1-quic_haixcui@quicinc.com>
- <20250828093451.2401448-4-quic_haixcui@quicinc.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="k8sZGatY"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5832EwLa001379;
+	Wed, 3 Sep 2025 06:56:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	VyEnSBBjTdBbkEycTIVxjeFThBtLY+79HWKX9Dyuypc=; b=k8sZGatYyxwqjqt+
+	GzHpevdVS28Gzb1y4uAYeSAV6GiPlfLclxvi6WLnfTC2SwQRXt9LIDx/gWkwYB+q
+	gdquWJhGRHjjR+N4c+G6IF/K26e2DnmbEugzn9gUdYe6/aFWzhEv7nr13sOtgt8+
+	rWg7riyIHfb6PKyfM8LjxP9VT0zD/V6RbiGH077TazNy/R+K4mgLapVM3AvlGGnB
+	1WWPrKBdr5lsrhaH37GyaFA+oYZ2B+Xmk8ujKdlmma9iaNug1ux3lyr4epnZD8xU
+	/k7G2n4q5D5F/kns7R7JEus9b5MZvSPHSGpbQ3tjDAB/cqVXNRG2UBrvOB2z4NJK
+	snPEjg==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48w8wy6d55-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 03 Sep 2025 06:56:14 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5836uDnn006086
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 3 Sep 2025 06:56:13 GMT
+Received: from [10.239.105.140] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.24; Tue, 2 Sep
+ 2025 23:56:10 -0700
+Message-ID: <764e77e2-303f-4603-8819-ec3116c85c02@quicinc.com>
+Date: Wed, 3 Sep 2025 14:55:40 +0800
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250828093451.2401448-4-quic_haixcui@quicinc.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Thu, Aug 28, 2025 at 05:34:51PM +0800, Haixu Cui wrote:
-> This is the virtio SPI Linux kernel driver.
-
-...
-
-> +#include <linux/completion.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/stddef.h>
-
-A lot of headers are still missing. See below.
-
-...
-
-
-> +struct virtio_spi_priv {
-> +	/* The virtio device we're associated with */
-> +	struct virtio_device *vdev;
-> +	/* Pointer to the virtqueue */
-> +	struct virtqueue *vq;
-> +	/* Copy of config space mode_func_supported */
-> +	u32 mode_func_supported;
-
-uXX (in particular u32) is defined in types.h.
-
-> +	/* Copy of config space max_freq_hz */
-> +	u32 max_freq_hz;
-> +};
-
-...
-
-> +static int virtio_spi_set_delays(struct spi_transfer_head *th,
-> +				 struct spi_device *spi,
-> +				 struct spi_transfer *xfer)
-> +{
-> +	int cs_setup;
-> +	int cs_word_delay_xfer;
-> +	int cs_word_delay_spi;
-> +	int delay;
-> +	int cs_hold;
-> +	int cs_inactive;
-> +	int cs_change_delay;
-> +
-> +	cs_setup = spi_delay_to_ns(&spi->cs_setup, xfer);
-> +	if (cs_setup < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert cs_setup\n");
-
-dev_warn() et al. are defined in dev_printk.h.
-
-> +		return cs_setup;
-> +	}
-> +	th->cs_setup_ns = cpu_to_le32(cs_setup);
-
-This requires
-
-#include <asm/byteorder.h>
-
-> +	cs_word_delay_xfer = spi_delay_to_ns(&xfer->word_delay, xfer);
-> +	if (cs_word_delay_xfer < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert cs_word_delay_xfer\n");
-> +		return cs_word_delay_xfer;
-> +	}
-> +	cs_word_delay_spi = spi_delay_to_ns(&spi->word_delay, xfer);
-> +	if (cs_word_delay_spi < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert cs_word_delay_spi\n");
-> +		return cs_word_delay_spi;
-> +	}
-> +
-> +	th->word_delay_ns = cpu_to_le32(max(cs_word_delay_spi, cs_word_delay_xfer));
-
-max() is defined in math.h.
-
-> +	delay = spi_delay_to_ns(&xfer->delay, xfer);
-> +	if (delay < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert delay\n");
-> +		return delay;
-> +	}
-> +	cs_hold = spi_delay_to_ns(&spi->cs_hold, xfer);
-> +	if (cs_hold < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert cs_hold\n");
-> +		return cs_hold;
-> +	}
-> +	th->cs_delay_hold_ns = cpu_to_le32(delay + cs_hold);
-> +
-> +	cs_inactive = spi_delay_to_ns(&spi->cs_inactive, xfer);
-> +	if (cs_inactive < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert cs_inactive\n");
-> +		return cs_inactive;
-> +	}
-> +	cs_change_delay = spi_delay_to_ns(&xfer->cs_change_delay, xfer);
-> +	if (cs_change_delay < 0) {
-> +		dev_warn(&spi->dev, "Cannot convert cs_change_delay\n");
-> +		return cs_change_delay;
-> +	}
-> +	th->cs_change_delay_inactive_ns =
-> +		cpu_to_le32(cs_inactive + cs_change_delay);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int virtio_spi_transfer_one(struct spi_controller *ctrl,
-> +				   struct spi_device *spi,
-> +				   struct spi_transfer *xfer)
-> +{
-> +	struct virtio_spi_priv *priv = spi_controller_get_devdata(ctrl);
-
-> +	struct virtio_spi_req *spi_req __free(kfree);
-
-This is incorrect template. It's one of the exceptions when we mix code and
-definitions...
-
-> +	struct spi_transfer_head *th;
-> +	struct scatterlist sg_out_head, sg_out_payload;
-> +	struct scatterlist sg_in_result, sg_in_payload;
-
-+ scatterlist.h
-
-> +	struct scatterlist *sgs[4];
-> +	unsigned int outcnt = 0;
-> +	unsigned int incnt = 0;
-> +	int ret;
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/3] virtio-spi: Add virtio-spi.h
+To: "Michael S. Tsirkin" <mst@redhat.com>
+CC: <andriy.shevchenko@intel.com>, <harald.mommer@oss.qualcomm.com>,
+        <quic_msavaliy@quicinc.com>, <broonie@kernel.org>,
+        <virtio-dev@lists.linux.dev>, <viresh.kumar@linaro.org>,
+        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hdanton@sina.com>, <qiang4.zhang@linux.intel.com>,
+        <alex.bennee@linaro.org>, <quic_ztu@quicinc.com>
+References: <20250820084944.84505-1-quic_haixcui@quicinc.com>
+ <20250820084944.84505-3-quic_haixcui@quicinc.com>
+ <20250821044351-mutt-send-email-mst@kernel.org>
+ <1a63f5f9-add0-4a22-b01c-2f0c8d9efcec@quicinc.com>
+ <20250828063350-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+From: Haixu Cui <quic_haixcui@quicinc.com>
+In-Reply-To: <20250828063350-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Authority-Analysis: v=2.4 cv=Ycq95xRf c=1 sm=1 tr=0 ts=68b7e68e cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=yJojWOMRYYMA:10
+ a=kBQPIZexwyFoi4fVXFQA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: WwvxrEx_Rhz5oGp7mLCNuRFvNTXVgrwV
+X-Proofpoint-ORIG-GUID: WwvxrEx_Rhz5oGp7mLCNuRFvNTXVgrwV
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTAxMDEwMSBTYWx0ZWRfXxtCXCHjAlBDE
+ n1ctMdVtgKfNEY/HaoOnUme4ZuPhfXsDVf6DfNu+0tzSiYKMA9XWq0AzTamIqtGasmplgIvzzEZ
+ VcpDTeut79QuGb4Az3XLPdhXyBkZDwfPWH9EUayU7L3y1a9bUk/oW05peEJoxDti7ngDDIgNks0
+ S7AZVU0x3dSPjxbowAS8KA0duea8+7M1uBIfNIU4LferZNWRFmP+pRJRZDypoKNo8XM2YsZfIkJ
+ aif7NFbJdOAY/hL7nb927ttymGtcE27CZ/upzwtHSJ9bU6RqgDrtXdZ65aTRFC99dbzvf571+h5
+ 7bk8hq+AtymPbRnAg2BknKYIxAGDAtPjrL6mHXwJ/kb3sdVz9/jPvlB3AK5pKHaliYDCfLiMYTu
+ BN14PJkZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-03_02,2025-08-28_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 priorityscore=1501 adultscore=0 phishscore=0 malwarescore=0
+ bulkscore=0 suspectscore=0 impostorscore=0 spamscore=0 classifier=typeunknown
+ authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2507300000 definitions=main-2509010101
 
 
-> +	spi_req = kzalloc(sizeof(*spi_req), GFP_KERNEL);
+On 8/28/2025 6:34 PM, Michael S. Tsirkin wrote:
+> On Mon, Aug 25, 2025 at 05:19:03PM +0800, Haixu Cui wrote:
+>>
+>>
+>> On 8/21/2025 4:45 PM, Michael S. Tsirkin wrote:
+>>
+>>
+>>>> +
+>>>> +/* Sample data on trailing clock edge */
+>>>> +#define VIRTIO_SPI_CPHA			_BITUL(0)
+>>>> +/* Clock is high when IDLE */
+>>>> +#define VIRTIO_SPI_CPOL			_BITUL(1)
+>>>> +/* Chip Select is active high */
+>>>> +#define VIRTIO_SPI_CS_HIGH			_BITUL(2)
+>>>> +/* Transmit LSB first */
+>>>> +#define VIRTIO_SPI_MODE_LSB_FIRST		_BITUL(3)
+>>>> +/* Loopback mode */
+>>>> +#define VIRTIO_SPI_MODE_LOOP			_BITUL(4)
+>>>
+>>> It is generally preferable to have an enum with just bit
+>>> numbers.
+>>>
+>>>
+>>> E.g.
+>>>
+>>> enum {
+>>> VIRTIO_SPI_F_CPHA = 0,
+>>> }
+>>>
+>>>
+>>> Userspace can add _BITUL wrappers itself if it
+>>> wants.
+>>>
+>>>
+>>
+>> Hi Michael,
+>>
+>> Thank you for the suggestion regarding the bit definitions.
+>>
+>> Would it be acceptable to keep the current macro definitions with _BITUL()
+>> because these macros are also used within the virtio SPI driver itself?
+>>
+>> Looking forward to your guidance.
+>>
+>> Best regards,
+>> Haixu Cui
+>>
+> 
+> 
+> move them to the .c file if you want them.
+> 
 
-...so this should be
+Hi Michael,
+I've observed that other virtio drivers - such as virtio-i2c and 
+virtio-net - commonly define feature bits directly in their headers and 
+use them in their drivers.
 
-	struct virtio_spi_req *spi_req __free(kfree) =
-		kzalloc(sizeof(*spi_req), GFP_KERNEL);
+To maintain alignment with those drivers and ensure consistency in 
+usage, I’d prefer to retain the current macro-based approach for 
+defining feature bits.
 
-(or on one line if you are okay with a 100 limit).
+Do you think this would be reasonable in this case?
 
-And do not forget to include cleanup.h (__free() macro) and
-slab.h (kzalloc() API).
-
-> +	if (!spi_req)
-> +		return -ENOMEM;
-
-+ errno.h
-
-But since you already have IS_ERR()/PTR_ERR() use, just
-
-+ err.h
-
-> +	init_completion(&spi_req->completion);
-> +
-> +	th = &spi_req->transfer_head;
-> +
-> +	/* Fill struct spi_transfer_head */
-> +	th->chip_select_id = spi_get_chipselect(spi, 0);
-> +	th->bits_per_word = spi->bits_per_word;
-> +	th->cs_change = xfer->cs_change;
-> +	th->tx_nbits = xfer->tx_nbits;
-> +	th->rx_nbits = xfer->rx_nbits;
-> +	th->reserved[0] = 0;
-> +	th->reserved[1] = 0;
-> +	th->reserved[2] = 0;
-> +
-> +	static_assert(VIRTIO_SPI_CPHA == SPI_CPHA,
-> +		      "VIRTIO_SPI_CPHA must match SPI_CPHA");
-> +	static_assert(VIRTIO_SPI_CPOL == SPI_CPOL,
-> +		      "VIRTIO_SPI_CPOL must match SPI_CPOL");
-> +	static_assert(VIRTIO_SPI_CS_HIGH == SPI_CS_HIGH,
-> +		      "VIRTIO_SPI_CS_HIGH must match SPI_CS_HIGH");
-> +	static_assert(VIRTIO_SPI_MODE_LSB_FIRST == SPI_LSB_FIRST,
-> +		      "VIRTIO_SPI_MODE_LSB_FIRST must match SPI_LSB_FIRST");
-> +
-> +	th->mode = cpu_to_le32(spi->mode & VIRTIO_SPI_MODE_MASK);
-> +	if (spi->mode & SPI_LOOP)
-> +		th->mode |= cpu_to_le32(VIRTIO_SPI_MODE_LOOP);
-> +
-> +	th->freq = cpu_to_le32(xfer->speed_hz);
-> +
-> +	ret = virtio_spi_set_delays(th, spi, xfer);
-> +	if (ret)
-> +		goto msg_done;
-> +
-> +	/* Set buffers */
-> +	spi_req->tx_buf = xfer->tx_buf;
-> +	spi_req->rx_buf = xfer->rx_buf;
-> +
-> +	/* Prepare sending of virtio message */
-> +	init_completion(&spi_req->completion);
-> +
-> +	sg_init_one(&sg_out_head, th, sizeof(*th));
-> +	sgs[outcnt] = &sg_out_head;
-> +	outcnt++;
-> +
-> +	if (spi_req->tx_buf) {
-> +		sg_init_one(&sg_out_payload, spi_req->tx_buf, xfer->len);
-> +		sgs[outcnt] = &sg_out_payload;
-> +		outcnt++;
-> +	}
-> +
-> +	if (spi_req->rx_buf) {
-> +		sg_init_one(&sg_in_payload, spi_req->rx_buf, xfer->len);
-> +		sgs[outcnt] = &sg_in_payload;
-> +		incnt++;
-> +	}
-> +
-> +	sg_init_one(&sg_in_result, &spi_req->result,
-> +		    sizeof(struct spi_transfer_result));
-> +	sgs[outcnt + incnt] = &sg_in_result;
-> +	incnt++;
-> +
-> +	ret = virtqueue_add_sgs(priv->vq, sgs, outcnt, incnt, spi_req,
-> +				GFP_KERNEL);
-> +	if (ret)
-> +		goto msg_done;
-> +
-> +	/* Simple implementation: There can be only one transfer in flight */
-> +	virtqueue_kick(priv->vq);
-> +
-> +	wait_for_completion(&spi_req->completion);
-> +
-> +	/* Read result from message and translate return code */
-> +	switch (spi_req->result.result) {
-> +	case VIRTIO_SPI_TRANS_OK:
-> +		break;
-> +	case VIRTIO_SPI_PARAM_ERR:
-> +		ret = -EINVAL;
-> +		break;
-> +	case VIRTIO_SPI_TRANS_ERR:
-> +		ret = -EIO;
-> +		break;
-> +	default:
-> +		ret = -EIO;
-> +		break;
-> +	}
-> +
-> +msg_done:
-> +	if (ret)
-> +		ctrl->cur_msg->status = ret;
-> +
-> +	return ret;
-> +}
-
-...
-
-> +static int virtio_spi_find_vqs(struct virtio_spi_priv *priv)
-> +{
-> +	struct virtqueue *vq;
-> +
-> +	vq = virtio_find_single_vq(priv->vdev, virtio_spi_msg_done, "spi-rq");
-> +	if (IS_ERR(vq))
-> +		return PTR_ERR(vq);
-
-See above.
-
-> +	priv->vq = vq;
-> +	return 0;
-> +}
-
-...
-
-> +static int virtio_spi_probe(struct virtio_device *vdev)
-> +{
-> +	struct virtio_spi_priv *priv;
-> +	struct spi_controller *ctrl;
-> +	int ret;
-> +	u32 bus_num;
-> +
-> +	ctrl = devm_spi_alloc_host(&vdev->dev, sizeof(*priv));
-> +	if (!ctrl)
-> +		return -ENOMEM;
-> +
-> +	priv = spi_controller_get_devdata(ctrl);
-> +	priv->vdev = vdev;
-> +	vdev->priv = priv;
-
-> +	device_set_node(&ctrl->dev, dev_fwnode(&vdev->dev));
-> +	dev_set_drvdata(&vdev->dev, ctrl);
-> +	ret = device_property_read_u32(&vdev->dev, "spi,bus-num", &bus_num);
-
-+ device.h
-+ property.h
-
-> +	if (ret || bus_num > S16_MAX)
-
-+ limits.h
-
-> +		ctrl->bus_num = -1;
-> +	else
-> +		ctrl->bus_num = bus_num;
-
-But why do we need this property at all? And where is it documented in the
-device tree bindings?
-
-> +	virtio_spi_read_config(vdev);
-> +
-> +	ctrl->transfer_one = virtio_spi_transfer_one;
-> +
-> +	ret = virtio_spi_find_vqs(priv);
-> +	if (ret)
-> +		return dev_err_probe(&vdev->dev, ret, "Cannot setup virtqueues\n");
-> +
-> +	/* Register cleanup for virtqueues using devm */
-> +	ret = devm_add_action_or_reset(&vdev->dev, virtio_spi_del_vq, vdev);
-> +	if (ret)
-> +		return dev_err_probe(&vdev->dev, ret, "Cannot register virtqueue cleanup\n");
-> +
-> +	/* Use devm version to register controller */
-> +	ret = devm_spi_register_controller(&vdev->dev, ctrl);
-> +	if (ret)
-> +		return dev_err_probe(&vdev->dev, ret, "Cannot register controller\n");
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static struct virtio_device_id virtio_spi_id_table[] = {
-
-The type is or should be defined in mod_devicetable.h.
-
-> +	{ VIRTIO_ID_SPI, VIRTIO_DEV_ANY_ID },
-> +	{}
-> +};
-
-...
-
-> +static const struct dev_pm_ops virtio_spi_pm_ops = {
-
-The type is defined in pm.h.
-
-> +	.freeze = pm_sleep_ptr(virtio_spi_freeze),
-> +	.restore = pm_sleep_ptr(virtio_spi_restore),
-> +};
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+thanks
