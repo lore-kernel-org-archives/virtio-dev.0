@@ -1,128 +1,238 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 764892EC548
-	for <virtio-dev@lists.linux.dev>; Wed,  3 Sep 2025 10:28:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E10541C4A13
+	for <virtio-dev@lists.linux.dev>; Mon,  8 Sep 2025 09:24:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756895287; cv=none; b=Oj4DBtgiXoz6BmOtGBV2p2rkHSaetPdtPFJYkYxoPowv7MgKSPDCMvkWFuMIYcmXrV+YjBgVWBXf1nBFjzxr6xGWnv+0R+UJmeMBIsj2+AmW/FJ9/FnjY46+3EAYMrVjTjv0tI+eKSBYlKik+P2MmwrRWBINKthKlgNmyMLwtCY=
+	t=1757323454; cv=none; b=p+EgIGztZFW+QdjTuhyOQGVAWjb22aJGtW8GeUhL6Mmo//06QH7diacAGZwlbyah9qtrML+mndbtiLnNX2+2wpf1tuBH6SqhVCsk4aA5Cpj6yVXTHPUCjXWaA0MIzyD65rFextdpdACl+qUl1KIeSb2uwDTFhnXIiDGdt9mm2r8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756895287; c=relaxed/simple;
-	bh=d0x3JX/+9DiVecJg9Q5If5tZJiuJvMmVamNF3ZJOfzo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KSXpxcjLSke4OC9WiVSpL9pP5XfT95Q/UyfC/AxPoaeOs5Sya9v0SXBeigp8Vrb77/Amt/rp79QxZwlUHTALq7A6EIa+Q1cRxMOQ6NA3Ez8hBcWmzi4PkCfcqRduP/JPtND8iIM6Kbr+uSYRiAhlipqHzVZK/L7k+l83IhZpGfA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BFrrDGXi; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1757323454; c=relaxed/simple;
+	bh=Lmf0sv2D0cJf19YN+ymNkfUJFVsX11nvRcxL4evcWBo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=IPsvYvtKurIW8kvtY1rAv6ziMnPSXtGROtKJ2Rfr0Icm59r5EBoGkjoCA6lQV1W/1C6T9SuUxkmRTKK/zUNVD4EMEAng3WxC36q7O3Hmr1NuqyygAhKn/zwCZyrDIb21tMXTMR5SvM4QmLrJfhBqjRCDexaxF405nf47E6NmYZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=aSk1JrN5; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BFrrDGXi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756895285; x=1788431285;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=d0x3JX/+9DiVecJg9Q5If5tZJiuJvMmVamNF3ZJOfzo=;
-  b=BFrrDGXigzk12OdWpxxMXL6I77W4SA9RfQ+N069TtpnI5DrLpmXCFt7/
-   hRfg2K0QPjUSIyUwdgnEQr0Nh+aSbEJwRGxCMDkZff8UjgMRpeIPlSBaZ
-   scfETUWf57Z2zvXu0Z7WCol1HOTfJLdOm+fThF+D3LLj3GXEu2pLmGKmZ
-   /V3Xt5FXlhk1rjv3/nOMi7Iw1Ld8gZqucrRh9uTMwM3U1XFvUKJRcplZI
-   2jyb2pb5g3vOyXnicMZWkGqHSHTaNSjanaHu2hVwlMe8wKD1WoK+dxble
-   +VySLkm3rpWWhJmR9HuG0QRpzdrIKVqcNZQt8w98kR47xf1wNkOVgZ9LL
-   w==;
-X-CSE-ConnectionGUID: dGELBYfDQfitEPxYBNZDzw==
-X-CSE-MsgGUID: jy9MBfWDRgeRccic/mNErQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="59153505"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="59153505"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2025 03:28:04 -0700
-X-CSE-ConnectionGUID: TralALkLQU+8hrjAbmNTdw==
-X-CSE-MsgGUID: JieKwavoTYOry3mIJvdrIw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,233,1751266800"; 
-   d="scan'208";a="208764839"
-Received: from smile.fi.intel.com ([10.237.72.52])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2025 03:28:01 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1utkib-0000000AxL8-2lXL;
-	Wed, 03 Sep 2025 13:27:57 +0300
-Date: Wed, 3 Sep 2025 13:27:57 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Haixu Cui <quic_haixcui@quicinc.com>
-Cc: harald.mommer@oss.qualcomm.com, quic_msavaliy@quicinc.com,
-	broonie@kernel.org, virtio-dev@lists.linux.dev,
-	viresh.kumar@linaro.org, linux-spi@vger.kernel.org,
-	linux-kernel@vger.kernel.org, hdanton@sina.com,
-	qiang4.zhang@linux.intel.com, alex.bennee@linaro.org,
-	quic_ztu@quicinc.com, virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v9 3/3] SPI: Add virtio SPI driver
-Message-ID: <aLgYLS6Lr5O2cIhK@smile.fi.intel.com>
-References: <20250828093451.2401448-1-quic_haixcui@quicinc.com>
- <20250828093451.2401448-4-quic_haixcui@quicinc.com>
- <aLWMZH3NTfM8qOUy@smile.fi.intel.com>
- <5dcabe90-c25b-4af5-b51f-5cda7113b5f4@quicinc.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="aSk1JrN5"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5883mJTf015294;
+	Mon, 8 Sep 2025 09:24:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=rDvGDV0hfGDCJIVNik5ct+
+	796AnXM43cGU3tkAI7YHM=; b=aSk1JrN5oDUpKM1Cv9RG6IdeP9Hf0Jlih5Wsx5
+	6/2IQ7/6hUuUNAhZR8H5ANZU+L3+a523jza38SL9OYDALEZh6KATsF8IlGl/FgMD
+	BszMNF2Xq5bChYpA2HZFYuK1mre275RJziqvkjJwhXIppXcAIZcJLsd5zU5l9UA0
+	5GSd9mnnM/0ART97u/Alfn2TDpDo1F9rdhKhoWA1rSf8mLwddik5lZdsvZSF1Zye
+	4cH+N/kw4htdPjzbZbbGibtej/UHCFuMd3YyBiZMOW/dsFA6D7tV9PV3IhJa30ah
+	C/558N3AQqUAibGoimbOWtEamGeLNA79WZgitKKZWgA+43MA==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 491qhdrw4m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 08 Sep 2025 09:24:06 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5889O5AH019489
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 8 Sep 2025 09:24:05 GMT
+Received: from haixcui1-gv.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.24; Mon, 8 Sep 2025 02:24:01 -0700
+From: Haixu Cui <quic_haixcui@quicinc.com>
+To: <andriy.shevchenko@intel.com>, <harald.mommer@oss.qualcomm.com>,
+        <quic_msavaliy@quicinc.com>, <quic_haixcui@quicinc.com>,
+        <broonie@kernel.org>, <virtio-dev@lists.linux.dev>,
+        <viresh.kumar@linaro.org>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <hdanton@sina.com>,
+        <qiang4.zhang@linux.intel.com>, <alex.bennee@linaro.org>
+CC: <virtualization@lists.linux-foundation.org>, <quic_ztu@quicinc.com>
+Subject: [PATCH v10 0/3] Virtio SPI Linux driver
+Date: Mon, 8 Sep 2025 17:23:45 +0800
+Message-ID: <20250908092348.1283552-1-quic_haixcui@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5dcabe90-c25b-4af5-b51f-5cda7113b5f4@quicinc.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: f9Ba2fhBUlEd72AA5ZquL1YRZouzGjZP
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA4MDAzNCBTYWx0ZWRfX+IDlU9Yl56mU
+ idQMpHNhN6oOiTGkJvbuMDOBgRSKnEkl9kKPiyeoeQhL7KT2OOcvoX/qwDvXaAyUQK3YyGbIc75
+ bi4IcMFif7O9pH+7HZ9VypOFi7uHKDnBSAzCyN3kXtrx8ToF1WC7NJTP3LhTcoJ+c/EmlbabZ42
+ s3/1smogMz/qclkh9rOFv0vGtKIiCitOG2hKhsiGxFYPnfQCJRRgEV5O8WjMT5ky39dZnkTa2qt
+ ntRDmqJ1l/aGup/hEP9vzsX9J45LE40/1zrpl/G92j0nQNhvvH4i5dYeBr4LN5boq0PlwXK9CTB
+ FsWgoTYt0gzFxa25ek8Kzuhw5xwGYCCw61Numyrl6vUs/R4+l1IfY4KDemmEkctfqm7QPvvuedA
+ L7EQp8+v
+X-Authority-Analysis: v=2.4 cv=YOCfyQGx c=1 sm=1 tr=0 ts=68bea0b6 cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=GEpy-HfZoHoA:10 a=yJojWOMRYYMA:10 a=NEAV23lmAAAA:8 a=Z4Rwk6OoAAAA:8
+ a=KKAkSRfTAAAA:8 a=ijoT9NbLev-7i16Au24A:9 a=HkZW87K1Qel5hWWM3VKY:22
+ a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-ORIG-GUID: f9Ba2fhBUlEd72AA5ZquL1YRZouzGjZP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-08_03,2025-09-08_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0 clxscore=1015 adultscore=0 impostorscore=0
+ suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509080034
 
-On Wed, Sep 03, 2025 at 05:04:46PM +0800, Haixu Cui wrote:
-> On 9/1/2025 8:07 PM, Andy Shevchenko wrote:
-> > On Thu, Aug 28, 2025 at 05:34:51PM +0800, Haixu Cui wrote:
-> > > This is the virtio SPI Linux kernel driver.
+This is the 10th version of the virtio SPI Linux driver patch series which is
+intended to be compliant with the upcoming virtio specification
+version 1.4. The specification can be found in repository:
+https://github.com/oasis-tcs/virtio-spec.git branch virtio-1.4.
 
-...
+The original contributor Harald submitted:
+RFC v1 to RFC v3
+non-RFC v1 to non-RFC v3
 
-> > > +#include <linux/completion.h>
-> > > +#include <linux/interrupt.h>
-> > > +#include <linux/io.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/spi/spi.h>
-> > > +#include <linux/stddef.h>
-> > 
-> > A lot of headers are still missing. See below.
-> 
-> This driver compiles successfully, and I believe all required definitions
-> are resolved through indirect inclusion. For example, since I included
-> virtio.h, there is no need to explicitly include device.h, scatterlist.h or
-> types.h.
-> 
-> I avoided redundant #includes to keep the code clean and minimal.
-> 
-> If there are any essential headers I’ve overlooked, please feel free to
-> highlight them—I’ll gladly include them in the next revision.
+I continued the work and submitted:
+RFC v4 to RFC v8
+non-RFC v4, v9
 
-The rationale is described on https://include-what-you-use.org/.
+This submission is labeled as v10 to maintain continuity and clarity.
+It builds upon non-RFC v9, and incorporates feedback from the community
+and testing improvements.
 
-...
+Changes between v9 and v10:
+- Remove support for reading "spi,bus-num" property in virtio_spi_probe.
+- Refine initialization of spi_req variable.
+- Update MAINTAINERS: change mailing list from
+  virtualization@lists.linux-foundation.org to virtualization@lists.linux.dev.
 
-> I plan to update the code as follows:
-> 
-> struct virtio_spi_req *spi_req __free(kfree) = NULL;
-> spi_req = kzalloc(sizeof(*spi_req), GFP_KERNEL);
-> if(!spi_req)
->     return -ENOMEM;
-> 
-> This follows the pattern used in
-> virtio_net(https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/virtio_net.c?h=v6.17-rc4#n3746)
-> 
-> I'd like to check if this style is acceptable here, thanks.
+Changes between non-RFC v4 and v9:
+- Updated macro definition to use SPI_MODE_X_MASK instead of manually
+  listing individual flags.
+- Restructured struct virtio_spi_req to improve cache alignment and
+  layout efficiency.
+- Replaced manual comparison logic with max() for word delay calculation.
+- Removed unnecessary u suffix from unsigned int initializations.
+- Simplified memory cleanup by using __free(kfree) for spi_req.
+- Standardized error variable naming from err to ret across the driver.
+- Removed redundant ACPI_COMPANION_SET() call to avoid inconsistency
+  with device_set_node().
+- Corrected logic for reading spi,bus-num property.
+- eplaced return err with return dev_err_probe for cleaner error reporting.
+- Used dev_to_virtio() in power management callbacks.
+- Added virtualization@lists.linux-foundation.org as the mailing list
+  for patch discussions.
 
-The style is fine. The potential issue (not now and probably never) is that the
-scope of the variable in this case is different which might lead to unexpected
-side-effects. That said, You can go with it.
+Changes between RFC V8 and non-RFC V4:
+- Replaced BUILD_BUG_ON with static_assert for SPI mode constants to
+  improve compile-time validation.
+- Introduced VIRTIO_SPI_MODE_MASK macro to simplify SPI mode bit masking.
+- Removed unnecessary __cacheline_aligned attributes from buffer
+  pointers in virtio_spi_req.
+- Simplified type casting in delay conversions by removing redundant
+  (u32) casts.
+- Replaced manual virtqueue cleanup with devm_add_action_or_reset()
+  for automatic resource management.
+- Migrated controller registration to devm_spi_register_controller()
+  for better lifecycle handling.
+- Updated power management callbacks to use struct device * and
+  added virtio_spi_pm_ops
+- Standardized bit macros in virtio_spi.h from BIT(x) to _BITUL(x) for
+  type safety.
+- Improved documentation comments in virtio_spi_config for clarity
+  and consistency.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Changes between RFC V7 and RFC V8:
+- Restored original Copyright.
+
+Changes between RFC V6 and RFC V7:
+- Restored original MODULE_AUTHOR information in the driver source file.
+- Reinstated the original Signed-off-by tags.
+
+Changes between RFC V5 and RFC V6:
+- Dynamically allocate the virtio_spi_req structure instead of keeping
+  it as a member of virtio_spi_priv.
+- Remove redundant comments.
+
+Changes between RFC V4 and RFC V5:
+- Use dev_err_probe instead of dev_err in virtio_spi_probe function
+  to improve error handling.
+- Add comments to virtio_spi_set_delays function and revise several
+  field descriptions in mode_func_supported for improved clarity.
+- Update bitmask definitions from (1 << n) to BIT(n) to enhance code
+  readability.
+
+Changes between non-RFC V3 and RFC V4
+- Remove the logic code for statically creating SPI devices through
+  the spi_new_device function.
+- Add ACPI support.
+- According to Hillf Danton's comment, use init_completion instead of
+  reinit_completion in virtio_spi_transfer_one function.
+
+Changes between non-RFC V2 and non-RFC V3
+- Child spi device tree nodes are supported now.
+  If a child spi device tree node exists the setup of the user mode SPI
+  device is done by spi_register_controller() and the driver itself does
+  not call spi_new_device() any more to setup the chip selects.
+  If there is no device tree child node the SPI device sets up the user
+  mode SPI devices autonomously as it was before.
+  
+Changes between non-RFC V1 and non-RFC V2
+- Remove some comments stating the obvious
+- Remove error trace when devm_spi_alloc_host() failed as this is habit
+- Add some blank lines to improve readabilty
+- Last TODO comment removed which was used to trigger some discussion.
+  Discussion did not take place, most probably the code below is correct
+  as it is
+- Abstained from replacing "Cannot " by "Failed to " in error messages
+  as the wording "Cannot " is frequently used even when "Failed to " has
+  the majority. Announced this, heard nothing about this, so added the
+  "Reviewed-by" from Viresh Kumar <viresh.kumar@linaro.org> as
+  everything else was done.
+
+Changes between RFC V3 and non-RFC V1:
+- Address kernel test robot comment which revealed an actual bug
+- Rework some comments in the code addressing review comments
+- Remove a TODO comment which has served it's purpose
+- Allocate struct virtio_spi_req spi_req only once at startup
+- Use callback transfer_one instead of transfer_one_message to simplify
+  and shorten code. Due to this rework in the affected function(s) some
+  additional changes:
+  - Do init_completion() only once at startup, for re-initialization
+    now reinit_completion() is used
+  - Translate result codes VIRTIO_SPI_PARAM_ERR and VIRTIO_SPI_TRANS_ERR
+    to appropriate Linux error codes -EINVAL and -EIO
+
+Changes between RFC V2 and RFC V3:
+- Order header inclusion alphabetically.
+- Add Viresh Kumar's "signed-off" to the header files.
+- Rework virtio_spi_one_transfer
+  - Rework the delays according to Haixu Cui's advise. Delays are now
+    handled in a new sub-function virtio_spi_set_delays.
+  - Minor change: Re-formulate arguments of sg_init_one.
+- Rework virtio_spi_probe
+  - Replace some goto in error paths by return.
+  - Add spi_unregister_controller to an error path. Abstained from
+    using devm_spi_register_controller to keep order of
+    de-initialization in virtio_spi_remove.
+  - Add deletion of vqueue to all error paths taken after the virtqueues
+    have been initialized.
+
+Changes between RFC V1 and RFC V2:
+- Update from virtio SPI draft specification V4 to V10.
+- Incorporate review comments gotten from the community.
+- A proposal for a performance enhancement having more than only one SPI
+  message in flight had to be kept out. The more complicated code would
+  have caused an unacceptable project risk now.
+
+The driver was smoke tested on QEMU using:
+- Qualcomm's target hardware with a physical SPI backend device via
+  vhost-user protocol (Linux v6.12).
+- OpenSynergy's proprietary virtio SPI device simulating a SPI backend
+  on top of linux-next.git (v6.8).
+- Regression tested on physical hardware using kernel v6.5.7.
 
 
