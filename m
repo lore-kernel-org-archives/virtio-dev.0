@@ -1,44 +1,46 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E10541C4A13
-	for <virtio-dev@lists.linux.dev>; Mon,  8 Sep 2025 09:24:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F0302F1FDC
+	for <virtio-dev@lists.linux.dev>; Mon,  8 Sep 2025 09:24:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757323454; cv=none; b=p+EgIGztZFW+QdjTuhyOQGVAWjb22aJGtW8GeUhL6Mmo//06QH7diacAGZwlbyah9qtrML+mndbtiLnNX2+2wpf1tuBH6SqhVCsk4aA5Cpj6yVXTHPUCjXWaA0MIzyD65rFextdpdACl+qUl1KIeSb2uwDTFhnXIiDGdt9mm2r8=
+	t=1757323467; cv=none; b=OCx89ZVFWvuIAc/p82xtRuc4o4P6E1XfOlFcr3nRNf2H/C6+rQ7lRM7KZrZTxyui0I4IOPd3NvhB7fCLAhZE3mhw50hcGLN4NKHx7NabBBmlHhSKKxhbV73EeYO476LP8PD44OEdTv0kIu7kdL/0YPJM/8h2uF2hfS9SDFqgEhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757323454; c=relaxed/simple;
-	bh=Lmf0sv2D0cJf19YN+ymNkfUJFVsX11nvRcxL4evcWBo=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=IPsvYvtKurIW8kvtY1rAv6ziMnPSXtGROtKJ2Rfr0Icm59r5EBoGkjoCA6lQV1W/1C6T9SuUxkmRTKK/zUNVD4EMEAng3WxC36q7O3Hmr1NuqyygAhKn/zwCZyrDIb21tMXTMR5SvM4QmLrJfhBqjRCDexaxF405nf47E6NmYZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=aSk1JrN5; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1757323467; c=relaxed/simple;
+	bh=y3OV92ZBfjz9Unv45KjmT75My/jD9kH0gpa0afCTmnI=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=krGmJQ42R1tAabyRJgNowN0CVegTRC3A5as9giDLP7zVmmSJuoVUqtdUC2yH+pVJNohkeJe+s5zmPek0UYAGAuxqR5HystveEUtcZfl2+2+IW1sbajkgK0OhpQDB0BgGvkfqrsDGyvdM4hrpoTSw3YjGW1mnrdlICOAswMfcOSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=BbzNeHyr; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="aSk1JrN5"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5883mJTf015294;
-	Mon, 8 Sep 2025 09:24:06 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BbzNeHyr"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5880K3R8018961;
+	Mon, 8 Sep 2025 09:24:21 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=rDvGDV0hfGDCJIVNik5ct+
-	796AnXM43cGU3tkAI7YHM=; b=aSk1JrN5oDUpKM1Cv9RG6IdeP9Hf0Jlih5Wsx5
-	6/2IQ7/6hUuUNAhZR8H5ANZU+L3+a523jza38SL9OYDALEZh6KATsF8IlGl/FgMD
-	BszMNF2Xq5bChYpA2HZFYuK1mre275RJziqvkjJwhXIppXcAIZcJLsd5zU5l9UA0
-	5GSd9mnnM/0ART97u/Alfn2TDpDo1F9rdhKhoWA1rSf8mLwddik5lZdsvZSF1Zye
-	4cH+N/kw4htdPjzbZbbGibtej/UHCFuMd3YyBiZMOW/dsFA6D7tV9PV3IhJa30ah
-	C/558N3AQqUAibGoimbOWtEamGeLNA79WZgitKKZWgA+43MA==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 491qhdrw4m-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	dljVRImY4V6dI88vlkoSWy4DEhe3I30NGPKOhgkN7iE=; b=BbzNeHyrrGQPSel3
+	mCYfGJxDkh3GnNMa+pjTsgBG9rhlgmTae22BVuAcFJnAm4FEKgsjUUdc1szZtG/5
+	KIz0Y1pEbqsQ9HC9xmDRYzCl668QbTe25WIUZ80bFcPxu5AAASAMegAnIC3vJysL
+	xOUAHRyFZm6qU8kFTasVScRl+SrvhVpXBdntl5wJcrij6QNPDI5xc2MnihBU/WMd
+	FnjxrMOL4oqoxw0CPmqtBIuW8PPdAAsUtMoZA446EtTQ5rluELdK5l76C6bpVDPR
+	jeAKye1PQu4wXsVl50MXES1Lw/PnqdqTgOo83ob3ORE2FJsBQJsjJgpr98sa/ZVs
+	bJ6ytQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 490e8a3xva-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 08 Sep 2025 09:24:06 +0000 (GMT)
+	Mon, 08 Sep 2025 09:24:21 +0000 (GMT)
 Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5889O5AH019489
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5889OKHw016681
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 8 Sep 2025 09:24:05 GMT
+	Mon, 8 Sep 2025 09:24:20 GMT
 Received: from haixcui1-gv.qualcomm.com (10.80.80.8) by
  nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.24; Mon, 8 Sep 2025 02:24:01 -0700
+ 15.2.1748.24; Mon, 8 Sep 2025 02:24:17 -0700
 From: Haixu Cui <quic_haixcui@quicinc.com>
 To: <andriy.shevchenko@intel.com>, <harald.mommer@oss.qualcomm.com>,
         <quic_msavaliy@quicinc.com>, <quic_haixcui@quicinc.com>,
@@ -47,10 +49,12 @@ To: <andriy.shevchenko@intel.com>, <harald.mommer@oss.qualcomm.com>,
         <linux-kernel@vger.kernel.org>, <hdanton@sina.com>,
         <qiang4.zhang@linux.intel.com>, <alex.bennee@linaro.org>
 CC: <virtualization@lists.linux-foundation.org>, <quic_ztu@quicinc.com>
-Subject: [PATCH v10 0/3] Virtio SPI Linux driver
-Date: Mon, 8 Sep 2025 17:23:45 +0800
-Message-ID: <20250908092348.1283552-1-quic_haixcui@quicinc.com>
+Subject: [PATCH v10 2/3] virtio-spi: Add virtio-spi.h
+Date: Mon, 8 Sep 2025 17:23:47 +0800
+Message-ID: <20250908092348.1283552-3-quic_haixcui@quicinc.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250908092348.1283552-1-quic_haixcui@quicinc.com>
+References: <20250908092348.1283552-1-quic_haixcui@quicinc.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
@@ -63,176 +67,241 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01b.na.qualcomm.com (10.47.209.197)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: f9Ba2fhBUlEd72AA5ZquL1YRZouzGjZP
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA4MDAzNCBTYWx0ZWRfX+IDlU9Yl56mU
- idQMpHNhN6oOiTGkJvbuMDOBgRSKnEkl9kKPiyeoeQhL7KT2OOcvoX/qwDvXaAyUQK3YyGbIc75
- bi4IcMFif7O9pH+7HZ9VypOFi7uHKDnBSAzCyN3kXtrx8ToF1WC7NJTP3LhTcoJ+c/EmlbabZ42
- s3/1smogMz/qclkh9rOFv0vGtKIiCitOG2hKhsiGxFYPnfQCJRRgEV5O8WjMT5ky39dZnkTa2qt
- ntRDmqJ1l/aGup/hEP9vzsX9J45LE40/1zrpl/G92j0nQNhvvH4i5dYeBr4LN5boq0PlwXK9CTB
- FsWgoTYt0gzFxa25ek8Kzuhw5xwGYCCw61Numyrl6vUs/R4+l1IfY4KDemmEkctfqm7QPvvuedA
- L7EQp8+v
-X-Authority-Analysis: v=2.4 cv=YOCfyQGx c=1 sm=1 tr=0 ts=68bea0b6 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=H7Dbw/Yi c=1 sm=1 tr=0 ts=68bea0c5 cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=yJojWOMRYYMA:10 a=NEAV23lmAAAA:8 a=Z4Rwk6OoAAAA:8
- a=KKAkSRfTAAAA:8 a=ijoT9NbLev-7i16Au24A:9 a=HkZW87K1Qel5hWWM3VKY:22
- a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-ORIG-GUID: f9Ba2fhBUlEd72AA5ZquL1YRZouzGjZP
+ a=GEpy-HfZoHoA:10 a=yJojWOMRYYMA:10 a=COk6AnOGAAAA:8 a=VwQbUJbxAAAA:8
+ a=rqJjEXyH_1KH1bkhQPcA:9 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: 6i7cUxQGdkJGXombLjOq2QGkpNhUqOiY
+X-Proofpoint-ORIG-GUID: 6i7cUxQGdkJGXombLjOq2QGkpNhUqOiY
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA2MDAzOSBTYWx0ZWRfX2PNqwNnRFMpy
+ EhnIUS1R4mzSo67ANOyxLnDoXvoAPXQPIfQSukFSj1djmF0/FnbpZedb4cjuOHzNhA6vwfTtkzE
+ jixxWcHGdYfpNrqYqoo10/dcdw0C+18XdtZSIGYbaokq0DS5YB6lwNqsbq+5j/kgekPLPAnoNEs
+ mWVEFUVAcvsNUwXqJiNMhO/P3im4N4b/C7LJVcmd/okL+5g2FqsQIGpkFDFw+PfmqbLhJ4G91sC
+ VBV/B+9il2FmbO7Z6P4WEvnPTvbY53ZwvOab3y+t+56AGcQ4QM27HwiuCzrjOi/iKcVG49QqvDp
+ Gx3WMYcTT/UbdRXtcfuJVxlAE7gUAqteEyF76X4mlNHx1bkdQZq3e+8ZIUITYNbADtwyF8eu5c9
+ HnjYQRp7
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
  definitions=2025-09-08_03,2025-09-08_01,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 phishscore=0 clxscore=1015 adultscore=0 impostorscore=0
- suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0
+ malwarescore=0 bulkscore=0 impostorscore=0 adultscore=0 phishscore=0
+ clxscore=1015 suspectscore=0 priorityscore=1501 spamscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509080034
+ reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509060039
 
-This is the 10th version of the virtio SPI Linux driver patch series which is
-intended to be compliant with the upcoming virtio specification
-version 1.4. The specification can be found in repository:
-https://github.com/oasis-tcs/virtio-spec.git branch virtio-1.4.
+Add virtio-spi.h header for virtio SPI.
 
-The original contributor Harald submitted:
-RFC v1 to RFC v3
-non-RFC v1 to non-RFC v3
+Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
+---
+ MAINTAINERS                     |   6 ++
+ include/uapi/linux/virtio_spi.h | 181 ++++++++++++++++++++++++++++++++
+ 2 files changed, 187 insertions(+)
+ create mode 100644 include/uapi/linux/virtio_spi.h
 
-I continued the work and submitted:
-RFC v4 to RFC v8
-non-RFC v4, v9
-
-This submission is labeled as v10 to maintain continuity and clarity.
-It builds upon non-RFC v9, and incorporates feedback from the community
-and testing improvements.
-
-Changes between v9 and v10:
-- Remove support for reading "spi,bus-num" property in virtio_spi_probe.
-- Refine initialization of spi_req variable.
-- Update MAINTAINERS: change mailing list from
-  virtualization@lists.linux-foundation.org to virtualization@lists.linux.dev.
-
-Changes between non-RFC v4 and v9:
-- Updated macro definition to use SPI_MODE_X_MASK instead of manually
-  listing individual flags.
-- Restructured struct virtio_spi_req to improve cache alignment and
-  layout efficiency.
-- Replaced manual comparison logic with max() for word delay calculation.
-- Removed unnecessary u suffix from unsigned int initializations.
-- Simplified memory cleanup by using __free(kfree) for spi_req.
-- Standardized error variable naming from err to ret across the driver.
-- Removed redundant ACPI_COMPANION_SET() call to avoid inconsistency
-  with device_set_node().
-- Corrected logic for reading spi,bus-num property.
-- eplaced return err with return dev_err_probe for cleaner error reporting.
-- Used dev_to_virtio() in power management callbacks.
-- Added virtualization@lists.linux-foundation.org as the mailing list
-  for patch discussions.
-
-Changes between RFC V8 and non-RFC V4:
-- Replaced BUILD_BUG_ON with static_assert for SPI mode constants to
-  improve compile-time validation.
-- Introduced VIRTIO_SPI_MODE_MASK macro to simplify SPI mode bit masking.
-- Removed unnecessary __cacheline_aligned attributes from buffer
-  pointers in virtio_spi_req.
-- Simplified type casting in delay conversions by removing redundant
-  (u32) casts.
-- Replaced manual virtqueue cleanup with devm_add_action_or_reset()
-  for automatic resource management.
-- Migrated controller registration to devm_spi_register_controller()
-  for better lifecycle handling.
-- Updated power management callbacks to use struct device * and
-  added virtio_spi_pm_ops
-- Standardized bit macros in virtio_spi.h from BIT(x) to _BITUL(x) for
-  type safety.
-- Improved documentation comments in virtio_spi_config for clarity
-  and consistency.
-
-Changes between RFC V7 and RFC V8:
-- Restored original Copyright.
-
-Changes between RFC V6 and RFC V7:
-- Restored original MODULE_AUTHOR information in the driver source file.
-- Reinstated the original Signed-off-by tags.
-
-Changes between RFC V5 and RFC V6:
-- Dynamically allocate the virtio_spi_req structure instead of keeping
-  it as a member of virtio_spi_priv.
-- Remove redundant comments.
-
-Changes between RFC V4 and RFC V5:
-- Use dev_err_probe instead of dev_err in virtio_spi_probe function
-  to improve error handling.
-- Add comments to virtio_spi_set_delays function and revise several
-  field descriptions in mode_func_supported for improved clarity.
-- Update bitmask definitions from (1 << n) to BIT(n) to enhance code
-  readability.
-
-Changes between non-RFC V3 and RFC V4
-- Remove the logic code for statically creating SPI devices through
-  the spi_new_device function.
-- Add ACPI support.
-- According to Hillf Danton's comment, use init_completion instead of
-  reinit_completion in virtio_spi_transfer_one function.
-
-Changes between non-RFC V2 and non-RFC V3
-- Child spi device tree nodes are supported now.
-  If a child spi device tree node exists the setup of the user mode SPI
-  device is done by spi_register_controller() and the driver itself does
-  not call spi_new_device() any more to setup the chip selects.
-  If there is no device tree child node the SPI device sets up the user
-  mode SPI devices autonomously as it was before.
-  
-Changes between non-RFC V1 and non-RFC V2
-- Remove some comments stating the obvious
-- Remove error trace when devm_spi_alloc_host() failed as this is habit
-- Add some blank lines to improve readabilty
-- Last TODO comment removed which was used to trigger some discussion.
-  Discussion did not take place, most probably the code below is correct
-  as it is
-- Abstained from replacing "Cannot " by "Failed to " in error messages
-  as the wording "Cannot " is frequently used even when "Failed to " has
-  the majority. Announced this, heard nothing about this, so added the
-  "Reviewed-by" from Viresh Kumar <viresh.kumar@linaro.org> as
-  everything else was done.
-
-Changes between RFC V3 and non-RFC V1:
-- Address kernel test robot comment which revealed an actual bug
-- Rework some comments in the code addressing review comments
-- Remove a TODO comment which has served it's purpose
-- Allocate struct virtio_spi_req spi_req only once at startup
-- Use callback transfer_one instead of transfer_one_message to simplify
-  and shorten code. Due to this rework in the affected function(s) some
-  additional changes:
-  - Do init_completion() only once at startup, for re-initialization
-    now reinit_completion() is used
-  - Translate result codes VIRTIO_SPI_PARAM_ERR and VIRTIO_SPI_TRANS_ERR
-    to appropriate Linux error codes -EINVAL and -EIO
-
-Changes between RFC V2 and RFC V3:
-- Order header inclusion alphabetically.
-- Add Viresh Kumar's "signed-off" to the header files.
-- Rework virtio_spi_one_transfer
-  - Rework the delays according to Haixu Cui's advise. Delays are now
-    handled in a new sub-function virtio_spi_set_delays.
-  - Minor change: Re-formulate arguments of sg_init_one.
-- Rework virtio_spi_probe
-  - Replace some goto in error paths by return.
-  - Add spi_unregister_controller to an error path. Abstained from
-    using devm_spi_register_controller to keep order of
-    de-initialization in virtio_spi_remove.
-  - Add deletion of vqueue to all error paths taken after the virtqueues
-    have been initialized.
-
-Changes between RFC V1 and RFC V2:
-- Update from virtio SPI draft specification V4 to V10.
-- Incorporate review comments gotten from the community.
-- A proposal for a performance enhancement having more than only one SPI
-  message in flight had to be kept out. The more complicated code would
-  have caused an unacceptable project risk now.
-
-The driver was smoke tested on QEMU using:
-- Qualcomm's target hardware with a physical SPI backend device via
-  vhost-user protocol (Linux v6.12).
-- OpenSynergy's proprietary virtio SPI device simulating a SPI backend
-  on top of linux-next.git (v6.8).
-- Regression tested on physical hardware using kernel v6.5.7.
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cd7ff55b5d32..bd3877016ec5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -26797,6 +26797,12 @@ S:	Maintained
+ F:	include/uapi/linux/virtio_snd.h
+ F:	sound/virtio/*
+ 
++VIRTIO SPI DRIVER
++M:	Haixu Cui <quic_haixcui@quicinc.com>
++L:	virtualization@lists.linux.dev
++S:	Maintained
++F:	include/uapi/linux/virtio_spi.h
++
+ VIRTUAL BOX GUEST DEVICE DRIVER
+ M:	Hans de Goede <hansg@kernel.org>
+ M:	Arnd Bergmann <arnd@arndb.de>
+diff --git a/include/uapi/linux/virtio_spi.h b/include/uapi/linux/virtio_spi.h
+new file mode 100644
+index 000000000000..8ab3c970cdd3
+--- /dev/null
++++ b/include/uapi/linux/virtio_spi.h
+@@ -0,0 +1,181 @@
++/* SPDX-License-Identifier: BSD-3-Clause */
++/*
++ * Copyright (C) 2023 OpenSynergy GmbH
++ * Copyright (C) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++#ifndef _LINUX_VIRTIO_VIRTIO_SPI_H
++#define _LINUX_VIRTIO_VIRTIO_SPI_H
++
++#include <linux/types.h>
++#include <linux/virtio_config.h>
++#include <linux/virtio_ids.h>
++#include <linux/virtio_types.h>
++
++/* Sample data on trailing clock edge */
++#define VIRTIO_SPI_CPHA			_BITUL(0)
++/* Clock is high when IDLE */
++#define VIRTIO_SPI_CPOL			_BITUL(1)
++/* Chip Select is active high */
++#define VIRTIO_SPI_CS_HIGH			_BITUL(2)
++/* Transmit LSB first */
++#define VIRTIO_SPI_MODE_LSB_FIRST		_BITUL(3)
++/* Loopback mode */
++#define VIRTIO_SPI_MODE_LOOP			_BITUL(4)
++
++/**
++ * struct virtio_spi_config - All config fields are read-only for the
++ * Virtio SPI driver
++ * @cs_max_number: maximum number of chipselect the host SPI controller
++ *   supports.
++ * @cs_change_supported: indicates if the host SPI controller supports to toggle
++ *   chipselect after each transfer in one message:
++ *   0: unsupported, chipselect will be kept in active state throughout the
++ *      message transaction;
++ *   1: supported.
++ *   Note: Message here contains a sequence of SPI transfers.
++ * @tx_nbits_supported: indicates the supported number of bit for writing:
++ *   bit 0: DUAL (2-bit transfer), 1 for supported
++ *   bit 1: QUAD (4-bit transfer), 1 for supported
++ *   bit 2: OCTAL (8-bit transfer), 1 for supported
++ *   other bits are reserved as 0, 1-bit transfer is always supported.
++ * @rx_nbits_supported: indicates the supported number of bit for reading:
++ *   bit 0: DUAL (2-bit transfer), 1 for supported
++ *   bit 1: QUAD (4-bit transfer), 1 for supported
++ *   bit 2: OCTAL (8-bit transfer), 1 for supported
++ *   other bits are reserved as 0, 1-bit transfer is always supported.
++ * @bits_per_word_mask: mask indicating which values of bits_per_word are
++ *   supported. If not set, no limitation for bits_per_word.
++ * @mode_func_supported: indicates the following features are supported or not:
++ *   bit 0-1: CPHA feature
++ *     0b00: invalid, should support as least one CPHA setting
++ *     0b01: supports CPHA=0 only
++ *     0b10: supports CPHA=1 only
++ *     0b11: supports CPHA=0 and CPHA=1.
++ *   bit 2-3: CPOL feature
++ *     0b00: invalid, should support as least one CPOL setting
++ *     0b01: supports CPOL=0 only
++ *     0b10: supports CPOL=1 only
++ *     0b11: supports CPOL=0 and CPOL=1.
++ *   bit 4: chipselect active high feature, 0 for unsupported and 1 for
++ *     supported, chipselect active low is supported by default.
++ *   bit 5: LSB first feature, 0 for unsupported and 1 for supported,
++ *     MSB first is supported by default.
++ *   bit 6: loopback mode feature, 0 for unsupported and 1 for supported,
++ *     normal mode is supported by default.
++ * @max_freq_hz: the maximum clock rate supported in Hz unit, 0 means no
++ *   limitation for transfer speed.
++ * @max_word_delay_ns: the maximum word delay supported, in nanoseconds.
++ *   A value of 0 indicates that word delay is unsupported.
++ *   Each transfer may consist of a sequence of words.
++ * @max_cs_setup_ns: the maximum delay supported after chipselect is asserted,
++ *   in ns unit, 0 means delay is not supported to introduce after chipselect is
++ *   asserted.
++ * @max_cs_hold_ns: the maximum delay supported before chipselect is deasserted,
++ *   in ns unit, 0 means delay is not supported to introduce before chipselect
++ *   is deasserted.
++ * @max_cs_incative_ns: maximum delay supported after chipselect is deasserted,
++ *   in ns unit, 0 means delay is not supported to introduce after chipselect is
++ *   deasserted.
++ */
++struct virtio_spi_config {
++	__u8 cs_max_number;
++	__u8 cs_change_supported;
++#define VIRTIO_SPI_RX_TX_SUPPORT_DUAL		_BITUL(0)
++#define VIRTIO_SPI_RX_TX_SUPPORT_QUAD		_BITUL(1)
++#define VIRTIO_SPI_RX_TX_SUPPORT_OCTAL		_BITUL(2)
++	__u8 tx_nbits_supported;
++	__u8 rx_nbits_supported;
++	__le32 bits_per_word_mask;
++#define VIRTIO_SPI_MF_SUPPORT_CPHA_0		_BITUL(0)
++#define VIRTIO_SPI_MF_SUPPORT_CPHA_1		_BITUL(1)
++#define VIRTIO_SPI_MF_SUPPORT_CPOL_0		_BITUL(2)
++#define VIRTIO_SPI_MF_SUPPORT_CPOL_1		_BITUL(3)
++#define VIRTIO_SPI_MF_SUPPORT_CS_HIGH		_BITUL(4)
++#define VIRTIO_SPI_MF_SUPPORT_LSB_FIRST		_BITUL(5)
++#define VIRTIO_SPI_MF_SUPPORT_LOOPBACK		_BITUL(6)
++	__le32 mode_func_supported;
++	__le32 max_freq_hz;
++	__le32 max_word_delay_ns;
++	__le32 max_cs_setup_ns;
++	__le32 max_cs_hold_ns;
++	__le32 max_cs_inactive_ns;
++};
++
++/**
++ * struct spi_transfer_head - virtio SPI transfer descriptor
++ * @chip_select_id: chipselect index the SPI transfer used.
++ * @bits_per_word: the number of bits in each SPI transfer word.
++ * @cs_change: whether to deselect device after finishing this transfer
++ *     before starting the next transfer, 0 means cs keep asserted and
++ *     1 means cs deasserted then asserted again.
++ * @tx_nbits: bus width for write transfer.
++ *     0,1: bus width is 1, also known as SINGLE
++ *     2  : bus width is 2, also known as DUAL
++ *     4  : bus width is 4, also known as QUAD
++ *     8  : bus width is 8, also known as OCTAL
++ *     other values are invalid.
++ * @rx_nbits: bus width for read transfer.
++ *     0,1: bus width is 1, also known as SINGLE
++ *     2  : bus width is 2, also known as DUAL
++ *     4  : bus width is 4, also known as QUAD
++ *     8  : bus width is 8, also known as OCTAL
++ *     other values are invalid.
++ * @reserved: for future use.
++ * @mode: SPI transfer mode.
++ *     bit 0: CPHA, determines the timing (i.e. phase) of the data
++ *         bits relative to the clock pulses.For CPHA=0, the
++ *         "out" side changes the data on the trailing edge of the
++ *         preceding clock cycle, while the "in" side captures the data
++ *         on (or shortly after) the leading edge of the clock cycle.
++ *         For CPHA=1, the "out" side changes the data on the leading
++ *         edge of the current clock cycle, while the "in" side
++ *         captures the data on (or shortly after) the trailing edge of
++ *         the clock cycle.
++ *     bit 1: CPOL, determines the polarity of the clock. CPOL=0 is a
++ *         clock which idles at 0, and each cycle consists of a pulse
++ *         of 1. CPOL=1 is a clock which idles at 1, and each cycle
++ *         consists of a pulse of 0.
++ *     bit 2: CS_HIGH, if 1, chip select active high, else active low.
++ *     bit 3: LSB_FIRST, determines per-word bits-on-wire, if 0, MSB
++ *         first, else LSB first.
++ *     bit 4: LOOP, loopback mode.
++ * @freq: the transfer speed in Hz.
++ * @word_delay_ns: delay to be inserted between consecutive words of a
++ *     transfer, in ns unit.
++ * @cs_setup_ns: delay to be introduced after CS is asserted, in ns
++ *     unit.
++ * @cs_delay_hold_ns: delay to be introduced before CS is deasserted
++ *     for each transfer, in ns unit.
++ * @cs_change_delay_inactive_ns: delay to be introduced after CS is
++ *     deasserted and before next asserted, in ns unit.
++ */
++struct spi_transfer_head {
++	__u8 chip_select_id;
++	__u8 bits_per_word;
++	__u8 cs_change;
++	__u8 tx_nbits;
++	__u8 rx_nbits;
++	__u8 reserved[3];
++	__le32 mode;
++	__le32 freq;
++	__le32 word_delay_ns;
++	__le32 cs_setup_ns;
++	__le32 cs_delay_hold_ns;
++	__le32 cs_change_delay_inactive_ns;
++};
++
++/**
++ * struct spi_transfer_result - virtio SPI transfer result
++ * @result: Transfer result code.
++ *          VIRTIO_SPI_TRANS_OK: Transfer successful.
++ *          VIRTIO_SPI_PARAM_ERR: Parameter error.
++ *          VIRTIO_SPI_TRANS_ERR: Transfer error.
++ */
++struct spi_transfer_result {
++#define VIRTIO_SPI_TRANS_OK	0
++#define VIRTIO_SPI_PARAM_ERR	1
++#define VIRTIO_SPI_TRANS_ERR	2
++	__u8 result;
++};
++
++#endif /* #ifndef _LINUX_VIRTIO_VIRTIO_SPI_H */
+-- 
+2.34.1
 
