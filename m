@@ -1,154 +1,100 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC923238142
-	for <virtio-dev@lists.linux.dev>; Wed, 10 Sep 2025 03:51:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115C53148B5
+	for <virtio-dev@lists.linux.dev>; Wed, 10 Sep 2025 09:39:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757476278; cv=none; b=pC4v7V8FuDPTVM127/MwEGnW+90cAe4vhmwUEJxGQPhAFR8R8247rbqzThy835njypeHb4JqYyz+Lnq2ZihF83Z0xYQLO/2Gc00tP1sGjnjarcr54BMAxmm5igB/ImUDQAczuzH9KWzZeFtd/ZQGChtGW/7478fLfsCNiI6Hym4=
+	t=1757497184; cv=none; b=U4jMgmcA3fK9JfQG/rrukyQPu7H9IB4xPkwQGN+/RSaaobHNUawffYIBDfocXCor7AnbmMhEWMxED45MnR3PG4n1BXaw/wcR+wYlN2kNv8zVBAKJmMrn9FOuFPiGC4zx3NCsHfxS3Hkyl6/OlYGOWuufAdU+Zr0njNnChmrOiY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757476278; c=relaxed/simple;
-	bh=qxZNqAZix6rwCEO0rBimeWyzxV2m1XdT0a7sLYWurxU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=AVoPjgsJrKf+ggYGzKl0Mq4l2da7+Vjszuf3zSKJNC/reup+ISdBhae4kxkNzGtBGnXCD+jgWMCbjekMAx/2kWewm11TVhb9mMbJ/4U9EX+PzQwvX62ICcyxBJyyYza+likPcqU4K2F4PHsZfC8mOcSOcWRqQOzKNvgEFRbqRg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=MibgBMdj; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1757497184; c=relaxed/simple;
+	bh=m3w9198KPcW52Kq5czGxwlCuVIFnmkUpH3jecGwOHRI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=dpDERYJnAcaaxAC+vX9n0EbJ4WKjyxKttQJdjlNBCPCI0zV9Ysk5onZThxE6wWClCU+fzE4T0UWdVdGlYAbVcggE9cHX/0lFgyCVnuU3CNRWj40Fpds/P9cvBU27rbwgtSVEEUtbP3S1U11QO2EKqG00ER1TI2dV2VF68KE63Ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=UmOM3FOd; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="MibgBMdj"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 589I0MBu002266;
-	Wed, 10 Sep 2025 03:51:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	D5mdBHAqEXHP7zlYREqKopUuLf7On5DXG2WXrZu8RVQ=; b=MibgBMdj2rnv/Is6
-	mCtkBK8uL5pTvQ+lYsBpOZON/O13aDYk0Was/mqg2/zgCkbnPtBY5ozOFLHu6385
-	qWGXKwEP36fPK6myZjZELLJHksMItWbKE4z7SoPBdY7fPKBNIFMSCpUbnUHI3KIy
-	SYjhFTIJXAU5b4Y8ixuSsXWaUbeljcAfFP+XZReezKrmSN3xRIKiVgGaTIjUmvGZ
-	mhpKOveXcFGjvX8alFDkOnneKA3D0WjWx8MOzTBsfzCqmgAY5u1uXDpFyRughY57
-	kyPUYqa0HuDQaWoybr0or/P8BALgeJV4Vji45ySka7HMkmKCs7YbtdVxcpxXuMcr
-	hqxXjA==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 490dqg2ann-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 10 Sep 2025 03:51:09 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 58A3p83a010036
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 10 Sep 2025 03:51:08 GMT
-Received: from [10.239.105.140] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.24; Tue, 9 Sep
- 2025 20:51:05 -0700
-Message-ID: <b9e9b4e5-7004-471b-a067-b6bacda2a0ca@quicinc.com>
-Date: Wed, 10 Sep 2025 11:51:03 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UmOM3FOd"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-b042eb09948so1269684266b.3
+        for <virtio-dev@lists.linux.dev>; Wed, 10 Sep 2025 02:39:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1757497180; x=1758101980; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:user-agent
+         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m3w9198KPcW52Kq5czGxwlCuVIFnmkUpH3jecGwOHRI=;
+        b=UmOM3FOdGVSvOkqrHnBWojXyFHayp5qEXCveu39F7LZcela0lLRCQzhFxfLfvlHhxx
+         CogNK2fOygdeHfcxEpbvDTy2S1kksQQxmPz1Kdzf72JEM09LK1NinU5ku/YvLXQarELQ
+         UEsVCJUDrD+mE47gReQqmHKyOANLCDdAnR6gUb3SuIyx7pbXJ+/i7BHiC9XgSnqmlchQ
+         jom9q/66k2GoUSlcGpa8PqV4adTBXAvps3apMn8haiFfhnibwkRZsvZBvKHXb1OPVCn+
+         uua5amZcI1jfLCivAfafNQCJsFknNR9B2zoIVLOZr/boiFBvMjdTwmPmmwT6RdKoMoK/
+         3OYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757497180; x=1758101980;
+        h=content-transfer-encoding:mime-version:message-id:date:user-agent
+         :references:in-reply-to:subject:cc:to:from:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=m3w9198KPcW52Kq5czGxwlCuVIFnmkUpH3jecGwOHRI=;
+        b=UF7w4KLDNQLvPJTA5UplE7ks7unER/RSFkBRAznKF4KVYS+GPFZm43gp+9OKHHC77N
+         eLq9y75bcJTD0coDF7WQS00vYqxwcy/pKernJavHyn0BJvA1y7WMDP+Sqm43wdVW9o0r
+         ykWNmU8PnAPx3D4Pcjpo2aSNu5+Z+Q4+RaxtLA2FTWpMpAMrh5B6BRzicGrLUEg2OAiR
+         nySuPsAMj13a8tuTI4bSFsdv1h6+hnP25/D86cWfCPykUHhSiVLiYr8MEaxBQ/cbtSAa
+         QaNkWQVV7pd/jg9MWogvTiurMXKBQpvhhk1J4hX3WGcmhJtmyAAmwTePJOkoK3xffWCf
+         JmXA==
+X-Forwarded-Encrypted: i=1; AJvYcCVsJRyrt9i9t8SchUz3z29VEGAwnfU2OLD9AHSvC4aR8FuH4KyWTZXmKjstMPdzir23VlWXxYwVPv97@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw1XrNEha956O187hWIFvsQZ1k6k2jlxLHIgNOtmzy5933PkQoe
+	9171sV8aA6Gkgt56q+L73PbPQ6eKlft06CPzPYU525uxHxDfm0ydNJneHS2EsP/pJM0=
+X-Gm-Gg: ASbGncue9c/qHOQVIHRd8bPigqFxfIzLwktj1XMnIpCAma0+T2VvVnRTf5s2g8VP4/c
+	82pYVB/0Ef+n0H9iyIMusJ02uzzC965faDgcoY2X+FaOdoRdebg55dRqgfRfyC8AjDqzrrk17Aw
+	ArcKgdh+qR2F6n1GURrDGVnZm7C2J3KcOvlmKKu7DRQNMVoF5WOqCD2MX6/pFPkEN9foJ+51s4G
+	j/EvWv2gFEAiU6o7yorgveGh6HFM4EqhvNqAR4kXSYMetttfyOi9AisaKpHBFYimCuJ0g2Ud9NL
+	3Dyd+IO7S0074UXKqYQp3/u7+j015kfba+8+EnQDBbaPbloNwuhr7ooWFlQao6U1sT8uhXtPREl
+	5H//um8B7JPbEhChl4AydOcAWv1g7Is2Fxg==
+X-Google-Smtp-Source: AGHT+IEgLz62atvGYTtgWhK0IqE5DaeMbopSvx9UyamfacYq3cpWns33qwgJoigjRNFokWLtUFrPnA==
+X-Received: by 2002:a17:907:97c9:b0:b04:1a1c:cb5b with SMTP id a640c23a62f3a-b04b13fd491mr1455086066b.7.1757497180392;
+        Wed, 10 Sep 2025 02:39:40 -0700 (PDT)
+Received: from draig.lan ([185.126.160.19])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b07833ac0c1sm138008066b.84.2025.09.10.02.39.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Sep 2025 02:39:39 -0700 (PDT)
+Received: from draig (localhost [IPv6:::1])
+	by draig.lan (Postfix) with ESMTP id BCED35F82D;
+	Wed, 10 Sep 2025 10:39:38 +0100 (BST)
+From: =?utf-8?Q?Alex_Benn=C3=A9e?= <alex.bennee@linaro.org>
+To: Haixu Cui <quic_haixcui@quicinc.com>
+Cc: <andriy.shevchenko@intel.com>,  <harald.mommer@oss.qualcomm.com>,
+  <quic_msavaliy@quicinc.com>,  <broonie@kernel.org>,
+  <virtio-dev@lists.linux.dev>,  <viresh.kumar@linaro.org>,
+  <linux-spi@vger.kernel.org>,  <linux-kernel@vger.kernel.org>,
+  <hdanton@sina.com>,  <qiang4.zhang@linux.intel.com>,
+  <quic_ztu@quicinc.com>,  <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH v9 1/3] virtio: Add ID for virtio SPI
+In-Reply-To: <20250828093451.2401448-2-quic_haixcui@quicinc.com> (Haixu Cui's
+	message of "Thu, 28 Aug 2025 17:34:49 +0800")
+References: <20250828093451.2401448-1-quic_haixcui@quicinc.com>
+	<20250828093451.2401448-2-quic_haixcui@quicinc.com>
+User-Agent: mu4e 1.12.12; emacs 30.1
+Date: Wed, 10 Sep 2025 10:39:38 +0100
+Message-ID: <87wm6663z9.fsf@draig.linaro.org>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 3/3] SPI: Add virtio SPI driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: <harald.mommer@oss.qualcomm.com>, <quic_msavaliy@quicinc.com>,
-        <broonie@kernel.org>, <virtio-dev@lists.linux.dev>,
-        <viresh.kumar@linaro.org>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <hdanton@sina.com>,
-        <qiang4.zhang@linux.intel.com>, <alex.bennee@linaro.org>,
-        <quic_ztu@quicinc.com>, <virtualization@lists.linux-foundation.org>
-References: <20250828093451.2401448-1-quic_haixcui@quicinc.com>
- <20250828093451.2401448-4-quic_haixcui@quicinc.com>
- <aLWMZH3NTfM8qOUy@smile.fi.intel.com>
- <5dcabe90-c25b-4af5-b51f-5cda7113b5f4@quicinc.com>
- <aLgYLS6Lr5O2cIhK@smile.fi.intel.com>
-Content-Language: en-US
-From: Haixu Cui <quic_haixcui@quicinc.com>
-In-Reply-To: <aLgYLS6Lr5O2cIhK@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: t34zmPoYWIF5cJKlrOhIOy2qKnYExiFs
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA2MDAzNSBTYWx0ZWRfX9z2qHvHq5kR5
- wqw9Z65HogeBamBnVnLn1mXtaqVt09thac5Td7IMssI1Grq+LdvG5AIXoxZ4mlZUqBHkqb/UdZE
- 2f7BxaGzUdzX72XGGPpPac6lmm4Zb6CYR5pM6s3iRUh30EbWdJnag6mMf5G7YJiCLbT0hgiUX5r
- le1+/0ovkTOqnmsmedqp5mKDX8F+cUDgb+QihfNmhwFKuBT4KKHyQmV2rLU+0mUOVlz786Yagbi
- jMrZin/Ot9WKAZkQKq2rmpQmzD438i4RQUtgK2BJwTmt7GzSn17C+6UMeuYmhobXrLQ4cueMuvN
- DJwcViw8nyu/CG27gF98L22fJF3gf6ZyJDZfarjjO6FYSdIWfM57737TEEZLqmO36LC8cJCwJEL
- t4rz8Vph
-X-Proofpoint-GUID: t34zmPoYWIF5cJKlrOhIOy2qKnYExiFs
-X-Authority-Analysis: v=2.4 cv=N8UpF39B c=1 sm=1 tr=0 ts=68c0f5ad cx=c_pps
- a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=yJojWOMRYYMA:10 a=4kCC11VFAAAA:8
- a=FwAf4IJFFU_psRvsp1cA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=i1DTqe_zuw-yvs4WsNz6:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-09_03,2025-09-08_02,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 spamscore=0 malwarescore=0 clxscore=1015 bulkscore=0
- suspectscore=0 priorityscore=1501 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509060035
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
+Haixu Cui <quic_haixcui@quicinc.com> writes:
 
+> Add VIRTIO_ID_SPI definition for virtio SPI.
+>
+> Signed-off-by: Haixu Cui <quic_haixcui@quicinc.com>
+> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-On 9/3/2025 6:27 PM, Andy Shevchenko wrote:
-> On Wed, Sep 03, 2025 at 05:04:46PM +0800, Haixu Cui wrote:
->> On 9/1/2025 8:07 PM, Andy Shevchenko wrote:
->>> On Thu, Aug 28, 2025 at 05:34:51PM +0800, Haixu Cui wrote:
->>>> This is the virtio SPI Linux kernel driver.
-> 
-> ...
-> 
->>>> +#include <linux/completion.h>
->>>> +#include <linux/interrupt.h>
->>>> +#include <linux/io.h>
->>>> +#include <linux/module.h>
->>>> +#include <linux/spi/spi.h>
->>>> +#include <linux/stddef.h>
->>>
->>> A lot of headers are still missing. See below.
->>
->> This driver compiles successfully, and I believe all required definitions
->> are resolved through indirect inclusion. For example, since I included
->> virtio.h, there is no need to explicitly include device.h, scatterlist.h or
->> types.h.
->>
->> I avoided redundant #includes to keep the code clean and minimal.
->>
->> If there are any essential headers I’ve overlooked, please feel free to
->> highlight them—I’ll gladly include them in the next revision.
-> 
-> The rationale is described on https://include-what-you-use.org/.
-> 
+Reviewed-by: Alex Benn=C3=A9e <alex.bennee@linaro.org>
 
-Hi Andy,
-
-Thanks for your feedback and for pointing me to the iwyu guidelines.
-
-I've experimented with the iwyu tool, and while for spi-virtio.c I 
-noticed that it recommends header that is not directly to the code - 
-such as vdso/cache.h - and occasionally suggests re-include header like 
-linux/spi/spi.h that is already present.
-
-iwyu is a power tool expecially in application-level development for C++ 
-projects where header dependencies are more straightforward. However it 
-seems iwyu may not yet be fully suited for analyzing Linux kernel due to 
-its complexity and conditional inclusions.
-
-Additionally, I’ve verified that the driver compiles successfully with 
-both gcc and clang, which indicates that all required definitions are 
-either directly or indirectly resolved.
-
-I appreciate your guidance and will continue to refine the patch with 
-clarity and maintainability in mind.
-
-Best Regards
-haixu Cui
-
-
+--=20
+Alex Benn=C3=A9e
+Virtualisation Tech Lead @ Linaro
