@@ -1,51 +1,55 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A72BD3101BB
-	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:14:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A4629E114
+	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:20:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769523296; cv=none; b=bA5yLNDSH09csoh80SlKzuQwOfZFwCgdk341c2UzbtTjuYxw8Az5A/wa4ZmvgC/vPap8zkVzILdD8IehxSAb4f8RfZ2WTD8b5RT9+Fo9c4rg7F3fIMv3RG4sSa7f0YPd1G//yxNpkQsgzZG32nG1y1zqsTIVgFkX1x7htB74krQ=
+	t=1769523652; cv=none; b=VrtWMFkn/dYs+v5azU3F6IUzdVlDzUCGdCj8FaYym1gmxJoCaNf2FxM7lOxjsEpRMO7na40Rr3bsDpvh0AJjS5ahY8VTlcQczdPNUn3g+G/i8TQMICzgeb8o13k0krsN+WKgwIlXDEZSVdqRpNx0VtuzFLqtlptXDcre1emdfcc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769523296; c=relaxed/simple;
-	bh=rqzGlcXzUOvVHc/oHnrDMI9+gUU1sv8s0lZ81Z3yqtg=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=aoDcDrZbJsuP50Ofmcvz1C1/VwbA08Bt6RtroQYZL/yRegSGNe+dUsHj0ysF/L16AY6YgR24pfNZ6KVljettOhGRwUxTqhDfAh4k4TQP3ei9Bst4xZjRRNDkH+ezFx77es5aYbO+nD1BryjCMQsx3XgMLf1x8sDyQ4WV1yi7at0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=lFFwjVYw; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1769523652; c=relaxed/simple;
+	bh=NFOce0zH4OLpRhMagKZSNUhHuopAror3Cn2B6q+b/X0=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WgsE/P42hN7KF/cJRejDrYNggs33QP3ttZZVKYZ0dv3EQKvFM1pykptli4ZrcU7bxqDoCeY7k7U/nZ2FKONqY/OJ2wfApdGM3TTGDLPYBniZE0bVogmuRbDlshC+anM7T7I60JjP8z5j91RIOQzh+R4V80KaxIvpaBuoZX7e5vk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=PJ3wUnRn; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="lFFwjVYw"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60RDg3hq658896
-	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:14:54 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="PJ3wUnRn"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60RDobJH113483
+	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:20:50 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=h2vaRjh6rWzZ8H/aZyjySG
-	hLzn3jNbeWMb7xFbgGQ+A=; b=lFFwjVYwFj45uGFOoJl3S1CQVhGBStVvp4X44G
-	jfI7uKtj0E+o9BbdTlMACmSG9ZLiwgAhL6FeI4/C9VrMA64i9aU/gDrcsyN6Qijn
-	lu9VKiETqJg6/IRKLEHvWBnXIZS2NGAPO0MJKwEyqD5kxDMXI/MaAahU7kvzhw9d
-	XEw+GAVJYNOzPAKcCixK10kpy41pg3qbgu2hEtRYdtuTZx2akMhPsgw7r9Lxi8aK
-	CUWsiQhd0AHFwq2QlWpnzwxOnO+OCmJnN/8e85GG92YKp7omm2y9J+7eKUzqof90
-	NhcjXmSXj4LtwzbewWM9wNCJZ20uy6HeexDBCed+w5RFcOfA==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bxryn9ap8-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	dPjTTNVtsnr2iZH/Z2PpvszMH2CL2t1RhkkA8sgYCJ0=; b=PJ3wUnRnt2jUZDiQ
+	+98a1CFSvKSehCRF25c3DkCgj+096HV8AnLV9BzEs0h+ZV/i4uirFWKCcpgDuPAv
+	VdacZFEP2la6jP2HpELc/Xp1GF6Ioqkesbm8v/dz4ddrJMbrfORXQmEVd+lemxhZ
+	JQFoeeQ+wJX41wLfSXmIeA/5wiDf5+ZV/VddPg+djAkrdfZSorHf30RouZneMWm5
+	L05WMuUmWptLmM/DQub6KscWqbMv5DOoe/4mm44PxLHKDmzNumrO0yM1so8E0K2m
+	/y6oo2/vFc4vW7eW/6vklQvP6RzystR/I0vUB08OoGV1HqFHwlhcSCnXqa5G82te
+	pDKsOQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bxs0e1c4a-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:14:53 +0000 (GMT)
+	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:20:50 +0000 (GMT)
 Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 60REEr0G003497
+	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 60REKn69007784
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:14:53 GMT
+	for <virtio-dev@lists.linux.dev>; Tue, 27 Jan 2026 14:20:49 GMT
 Received: from linlzhan-gv.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Tue, 27 Jan 2026 06:14:51 -0800
+ 15.2.2562.17; Tue, 27 Jan 2026 06:20:48 -0800
 From: Linlin Zhang <quic_linlzhan@quicinc.com>
 To: <virtio-dev@lists.linux.dev>
-CC: <quic_dshaikhu@quicinc.com>, <quic_spunacha@quicinc.com>
+CC: <quic_dshaikhu@quicinc.com>
 Subject: [PATCH v1] virtio-blk: Add inline encryption support
-Date: Tue, 27 Jan 2026 22:14:32 +0800
-Message-ID: <20260127141432.2617357-1-quic_linlzhan@quicinc.com>
+Date: Tue, 27 Jan 2026 22:20:32 +0800
+Message-ID: <20260127142032.2619551-1-quic_linlzhan@quicinc.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260127141432.2617357-1-quic_linlzhan@quicinc.com>
+References: <20260127141432.2617357-1-quic_linlzhan@quicinc.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
@@ -54,33 +58,33 @@ List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01c.na.qualcomm.com (10.47.97.35)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: r5O6-g3lrilxpTomIQTT5W30AkPy3fs6
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI3MDExNiBTYWx0ZWRfX9aaxSyULNYuy
- iYEEVQ8UrQd61s3c9Dm7vTSmbMNH9aIwSE23p7SEYCsUMImzAT88QAe6tQ9C+L1pa3QeKcKenaL
- a7KisHhpp6c/Ip/6973D3UohCHoG/H5YY5F8W7hpDeplrVTIvTe4JrkBwjoBOPJ6UBLS0jCiSyK
- ubPdhZDNSXpRp0chzF6mdpZkPAkeLeyjBXQ/XAlJ43mTU9DM9ITBjBGriRN7nuVoy6lqPBqaJn9
- vuZ9PpjvlsEc4OULaJh2xFc3vfIeTIaXNadPoptXXxr2OwNJGYeIklx7bzJV++CUd1u/vOI+xtB
- WUW1LrInsJDZ/LiWKLmp6p0At4/VGYyzpZ3NWF45CL4AGTzOrWYtWX4Dsdin9ee4Q1C7J80HDiL
- Vm1JlJA5yne5R6Rv/Pk+m5JWj8Az12Xs7BJN0w3lHDYuaH//FvONN3im1kPzl5m3NoLC6eG2l2a
- 8UInM7l9/GA8yuesFGA==
-X-Proofpoint-GUID: r5O6-g3lrilxpTomIQTT5W30AkPy3fs6
-X-Authority-Analysis: v=2.4 cv=FsEIPmrq c=1 sm=1 tr=0 ts=6978c85d cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI3MDExNyBTYWx0ZWRfX569m+onmBQiZ
+ 6RGZVtNV6cDVZniHxDZQJsf1QuKR1ztVKkORvVMEIJ1xjbXl5RQHfQATtYpKn975Os4sO5r7U6Q
+ eyLmAZ5T7xbiLwTC3618AuBclYsUGsHfzPX2NglWw4xZsRTnoHDdWLyLxftW1/9H0POBRTJDV2Q
+ 5ndQqgfRNKv8WOUItu8CIpfcYnP/vE8QTPw9zAwPj3d5CasVATukYbyVoLBim3RDDnDt5oqEqjj
+ pUIIQqGs7zG1scVP6w7ydWkzrtxDR9wfbh3Qs8ntaPV+L2OE9lV18stSwJ6S+qzrAVxdpx46cf9
+ DW170zM1biDfvhxz80vIhQVUkltdaqrLfhY+eTtEu5ftpv/52nLdFq/WHJZbiHrNU4UKuo2l3BV
+ gPJBnmWORGDl0D2sLvFHzo2QgPy5L9Bj14EhsIQvs+FDY3y0TLiIS+dxaU8sAIT4Ri0aX915EZZ
+ SXLhEexALkASNEfkNiw==
+X-Proofpoint-ORIG-GUID: w89ywo9Evya-sB-hiwflDDxVAqmVComR
+X-Authority-Analysis: v=2.4 cv=Hvh72kTS c=1 sm=1 tr=0 ts=6978c9c2 cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
  a=GEpy-HfZoHoA:10 a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=COk6AnOGAAAA:8 a=nGuF1CrgE_JbnNSJFKAA:9 a=TjNXssC_j7lpFel5tvFf:22
+ a=NEAV23lmAAAA:8 a=COk6AnOGAAAA:8 a=nGuF1CrgE_JbnNSJFKAA:9
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: w89ywo9Evya-sB-hiwflDDxVAqmVComR
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-01-27_03,2026-01-27_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 lowpriorityscore=0 phishscore=0 adultscore=0
- malwarescore=0 suspectscore=0 impostorscore=0 bulkscore=0 clxscore=1015
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2601270116
+ clxscore=1015 bulkscore=0 suspectscore=0 phishscore=0 priorityscore=1501
+ adultscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601270117
 
 From: linlzhan <quic_linlzhan@quicinc.com>
 
@@ -92,6 +96,9 @@ so that crypto capabilities can be got in the frontend and
 encryption metadata can be sent to the backend, together with
 each I/O transaction.
 
+Fixes: https://github.com/oasis-tcs/virtio-spec/issues/238
+
+Change-Id: Ic23b2137e5d9a599d826e06c279f1b614d79abdf
 Signed-off-by: linlzhan <quic_linlzhan@quicinc.com>
 ---
  device-types/blk/description.tex | 69 ++++++++++++++++++++++++++++++++
