@@ -1,404 +1,385 @@
-Received: from egress-ip11a.ess.de.barracuda.com (egress-ip11a.ess.de.barracuda.com [18.184.203.234])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5323433FE06
-	for <virtio-dev@lists.linux.dev>; Thu, 19 Feb 2026 15:09:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=18.184.203.234
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771513772; cv=fail; b=L22J3o0aeRefryH08OlvPCS+4YZMsl+UUjILCY+5w+72LHL+RNwJrlaOqRembAB6iEFYbR+SzsBYXbgn+Wh+M1ryADQR6TB0BdJ98p3sY6jMI851gOq58KwBQGoCBZSp3myLw07TsZ6VpkpYgMltZY9bVf9PezIA9wC+HqXw0wE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771513772; c=relaxed/simple;
-	bh=HGtTSZQ0NYjqtdf5HWGLYywswRfK0qCjH7utGiGaNEg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=oFVXPUuvSq6u5g7hFyqDB8D3S5j7bp0pWCHBBg5vcWtDKmPyIMlwlXv80cwb2py+1PUlBNbe8ATxa0BUPhHn0jUw0iNSz/6mOqIyiXh1FDhextd9CMFOKA0b4M3JP0BdYbiAXCQ+gGBdzwx7lyW+zPIAcOwrN8WMriO1UeZD15k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=napatech.com; spf=pass smtp.mailfrom=napatech.com; dkim=pass (1024-bit key) header.d=napatech.com header.i=@napatech.com header.b=E/iEwbr2; arc=fail smtp.client-ip=18.184.203.234
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=napatech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=napatech.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEA6E573
+	for <virtio-dev@lists.linux.dev>; Sun, 22 Feb 2026 06:09:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771740589; cv=none; b=RAYnM3vU+Fx5kO5f3sL6V23rsILAqC+CXD8JMkiiZ9MLX3DZIlRI42ye/PF8L2hgjBamcZdI4IaAjk8vFfXVK2Q9IpMKJMt5JePWO2OIxPnyrja8FYsj3e4Ga+OEh2uCFbAAwURAibTgsOarWmHw5PZA7pkOkwle0RqkBs5X0S0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771740589; c=relaxed/simple;
+	bh=feYK3X9HL+/mRJHszxC9vmvcX+kyqYvjrJPAowVfu+Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=UVXG4dLwe2EZzkpsbuxYZuOriypkBZpdWjyKQrVgi2DOgs2jp7m656afl4YIz0ZSDbL3mhY+3Vh7t0BGMa42mDuHzAOhre3lFDeV80EwkQRkVB5xBqRJ2VSoQwBeDdeIXCKuqzzY34t2+c0u0hDh3/5A6R13OC8ybRUSHtp6vFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=hL5SNWP/; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=napatech.com header.i=@napatech.com header.b="E/iEwbr2"
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11021140.outbound.protection.outlook.com [52.101.70.140]) by mx-outbound40-90.eu-central-1c.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Thu, 19 Feb 2026 15:09:26 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Z/EehiSARl90Gj+NZmSOFG8tIzPT4Dh/e5MHwuHoWTos3sRe/W4bhbvIMYmgrB4HbyNsDCEi+zJt0weEOmjz1Kq9S1bvLo/Ksr0QXjDTVLT8UH4BI2umaLmM2+pgoMTchLtzonnMUZsMvUsvANfmsPoyXwGLbxj7I++2OMTN04Q76ert5CqBQyVqTFumNhXjq7VDBh24QzzwNxSqkYRErXG3cVEWBnE19y3q0GvfIntjIO3SuQ60xezgZkbNxZHYR+xF0S5PdhO0nMS0wwiz7knSJawnCXV1/oO/j1qPU/puD92YSJ2BBTvh32jIFupZycC0NTCP/7py8zbvsOJ77Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HGtTSZQ0NYjqtdf5HWGLYywswRfK0qCjH7utGiGaNEg=;
- b=XQiVeRj1l4Vw3Y23k97o7ylyXSaRTC2SDZMPR1o3vthMEEKnz4Pe2DObZ+iShM6NM+ckZ+BWEHJYS35+Ix2y+XXBRe86xiXPInfpHEp1cqucnv308Ae2GtW5letmN0SrLRiyC2EI7GX4p6jXPN+MZm+ET8GESQQKkQrRrYA7R/iDu62CtohoVjX+dupWGxDetQOBTHgnPf46FhtVkBwLp8D1MtIqu1m9Y9YD1vzB9z11wX3QvegRed0OjOP+r3Bc/D8rx3iRa+EaqS6nrI7PFoWeU4eT0Z8ph+TvC7FcFTYqoMZF+AtTG7iYLwC59CCqCqO6T6wQpn8VTGB9/Tiv/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=napatech.com; dmarc=pass action=none header.from=napatech.com;
- dkim=pass header.d=napatech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=napatech.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HGtTSZQ0NYjqtdf5HWGLYywswRfK0qCjH7utGiGaNEg=;
- b=E/iEwbr2o3sfPS15eGQgBlH8lJVgQsstZ/LNw+QIt1O3Hz5kINEkljXy4v2zJf0EejfRgzOYOJ9a7JE865WbGfXKegjxBFfQnVBsrwNrHYkfNJ9tMz7EbSdtlYSbWfqcXv63f2QozBTThrrgLSppJ33XO5Me6YjpojJiGvIcqPU=
-Received: from VI0P190MB2641.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:2d2::11)
- by PRAP190MB1762.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:29f::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.14; Thu, 19 Feb
- 2026 14:35:51 +0000
-Received: from VI0P190MB2641.EURP190.PROD.OUTLOOK.COM
- ([fe80::62b5:2d88:af5d:5d7b]) by VI0P190MB2641.EURP190.PROD.OUTLOOK.COM
- ([fe80::62b5:2d88:af5d:5d7b%4]) with mapi id 15.20.9632.010; Thu, 19 Feb 2026
- 14:35:51 +0000
-From: Sebastian Mauritsson <sma@napatech.com>
-To: Linlin Zhang <quic_linlzhan@quicinc.com>, "virtio-dev@lists.linux.dev"
-	<virtio-dev@lists.linux.dev>, "stefanha@redhat.com" <stefanha@redhat.com>
-CC: "quic_dshaikhu@quicinc.com" <quic_dshaikhu@quicinc.com>
-Subject: RE: [PATCH v2] virtio-blk: Add inline encryption support
-Thread-Topic: [PATCH v2] virtio-blk: Add inline encryption support
-Thread-Index: AQHcl4wNKmfZfUXLhUODTEU13iaZr7WKIfVg
-Date: Thu, 19 Feb 2026 14:35:51 +0000
-Message-ID:
- <VI0P190MB2641340DAF4AA5886D58B629CE6BA@VI0P190MB2641.EURP190.PROD.OUTLOOK.COM>
-References: <20260204172749.GA610283@fedora>
- <20260206171218.1748260-1-quic_linlzhan@quicinc.com>
-In-Reply-To: <20260206171218.1748260-1-quic_linlzhan@quicinc.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=napatech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI0P190MB2641:EE_|PRAP190MB1762:EE_
-x-ms-office365-filtering-correlation-id: 8ccaa6d4-34a6-4bb0-1348-08de6fc42e2f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- =?utf-8?B?My8xWjZxK01WcGhaTGhyaER0QmpZeHJFd1Q4bWxUNWJQYjhJdWNQNG5naVR1?=
- =?utf-8?B?T2RpZHZpbXZnWEpzWDFvK1ZKdWdrR2UrU0RyeGFaWmN6STA3ZGJsR01KUTNW?=
- =?utf-8?B?WkJ2MDBpWUwvR3Flb2J5YWh6VGtzR1N4cUNtcml4WTdiNGpFNC9vc3BSendn?=
- =?utf-8?B?TUFxM0I4eHdGM2o1YzMrYlVUeDBMVWdEclEyMkpzRG9KMzB3VFdCNS9CNW45?=
- =?utf-8?B?N25EU2d3MnZZRXE0L05wVmhINnh6MUsxOW5VUHFQS05HZ3pieXNTRlg2SFl2?=
- =?utf-8?B?cFR3MVppQlB6aXhMUFF2bWJqeDVDODdZS3ZGNVYrRnN1cEpWenRvN3hraTFM?=
- =?utf-8?B?Q29ZSkdZdE81dmJ3bW4yU2JaTXVZU1JPeVoyWmdpYXpXYzVEenlaSGlDdFlI?=
- =?utf-8?B?ZGpqNkc1QVNOSXlvV1p2dzRQbWdjei8vRUgzUFlQSnYvODBoZmFkWXIxdFph?=
- =?utf-8?B?elZLU2xUVjhOUVVQUWhpVkZ0d3kxNnJtYXF5M045TDhhT3g5YVVlVUpqaS9s?=
- =?utf-8?B?dDhBaWNQNU4wWGx1WTVOMW55UzhpSXVwVnZnaU8zVVpnUE5Sa09TbWJncXFv?=
- =?utf-8?B?a1JaR3ppTmxmSndWcVkzK1ZHUWdmeXMranVqdTl4MDYwa1pVenFIdWxlbm5L?=
- =?utf-8?B?TmlTczM3elpBOXRIa3FXb0lCTEZ5NkVCeHUyQTNzYkE1ckUvZlhrTUNlcHp0?=
- =?utf-8?B?bVhVK2JyNDlCTUU2U0E2cEF4TlFDUjY5MEMrSDZCYklQVC9QZ3hjN1lPdGJL?=
- =?utf-8?B?M3hSbnppaUNvOURNTk5nREl5bnlUQVZKYk9raXVLOTZJdWsrR0wxbSt2eUxU?=
- =?utf-8?B?cTR3c1RFbWk4MzI3di9WVmozcG0rZzNCN1ltS2FaYjJpZHp6YmZwS0VlMVlV?=
- =?utf-8?B?eHBYUXgzdjZzUUYrSko1elZveHlsY2MzZ1Z6byttczRROER2NWM4b1JXalhG?=
- =?utf-8?B?RmxEd1k0ZThMUzB5bVZZMm9TeWlOazBrNHltank2OTdrVUhodEJtRHk4Zzl5?=
- =?utf-8?B?eUlJTmVvSUF5NlN4VUNlS2RtZ3g5OHlEenVReGVqWW1ocWdFTlp5dm1TOSs5?=
- =?utf-8?B?N21wbUVoeS9GcTdsTGNLVDU3cjZNRE1PRHJjZlhGWHNTYTBNcVM3WURpc2sv?=
- =?utf-8?B?U2ZlQUVaS0xWblZpMTgxU0tJQWxtdFRlMjlJU0tZa3dZbmdjWVhmQTF0c01P?=
- =?utf-8?B?VndnMHdoaENpS0lZTjJkQ1BPd04zZ0RrZGlkT1V2eDdWVTFWbDVRdVlHcjZV?=
- =?utf-8?B?azZtV0xjU0FPdTlkdmpkRTRGRU91VElFbnR3RkhSKzhiUnVQd0QvVkhJN3d2?=
- =?utf-8?B?enY2R2JGckFXa2FDcEF6QUFFRVJBSkdjdWFOQXUybE94R09mSWFzSDdoZ1dT?=
- =?utf-8?B?c0RPaytVS1ZCb0lHQi9kQndybmZLSXpvbFVEaDNQeDU1VWRLTm5rNmNsaE9T?=
- =?utf-8?B?V2k0WU05YnU1YmdYcW94S0pqRFI0TlBaVGgyZFVUb2g5Umo4dUlUSVA5bVJi?=
- =?utf-8?B?cDFIMUgrL3luNXhNWDE1ZUpqSU5FblFSYkVuL0FjYTVDcTFuNllOVkJLanNq?=
- =?utf-8?B?K3dSL053VzdNaEx1S1hIYmc4K2xQVTVWQW9hb1Yzdlc2L2c5ZGdhc0ViZ2Jh?=
- =?utf-8?B?WlhVSjJRWFNsWEMyMWlkbE9pcEZOK0d6K2pobWt4NzBRTFp1MTNSRUtubk9O?=
- =?utf-8?B?S1ZQNDBkKytmQXFmZHk0WDVhdzc4TmRsNW16NXBWalArU0pQRXc4RklpT016?=
- =?utf-8?B?VStZR25OYlN6T3I1QWVBcVFGUXEyMlAwZEdUUG1FS1JLMlVXcE9Ib1VucXJF?=
- =?utf-8?B?T0VBZUk3SmhzVlVWbXJQT3J5S1MxUXQxSEtFNmZjRWxXZWpDaHQ2TlBndW9P?=
- =?utf-8?B?aEd3RENocXZVLzBQNUtGTDFBdndIeXZFSzhQMlh5RmtjV1FYZGg0RVd4Y0dP?=
- =?utf-8?B?cnprUExVYzJMc1FXNmpkSzh5eE9pV2lKdUorUXNHcUJzR2UyamhQdjdpN2VK?=
- =?utf-8?B?dUgwRHRrSXFuNGgzSm9sRzlZRDRnamZQNHNnSDl6TzAvM0RROTYrWlRxSmhB?=
- =?utf-8?B?TE1XOG9sRlV1bGc3VmZSZ3pkUzNQaC8zYjMvc2lwcGE0T25iSWozZjI5M0VJ?=
- =?utf-8?B?VCsrZXNqYnZtQU1QT1V6REwxbkUwTitISURVekNjWGtWRGJDTGVXeCtkV2Vk?=
- =?utf-8?Q?Y/7Th1TLG97rOWSAmSybfM8=3D?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI0P190MB2641.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?TFVtTUEyamZaYURKTnNQYjRGaEt6YTFGQmkvcTlkbkxKenQ0LytpWG5lM3U0?=
- =?utf-8?B?S3hIRDczaW1udlRwVDdDbFZDcGZXa1ZHZENtcmEwQ3R0V3FIRWhmUTRaU0tx?=
- =?utf-8?B?QjJsQS9MUmpoUE9yd20wYXFBa0lSMG1aV0RaeFJRaU9VYTluZWplQkRubVlQ?=
- =?utf-8?B?c09DN00zc3E2L0tjNXd5d2JnL1hVSnU5OUhrSkZpOEFtRC9Rb3E4Uk1EOWc1?=
- =?utf-8?B?VU0vZHN0ZFd5eU9sZHNiN0hQQ1prQ2h1MFdiR1hXbGJ5QjM4WERsWnE0UlFR?=
- =?utf-8?B?cVpKSFU1aHpkTVlXT3ZUeWhoaVpkTS95eGo1LzR2TVVFTEwrWkhhLy9Ia0RJ?=
- =?utf-8?B?VVJxRzR0ZUFYd1BUckJmMFZ4aE90TjZjZThlYUdiVm1SeDJKNi8vaVg4U2Zk?=
- =?utf-8?B?OW1DWGhObWduQ2U4YmtXVmRkNEp6bm9tZ2VuZHN2eXNVVVRFVE8wZDFxZUFB?=
- =?utf-8?B?bkYwTEMvZEZ5OW1rdEtBdm51QUlJVEJ5eGRKV0JGKzBjVUFJekxDVjQrZ0ZI?=
- =?utf-8?B?QnBvalEzVXdhUUREL2tWVkNRVEZMU1E4Y1YxNVNES3l6L01zMGhpR2Y5S1BG?=
- =?utf-8?B?SUhpQVNQKzNMOXVQcnV0d29oZXpzdjMvMUN1VFZ2WFphTTRZeXh6WDJ3Q01z?=
- =?utf-8?B?ejFoeGN4Tzc0RW91dGk4S3hjangvZHN6L2xDd2VxMU5DTVhiaVUxT0VKQmxE?=
- =?utf-8?B?UjlFZkV5dXpFeGpLM2M1ZnM2NS80UDhTWS81TmFqMWVRdk5iRllUNFNyLzRt?=
- =?utf-8?B?bHArbWxoUUlEa3lPR2pteUJVbHd2NnBENTRnbm5MT3NZeDZLSTZKa3JMWFhx?=
- =?utf-8?B?TjZRQktsQTRjek1pMUJZNno5c3ZtQThUQ2RWdVlYbE4wOUxZZVh5WVo1eWpS?=
- =?utf-8?B?R3R5YWZOVlRoQkFaOVpEclZJUnd6YlZQV0k0NDU0dDdJcUE4bGxCOU5sQ2hC?=
- =?utf-8?B?di9NVXVHK1l6T2dEY0VZaExjUmZ6aTlNa21keFRySEhCOXpBS3p2MDh1MXlP?=
- =?utf-8?B?MGhmakVMbEZyUDF4Tm5uNGtlSkRJT1pKaHNwVHc0OVdldVVVVXQvVWlrUDc3?=
- =?utf-8?B?WXNPNmpjeWJFS0liMHBJMnVrZmxNRWgrbVBZaVZjTzIvKzluK3UwNy80RlF3?=
- =?utf-8?B?cTBoK3JYeDR2TzBkSGh4Q3V2clBHSElCWUw5bnYrQUhMK3JKQVd4cFk2OWw5?=
- =?utf-8?B?SFVKcWpvZFlzTFkyNFA5TW1EeWpkS0dpWXJUQnFQR1ZKbG1NK2lIWDhSSTRu?=
- =?utf-8?B?dmVJajdHam5UcG91ZkZVYnUzMEdvL1pXYmNTTFB6dC9HNHplYTF5WWhFMFRR?=
- =?utf-8?B?REJRNGE1L213SENyL3poRWxLSjhGblppUFZiN0oxdkVObFllanB5QzlDMzhR?=
- =?utf-8?B?QVFMQUYzNWJOSzFsaVQ2amROc1drbWtQbnowU0o4ODg4RHVzMGtTUUNjZ1VL?=
- =?utf-8?B?dnhlRC9adHI2d0RBcDVuRlkyQzNRM3lPOHFvdHhEbUxaaVlLVFFOWTBydTBF?=
- =?utf-8?B?Yjh6TG1TRDFhb2U5OHFibWtOY3dVZ3RNUnoyWVNuRlgxdFFNUnYzcnMzTGl3?=
- =?utf-8?B?N3VoN2tPdTVFSUlpU2FrK3krOGoxYVFYZnAvNHg0eDZWeG8wRzE4VUpYVzhz?=
- =?utf-8?B?NWk4OTl0L3BUL29JM3VoT1BmTzBPb0dFSkw0eHhvQzR1UnIwRDRjSEJWSlNm?=
- =?utf-8?B?TmJGQStkQWhkdm8va2VzOGFoVWdnM0FVYmlOQmd1SzBJYjJrS2ZlVzZyTjYx?=
- =?utf-8?B?bG55dnY2Tm1vdHVBeE05b0c2eEh6UFhrTjEyRXcwR1U2L2JSaDVrd3VtVmJP?=
- =?utf-8?B?SWM2UE1mUWVJdEhSekxzYVZQVkpFYmQyTjB3RUg0VGEzbnRoUnMvS1ZKeExx?=
- =?utf-8?B?T2J5cjZMSTRHR094WTA0VmZhNlhHY1hPQjJSZ2Z0Q0Y3RFBIZlhCcDNuem5H?=
- =?utf-8?B?b0ErWHp6T3BPYmVFWGV6Z3NuVlhVWStoMVRBcThaOW12MVozOGtwRlZaUkN6?=
- =?utf-8?B?SWEwQllSS0VRdGZRV1ZaVi80UWJmSjJUV1RXZ3diZ0ErYTZVSkRnUGtyYTM1?=
- =?utf-8?B?UzVwUWlPdHJHdWU5bjZtOU5XY0VET0ZUdllwZC9ibEtxOVZmOFRobFdMU2Ro?=
- =?utf-8?B?aFVDR2duc0RBelZJUjNRSk8rMkRhaUx1cnl4bEFHek5LMlBOUllZaCtjZE1S?=
- =?utf-8?B?N1o5UXljenZRd1oyWUlDU0dyeXN4T0NFUGIvQXJnQTVkaG1Xd2VSeHBYalRW?=
- =?utf-8?B?dnRDZnpwbWdoblQzSWF3VDdXNnhnWGJnRXhnRWM2djRFQVhKM0JoTTB4bVpt?=
- =?utf-8?Q?btRD+xE6hbFyfld9zq?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="hL5SNWP/"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61M3nZLn547377;
+	Sun, 22 Feb 2026 06:09:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	oGV7pOxqqhSygdFkFZILgKiFEU13+EMU8k4gvpPSStA=; b=hL5SNWP/vEqCUQnB
+	+wwBO6ua0m9M/NCwCvkgSE9bg2Ao934sAHbQVrymtKMNUfAxFocoMnwznPRsa/NS
+	+Z3SaiGWSPK5YeHN3ehUnJcWpXUJKRnzP+uk53Tt+pAtz2MQDHhTMk1LKqmPP/ni
+	Qd3hJeNXjw3ar5DJVicvzft1IFcazqIysV3syROZulxNWaoaZJb6EesoyvP4C0jV
+	BrvwO26Je+22xCtMphta5QCfaqr0xS6l6omIUx7YwoI8qiNu8ACtmjkh0I15+LDL
+	xD53ubK7r2MmoTexJdde4OAIVh/779ZK4WbYjVfldHvOD4F+KXNCW59WqLDa0ESa
+	01CgZQ==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cf5vgsuag-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sun, 22 Feb 2026 06:09:46 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 61M69jau028940
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sun, 22 Feb 2026 06:09:45 GMT
+Received: from [10.253.8.33] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Sat, 21 Feb
+ 2026 22:09:43 -0800
+Message-ID: <bd48b394-ac9a-4c9a-9f38-afcc4ae8d004@quicinc.com>
+Date: Sun, 22 Feb 2026 14:09:40 +0800
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	KdPkU1Ps7mK0QPk7zn+gOP/h2eO8BZte7RFCEI53x64ldAW1sPEYOn5O3HOQtg8QIS1Wh5jtk21q9lPaYLurv1rz+bFDmiBH/Y9/xQmgahBZyZCn5wTUdvOXB8Lpl7NG23+6GKwRZjvo9B2fXSnqrnNciRW4gZxHjv/QFwqde8h25QNvL9kUSTxHH09AzUHNmVzHnqq6O3Bvn9UzoVjsn7Xh0NYwrD0c5qMCOtII9KUa+COz9oAm1JEoYQanTcPgS8GvmIC8oN/ihj2PDwiyxClbcqz1eH/5Hk5kPDyE1l0CisCgnoBY47OAGtP01aVukOfqjxO3hwfknHQ9OIxpjNW3Q/KkUODW2enUIJfCdtGIh1Yw0Yz3+lcXjc6tJK5I6wZ+AAODIpwmipL/unvj8MUicASM8aziMxNtdtjR4pnryEK6aGlIk2ba0VxqxeOCq1UV37Elkf0nwmFzlTBSrNMHU87bZwm78ZUBRoD+oWO88Y9eTffKZ6aJcrYx3sbNSGX+4BJujaXrhypH8XCUt6P63NViM6oRAbLngZzXHcg8Z1/KG5m5j7usPRRu+CBjTlBM+X4Sne+ntU5OFzRgVUZV10zpkHSwpfT74/cq0kGNX7yu/8ba3vs6NWy881uBVpFFPK+3gYgPGNKK24Zq0Q==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI0P190MB2641.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ccaa6d4-34a6-4bb0-1348-08de6fc42e2f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Feb 2026 14:35:51.1935
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c4540d0b-728a-4233-9da5-9ea30c7ec3ed
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gimukV2BF6KWDyFMSuGUiBerrmOLI5FDCkFNY51qFZN1FDQMEkRUF/xyHKhP3mWZT5KqfcQiHw8GztTkruIEOQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PRAP190MB1762
-X-OriginatorOrg: napatech.com
-X-BESS-ID: 1771513766-310330-14215-60704-1
-X-BESS-VER: 2019.1_20260217.1624
-X-BESS-Apparent-Source-IP: 52.101.70.140
-X-BESS-Parts: H4sIAAAAAAACA4uuVkqtKFGyUioBkjpK+cVKVoZGBhYWQGYGUNQi1SDV0jTNwC
-	DV0NzUyNDCLCkxOdnMwMDcwNLA3MLURKk2FgDDUR4yQgAAAA==
-X-BESS-Outbound-Spam-Score: 0.00
-X-BESS-Outbound-Spam-Report: Code version 3.2, rules version 3.2.2.271257 [from 
-	cloudscan14-251.eu-central-1a.ess.aws.cudaops.com]
-	Rule breakdown below
-	 pts rule name              description
-	---- ---------------------- --------------------------------
-	0.00 BSF_SC0_MISMATCH_TO    META: Envelope rcpt doesn't match header 
-	0.00 BSF_BESS_OUTBOUND      META: BESS Outbound 
-X-BESS-Outbound-Spam-Status: SCORE=0.00 using account:ESS113687 scores of KILL_LEVEL=7.0 tests=BSF_SC0_MISMATCH_TO, BSF_BESS_OUTBOUND
-X-BESS-BRTS-Status:1
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] virtio-blk: Add inline encryption support
+To: Sebastian Mauritsson <sma@napatech.com>,
+        "virtio-dev@lists.linux.dev"
+	<virtio-dev@lists.linux.dev>,
+        "stefanha@redhat.com" <stefanha@redhat.com>
+CC: "quic_dshaikhu@quicinc.com" <quic_dshaikhu@quicinc.com>
+References: <20260204172749.GA610283@fedora>
+ <20260206171218.1748260-1-quic_linlzhan@quicinc.com>
+ <VI0P190MB2641340DAF4AA5886D58B629CE6BA@VI0P190MB2641.EURP190.PROD.OUTLOOK.COM>
+Content-Language: en-US
+From: Linlin Zhang <quic_linlzhan@quicinc.com>
+In-Reply-To: <VI0P190MB2641340DAF4AA5886D58B629CE6BA@VI0P190MB2641.EURP190.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIyMDA1NiBTYWx0ZWRfXxQtVKSc9yE3G
+ 9wsqVurZRmI6Qn6MzAUvJ0eTFyPq5Qkv5nLY09SM4xzWX/nnSOPjm73SvUH9WYq2+/g5jHCswEE
+ VG4CMVKZdWpB3ycTNnDCIM6w1MfMMrB4tDjkR2bTrctN3WI98kSEiugZRYO9iG1hoFlQkGcdYRC
+ iyOaNGKZuN/3CoSLzCZvSW7B/mqB7MnIZWhD54Q/WwH15YdU6aDs5bECGbZlCLriNoe0Ixw6gYa
+ 9vZabBxAAiFn7sIYaXL3Zo/ujw8zqinRWSoV4a/vC1KETI12ScXFHI2ALEs1QSkZBeo/IQYs+d5
+ 6XjR4iphExJOJWggh0toOm1rvdO0oBa15AZp99WOCeSul8waFRlKGt/KPdX7z8fOxIOme9m9GnP
+ hLsUsJzpDteEgcJV/I18NloPW3jaN96Tvki7nXKAeLMp/ZrzH5noWIRBLUhURraz/Jejpo5YSJO
+ qpqwJHsPPQccS7pyzfw==
+X-Authority-Analysis: v=2.4 cv=W+A1lBWk c=1 sm=1 tr=0 ts=699a9daa cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=XOxgxf62AAAA:8 a=NEAV23lmAAAA:8
+ a=COk6AnOGAAAA:8 a=20KFwNOVAAAA:8 a=uRUJHJf9FwpgWwDBh04A:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=gu-GzIYwBIvN1fC6SyRQ:22 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: f0ekrTdX60CxASfkQJz07aFX4NV2volB
+X-Proofpoint-ORIG-GUID: f0ekrTdX60CxASfkQJz07aFX4NV2volB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-21_07,2026-02-20_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 spamscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 clxscore=1011 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602220056
 
-SSB1bmRlcnN0YW5kIHRoZXJlIG1pZ2h0IGJlIGNvbXBhdGliaWxpdHkgY29uc2lkZXJhdGlvbnMs
-IGJ1dCBJJ20gd29uZGVyaW5nIHRoZSBleGFjdCByZWFzb24gZm9yIG1ha2luZyBDUllQVE9fQUxH
-X0FFU19FQ0IgYW4gb3B0aW9uPyBUaGlzIGRvZXMgbm90IHVzZSBhbiBJViBhbmQgaXMgdW5zdWl0
-YWJsZSBmb3IgYW55dGhpbmcgb3RoZXIgdGhhbiBzaW5nbGUtdXNlICYgc2luZ2xlLWJsb2NrIGVu
-Y3J5cHRpb24uDQoNCkJlc3QgcmVnYXJkcywgU2ViYXN0aWFuDQoNCj4gLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCj4gRnJvbTogTGlubGluIFpoYW5nIDxxdWljX2xpbmx6aGFuQHF1aWNpbmMu
-Y29tPg0KPiBTZW50OiBGcmlkYXksIEZlYnJ1YXJ5IDYsIDIwMjYgNjoxMiBQTQ0KPiBUbzogdmly
-dGlvLWRldkBsaXN0cy5saW51eC5kZXY7IHN0ZWZhbmhhQHJlZGhhdC5jb20NCj4gQ2M6IHF1aWNf
-ZHNoYWlraHVAcXVpY2luYy5jb20NCj4gU3ViamVjdDogW1BBVENIIHYyXSB2aXJ0aW8tYmxrOiBB
-ZGQgaW5saW5lIGVuY3J5cHRpb24gc3VwcG9ydA0KPg0KPiBGcm9tOiBsaW5semhhbiA8cXVpY19s
-aW5semhhbkBxdWljaW5jLmNvbT4NCj4NCj4gSW5saW5lIGVuY3J5cHRpb24gb24gdmlydGlvIGJs
-b2NrIGNhbiBvbmx5IGJlIHN1cHBvcnRlZCB3aGVuIHRoZSBuZXcgZmVhdHVyZQ0KPiBiaXQgVklS
-VElPX0JMS19GX0lDRSBpcyBuZWdvdGlhdGVkLg0KPg0KPiBFeHRlbmQgc3RydWN0IHZpcnRpb19i
-bGtfY29uZmlnIGFuZCBzdHJ1Y3QgdmlydGlvX2Jsa19yZXEsIHNvIHRoYXQgY3J5cHRvDQo+IGNh
-cGFiaWxpdGllcyBjYW4gYmUgZ290IGluIHRoZSBmcm9udGVuZCBhbmQgZW5jcnlwdGlvbiBtZXRh
-ZGF0YSBjYW4gYmUgc2VudA0KPiB0byB0aGUgYmFja2VuZCwgdG9nZXRoZXIgd2l0aCBlYWNoIEkv
-TyB0cmFuc2FjdGlvbi4NCj4NCj4gQWJvdXQgdGhlIGlubGluZSBlbmNyeXB0aW9uIG9uIFVGUyBv
-ciBlTU1DIHN0b3JhZ2UsIHBsZWFzZSByZWZlciB0byB0aGUNCj4gTGludXggaW5saW5lIGVuY3J5
-cHRpb24gZG9jdW1lbnRhdGlvbjoNCj4gaHR0cHM6Ly9saW5rcHJvdGVjdC5jdWRhc3ZjLmNvbS91
-cmw/YT1odHRwcyUzYSUyZiUyZmdpdC5rZXJuZWwub3JnJTJmcHViDQo+ICUyZnNjbSUyZmxpbnV4
-JTJma2VybmVsJTJmZ2l0JTJmdG9ydmFsZHMlMmZsaW51eC5naXQlMmZ0cmVlJTJmRG9jdW1lbg0K
-PiB0YXRpb24lMmZibG9jayUyZmlubGluZS1lbmNyeXB0aW9uLnJzdCZjPUUsMSxuaEwzek14WXd4
-dUZQNFFROFNMaExqei0NCj4gTVl3UTNSR0QtUFlYVTcxdWhDLU9CbnhEZWFlZlZ5RFlRSDFBMEt2
-WDcwVEhYZmwtU1dqai0NCj4gSmNEbnRHR2llM2JTVE5BcmkwSDRfMEN0Q3FVM2t5Q1dSb0RnMV9O
-JnR5cG89MQ0KPg0KPiBGaXhlczogaHR0cHM6Ly9naXRodWIuY29tL29hc2lzLXRjcy92aXJ0aW8t
-c3BlYy9pc3N1ZXMvMjM4DQo+IFJldmlld2VkLWJ5OiBTdGVmYW4gSGFqbm9jemkgPHN0ZWZhbmhh
-QHJlZGhhdC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IGxpbmx6aGFuIDxxdWljX2xpbmx6aGFuQHF1
-aWNpbmMuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBMaW5saW4gWmhhbmcgPGxpbmxpbi56aGFuZ0Bv
-c3MucXVhbGNvbW0uY29tPg0KPiAtLS0NCj4NCj4gY2hhbmdlcyBmcm9tIHYyOg0KPiAgLSBBZGQg
-aW5saW5lIGVuY3J5cHRpb24gbGluayBpbiBjb21taXQgbWVzc2FnZSBmb3IgYSBiZXR0ZXINCj4g
-ICAgYmFja2dyb25kIGRlc2NyeXB0aW9uDQo+ICAtIEFkZCBzdWZmaWNpZW50IGRlc2NyeXB0aW9u
-IGZvciB0aGUgZmllbGRzIG9mIGNyeXB0bw0KPiAgICBjYXBhYmlsaXR5DQo+ICAtIERlbGV0ZSBj
-cnlwdG8gY2FwYWJpbGl0eSBpbiBjb25maWd1cmF0aW9uIGxheW91dCwgaW5zdGVhZA0KPiAgICBh
-ZGQgYSBuZXcgcmVxdWVzdCBjb21tYW5kIHRvIGdldCBpdA0KPiAgLSBDb3JyZWN0IHRoZSB0ZXJt
-aW5vbG9neSBpbiBub24tbm9ybWF0aXZlIGFuZCBub3JtYXRpdmUNCj4gICAgc2VjdGlvbnMNCj4g
-IC0gQ29ycmVjdCB0aGUgbWFpbCBmb3Igb3BlbiBzb3VyY2UgdXBzdHJlYW0NCj4gLS0tDQo+DQo+
-ICBkZXZpY2UtdHlwZXMvYmxrL2Rlc2NyaXB0aW9uLnRleCB8IDExMCArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKystDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTA4IGluc2VydGlvbnMoKyksIDIg
-ZGVsZXRpb25zKC0pDQo+DQo+IGRpZmYgLS1naXQgYS9kZXZpY2UtdHlwZXMvYmxrL2Rlc2NyaXB0
-aW9uLnRleCBiL2RldmljZS0NCj4gdHlwZXMvYmxrL2Rlc2NyaXB0aW9uLnRleA0KPiBpbmRleCAy
-NzEyYWRhLi42MGY0NmFmIDEwMDY0NA0KPiAtLS0gYS9kZXZpY2UtdHlwZXMvYmxrL2Rlc2NyaXB0
-aW9uLnRleA0KPiArKysgYi9kZXZpY2UtdHlwZXMvYmxrL2Rlc2NyaXB0aW9uLnRleA0KPiBAQCAt
-NjYsNiArNjYsMTEgQEAgXHN1YnNlY3Rpb257RmVhdHVyZSBiaXRzfVxsYWJlbHtzZWM6RGV2aWNl
-IFR5cGVzIC8NCj4gQmxvY2sgRGV2aWNlIC8gRmVhdHVyZSBiaXRzfQ0KPiAgICAgICAoWk5TKS4g
-Rm9yIGJyZXZpdHksIHRoZXNlIHN0YW5kYXJkIGRvY3VtZW50cyBhcmUgcmVmZXJyZWQgYXMgIlpC
-RA0KPiBzdGFuZGFyZHMiDQo+ICAgICAgIGZyb20gdGhpcyBwb2ludCBvbiBpbiB0aGUgdGV4dC4N
-Cj4NCj4gK1xpdGVtW1ZJUlRJT19CTEtfRl9JQ0UoMjIpXSBJbmxpbmUgQ3J5cHRvIEV4dGVuc2lv
-bnMgYXJlIHN1cHBvcnRlZC4gT25seQ0KPiB3aGVuIHRoaXMNCj4gKyAgICAgZmVhdHVyZSBiaXQg
-aXMgbmVnb3RpYXRlZCwgdGhlIGRldmljZSBuZWVkIGV4cG9zZSBjcnlwdG8gY2hhcmFjdGVyaXN0
-aWNzIGluDQo+ICsgICAgIGNvbmZpZ3VyYXRpb24gc3BhY2UgYW5kIHRoZSBkcml2ZXIgbmVlZCBw
-cm92aWRlIGFuIGV4dGVuZGVkIHJlcXVlc3QNCj4gaGVhZGVyDQo+ICsgICAgIGNvbnRhaW5pbmcg
-YSBjcnlwdG8gcGF5bG9hZCBmb3IgYmxvY2sgSS9PLg0KPiArDQo+ICBcZW5ke2Rlc2NyaXB0aW9u
-fQ0KPg0KPiAgXHN1YnN1YnNlY3Rpb257TGVnYWN5IEludGVyZmFjZTogRmVhdHVyZSBiaXRzfVxs
-YWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gQmxvY2sNCj4gRGV2aWNlIC8gRmVhdHVyZSBiaXRzIC8g
-TGVnYWN5IEludGVyZmFjZTogRmVhdHVyZSBiaXRzfSBAQCAtMTI4LDYgKzEzMywxMCBAQA0KPiBc
-c3Vic2VjdGlvbntEZXZpY2UgY29uZmlndXJhdGlvbiBsYXlvdXR9XGxhYmVse3NlYzpEZXZpY2Ug
-VHlwZXMgLyBCbG9jaw0KPiBEZXZpY2UgLw0KPiAgICAgICAgICAgICAgICAgIHU4IG1vZGVsOw0K
-PiAgICAgICAgICAgICAgICAgIHU4IHVudXNlZDJbM107DQo+ICAgICAgICAgIH0gem9uZWQ7DQo+
-ICsgICAgICAgIHN0cnVjdCB2aXJ0aW9fYmxrX2NyeXB0b19jaGFyYWN0ZXJpc3RpY3Mgew0KPiAr
-ICAgICAgICAgICAgICAgIF9fdmlydGlvMTYgc2xvdF9pbmZvOw0KPiArICAgICAgICAgICAgICAg
-IF9fdmlydGlvMTYgcmVzZXJ2ZWQ7DQo+ICsgICAgICAgIH0gY3J5cHRvOw0KPiAgfTsNCj4gIFxl
-bmR7bHN0bGlzdGluZ30NCj4NCj4gQEAgLTIxNSw2ICsyMjQsMTggQEAgXHN1YnNlY3Rpb257RGV2
-aWNlIGNvbmZpZ3VyYXRpb24NCj4gbGF5b3V0fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gQmxv
-Y2sgRGV2aWNlIC8gIHRlcm1pbmF0ZWQgYnkgdGhlIGRldmljZSB3aXRoDQo+IGEgInpvbmUgcmVz
-b3VyY2VzIGV4Y2VlZGVkIiBlcnJvciBhcyBkZWZpbmVkIGZvciAgc3BlY2lmaWMgY29tbWFuZHMg
-bGF0ZXIuDQo+DQo+ICtJZiB0aGUgVklSVElPX0JMS19GX0lDRSBmZWF0dXJlIGlzIG5lZ290aWF0
-ZWQsIHRoZW4gaW4NCj4gK1xmaWVsZHt2aXJ0aW9fYmxrX2NyeXB0b19jaGFyYWN0ZXJpc3RpY3N9
-LA0KPiArXGJlZ2lue2l0ZW1pemV9DQo+ICtcaXRlbSBcZmllbGR7c2xvdF9pbmZvfSB2YWx1ZSBw
-YWNrcyB0d28gOC1iaXRzIHZhbHVlcyB0byByZWR1Y2UgdGhlIG51bWJlciBvZg0KPiArICAgIENv
-bmZpZ3VyYXRpb24gU3BhY2UgcmVhZHMuDQo+ICsgICAgXGJlZ2lue2l0ZW1pemV9DQo+ICsgICAg
-ICAgIFxpdGVtIEJpdHN+XFsxNTo4XSAoXGVtcGh7bWF4XF9zbG90c30pOiB0aGUgbWF4aW11bSBu
-dW1iZXIgb2YNCj4gc3VwcG9ydGVkDQo+ICsgICAgICAgICAgICBjcnlwdG8ga2V5IHNsb3RzLg0K
-PiArICAgICAgICBcaXRlbSBCaXRzflxbNzowXSAoXGVtcGh7c2xvdFxfb2Zmc2V0fSk6IGFuIG9m
-ZnNldCBhcHBsaWVkIHRvIHNsb3QNCj4gbnVtYmVyaW5nLg0KPiArICAgIFxlbmR7aXRlbWl6ZX0N
-Cj4gK1xlbmR7aXRlbWl6ZX0NCj4gKw0KPiAgXHN1YnN1YnNlY3Rpb257TGVnYWN5IEludGVyZmFj
-ZTogRGV2aWNlIGNvbmZpZ3VyYXRpb24NCj4gbGF5b3V0fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVz
-IC8gQmxvY2sgRGV2aWNlIC8gRGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0IC8NCj4gTGVnYWN5
-IEludGVyZmFjZTogRGV2aWNlIGNvbmZpZ3VyYXRpb24gbGF5b3V0fSAgV2hlbiB1c2luZyB0aGUg
-bGVnYWN5DQo+IGludGVyZmFjZSwgdHJhbnNpdGlvbmFsIGRldmljZXMgYW5kIGRyaXZlcnMgIE1V
-U1QgZm9ybWF0IHRoZSBmaWVsZHMgaW4gc3RydWN0DQo+IHZpcnRpb19ibGtfY29uZmlnIEBAIC0y
-NzgsNiArMjk5LDEwIEBAIFxzdWJzZWN0aW9ue0RldmljZQ0KPiBJbml0aWFsaXphdGlvbn1cbGFi
-ZWx7c2VjOkRldmljZSBUeXBlcyAvIEJsb2NrIERldmljZSAvIERldmljDQo+ICAgICAgXGZpZWxk
-e3pvbmVkfSBjYW4gYmUgcmVhZCBieSB0aGUgZHJpdmVyIHRvIGRldGVybWluZSB0aGUgem9uZQ0K
-PiAgICAgIGNoYXJhY3RlcmlzdGljcyBvZiB0aGUgZGV2aWNlLiBBbGwgXGZpZWxke3pvbmVkfSBm
-aWVsZHMgYXJlIHJlYWQtb25seS4NCj4NCj4gK1xpdGVtIElmIHRoZSBWSVJUSU9fQkxLX0ZfSUNF
-IGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwgdGhlIGZpZWxkcyBpbg0KPiArICAgIFxmaWVsZHtjcnlw
-dG99IGNhbiBiZSByZWFkIGJ5IHRoZSBkcml2ZXIgdG8gZGV0ZXJtaW5lIHRoZSBpbmxpbmUgY3J5
-cHRvDQo+ICsgICAgY2hhcmFjdGVyaXN0aWNzIG9mIHRoZSBkZXZpY2UuIEFsbCBcZmllbGR7Y3J5
-cHRvfSBmaWVsZHMgYXJlIHJlYWQtb25seS4NCj4gKw0KPiAgXGVuZHtlbnVtZXJhdGV9DQo+DQo+
-ICBcZHJpdmVybm9ybWF0aXZle1xzdWJzdWJzZWN0aW9ufXtEZXZpY2UgSW5pdGlhbGl6YXRpb259
-e0RldmljZSBUeXBlcyAvIEJsb2NrDQo+IERldmljZSAvIERldmljZSBJbml0aWFsaXphdGlvbn0g
-QEAgLTMxNyw2ICszNDIsOSBAQCBcc3Vic2VjdGlvbntEZXZpY2UNCj4gSW5pdGlhbGl6YXRpb259
-XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBCbG9jayBEZXZpY2UgLyBEZXZpYw0KPiAgICAgIGRy
-aXZlciBTSE9VTEQgaWdub3JlIGFsbCBvdGhlciBmaWVsZHMgaW4gXGZpZWxke3pvbmVkfS4NCj4g
-IFxlbmR7aXRlbWl6ZX0NCj4NCj4gK0lmIHRoZSBWSVJUSU9fQkxLX0ZfSUNFIGZlYXR1cmUgaXMg
-bmVnb3RpYXRlZCwgdGhlbiB0aGUgZHJpdmVyIE1VU1QNCj4gdmFsaWRhdGUNCj4gKyAgICB0aGUg
-bWF4X3Nsb3RzIGluIFxmaWVsZHtzbG90X2luZm99IGJlZm9yZSB0aGUgc2xvdCB1c2FnZS4NCj4g
-Kw0KPiAgXGRldmljZW5vcm1hdGl2ZXtcc3Vic3Vic2VjdGlvbn17RGV2aWNlIEluaXRpYWxpemF0
-aW9ufXtEZXZpY2UgVHlwZXMgLyBCbG9jaw0KPiBEZXZpY2UgLyBEZXZpY2UgSW5pdGlhbGl6YXRp
-b259DQo+DQo+ICBEZXZpY2VzIFNIT1VMRCBhbHdheXMgb2ZmZXIgVklSVElPX0JMS19GX0ZMVVNI
-LCBhbmQgTVVTVCBvZmZlciBpdCBAQCAtDQo+IDQwMiw2ICs0MzAsMTMgQEAgXHN1YnNlY3Rpb257
-RGV2aWNlIEluaXRpYWxpemF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8NCj4gQmxvY2sg
-RGV2aWNlIC8gRGV2aWMgIFxpdGVtIHRoZSBkZXZpY2UgTVVTVCBpbml0aWFsaXplIHBhZGRpbmcg
-Ynl0ZXMNCj4gXGZpZWxke3VudXNlZDJ9IHRvIDAuDQo+ICBcZW5ke2l0ZW1pemV9DQo+DQo+ICtJ
-ZiB0aGUgVklSVElPX0JMS19GX0lDRSBmZWF0dXJlIGlzIG5lZ290aWF0ZWQsIHRoZW4gdGhlIGZp
-ZWxkcyBpbg0KPiArXGZpZWxke2NyeXB0b30gc3RydWN0IGluIHRoZSBjb25maWd1cmF0aW9uIHNw
-YWNlIE1VU1QgYmUgc2V0IGJ5IHRoZSBkZXZpY2UuDQo+ICtcYmVnaW57aXRlbWl6ZX0NCj4gK1xp
-dGVtIHRoZSBcZmllbGR7c2xvdF9pbmZvfSBmaWVsZCBvZiBcZmllbGR7Y3J5cHRvfSBNVVNUIGJl
-IHNldCBieSB0aGUgZGV2aWNlIHRvDQo+IGENCj4gKyAgICBtYXhfc2xvdHMgaW4gdGhlIGhpZ2hl
-ciA4IGJpdHMgYW5kIHNsb3Rfb2Zmc2V0IGluIHRoZSBsb3dlciA4IGJpdHMuDQo+ICtcZW5ke2l0
-ZW1pemV9DQo+ICsNCj4gIFxzdWJzdWJzZWN0aW9ue0xlZ2FjeSBJbnRlcmZhY2U6IERldmljZSBJ
-bml0aWFsaXphdGlvbn1cbGFiZWx7c2VjOkRldmljZSBUeXBlcw0KPiAvIEJsb2NrIERldmljZSAv
-IERldmljZSBJbml0aWFsaXphdGlvbiAvIExlZ2FjeSBJbnRlcmZhY2U6IERldmljZSBJbml0aWFs
-aXphdGlvbn0NCj4NCj4gIEJlY2F1c2UgbGVnYWN5IGRldmljZXMgZG8gbm90IGhhdmUgRkVBVFVS
-RVNfT0ssIHRyYW5zaXRpb25hbCBkZXZpY2VzIEBAIC0NCj4gNDM2LDYgKzQ3MSwxMyBAQCBcc3Vi
-c2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8NCj4gQmxv
-Y2sgRGV2aWNlIC8gRGV2aWNlIE9wZQ0KPiAgICAgICAgICBsZTMyIHR5cGU7DQo+ICAgICAgICAg
-IGxlMzIgcmVzZXJ2ZWQ7DQo+ICAgICAgICAgIGxlNjQgc2VjdG9yOw0KPiArICAgICAgICBzdHJ1
-Y3QgdmlydGlvX2Jsa19jcnlwdG9fcGF5bG9hZCB7DQo+ICsgICAgICAgICAgICB1OCBzbG90Ow0K
-PiArICAgICAgICAgICAgdTggYWN0aXZhdGU7DQo+ICsgICAgICAgICAgICBsZTE2IHJlc2VydmVk
-MTsNCj4gKyAgICAgICAgICAgIGxlMzIgcmVzZXJ2ZWQyOw0KPiArICAgICAgICAgICAgbGU2NCBk
-YXRhX3VuaXRfbnVtOw0KPiArICAgICAgICB9IHBheWxvYWQ7DQo+ICAgICAgICAgIHU4IGRhdGFb
-XTsNCj4gICAgICAgICAgdTggc3RhdHVzOw0KPiAgfTsNCj4gQEAgLTQ0NSw4ICs0ODcsOSBAQCBc
-c3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlDQo+IFR5cGVzIC8g
-QmxvY2sgRGV2aWNlIC8gRGV2aWNlIE9wZSAgKFZJUlRJT19CTEtfVF9PVVQpLCBhIGRpc2NhcmQN
-Cj4gKFZJUlRJT19CTEtfVF9ESVNDQVJEKSwgYSB3cml0ZSB6ZXJvZXMgIChWSVJUSU9fQkxLX1Rf
-V1JJVEVfWkVST0VTKSwgYQ0KPiBmbHVzaCAoVklSVElPX0JMS19UX0ZMVVNIKSwgYSBnZXQgZGV2
-aWNlIElEICBzdHJpbmcgY29tbWFuZA0KPiAoVklSVElPX0JMS19UX0dFVF9JRCksIGEgc2VjdXJl
-IGVyYXNlIC0oVklSVElPX0JMS19UX1NFQ1VSRV9FUkFTRSksIG9yDQo+IGEgZ2V0IGRldmljZSBs
-aWZldGltZSBjb21tYW5kIC0oVklSVElPX0JMS19UX0dFVF9MSUZFVElNRSkuDQo+ICsoVklSVElP
-X0JMS19UX1NFQ1VSRV9FUkFTRSksIGEgZ2V0IGRldmljZSBsaWZldGltZSBjb21tYW5kDQo+ICso
-VklSVElPX0JMS19UX0dFVF9MSUZFVElNRSksIG9yIGEgZ2V0IGRldmljZSBjcnlwdG8gY2FwYWJp
-bGl0aWVzDQo+ICtjb21tYW5kIChWSVJUSU9fQkxLX1RfR0VUX0NSWVBUT19DQVBBQklMSVRJRVMp
-Lg0KPg0KPiAgXGJlZ2lue2xzdGxpc3Rpbmd9DQo+ICAjZGVmaW5lIFZJUlRJT19CTEtfVF9JTiAg
-ICAgICAgICAgMA0KPiBAQCAtNDU3LDEyICs1MDAsMjcgQEAgXHN1YnNlY3Rpb257RGV2aWNlIE9w
-ZXJhdGlvbn1cbGFiZWx7c2VjOkRldmljZQ0KPiBUeXBlcyAvIEJsb2NrIERldmljZSAvIERldmlj
-ZSBPcGUNCj4gICNkZWZpbmUgVklSVElPX0JMS19UX0RJU0NBUkQgICAgICAxMQ0KPiAgI2RlZmlu
-ZSBWSVJUSU9fQkxLX1RfV1JJVEVfWkVST0VTIDEzDQo+ICAjZGVmaW5lIFZJUlRJT19CTEtfVF9T
-RUNVUkVfRVJBU0UgICAxNA0KPiArI2RlZmluZSBWSVJUSU9fQkxLX1RfR0VUX0NSWVBUT19DQVBB
-QklMSVRJRVMgICAyNw0KPiAgXGVuZHtsc3RsaXN0aW5nfQ0KPg0KPiAgVGhlIFxmaWVsZHtzZWN0
-b3J9IG51bWJlciBpbmRpY2F0ZXMgdGhlIG9mZnNldCAobXVsdGlwbGllZCBieSA1MTIpIHdoZXJl
-ICB0aGUNCj4gcmVhZCBvciB3cml0ZSBpcyB0byBvY2N1ci4gVGhpcyBmaWVsZCBpcyB1bnVzZWQg
-YW5kIHNldCB0byAwIGZvciAgY29tbWFuZHMNCj4gb3RoZXIgdGhhbiByZWFkLCB3cml0ZSBhbmQg
-c29tZSB6b25lIG9wZXJhdGlvbnMuDQo+DQo+ICtUaGUgXGZpZWxke3BheWxvYWR9IGNvbnNpc3Rz
-IG9mIHRoZSBlbmNyeXB0aW9uIGluZm9ybWF0aW9uIGZvciBjdXJyZW50DQo+ICtyZXF1ZXN0LiBJ
-dCBpcyBvbmx5IHByZXNlbnQgd2hlbiB0aGUgVklSVElPX0JMS19GX0lDRSBmZWF0dXJlIGlzDQo+
-ICtuZWdvdGlhdGVkIGFuZCBcZmllbGR7dHlwZX0gaXMgVklSVElPX0JMS19UX0lOLCBWSVJUSU9f
-QkxLX1RfT1VUIG9yDQo+IFZJUlRJT19CTEtfVF9GTFVTSC4NCj4gK1xiZWdpbntpdGVtaXplfQ0K
-PiArXGl0ZW0gVGhlIFxmaWVsZHtzbG90fSBmaWVsZCBpbiBcZmllbGR7cGF5bG9hZH0gaW5kaWNh
-dGVzIHRoZSBJQ0UNCj4gKyAgKElubGluZSBDcnlwdG8gRW5jcnlwdGlvbikgc2xvdCBpbmRleCB3
-aGVyZSB0aGUga2V5IHJlc2lkZXMuDQo+ICsNCj4gK1xpdGVtIFRoZSBcZmllbGR7YWN0aXZhdGV9
-IGZpZWxkIGluIFxmaWVsZHtwYXlsb2FkfSBpbXBsaWVzIHRoaXMgaXMgYQ0KPiArICBpbmxpbmUg
-ZW5jcnlwdGlvbiByZXF1ZXN0Lg0KPiArDQo+ICtcaXRlbSBUaGUgXGZpZWxke2RhdGFfdW5pdF9u
-dW19IGZpZWxkIGluIFxmaWVsZHtwYXlsb2FkfSBpbmRpY2F0ZXMgdGhlDQo+ICsgIHN0YXJ0aW5n
-IGJsb2NrIG9mIHRoZSByZXF1ZXN0Lg0KPiArXGVuZHtpdGVtaXplfQ0KPiArDQo+ICBWSVJUSU9f
-QkxLX1RfSU4gcmVxdWVzdHMgcG9wdWxhdGUgXGZpZWxke2RhdGF9IHdpdGggdGhlIGNvbnRlbnRz
-IG9mIHNlY3RvcnMNCj4gcmVhZCBmcm9tIHRoZSBibG9jayBkZXZpY2UgKGluIG11bHRpcGxlcyBv
-ZiA1MTIgYnl0ZXMpLiAgVklSVElPX0JMS19UX09VVA0KPiByZXF1ZXN0cyB3cml0ZSB0aGUgY29u
-dGVudHMgb2YgXGZpZWxke2RhdGF9IHRvIHRoZSBibG9jayBkZXZpY2UgKGluIG11bHRpcGxlcw0K
-PiBAQCAtNTMwLDYgKzU4OCw0NyBAQCBcc3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJl
-bHtzZWM6RGV2aWNlDQo+IFR5cGVzIC8gQmxvY2sgRGV2aWNlIC8gRGV2aWNlIE9wZSAgVGhlIFxm
-aWVsZHtkZXZpY2VfbGlmZXRpbWVfZXN0X3R5cF9ifQ0KPiByZWZlcnMgdG8gd2VhciBvZiBNTEMg
-Y2VsbHMgYW5kIGlzIHByb3ZpZGVkICB3aXRoIHRoZSBzYW1lIHNlbWFudGljcyBhcw0KPiBcZmll
-bGR7ZGV2aWNlX2xpZmV0aW1lX2VzdF90eXBfYX0uDQo+DQo+ICtWSVJUSU9fQkxLX1RfR0VUX0NS
-WVBUT19DQVBBQklMSVRJRVMgcmVxdWVzdHMgZmV0Y2ggdGhlIHN0b3JhZ2UNCj4gK2hhcmR3YXJl
-IGNyeXB0byBjYXBhYmlsaXRpZXMgaW50byBcZmllbGR7ZGF0YX0uIEFuZCB0aGUgXGZpZWxke2Rh
-dGF9IGlzDQo+ICtvZiB0aGUgZm9ybQ0KPiArDQo+ICtcYmVnaW57bHN0bGlzdGluZ30NCj4gK3N0
-cnVjdCB2aXJ0aW9fYmxrX2NyeXB0b19jYXBzIHsNCj4gKyAgdTggc2l6ZTsNCj4gKyAgbGUzMiBj
-cnlwdG9fY2FwYWJpbGl0aWVzW107DQo+ICt9Ow0KPiArXGVuZHtsc3RsaXN0aW5nfQ0KPiArDQo+
-ICtUaGUgXGZpZWxke3NpemV9IHNwZWNpZmllcyB0aGUgc2l6ZSBvZiBhcnJheSBcZmllbGR7Y3J5
-cHRvX2NhcGFiaWxpdGllc30uDQo+ICtUaGUgXGZpZWxke2NyeXB0b19jYXBhYmlsaXRpZXN9IGlu
-ZGljYXRlcyB0aGUgY3J5cHRvIGNhcGFiaWxpdGllcw0KPiArc3VwcG9ydGVkIGJ5IHRoZSBoYXJk
-d2FyZSBzdG9yYWdlIGZvciBpbmxpbmUgZW5jcnlwdGlvbi4NCj4gKw0KPiArQSBjcnlwdG8gY2Fw
-YWJpbGl0eSBwYWNrcyBmb3VyIDgtYml0cyB2YWx1ZXM6DQo+ICtcYmVnaW57aXRlbWl6ZX0NCj4g
-KyAgICBcaXRlbSBCaXRzflxbMzE6MjRdOiBjcnlwdG8gYWxnb3JpdGhtIGlkZW50aWZpZXJzLg0K
-PiArICAgIFRoZSBkZXZpY2Ugc3VwcG9ydHMgcmVwb3J0aW5nIGFuZCBuZWdvdGlhdGluZyBjcnlw
-dG9ncmFwaGljIGFsZ29yaXRobXMNCj4gKyAgICB1c2luZyB0aGUgZm9sbG93aW5nIGFsZ29yaXRo
-bSBpZGVudGlmaWVyczoNCj4gKyAgICBcYmVnaW57bHN0bGlzdGluZ30NCj4gKyAgICAgICAgQ1JZ
-UFRPX0FMR19BRVNfWFRTICAgICAgICAgICAgICA9IDB4MA0KPiArICAgICAgICBDUllQVE9fQUxH
-X0JJVExPQ0tFUl9BRVNfQ0JDICAgID0gMHgxDQo+ICsgICAgICAgIENSWVBUT19BTEdfQUVTX0VD
-QiAgICAgICAgICAgICAgPSAweDINCj4gKyAgICAgICAgQ1JZUFRPX0FMR19FU1NJVl9BRVNfQ0JD
-ICAgICAgICA9IDB4Mw0KPiArICAgIFxlbmR7bHN0bGlzdGluZ30NCj4gKyAgICBUaGVzZSBpZGVu
-dGlmaWVycyBhYnN0cmFjdCB0aGUgdW5kZXJseWluZyBoYXJkd2FyZSBjcnlwdG8NCj4gaW1wbGVt
-ZW50YXRpb24NCj4gKyAgICBhbmQgZG9lcyBub3QgYXNzdW1lIGFueSBvcGVyYXRpbmfigJFzeXN0
-ZW3igJFzcGVjaWZpYyBkYXRhIHN0cnVjdHVyZXMgb3INCj4gKyAgICBjb25zdGFudHMuDQo+ICsg
-ICAgXGl0ZW0gQml0c35cWzIzOjE2XTogbWFzayBvZiBkYXRhIHVuaXQgc2l6ZS4gV2hlbiBiaXQg
-aiBpbiB0aGlzIGZpZWxkDQo+ICsgICAgKGo9Ny4uLi4uLjApIGlzIHNldCwgYSBkYXRhIHVuaXQg
-c2l6ZSBvZiA1MTIqMl5qIGJ5dGVzIGlzIHNlbGVjdGVkLg0KPiArICAgIFxpdGVtIEJpdHN+XFsx
-NTo4XTogY3J5cHRvIGtleSBzaXplIGlkZW50aWZpZXJzLg0KPiArICAgIFxiZWdpbntsc3RsaXN0
-aW5nfQ0KPiArICAgICAgICBDUllQVE9fS0VZX1NJWkVfSU5WQUxJRCAgICAgPSAweDANCj4gKyAg
-ICAgICAgQ1JZUFRPX0tFWV9TSVpFXzEyOF9CSVRTICAgID0gMHgxDQo+ICsgICAgICAgIENSWVBU
-T19LRVlfU0laRV8xOTJfQklUUyAgICA9IDB4Mg0KPiArICAgICAgICBDUllQVE9fS0VZX1NJWkVf
-MjU2X0JJVFMgICAgPSAweDMNCj4gKyAgICAgICAgQ1JZUFRPX0tFWV9TSVpFXzUxMl9CSVRTICAg
-ID0gMHg0DQo+ICsgICAgXGVuZHtsc3RsaXN0aW5nfQ0KPiArICAgIFxpdGVtIEJpdHN+XFs3OjBd
-OiB1bnVzZWQuDQo+ICtcZW5ke2l0ZW1pemV9DQo+ICsNCj4gIFRoZSBmaW5hbCBcZmllbGR7c3Rh
-dHVzfSBieXRlIGlzIHdyaXR0ZW4gYnkgdGhlIGRldmljZTogZWl0aGVyICBWSVJUSU9fQkxLX1Nf
-T0sNCj4gZm9yIHN1Y2Nlc3MsIFZJUlRJT19CTEtfU19JT0VSUiBmb3IgZGV2aWNlIG9yIGRyaXZl
-ciAgZXJyb3Igb3INCj4gVklSVElPX0JMS19TX1VOU1VQUCBmb3IgYSByZXF1ZXN0IHVuc3VwcG9y
-dGVkIGJ5IGRldmljZToNCj4gQEAgLTkxMiw2ICsxMDExLDEzIEBAIFxzdWJzZWN0aW9ue0Rldmlj
-ZSBPcGVyYXRpb259XGxhYmVse3NlYzpEZXZpY2UNCj4gVHlwZXMgLyBCbG9jayBEZXZpY2UgLyBE
-ZXZpY2UgT3BlICBzdWNjZXNzZnVsbHksIGZhaWxlZCwgb3Igd2VyZSBwcm9jZXNzZWQgYnkNCj4g
-dGhlIGRldmljZSBhdCBhbGwgaWYgdGhlIHJlcXVlc3QgIGZhaWxlZCB3aXRoIFZJUlRJT19CTEtf
-U19JT0VSUi4NCj4NCj4gK1RoZSBsZW5ndGggb2YgXGZpZWxke2RhdGF9IE1VU1QgYmUgYSBtdWx0
-aXBsZSBvZiA0IGJ5dGVzIHBsdXMgMSBmb3INCj4gK1ZJUlRJT19CTEtfVF9HRVRfQ1JZUFRPX0NB
-UEFCSUxJVElFUyByZXF1ZXN0cy4NCj4gKw0KPiArQSBkcml2ZXIgTVVTVCBzZXQgXGZpZWxke2Fj
-dGl2YXRlfSB0byAxIGZvcg0KPiBWSVJUSU9fQkxLX1RfSU4sVklSVElPX0JMS19UX09VVCwNCj4g
-KyAgICBhbmQgVklSVElPX0JMS19UX0ZMVVNIIHJlcXVlc3RzIHRoYXQgcmVxdWlyZSBpbmxpbmUg
-ZW5jcnlwdGlvbi4gRm9yDQo+IG90aGVyDQo+ICsgICAgcmVxdWVzdCB0eXBlcyBvciB3aGVuIGlu
-bGluZSBlbmNyeXB0aW9uIGlzIG5vdCByZXF1aXJlZCwgaXQgaXMgc2V0IHRvIDAuDQo+ICsNCj4g
-IFRoZSBmb2xsb3dpbmcgcmVxdWlyZW1lbnRzIG9ubHkgYXBwbHkgaWYgdGhlIFZJUlRJT19CTEtf
-Rl9aT05FRCBmZWF0dXJlIGlzDQo+IG5lZ290aWF0ZWQuDQo+DQo+IC0tDQo+IDIuMzQuMQ0KPg0K
-DQpEaXNjbGFpbWVyOiBUaGlzIGVtYWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBp
-dCBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24gaW50ZW5kZWQgZm9yIHRoZSBh
-ZGRyZXNzZWUocykgb25seS4gVGhlIGluZm9ybWF0aW9uIGlzIG5vdCB0byBiZSBzdXJyZW5kZXJl
-ZCBvciBjb3BpZWQgdG8gdW5hdXRob3JpemVkIHBlcnNvbnMuIElmIHlvdSBoYXZlIHJlY2VpdmVk
-IHRoaXMgY29tbXVuaWNhdGlvbiBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGlt
-bWVkaWF0ZWx5IGFuZCBkZWxldGUgdGhpcyBlLW1haWwgZnJvbSB5b3VyIHN5c3RlbS4NCg==
+
+
+On 2/19/2026 10:35 PM, Sebastian Mauritsson wrote:
+> I understand there might be compatibility considerations, but I'm wondering the exact reason for making CRYPTO_ALG_AES_ECB an option? This does not use an IV and is unsuitable for anything other than single-use & single-block encryption.
+Would you please share your exact compatibility concerns? I believe the change in this patch only works for that the beckend and virtio block frontend negociates VIRTIO_BLK_F_ICE feature bit. Previous implementation doesn't have such
+feature bit, so no impact on the backward compatibility.
+
+With respect to CRYPTO_ALG_AES_ECB, it's just one possible enum of algoritms storage hardware supports. IV in additional
+metadate encryption is mainly used by CBC mode.
+
+By the way, please help review the patch in bellow thread sent by OSS mail id due to Qualcomm internal requirement for upstream.
+  https://lore.kernel.org/virtio-dev/20260210083208.472824-1-linlin.zhang@oss.qualcomm.com/T/#t
+
+> 
+> Best regards, Sebastian
+> 
+>> -----Original Message-----
+>> From: Linlin Zhang <quic_linlzhan@quicinc.com>
+>> Sent: Friday, February 6, 2026 6:12 PM
+>> To: virtio-dev@lists.linux.dev; stefanha@redhat.com
+>> Cc: quic_dshaikhu@quicinc.com
+>> Subject: [PATCH v2] virtio-blk: Add inline encryption support
+>>
+>> From: linlzhan <quic_linlzhan@quicinc.com>
+>>
+>> Inline encryption on virtio block can only be supported when the new feature
+>> bit VIRTIO_BLK_F_ICE is negotiated.
+>>
+>> Extend struct virtio_blk_config and struct virtio_blk_req, so that crypto
+>> capabilities can be got in the frontend and encryption metadata can be sent
+>> to the backend, together with each I/O transaction.
+>>
+>> About the inline encryption on UFS or eMMC storage, please refer to the
+>> Linux inline encryption documentation:
+>> https://linkprotect.cudasvc.com/url?a=https%3a%2f%2fgit.kernel.org%2fpub
+>> %2fscm%2flinux%2fkernel%2fgit%2ftorvalds%2flinux.git%2ftree%2fDocumen
+>> tation%2fblock%2finline-encryption.rst&c=E,1,nhL3zMxYwxuFP4QQ8SLhLjz-
+>> MYwQ3RGD-PYXU71uhC-OBnxDeaefVyDYQH1A0KvX70THXfl-SWjj-
+>> JcDntGGie3bSTNAri0H4_0CtCqU3kyCWRoDg1_N&typo=1
+>>
+>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/238
+>> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+>> Signed-off-by: linlzhan <quic_linlzhan@quicinc.com>
+>> Signed-off-by: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
+>> ---
+>>
+>> changes from v2:
+>>  - Add inline encryption link in commit message for a better
+>>    backgrond descryption
+>>  - Add sufficient descryption for the fields of crypto
+>>    capability
+>>  - Delete crypto capability in configuration layout, instead
+>>    add a new request command to get it
+>>  - Correct the terminology in non-normative and normative
+>>    sections
+>>  - Correct the mail for open source upstream
+>> ---
+>>
+>>  device-types/blk/description.tex | 110 ++++++++++++++++++++++++++++++-
+>>  1 file changed, 108 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/device-types/blk/description.tex b/device-
+>> types/blk/description.tex
+>> index 2712ada..60f46af 100644
+>> --- a/device-types/blk/description.tex
+>> +++ b/device-types/blk/description.tex
+>> @@ -66,6 +66,11 @@ \subsection{Feature bits}\label{sec:Device Types /
+>> Block Device / Feature bits}
+>>       (ZNS). For brevity, these standard documents are referred as "ZBD
+>> standards"
+>>       from this point on in the text.
+>>
+>> +\item[VIRTIO_BLK_F_ICE(22)] Inline Crypto Extensions are supported. Only
+>> when this
+>> +     feature bit is negotiated, the device need expose crypto characteristics in
+>> +     configuration space and the driver need provide an extended request
+>> header
+>> +     containing a crypto payload for block I/O.
+>> +
+>>  \end{description}
+>>
+>>  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block
+>> Device / Feature bits / Legacy Interface: Feature bits} @@ -128,6 +133,10 @@
+>> \subsection{Device configuration layout}\label{sec:Device Types / Block
+>> Device /
+>>                  u8 model;
+>>                  u8 unused2[3];
+>>          } zoned;
+>> +        struct virtio_blk_crypto_characteristics {
+>> +                __virtio16 slot_info;
+>> +                __virtio16 reserved;
+>> +        } crypto;
+>>  };
+>>  \end{lstlisting}
+>>
+>> @@ -215,6 +224,18 @@ \subsection{Device configuration
+>> layout}\label{sec:Device Types / Block Device /  terminated by the device with
+>> a "zone resources exceeded" error as defined for  specific commands later.
+>>
+>> +If the VIRTIO_BLK_F_ICE feature is negotiated, then in
+>> +\field{virtio_blk_crypto_characteristics},
+>> +\begin{itemize}
+>> +\item \field{slot_info} value packs two 8-bits values to reduce the number of
+>> +    Configuration Space reads.
+>> +    \begin{itemize}
+>> +        \item Bits~\[15:8] (\emph{max\_slots}): the maximum number of
+>> supported
+>> +            crypto key slots.
+>> +        \item Bits~\[7:0] (\emph{slot\_offset}): an offset applied to slot
+>> numbering.
+>> +    \end{itemize}
+>> +\end{itemize}
+>> +
+>>  \subsubsection{Legacy Interface: Device configuration
+>> layout}\label{sec:Device Types / Block Device / Device configuration layout /
+>> Legacy Interface: Device configuration layout}  When using the legacy
+>> interface, transitional devices and drivers  MUST format the fields in struct
+>> virtio_blk_config @@ -278,6 +299,10 @@ \subsection{Device
+>> Initialization}\label{sec:Device Types / Block Device / Devic
+>>      \field{zoned} can be read by the driver to determine the zone
+>>      characteristics of the device. All \field{zoned} fields are read-only.
+>>
+>> +\item If the VIRTIO_BLK_F_ICE feature is negotiated, the fields in
+>> +    \field{crypto} can be read by the driver to determine the inline crypto
+>> +    characteristics of the device. All \field{crypto} fields are read-only.
+>> +
+>>  \end{enumerate}
+>>
+>>  \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block
+>> Device / Device Initialization} @@ -317,6 +342,9 @@ \subsection{Device
+>> Initialization}\label{sec:Device Types / Block Device / Devic
+>>      driver SHOULD ignore all other fields in \field{zoned}.
+>>  \end{itemize}
+>>
+>> +If the VIRTIO_BLK_F_ICE feature is negotiated, then the driver MUST
+>> validate
+>> +    the max_slots in \field{slot_info} before the slot usage.
+>> +
+>>  \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block
+>> Device / Device Initialization}
+>>
+>>  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it @@ -
+>> 402,6 +430,13 @@ \subsection{Device Initialization}\label{sec:Device Types /
+>> Block Device / Devic  \item the device MUST initialize padding bytes
+>> \field{unused2} to 0.
+>>  \end{itemize}
+>>
+>> +If the VIRTIO_BLK_F_ICE feature is negotiated, then the fields in
+>> +\field{crypto} struct in the configuration space MUST be set by the device.
+>> +\begin{itemize}
+>> +\item the \field{slot_info} field of \field{crypto} MUST be set by the device to
+>> a
+>> +    max_slots in the higher 8 bits and slot_offset in the lower 8 bits.
+>> +\end{itemize}
+>> +
+>>  \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types
+>> / Block Device / Device Initialization / Legacy Interface: Device Initialization}
+>>
+>>  Because legacy devices do not have FEATURES_OK, transitional devices @@ -
+>> 436,6 +471,13 @@ \subsection{Device Operation}\label{sec:Device Types /
+>> Block Device / Device Ope
+>>          le32 type;
+>>          le32 reserved;
+>>          le64 sector;
+>> +        struct virtio_blk_crypto_payload {
+>> +            u8 slot;
+>> +            u8 activate;
+>> +            le16 reserved1;
+>> +            le32 reserved2;
+>> +            le64 data_unit_num;
+>> +        } payload;
+>>          u8 data[];
+>>          u8 status;
+>>  };
+>> @@ -445,8 +487,9 @@ \subsection{Device Operation}\label{sec:Device
+>> Types / Block Device / Device Ope  (VIRTIO_BLK_T_OUT), a discard
+>> (VIRTIO_BLK_T_DISCARD), a write zeroes  (VIRTIO_BLK_T_WRITE_ZEROES), a
+>> flush (VIRTIO_BLK_T_FLUSH), a get device ID  string command
+>> (VIRTIO_BLK_T_GET_ID), a secure erase -(VIRTIO_BLK_T_SECURE_ERASE), or
+>> a get device lifetime command -(VIRTIO_BLK_T_GET_LIFETIME).
+>> +(VIRTIO_BLK_T_SECURE_ERASE), a get device lifetime command
+>> +(VIRTIO_BLK_T_GET_LIFETIME), or a get device crypto capabilities
+>> +command (VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES).
+>>
+>>  \begin{lstlisting}
+>>  #define VIRTIO_BLK_T_IN           0
+>> @@ -457,12 +500,27 @@ \subsection{Device Operation}\label{sec:Device
+>> Types / Block Device / Device Ope
+>>  #define VIRTIO_BLK_T_DISCARD      11
+>>  #define VIRTIO_BLK_T_WRITE_ZEROES 13
+>>  #define VIRTIO_BLK_T_SECURE_ERASE   14
+>> +#define VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES   27
+>>  \end{lstlisting}
+>>
+>>  The \field{sector} number indicates the offset (multiplied by 512) where  the
+>> read or write is to occur. This field is unused and set to 0 for  commands
+>> other than read, write and some zone operations.
+>>
+>> +The \field{payload} consists of the encryption information for current
+>> +request. It is only present when the VIRTIO_BLK_F_ICE feature is
+>> +negotiated and \field{type} is VIRTIO_BLK_T_IN, VIRTIO_BLK_T_OUT or
+>> VIRTIO_BLK_T_FLUSH.
+>> +\begin{itemize}
+>> +\item The \field{slot} field in \field{payload} indicates the ICE
+>> +  (Inline Crypto Encryption) slot index where the key resides.
+>> +
+>> +\item The \field{activate} field in \field{payload} implies this is a
+>> +  inline encryption request.
+>> +
+>> +\item The \field{data_unit_num} field in \field{payload} indicates the
+>> +  starting block of the request.
+>> +\end{itemize}
+>> +
+>>  VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sectors
+>> read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
+>> requests write the contents of \field{data} to the block device (in multiples
+>> @@ -530,6 +588,47 @@ \subsection{Device Operation}\label{sec:Device
+>> Types / Block Device / Device Ope  The \field{device_lifetime_est_typ_b}
+>> refers to wear of MLC cells and is provided  with the same semantics as
+>> \field{device_lifetime_est_typ_a}.
+>>
+>> +VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES requests fetch the storage
+>> +hardware crypto capabilities into \field{data}. And the \field{data} is
+>> +of the form
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_blk_crypto_caps {
+>> +  u8 size;
+>> +  le32 crypto_capabilities[];
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The \field{size} specifies the size of array \field{crypto_capabilities}.
+>> +The \field{crypto_capabilities} indicates the crypto capabilities
+>> +supported by the hardware storage for inline encryption.
+>> +
+>> +A crypto capability packs four 8-bits values:
+>> +\begin{itemize}
+>> +    \item Bits~\[31:24]: crypto algorithm identifiers.
+>> +    The device supports reporting and negotiating cryptographic algorithms
+>> +    using the following algorithm identifiers:
+>> +    \begin{lstlisting}
+>> +        CRYPTO_ALG_AES_XTS              = 0x0
+>> +        CRYPTO_ALG_BITLOCKER_AES_CBC    = 0x1
+>> +        CRYPTO_ALG_AES_ECB              = 0x2
+>> +        CRYPTO_ALG_ESSIV_AES_CBC        = 0x3
+>> +    \end{lstlisting}
+>> +    These identifiers abstract the underlying hardware crypto
+>> implementation
+>> +    and does not assume any operating‑system‑specific data structures or
+>> +    constants.
+>> +    \item Bits~\[23:16]: mask of data unit size. When bit j in this field
+>> +    (j=7......0) is set, a data unit size of 512*2^j bytes is selected.
+>> +    \item Bits~\[15:8]: crypto key size identifiers.
+>> +    \begin{lstlisting}
+>> +        CRYPTO_KEY_SIZE_INVALID     = 0x0
+>> +        CRYPTO_KEY_SIZE_128_BITS    = 0x1
+>> +        CRYPTO_KEY_SIZE_192_BITS    = 0x2
+>> +        CRYPTO_KEY_SIZE_256_BITS    = 0x3
+>> +        CRYPTO_KEY_SIZE_512_BITS    = 0x4
+>> +    \end{lstlisting}
+>> +    \item Bits~\[7:0]: unused.
+>> +\end{itemize}
+>> +
+>>  The final \field{status} byte is written by the device: either  VIRTIO_BLK_S_OK
+>> for success, VIRTIO_BLK_S_IOERR for device or driver  error or
+>> VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
+>> @@ -912,6 +1011,13 @@ \subsection{Device Operation}\label{sec:Device
+>> Types / Block Device / Device Ope  successfully, failed, or were processed by
+>> the device at all if the request  failed with VIRTIO_BLK_S_IOERR.
+>>
+>> +The length of \field{data} MUST be a multiple of 4 bytes plus 1 for
+>> +VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES requests.
+>> +
+>> +A driver MUST set \field{activate} to 1 for
+>> VIRTIO_BLK_T_IN,VIRTIO_BLK_T_OUT,
+>> +    and VIRTIO_BLK_T_FLUSH requests that require inline encryption. For
+>> other
+>> +    request types or when inline encryption is not required, it is set to 0.
+>> +
+>>  The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
+>> negotiated.
+>>
+>> --
+>> 2.34.1
+>>
+> 
+> Disclaimer: This email and any files transmitted with it may contain confidential information intended for the addressee(s) only. The information is not to be surrendered or copied to unauthorized persons. If you have received this communication in error, please notify the sender immediately and delete this e-mail from your system.
+
