@@ -1,429 +1,849 @@
-Received: from egress-ip11a.ess.de.barracuda.com (egress-ip11a.ess.de.barracuda.com [18.184.203.234])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C84C3358C7
-	for <virtio-dev@lists.linux.dev>; Thu, 26 Feb 2026 11:08:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=18.184.203.234
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772104117; cv=fail; b=aceMcmRgdtPIyc0k9cnOO248eZJld6jPdSsL5wmGdfMch9+Ryi/RLFz8Kp7QIx3GD5Z9S2lr2bu8qq4JHbZrcoFTZ63m/QgFsEgerKdXhE1xghOlsxetEQ7Bg+CWrM9Eb+sgUcR4XMuZUrA5VZ8u7Mzy/cm3Nb4H5GIZVsMiAN0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772104117; c=relaxed/simple;
-	bh=1pGetcFZ5fp+6KKIdR3YG9CIT/f9g07hUJFVIhihECg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=czT+M1RdmR+7caaaUWHhogSVqoz8fcTilRMRghy4vGdStoHWFTLe3lPdxk2TqwhiXXIheq9cG9a0RMK8SAt2slBuDddT4lhp6oTfzK5lUjhkd/6VzzKtMyOt+NSt+ZC8vOsmd87oFGhLupIfQFZrY9om3liLtLFINMsH6ge0mKY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=napatech.com; spf=pass smtp.mailfrom=napatech.com; dkim=pass (1024-bit key) header.d=napatech.com header.i=@napatech.com header.b=goixKOxE; arc=fail smtp.client-ip=18.184.203.234
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=napatech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=napatech.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C3E3164DF
+	for <virtio-dev@lists.linux.dev>; Thu, 26 Feb 2026 13:34:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772112855; cv=none; b=FhZ2zXnLts3+kTdfXiUnba73vbtiLsVLP/5jFqTZBg2pIKkMr0J7f8p/3OYrTjumZrWbzuMKsLWhlaaaELACKfqsooP4YB8Pao/9omt7LFqY4pmXW8P/BSmnOy63b3DjQJwGmTAi/isDlGVkf252f1+meiR9hsDvnPcRNm/IEmU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772112855; c=relaxed/simple;
+	bh=XaRMzXwgh/BTR3NxrRyzrcYKbf0NWkXgcCLH5FOQvBo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eeCL5KQ2OMHyUhRG0f8K3Is0+bpNtUo6gbCsDpDdC4pyF4J+o5YUDwzw++nw9f5E0j9gptHRbNHUuP1FI1A85rMTwwoiH5Hs+QPgOceCfuLUQfN7zQ5ul/7H1e2Voh2QnqLXHc+oCRJPYV/LUtIBc7k/K/A+AqHXTj9TPqyhJPM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LqadokJY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZChGV7TV; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=napatech.com header.i=@napatech.com header.b="goixKOxE"
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11023127.outbound.protection.outlook.com [40.107.162.127]) by mx-outbound42-242.eu-central-1c.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Thu, 26 Feb 2026 11:08:22 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JzxPkDKIs6Gn7tAP3+8a27pmE3rcyYdJtkvLYyZ68mRfCQvBAxEF5aTGe38ZG999LnO81PVVXjBSe1Asw5uxdu2IkpNyERvVRDXobHiy5WOyWgPeeAWuhm/0UL6zzJFldHtT5ZNTS0KOqkXmkQgek6UsgesLTrCBn4nlVnyHfAqqgjgMkkcg6aNW3s5oVB3Op7gau55B4P9BBSd5Ysq5voknwdXQLskNNTlWBd2SGdqnROJpADMAZuCDQ7NJkP2Qds6THdQYts/08TMdcmQcxFQAUC2X8MWF3C1Neca/lfgBz4wDHcaDA5SKHUCc8YXzdqGLGJEOJfo+BjOurqVWUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1pGetcFZ5fp+6KKIdR3YG9CIT/f9g07hUJFVIhihECg=;
- b=ng92MMn1UM5/7Ii5cC1V+V/HESa4QgD8jPssW89eXwh1HMQLVDAmGWy2eJsqA8XYB0KTR3tosaQLw1QyVl1m84iVCGX7+sdHVf2v8MbSGhiQOxt/YonkrBobRB9pECrsW66MZvIns/xrLapZvDwg3tcWfZRBJjaVde+boNIo7aBBe2siqvgJDYZqyu1ZgK9rwmwNAHGPh1yjQMbUJ58n6vdeRa7T4m6l2TBLkjJ7hUM1MH9qWBt3SWmQq+ImAPcQ8VjlMs2f5+GUP0DfZUZIcDousdnjLpByRhp+JXp3IDziUL4ME4ZljjrUmfXVlkr8HRpI3zAYgSBL64ET66JUwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=napatech.com; dmarc=pass action=none header.from=napatech.com;
- dkim=pass header.d=napatech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=napatech.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1pGetcFZ5fp+6KKIdR3YG9CIT/f9g07hUJFVIhihECg=;
- b=goixKOxEg+Yq2j88n7lAwTG1CUuG0sU0k/fERmiEnMRiY+rL3HTqH59KxtYH9xWPuehph/gXEjB2lntvYT8yut/3DNzxWGkHYgFvPhqh4T18nvMC+5McyQqwzwsKM97jyKediNtedPqq+NzGSXiJiW1fkvh4e3EW02h92x3EUKs=
-Received: from VI0P190MB2641.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:2d2::11)
- by AS4P190MB1998.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:519::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Thu, 26 Feb
- 2026 11:08:16 +0000
-Received: from VI0P190MB2641.EURP190.PROD.OUTLOOK.COM
- ([fe80::62b5:2d88:af5d:5d7b]) by VI0P190MB2641.EURP190.PROD.OUTLOOK.COM
- ([fe80::62b5:2d88:af5d:5d7b%4]) with mapi id 15.20.9632.017; Thu, 26 Feb 2026
- 11:08:15 +0000
-From: Sebastian Mauritsson <sma@napatech.com>
-To: Linlin Zhang <quic_linlzhan@quicinc.com>, "virtio-dev@lists.linux.dev"
-	<virtio-dev@lists.linux.dev>, "stefanha@redhat.com" <stefanha@redhat.com>
-CC: "quic_dshaikhu@quicinc.com" <quic_dshaikhu@quicinc.com>
-Subject: RE: [PATCH v2] virtio-blk: Add inline encryption support
-Thread-Topic: [PATCH v2] virtio-blk: Add inline encryption support
-Thread-Index: AQHcl4wNKmfZfUXLhUODTEU13iaZr7WKIfVggAQymwCABpS2YA==
-Date: Thu, 26 Feb 2026 11:08:15 +0000
-Message-ID:
- <VI0P190MB2641B61ED8CC7BE0EC5E0335CE72A@VI0P190MB2641.EURP190.PROD.OUTLOOK.COM>
-References: <20260204172749.GA610283@fedora>
- <20260206171218.1748260-1-quic_linlzhan@quicinc.com>
- <VI0P190MB2641340DAF4AA5886D58B629CE6BA@VI0P190MB2641.EURP190.PROD.OUTLOOK.COM>
- <bd48b394-ac9a-4c9a-9f38-afcc4ae8d004@quicinc.com>
-In-Reply-To: <bd48b394-ac9a-4c9a-9f38-afcc4ae8d004@quicinc.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=napatech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI0P190MB2641:EE_|AS4P190MB1998:EE_
-x-ms-office365-filtering-correlation-id: bfa8ca01-41d6-41f9-93bf-08de75275711
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- wJQwy3vrb1TO0c6qvdinjX4xoCDQ6NoHQPCAEsgsb3ATP+a8pVwQDScm+YVRZUrv/OFGSIntXssiPjqxuVZ64H/MEMMu27uPiXxRrqyn4fNdGgRzwGLmib/IUzSNaQyWqAtHkkhaZZL7SaXZRgvVYHrPmkxgEsPbUxl9e/S8dpXsK0lZ4rozzXvnWKeeKVww86a+UUdZTOkNd6n0HFiy1DraTYBbT5+yU59EALpVq/+PQcoYbdjkvzbAAVtJnyN9xegEE+vkG7G2CtKzQoP8k8Vz0m52vFcjY9hB1RrHWUe5eO0UQvzNXzFd6SZ7ahRzGSCtxias7ljxCh196H8rJ4hiSBRdf+5ePPmtbcqOEaBBX+Y3T4rQJaPtM66uVKtz9und3CXq/IppDBhXyZVhd629L3vGWiW5mvyLVDbZhSQVEc7uo9cRnqreCdXWJdPTHloGcYZkYDlkvGeX9HfVBIWLSLxnQbqYYrPB/KMAl1pbEi69gUhSB1yvmGm7lCyI8HCLkSh4CoIvR+q3NE8woyituKQ/cRQznHBDxIgb7FeDe50xw7AZASH70FmowksTVzOQRv+fikfd2Un/6c3ofhF0eT2CPvErgJotFom90/dDLD5FcaEaHNVojZPjvtfyl88x7+1r/TXI3nksJnsEINUtboFEWRzonpQ4SQexbA6zYKJCxTJqbUxPDJeLi0VsXldBJiGdP4BQL1ITgufwlOXt5ZJgnzBP8hQ3j/dlHXE=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI0P190MB2641.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?UFR0cTZvSGNrWEJtc1RWOWl5YnJzSC9ST2VVQUJCS2FYd0c3NWFBYWR5Wnl3?=
- =?utf-8?B?Y0pvN053VjN2cjNIMVp6VlBsM2o1d2FaRWtrb09RNlBQbi80SDVyNERUZ0ZD?=
- =?utf-8?B?d0pSUFJFQjhId3p4bHBEaHU3YTl4SHRSc2xGb0t1RXR6M1lZUThZa0VlOFN0?=
- =?utf-8?B?OFhyT0xSdzJlWlgwZVlTWEUwc0VoQ2xOdDltUzVFTGJ1OTc5SjNMRU8vTmhX?=
- =?utf-8?B?ZytnL1RyVnRKT1ZtQnZ6Rk51dFlVYkFzTno3aDdVby9IeXd5RXVaSWNKSGdR?=
- =?utf-8?B?YjhqTm9hU1RqSGpPZ09IaWhQTXkwdmFyR2gyek1vOFI0MUI0Y1M2dWR4WGla?=
- =?utf-8?B?dHlXcldmbWNUdTNHN3N6VzhiZHI3KzJPeTZZZCtzWkM3SlVJelVDZVZDWVdr?=
- =?utf-8?B?aUhLb3hGTWx5aHhQVDU0MHhVS29tNkU3enBid0YrdWRXTW1BK053YUt3eVZE?=
- =?utf-8?B?TzZaTkhuNWh2RHlJb2VWVWdtSW1Wa211Q29YcjErZGk0KzFoQVdUN3c3UEtW?=
- =?utf-8?B?N0YrRVllUncybytodW9iNVBiaTd1QVJqcjdCQ0IvVjV3aGc1MGs3aHhaV28r?=
- =?utf-8?B?VXNDV1BtcUc0Sml0amg5K3k0TGhldG14V2dkbGdQZ2dCYjZQSHAwUFhxcEVn?=
- =?utf-8?B?MTQwZks5MnE5WmQ2OWc1b1FFL2MzbWN4cVVhZklvdU9JeUk3MWN4R1hwL1g1?=
- =?utf-8?B?WXpQVEVrZkhNQy9xMG5KS2NMMHdZakMxMWh0VGFJbkplc2pFZW9TaDdScVp3?=
- =?utf-8?B?ZHgxemN0ZXF2Z09razY3S252NjRnaHNYV1lKZW1jaEJiVXNWZHNzOS9BMDVq?=
- =?utf-8?B?cWdYZjYrdDVZYW4rVzI4L3BLTjhTRUc0TW51RGlhVFFCVlc0VmhQTm9LdFdR?=
- =?utf-8?B?b0pkZUtUTHJCT05Ic0NqWDNjU1VGamFRcWtrMjRYZkdyRzhvOWc2eS9vcmdL?=
- =?utf-8?B?TEZQelpnNjZsMytsVnhDTEtJRncva2kwQ3liK284VmV4UzlJSFg1WWR2TnVj?=
- =?utf-8?B?M3pENm90MEZ3aTBlY28yWjF5T1ZFbGg3M1h6RnpXaE0wdnppd0ZKT00xVGNr?=
- =?utf-8?B?TEJOZDRVOVhRK0dsSCs4UU9iRmlMWFhnSFVEWWhlbEVQcWFyVE1QSlBkUVpD?=
- =?utf-8?B?ckZKdFlKZEI4bFNiZXdkNGJ4QkdSV3hxTno2dGxURlYzSGRoVU4rQjJMMFZi?=
- =?utf-8?B?UVVNSUZBYXFKS05HTXloT2RwY2xlZ1ZKN1dRU1p0MDY0b284MGRKZlhzSlRI?=
- =?utf-8?B?U3VZTUwxVm5pdlcvMnpwcjJ0YVZTeERuVWY4YUNIRldET3Q5NjROTnV0VXpt?=
- =?utf-8?B?K3hPaFpoV09qUjdUZmxUTmtJU0ZyWWx6b21hbDhtYmRWWGxqZjJLQkN5SjNw?=
- =?utf-8?B?WkFRckdNaVdrRUppNGZvU0prb3cvbG5kL1N1RXljWkN1Nmc5QlZBQjREQk9N?=
- =?utf-8?B?MVpqQjBkTVpyM1JHc3FabVBkZWptS2NGYmU4Q0FuSUtpRlI4ZVRmUENkN2ZG?=
- =?utf-8?B?cGZrS3h0NlpjV09lYWl0UTcvOU9DcmUycGdIaE9EUEhKMlduNllSMngyRFpR?=
- =?utf-8?B?QlJwR012dXpsbUNDYmI4RzMwM2tkak1MSS9hWUlobVp2UDJtVXUrYlhQdndN?=
- =?utf-8?B?M1FUWlZPWU5HZFNIQWFPZGV3dEl4enJVbUZLSS9qblYraGkxeUhjMWtkZEZl?=
- =?utf-8?B?ZjMySG41Y2VYdHU5SlVBdjNvVkx6d0xNN2RFVWorZTFGZm55dmNEcDdNc2lD?=
- =?utf-8?B?QlZ6eE92aXVOSlA0YllBZzhJVjRHbm44OVN3YmMrY29UNWpIdUtuS0ZiVTNl?=
- =?utf-8?B?VUVEMHZnYXo0MGxmVWg4MjBFNE5FdThqSGhKQWFFaVB5bko0VkVtbUxUK2E4?=
- =?utf-8?B?ZGFHMy92MVgwQzR6NUpRUmNSSXdRQ0dhQ0xOTW8zU0h5WVQ4VlpsSjJtcUlK?=
- =?utf-8?B?Z1h6ZEgremtIcFFROUlwRmFOaU1HM0NwMEtJNDlIUTFmK2RxcEh6OVRHQzhx?=
- =?utf-8?B?akRaYWV0QlJDbFE2VzVJaU1vd0tOdHB4MFZKMVlOREtIa0lWNlBxTHVnb3Fp?=
- =?utf-8?B?WXhWRWNGTzlGUHVjK0MxaDB1VENyYVBOcHlYYkl4d0ZNdVE5MTFoUmpydlpx?=
- =?utf-8?B?bnJjTy9KMm4vdGJJdU1FZGszWmNhSUoxeFphR1JQUWFDM3NVZHZhaitlZHdp?=
- =?utf-8?B?Q1JZRGlYb2M5aGJ0RElva3pLdW5aRkQ0OWk5SUoyanRYUklmVGd5TEJOeHlt?=
- =?utf-8?B?SlVIaFAzUEsrRlNCcHQ5UlNOWE1tYmQxRnhwcHVad3pMRk1YeVNRSnRHVHlH?=
- =?utf-8?Q?o3cXEpN+5ge581YxZx?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LqadokJY";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZChGV7TV"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61QAL8QK340935
+	for <virtio-dev@lists.linux.dev>; Thu, 26 Feb 2026 13:34:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	qDZbN6TCzS2pRUUFZ6vWjgamfdz3WNSAaWKK4NnuEIQ=; b=LqadokJYphUnRCEW
+	J3/EjP/oZZJwtc3cT3HJB3M7iwuY50JLdUkW7tSvfvUe0QD2adtYUTofCcvF7cwg
+	Vo0dYOVdJHs6yKetKeSYl/aB9oyrKxAipeCSwYYLuAnAa7MBgx2inP3mz6PZlfuF
+	6uB/8qvdXz6DD3O8TVFpdfEa56aWwJiTdZuFl2BAxx+woG3LxTkHe0Y+c7TMK84N
+	Rbcus1VhKnctiKx8v1WdFLuF4yqMd+seTMYczIXv5n3pA9oZA1y2ajNd1m+5RIko
+	StYWM/mDFeH2yVHQG2YaQBssry5JxtMrJ5E0HH182t1pP7NzI3J5uxWm6nNKP4kO
+	T+5mTw==
+Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cjae0ta8d-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <virtio-dev@lists.linux.dev>; Thu, 26 Feb 2026 13:34:07 +0000 (GMT)
+Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-2bd3bf5dde4so787233eec.1
+        for <virtio-dev@lists.linux.dev>; Thu, 26 Feb 2026 05:34:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1772112847; x=1772717647; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qDZbN6TCzS2pRUUFZ6vWjgamfdz3WNSAaWKK4NnuEIQ=;
+        b=ZChGV7TVSXftLOu+QnUPaxzpnvx1raJrg9on9e7RDyNTdcVOaxWUr7Jude6EmZsYLs
+         iRoOJ0rzUtObQjfdZIRBxxWDfqm7u4XcBdruQVsUXmgOU6gHJB8TM5Mf+d1F7B6l1CY9
+         eEQXoDZ9IIXGdf7PY4ngtLnHCHdgxb3/JxfF4z3nxJ0nf1JM1Tg2LA49BhBc6XV7WQ5F
+         b+HvppIZhgWmRIIGNtBjxad+ogJHtmGGlXzCY5I4EOh01bmjqmhXKWQj3MQMGc9bH4B8
+         UtV7Lc6FBy1mwWSxofbKmelt4UM5NcNmAYowYHbM96uJjbKPfRD52Hw2jjN3XtmPIWQd
+         EGeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772112847; x=1772717647;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qDZbN6TCzS2pRUUFZ6vWjgamfdz3WNSAaWKK4NnuEIQ=;
+        b=R0QNR/o5JpWjv+1auvyh9UJeJuqEyA5Iz+y92xXgMz66Wjix8UWrY608mx494Uho3U
+         myWOJJsweR0VaC6aINhEGoy7XwM0lRBOnNmyZ8ea0OhiNEZXqbfrYm0As9SCwvmnwwAk
+         TYmMf3wAtjE4zqQE1h56LuuVNcBazePfUp7ZdAN0q5TQ6/4+Or5YqQbvb7BzLuCCXv7T
+         Hw0HxI1Z+Ie3QsUYOhxlryov7bJHJ+ru9Fq3GQR3Qg+PYmzcXwGjUwE9w6PwzpFhpCwQ
+         snds+LPIJFy6lS86RZPPmaf+dhjnXL6gvWiuxqCEvIV+izHFxX53FQWsyn4tY5uAZnCX
+         FxiA==
+X-Forwarded-Encrypted: i=1; AJvYcCUDLcyHUNQWrQJnBUa53LBnivRvcW8F3jXlgzs53Wg4IolljXpYut3PAIAWyKp9x6y5R+Piu2JCZwVD@lists.linux.dev
+X-Gm-Message-State: AOJu0YyuBf09OIXSjSKkd8xKePWFOn1mSVygrZDdTJqrQOQRdsaabKv1
+	DexvBoQloQnOtxvUt6ALpoR1RrmKWTHXCU7fNDx1wYIivxSiHr4sxM37gTBGSUOHguXZRg1oAcO
+	C7zKdovav4uE32HkIngS9SuuSSP0tOSNcAQuL3gUgizItxxd974bXV+ldyr6vGQ+j
+X-Gm-Gg: ATEYQzxBq2hrTxcJUU0QlQo3q8VqE5YTBdeVhQmU0mnRGsMhNBKH1VdRivdYWXrKL5r
+	NHnBvCz4mcPcm2h+AyKQtesOLNl8ZdgWOqSDN5NBFUymKfIHPyTD/b0nv35aadgWA+8H65b+Fu/
+	3uvrMfNRWVOLS9O4+orqkoUp2cHGD9gUe+gPWwl1eSu8QnTH6UG2l3UySZJ6kHMN7YlIMBWmx+l
+	lBNdpVFzM2m9r6wY8KVyN8fr1731FO/4YRqkTihrB5681FHycjgy2s3mq5RVZVdPDUdGLbdwVyR
+	APDvfKInaTROFhdz5zsfLfI3D9ZlcZfRRHf1yl/0SKOx/0zvGK+6TTrrxfDFei3a8BH8UVzUF21
+	87WM21H2zFOofYFa6RAG/ne0VBvOrZZwxnRe73QTHVTTp0VU6v0bdvUWT+FwlftKxJ5DX9+WJaQ
+	x3IM4=
+X-Received: by 2002:a05:7301:d1a:b0:2bd:b2c9:851c with SMTP id 5a478bee46e88-2bdcc070e66mr2156524eec.30.1772112846268;
+        Thu, 26 Feb 2026 05:34:06 -0800 (PST)
+X-Received: by 2002:a05:7301:d1a:b0:2bd:b2c9:851c with SMTP id 5a478bee46e88-2bdcc070e66mr2156499eec.30.1772112845319;
+        Thu, 26 Feb 2026 05:34:05 -0800 (PST)
+Received: from [10.110.79.106] (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2bdd1f23c3csm2007393eec.17.2026.02.26.05.34.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Feb 2026 05:34:04 -0800 (PST)
+Message-ID: <22632a98-3d10-4c71-b579-d7aaefe8553d@oss.qualcomm.com>
+Date: Thu, 26 Feb 2026 21:34:01 +0800
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	RyYrL1auyDRnP8VgFOnSEUFaagvFtcl1Gzj1Foc46ugR3zpaqg9bwatGA1bSVG1oXL+OrmfUc/2klwJevwtKpQ7/Lu6lPJ41uKeaR5XPgAbXVB6NG+1loE4e7ObZon5vnSaLzlL4GeoMUJu0g1vgjQghwB6T58tiVneAKQTC2FhWsk+L9/uNmb2XUCozC3n4TdmEqrLSl3rRVvbI3NY9UZ6gUQQ35OLdgyKsXrW8yPQmfFgfmHqlxWdNEFOVNKV81vmpmCxQkUPKqxovilsN64H98bhaxWCHUJxY5z5VMYsn7vCdgh/E/XiN0RdpHP1gkpn+5/X3mwGEItV1bpReyH3mnipZLzuY52Nzgx0xJUqd/1QAcQ3yNo1QWRDUZRcfXSwnUQ+MiwjAdOwWw07Owr6d20P4uLqO59lcyuplVZQ/NqvoCNoA69j1Gp0/K/fxnpUL+zc9qzJ94Cg/1r0kTcnQFd3bC/9EQDOGHYJN8xVlUz3bxL3hv7c7AgjYZPArkykrKVI1d/hiiqChjB3l5osbhieo4A9eWLLY8DNjj/oMxx98iT09BbPs8quwVnHIJnBLkKP7vxH4EmwXwCjtU0DGREPu53RkY2dc2DgxEFrjJFsAkm1HifL66YZCuXSRcxnD+/VQ79jGeSo2n60H1iClVNAvDTAGFILnVz9ucN4=
-X-OriginatorOrg: napatech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI0P190MB2641.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfa8ca01-41d6-41f9-93bf-08de75275711
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Feb 2026 11:08:15.7950
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c4540d0b-728a-4233-9da5-9ea30c7ec3ed
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vtqsHyptxhHq73PzArmzcIZ/VS0mBlw3h0YPlbhaMLP4xeFQF0cjU6Hxt5nsHT+omwKu0ufEN4CTJdqDl8g2ew==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4P190MB1998
-X-BESS-ID: 1772104098-310994-2045-72827-2
-X-BESS-VER: 2019.1_20260224.2149
-X-BESS-Apparent-Source-IP: 40.107.162.127
-X-BESS-Parts: H4sIAAAAAAACA4uuVkqtKFGyUioBkjpK+cVKVoamxuaWQGYGUDTVItHCIsXE1M
-	LEyNQ0Kdk01cQ0KS3ZwjzV0tg8xSA1Rak2FgAPVI4ZQgAAAA==
-X-BESS-Outbound-Spam-Score: 0.00
-X-BESS-Outbound-Spam-Report: Code version 3.2, rules version 3.2.2.271419 [from 
-	cloudscan11-241.eu-central-1a.ess.aws.cudaops.com]
-	Rule breakdown below
-	 pts rule name              description
-	---- ---------------------- --------------------------------
-	0.00 HTTP_ESCAPED_HOST      URI: Uses %-escapes inside a URL's hostname 
-	0.00 BSF_BESS_OUTBOUND      META: BESS Outbound 
-X-BESS-Outbound-Spam-Status: SCORE=0.00 using account:ESS113687 scores of KILL_LEVEL=7.0 tests=HTTP_ESCAPED_HOST, BSF_BESS_OUTBOUND
-X-BESS-BRTS-Status:1
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/1] virtio-blk: Add inline encryption support
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Sebastian Mauritsson <sma@napatech.com>, virtio-dev@lists.linux.dev,
+        quic_dshaikhu@quicinc.com
+References: <20260210083208.472824-1-linlin.zhang@oss.qualcomm.com>
+ <20260210083208.472824-2-linlin.zhang@oss.qualcomm.com>
+ <20260210211842.GA158755@fedora>
+ <fa458358-90c8-408c-a860-8bfdb11658bb@oss.qualcomm.com>
+ <20260218215336.GD605390@fedora>
+ <bca448cf-6c18-4c82-806d-f2a25579a02b@oss.qualcomm.com>
+ <20260225095502.GB1653802@fedora>
+Content-Language: en-US
+From: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
+In-Reply-To: <20260225095502.GB1653802@fedora>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI2MDEyMyBTYWx0ZWRfX7UErEVK3cRAR
+ iID0XbUhbY9Our7yoFB9HunkCN//3k54UNW/GYmT/bkgWc6+2XHKwfplIpr3AYlRV+McA30odfL
+ 13kAF6Lplgk1XYiuhVZ74Eq39n8qoqgiSVRxjBaZCXbf3fXWqhkAsy9MWhToPwKZXKj0D6iNz/m
+ IAjbQn6MrVjREGSdrdARNdivLVt8CN15ytCKo5XSQn8meHYG3Zm06+P2vK8FZ6i0wtIdh1ZkiCW
+ nPLHvcEkEB42KrUDXKqfho9DgIhDpJj0yAAixExmOZi8fxDBsXCy9WWVCenOqKEviKqSQRCSwil
+ x6HiIJ6A85WPJlO2iydI/qNfazkT2skqYk77GLM3gNgJXiSN5jU6vHw5ZoJOkjwdysLPvhUM5dy
+ wXHLAPGNQHYQxPKNE3F31WN3DZ0CdiT79vYaMv1XA2J54kXQzPc7JBwuMsJH2JuK7KvaNFDntfB
+ LmtetjeWWQs+jdrXg0w==
+X-Authority-Analysis: v=2.4 cv=O7Q0fR9W c=1 sm=1 tr=0 ts=69a04bcf cx=c_pps
+ a=wEP8DlPgTf/vqF+yE6f9lg==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=VwQbUJbxAAAA:8 a=NEAV23lmAAAA:8 a=20KFwNOVAAAA:8 a=COk6AnOGAAAA:8
+ a=EUspDBNiAAAA:8 a=XgZIZXSeGgAWseIeBZwA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=bBxd6f-gb0O0v-kibOvt:22 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-ORIG-GUID: nRdryt3y8EigL6P2I1CIavkwUclqiglM
+X-Proofpoint-GUID: nRdryt3y8EigL6P2I1CIavkwUclqiglM
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-25_04,2026-02-26_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0 impostorscore=0
+ lowpriorityscore=0 phishscore=0 spamscore=0 clxscore=1015 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602260123
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGlubGluIFpoYW5nIDxx
-dWljX2xpbmx6aGFuQHF1aWNpbmMuY29tPg0KPiBTZW50OiBTdW5kYXksIEZlYnJ1YXJ5IDIyLCAy
-MDI2IDc6MTAgQU0NCj4gVG86IFNlYmFzdGlhbiBNYXVyaXRzc29uIDxzbWFAbmFwYXRlY2guY29t
-PjsgdmlydGlvLWRldkBsaXN0cy5saW51eC5kZXY7DQo+IHN0ZWZhbmhhQHJlZGhhdC5jb20NCj4g
-Q2M6IHF1aWNfZHNoYWlraHVAcXVpY2luYy5jb20NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2Ml0g
-dmlydGlvLWJsazogQWRkIGlubGluZSBlbmNyeXB0aW9uIHN1cHBvcnQNCj4NCj4NCj4NCj4gT24g
-Mi8xOS8yMDI2IDEwOjM1IFBNLCBTZWJhc3RpYW4gTWF1cml0c3NvbiB3cm90ZToNCj4gPiBJIHVu
-ZGVyc3RhbmQgdGhlcmUgbWlnaHQgYmUgY29tcGF0aWJpbGl0eSBjb25zaWRlcmF0aW9ucywgYnV0
-IEknbQ0KPiB3b25kZXJpbmcgdGhlIGV4YWN0IHJlYXNvbiBmb3IgbWFraW5nIENSWVBUT19BTEdf
-QUVTX0VDQiBhbiBvcHRpb24/DQo+IFRoaXMgZG9lcyBub3QgdXNlIGFuIElWIGFuZCBpcyB1bnN1
-aXRhYmxlIGZvciBhbnl0aGluZyBvdGhlciB0aGFuIHNpbmdsZS11c2UgJg0KPiBzaW5nbGUtYmxv
-Y2sgZW5jcnlwdGlvbi4NCj4gV291bGQgeW91IHBsZWFzZSBzaGFyZSB5b3VyIGV4YWN0IGNvbXBh
-dGliaWxpdHkgY29uY2VybnM/IEkgYmVsaWV2ZSB0aGUNCj4gY2hhbmdlIGluIHRoaXMgcGF0Y2gg
-b25seSB3b3JrcyBmb3IgdGhhdCB0aGUgYmVja2VuZCBhbmQgdmlydGlvIGJsb2NrDQo+IGZyb250
-ZW5kIG5lZ29jaWF0ZXMgVklSVElPX0JMS19GX0lDRSBmZWF0dXJlIGJpdC4gUHJldmlvdXMgaW1w
-bGVtZW50YXRpb24NCj4gZG9lc24ndCBoYXZlIHN1Y2ggZmVhdHVyZSBiaXQsIHNvIG5vIGltcGFj
-dCBvbiB0aGUgYmFja3dhcmQgY29tcGF0aWJpbGl0eS4NCj4NCj4gV2l0aCByZXNwZWN0IHRvIENS
-WVBUT19BTEdfQUVTX0VDQiwgaXQncyBqdXN0IG9uZSBwb3NzaWJsZSBlbnVtIG9mDQo+IGFsZ29y
-aXRtcyBzdG9yYWdlIGhhcmR3YXJlIHN1cHBvcnRzLiBJViBpbiBhZGRpdGlvbmFsIG1ldGFkYXRl
-IGVuY3J5cHRpb24gaXMNCj4gbWFpbmx5IHVzZWQgYnkgQ0JDIG1vZGUuDQo+DQo+IEJ5IHRoZSB3
-YXksIHBsZWFzZSBoZWxwIHJldmlldyB0aGUgcGF0Y2ggaW4gYmVsbG93IHRocmVhZCBzZW50IGJ5
-IE9TUyBtYWlsIGlkDQo+IGR1ZSB0byBRdWFsY29tbSBpbnRlcm5hbCByZXF1aXJlbWVudCBmb3Ig
-dXBzdHJlYW0uDQo+DQo+IGh0dHBzOi8vbGlua3Byb3RlY3QuY3VkYXN2Yy5jb20vdXJsP2E9aHR0
-cHMlM2ElMmYlMmZsb3JlLmtlcm5lbC5vcmclMmZ2aXINCj4gdGlvLWRldiUyZjIwMjYwMjEwMDgz
-MjA4LjQ3MjgyNC0xLQ0KPiBsaW5saW4uemhhbmclNDBvc3MucXVhbGNvbW0uY29tJTJmVCUyZiUy
-M3QmYz1FLDEsb3FXM3JVMUd4WF9udmNpRg0KPiBtaGZXakVUMnd0dHRERkp1ZWlfdVVWWVFiZV8w
-RHZCWnRHYjV3SVJDQ1RTUXhCa3J6WUMwU3R3T3I3TGFhWXJJDQo+IEdmT2luUXMxVWlMYmQzUXpO
-UFJldE5tdi13LCwmdHlwbz0xDQoNCk15IGNvbXBhdGliaWxpdHkgY29uY2VybnMgd2VyZSB3aXRo
-IHRoZSBoYXJkd2FyZSBhbGdvcml0aG0gc3VwcG9ydCAtIGlmIEFFUyBpbiBFQ0IgbW9kZSB3b3Vs
-ZCBiZSB0aGUgb25seSBjb21tb24gZGVub21pbmF0b3IsIHRoZW4gaXQgd291bGQgYmUgdGhlIG9u
-bHkgb3B0aW9uIGFuZCB0aGVyZWJ5IGhhdmUgc29tZSByZWFzb24gZm9yIGV4aXN0ZW5jZS4gSG93
-ZXZlciwgSSBkbyBub3Qgc2VlIHRoaXMgdXNlIGNhc2UsIGFuZCBwcm92aWRpbmcgc3VwcG9ydCBm
-b3IgYSB2ZXJ5IGluc2VjdXJlIGNob2ljZSBpcyBub3QgZ29vZC4gQWxsIG90aGVyIG1vZGVzIHVz
-ZSBJViBvbmUgd2F5IG9yIHRoZSBvdGhlci4NCg0KSWYgY29tcGFyaW5nIHdpdGggdGhlIExpbnV4
-IGJsay1jcnlwdG8gZm9yIElubGluZSBFbmNyeXB0aW9uLCBodHRwczovL2dpdGh1Yi5jb20vdG9y
-dmFsZHMvbGludXgvYmxvYi9tYXN0ZXIvYmxvY2svYmxrLWNyeXB0by5jLCBvbmx5IEFFU18yNTZf
-WFRTLCBBRVNfMTI4X0NCQ19FU1NJViwgQWRpYW50dW0gYW5kIFNNNC1YVFMgaXMgc3VwcG9ydGVk
-Lg0KDQpBbHNvIGNvbXBhcmUgd2l0aCB0aGUgdGhyZWFkICIgY3J5cHRvOiB2aXJ0aW86IEFkZCBl
-Y2IgYWVzIGFsZ28gc3VwcG9ydCIgd2hlcmUgdGhlIHBhdGNoIHdhcyBkZW5pZWQuIFRoZSB1c2Ug
-Y2FzZSB3YXMgcXVlc3Rpb25lZCwgYXMgd2VsbCBhcyBpdCdzIGJhY2tlbmQgc3VwcG9ydCBpbiBR
-ZW11IGFuZCBPUGVuU1NMLg0KDQo+DQo+ID4NCj4gPiBCZXN0IHJlZ2FyZHMsIFNlYmFzdGlhbg0K
-PiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IExpbmxpbiBa
-aGFuZyA8cXVpY19saW5semhhbkBxdWljaW5jLmNvbT4NCj4gPj4gU2VudDogRnJpZGF5LCBGZWJy
-dWFyeSA2LCAyMDI2IDY6MTIgUE0NCj4gPj4gVG86IHZpcnRpby1kZXZAbGlzdHMubGludXguZGV2
-OyBzdGVmYW5oYUByZWRoYXQuY29tDQo+ID4+IENjOiBxdWljX2RzaGFpa2h1QHF1aWNpbmMuY29t
-DQo+ID4+IFN1YmplY3Q6IFtQQVRDSCB2Ml0gdmlydGlvLWJsazogQWRkIGlubGluZSBlbmNyeXB0
-aW9uIHN1cHBvcnQNCj4gPj4NCj4gPj4gRnJvbTogbGlubHpoYW4gPHF1aWNfbGlubHpoYW5AcXVp
-Y2luYy5jb20+DQo+ID4+DQo+ID4+IElubGluZSBlbmNyeXB0aW9uIG9uIHZpcnRpbyBibG9jayBj
-YW4gb25seSBiZSBzdXBwb3J0ZWQgd2hlbiB0aGUgbmV3DQo+ID4+IGZlYXR1cmUgYml0IFZJUlRJ
-T19CTEtfRl9JQ0UgaXMgbmVnb3RpYXRlZC4NCj4gPj4NCj4gPj4gRXh0ZW5kIHN0cnVjdCB2aXJ0
-aW9fYmxrX2NvbmZpZyBhbmQgc3RydWN0IHZpcnRpb19ibGtfcmVxLCBzbyB0aGF0DQo+ID4+IGNy
-eXB0byBjYXBhYmlsaXRpZXMgY2FuIGJlIGdvdCBpbiB0aGUgZnJvbnRlbmQgYW5kIGVuY3J5cHRp
-b24NCj4gPj4gbWV0YWRhdGEgY2FuIGJlIHNlbnQgdG8gdGhlIGJhY2tlbmQsIHRvZ2V0aGVyIHdp
-dGggZWFjaCBJL08gdHJhbnNhY3Rpb24uDQo+ID4+DQo+ID4+IEFib3V0IHRoZSBpbmxpbmUgZW5j
-cnlwdGlvbiBvbiBVRlMgb3IgZU1NQyBzdG9yYWdlLCBwbGVhc2UgcmVmZXIgdG8NCj4gPj4gdGhl
-IExpbnV4IGlubGluZSBlbmNyeXB0aW9uIGRvY3VtZW50YXRpb246DQo+ID4+IGh0dHBzOi8vbGlu
-a3Byb3RlY3QuY3VkYXN2Yy5jb20vdXJsP2E9aHR0cHMlM2ElMmYlMmZnaXQua2VybmVsLm9yZyUy
-Zg0KPiA+PiBwdWINCj4gPj4NCj4gJTJmc2NtJTJmbGludXglMmZrZXJuZWwlMmZnaXQlMmZ0b3J2
-YWxkcyUyZmxpbnV4LmdpdCUyZnRyZWUlMmZEb2N1bWVuDQo+ID4+IHRhdGlvbiUyZmJsb2NrJTJm
-aW5saW5lLQ0KPiBlbmNyeXB0aW9uLnJzdCZjPUUsMSxuaEwzek14WXd4dUZQNFFROFNMaExqei0N
-Cj4gPj4gTVl3UTNSR0QtUFlYVTcxdWhDLU9CbnhEZWFlZlZ5RFlRSDFBMEt2WDcwVEhYZmwtU1dq
-ai0NCj4gPj4gSmNEbnRHR2llM2JTVE5BcmkwSDRfMEN0Q3FVM2t5Q1dSb0RnMV9OJnR5cG89MQ0K
-PiA+Pg0KPiA+PiBGaXhlczogaHR0cHM6Ly9naXRodWIuY29tL29hc2lzLXRjcy92aXJ0aW8tc3Bl
-Yy9pc3N1ZXMvMjM4DQo+ID4+IFJldmlld2VkLWJ5OiBTdGVmYW4gSGFqbm9jemkgPHN0ZWZhbmhh
-QHJlZGhhdC5jb20+DQo+ID4+IFNpZ25lZC1vZmYtYnk6IGxpbmx6aGFuIDxxdWljX2xpbmx6aGFu
-QHF1aWNpbmMuY29tPg0KPiA+PiBTaWduZWQtb2ZmLWJ5OiBMaW5saW4gWmhhbmcgPGxpbmxpbi56
-aGFuZ0Bvc3MucXVhbGNvbW0uY29tPg0KPiA+PiAtLS0NCj4gPj4NCj4gPj4gY2hhbmdlcyBmcm9t
-IHYyOg0KPiA+PiAgLSBBZGQgaW5saW5lIGVuY3J5cHRpb24gbGluayBpbiBjb21taXQgbWVzc2Fn
-ZSBmb3IgYSBiZXR0ZXINCj4gPj4gICAgYmFja2dyb25kIGRlc2NyeXB0aW9uDQo+ID4+ICAtIEFk
-ZCBzdWZmaWNpZW50IGRlc2NyeXB0aW9uIGZvciB0aGUgZmllbGRzIG9mIGNyeXB0bw0KPiA+PiAg
-ICBjYXBhYmlsaXR5DQo+ID4+ICAtIERlbGV0ZSBjcnlwdG8gY2FwYWJpbGl0eSBpbiBjb25maWd1
-cmF0aW9uIGxheW91dCwgaW5zdGVhZA0KPiA+PiAgICBhZGQgYSBuZXcgcmVxdWVzdCBjb21tYW5k
-IHRvIGdldCBpdA0KPiA+PiAgLSBDb3JyZWN0IHRoZSB0ZXJtaW5vbG9neSBpbiBub24tbm9ybWF0
-aXZlIGFuZCBub3JtYXRpdmUNCj4gPj4gICAgc2VjdGlvbnMNCj4gPj4gIC0gQ29ycmVjdCB0aGUg
-bWFpbCBmb3Igb3BlbiBzb3VyY2UgdXBzdHJlYW0NCj4gPj4gLS0tDQo+ID4+DQo+ID4+ICBkZXZp
-Y2UtdHlwZXMvYmxrL2Rlc2NyaXB0aW9uLnRleCB8IDExMA0KPiA+PiArKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKystDQo+ID4+ICAxIGZpbGUgY2hhbmdlZCwgMTA4IGluc2VydGlvbnMoKyks
-IDIgZGVsZXRpb25zKC0pDQo+ID4+DQo+ID4+IGRpZmYgLS1naXQgYS9kZXZpY2UtdHlwZXMvYmxr
-L2Rlc2NyaXB0aW9uLnRleCBiL2RldmljZS0NCj4gPj4gdHlwZXMvYmxrL2Rlc2NyaXB0aW9uLnRl
-eCBpbmRleCAyNzEyYWRhLi42MGY0NmFmIDEwMDY0NA0KPiA+PiAtLS0gYS9kZXZpY2UtdHlwZXMv
-YmxrL2Rlc2NyaXB0aW9uLnRleA0KPiA+PiArKysgYi9kZXZpY2UtdHlwZXMvYmxrL2Rlc2NyaXB0
-aW9uLnRleA0KPiA+PiBAQCAtNjYsNiArNjYsMTEgQEAgXHN1YnNlY3Rpb257RmVhdHVyZSBiaXRz
-fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8NCj4gPj4gQmxvY2sgRGV2aWNlIC8gRmVhdHVyZSBi
-aXRzfQ0KPiA+PiAgICAgICAoWk5TKS4gRm9yIGJyZXZpdHksIHRoZXNlIHN0YW5kYXJkIGRvY3Vt
-ZW50cyBhcmUgcmVmZXJyZWQgYXMNCj4gPj4gIlpCRCBzdGFuZGFyZHMiDQo+ID4+ICAgICAgIGZy
-b20gdGhpcyBwb2ludCBvbiBpbiB0aGUgdGV4dC4NCj4gPj4NCj4gPj4gK1xpdGVtW1ZJUlRJT19C
-TEtfRl9JQ0UoMjIpXSBJbmxpbmUgQ3J5cHRvIEV4dGVuc2lvbnMgYXJlIHN1cHBvcnRlZC4NCj4g
-Pj4gK09ubHkNCj4gPj4gd2hlbiB0aGlzDQo+ID4+ICsgICAgIGZlYXR1cmUgYml0IGlzIG5lZ290
-aWF0ZWQsIHRoZSBkZXZpY2UgbmVlZCBleHBvc2UgY3J5cHRvIGNoYXJhY3RlcmlzdGljcw0KPiBp
-bg0KPiA+PiArICAgICBjb25maWd1cmF0aW9uIHNwYWNlIGFuZCB0aGUgZHJpdmVyIG5lZWQgcHJv
-dmlkZSBhbiBleHRlbmRlZA0KPiA+PiArIHJlcXVlc3QNCj4gPj4gaGVhZGVyDQo+ID4+ICsgICAg
-IGNvbnRhaW5pbmcgYSBjcnlwdG8gcGF5bG9hZCBmb3IgYmxvY2sgSS9PLg0KPiA+PiArDQo+ID4+
-ICBcZW5ke2Rlc2NyaXB0aW9ufQ0KPiA+Pg0KPiA+PiAgXHN1YnN1YnNlY3Rpb257TGVnYWN5IElu
-dGVyZmFjZTogRmVhdHVyZSBiaXRzfVxsYWJlbHtzZWM6RGV2aWNlDQo+ID4+IFR5cGVzIC8gQmxv
-Y2sgRGV2aWNlIC8gRmVhdHVyZSBiaXRzIC8gTGVnYWN5IEludGVyZmFjZTogRmVhdHVyZSBiaXRz
-fQ0KPiA+PiBAQCAtMTI4LDYgKzEzMywxMCBAQCBcc3Vic2VjdGlvbntEZXZpY2UgY29uZmlndXJh
-dGlvbg0KPiA+PiBsYXlvdXR9XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBCbG9jayBEZXZpY2Ug
-Lw0KPiA+PiAgICAgICAgICAgICAgICAgIHU4IG1vZGVsOw0KPiA+PiAgICAgICAgICAgICAgICAg
-IHU4IHVudXNlZDJbM107DQo+ID4+ICAgICAgICAgIH0gem9uZWQ7DQo+ID4+ICsgICAgICAgIHN0
-cnVjdCB2aXJ0aW9fYmxrX2NyeXB0b19jaGFyYWN0ZXJpc3RpY3Mgew0KPiA+PiArICAgICAgICAg
-ICAgICAgIF9fdmlydGlvMTYgc2xvdF9pbmZvOw0KPiA+PiArICAgICAgICAgICAgICAgIF9fdmly
-dGlvMTYgcmVzZXJ2ZWQ7DQo+ID4+ICsgICAgICAgIH0gY3J5cHRvOw0KPiA+PiAgfTsNCj4gPj4g
-IFxlbmR7bHN0bGlzdGluZ30NCj4gPj4NCj4gPj4gQEAgLTIxNSw2ICsyMjQsMTggQEAgXHN1YnNl
-Y3Rpb257RGV2aWNlIGNvbmZpZ3VyYXRpb24NCj4gPj4gbGF5b3V0fVxsYWJlbHtzZWM6RGV2aWNl
-IFR5cGVzIC8gQmxvY2sgRGV2aWNlIC8gIHRlcm1pbmF0ZWQgYnkgdGhlDQo+ID4+IGRldmljZSB3
-aXRoIGEgInpvbmUgcmVzb3VyY2VzIGV4Y2VlZGVkIiBlcnJvciBhcyBkZWZpbmVkIGZvciAgc3Bl
-Y2lmaWMNCj4gY29tbWFuZHMgbGF0ZXIuDQo+ID4+DQo+ID4+ICtJZiB0aGUgVklSVElPX0JMS19G
-X0lDRSBmZWF0dXJlIGlzIG5lZ290aWF0ZWQsIHRoZW4gaW4NCj4gPj4gK1xmaWVsZHt2aXJ0aW9f
-YmxrX2NyeXB0b19jaGFyYWN0ZXJpc3RpY3N9LA0KPiA+PiArXGJlZ2lue2l0ZW1pemV9DQo+ID4+
-ICtcaXRlbSBcZmllbGR7c2xvdF9pbmZvfSB2YWx1ZSBwYWNrcyB0d28gOC1iaXRzIHZhbHVlcyB0
-byByZWR1Y2UgdGhlDQo+IG51bWJlciBvZg0KPiA+PiArICAgIENvbmZpZ3VyYXRpb24gU3BhY2Ug
-cmVhZHMuDQo+ID4+ICsgICAgXGJlZ2lue2l0ZW1pemV9DQo+ID4+ICsgICAgICAgIFxpdGVtIEJp
-dHN+XFsxNTo4XSAoXGVtcGh7bWF4XF9zbG90c30pOiB0aGUgbWF4aW11bSBudW1iZXINCj4gPj4g
-K29mDQo+ID4+IHN1cHBvcnRlZA0KPiA+PiArICAgICAgICAgICAgY3J5cHRvIGtleSBzbG90cy4N
-Cj4gPj4gKyAgICAgICAgXGl0ZW0gQml0c35cWzc6MF0gKFxlbXBoe3Nsb3RcX29mZnNldH0pOiBh
-biBvZmZzZXQgYXBwbGllZA0KPiA+PiArIHRvIHNsb3QNCj4gPj4gbnVtYmVyaW5nLg0KPiA+PiAr
-ICAgIFxlbmR7aXRlbWl6ZX0NCj4gPj4gK1xlbmR7aXRlbWl6ZX0NCj4gPj4gKw0KPiA+PiAgXHN1
-YnN1YnNlY3Rpb257TGVnYWN5IEludGVyZmFjZTogRGV2aWNlIGNvbmZpZ3VyYXRpb24NCj4gPj4g
-bGF5b3V0fVxsYWJlbHtzZWM6RGV2aWNlIFR5cGVzIC8gQmxvY2sgRGV2aWNlIC8gRGV2aWNlIGNv
-bmZpZ3VyYXRpb24NCj4gPj4gbGF5b3V0IC8gTGVnYWN5IEludGVyZmFjZTogRGV2aWNlIGNvbmZp
-Z3VyYXRpb24gbGF5b3V0fSAgV2hlbiB1c2luZw0KPiA+PiB0aGUgbGVnYWN5IGludGVyZmFjZSwg
-dHJhbnNpdGlvbmFsIGRldmljZXMgYW5kIGRyaXZlcnMgIE1VU1QgZm9ybWF0DQo+ID4+IHRoZSBm
-aWVsZHMgaW4gc3RydWN0IHZpcnRpb19ibGtfY29uZmlnIEBAIC0yNzgsNiArMjk5LDEwIEBADQo+
-ID4+IFxzdWJzZWN0aW9ue0RldmljZSBJbml0aWFsaXphdGlvbn1cbGFiZWx7c2VjOkRldmljZSBU
-eXBlcyAvIEJsb2NrIERldmljZSAvDQo+IERldmljDQo+ID4+ICAgICAgXGZpZWxke3pvbmVkfSBj
-YW4gYmUgcmVhZCBieSB0aGUgZHJpdmVyIHRvIGRldGVybWluZSB0aGUgem9uZQ0KPiA+PiAgICAg
-IGNoYXJhY3RlcmlzdGljcyBvZiB0aGUgZGV2aWNlLiBBbGwgXGZpZWxke3pvbmVkfSBmaWVsZHMg
-YXJlIHJlYWQtb25seS4NCj4gPj4NCj4gPj4gK1xpdGVtIElmIHRoZSBWSVJUSU9fQkxLX0ZfSUNF
-IGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwgdGhlIGZpZWxkcyBpbg0KPiA+PiArICAgIFxmaWVsZHtj
-cnlwdG99IGNhbiBiZSByZWFkIGJ5IHRoZSBkcml2ZXIgdG8gZGV0ZXJtaW5lIHRoZSBpbmxpbmUg
-Y3J5cHRvDQo+ID4+ICsgICAgY2hhcmFjdGVyaXN0aWNzIG9mIHRoZSBkZXZpY2UuIEFsbCBcZmll
-bGR7Y3J5cHRvfSBmaWVsZHMgYXJlIHJlYWQtb25seS4NCj4gPj4gKw0KPiA+PiAgXGVuZHtlbnVt
-ZXJhdGV9DQo+ID4+DQo+ID4+ICBcZHJpdmVybm9ybWF0aXZle1xzdWJzdWJzZWN0aW9ufXtEZXZp
-Y2UgSW5pdGlhbGl6YXRpb259e0RldmljZSBUeXBlcw0KPiA+PiAvIEJsb2NrIERldmljZSAvIERl
-dmljZSBJbml0aWFsaXphdGlvbn0gQEAgLTMxNyw2ICszNDIsOSBAQA0KPiA+PiBcc3Vic2VjdGlv
-bntEZXZpY2UgSW5pdGlhbGl6YXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBCbG9jayBE
-ZXZpY2UgLw0KPiBEZXZpYw0KPiA+PiAgICAgIGRyaXZlciBTSE9VTEQgaWdub3JlIGFsbCBvdGhl
-ciBmaWVsZHMgaW4gXGZpZWxke3pvbmVkfS4NCj4gPj4gIFxlbmR7aXRlbWl6ZX0NCj4gPj4NCj4g
-Pj4gK0lmIHRoZSBWSVJUSU9fQkxLX0ZfSUNFIGZlYXR1cmUgaXMgbmVnb3RpYXRlZCwgdGhlbiB0
-aGUgZHJpdmVyIE1VU1QNCj4gPj4gdmFsaWRhdGUNCj4gPj4gKyAgICB0aGUgbWF4X3Nsb3RzIGlu
-IFxmaWVsZHtzbG90X2luZm99IGJlZm9yZSB0aGUgc2xvdCB1c2FnZS4NCj4gPj4gKw0KPiA+PiAg
-XGRldmljZW5vcm1hdGl2ZXtcc3Vic3Vic2VjdGlvbn17RGV2aWNlIEluaXRpYWxpemF0aW9ufXtE
-ZXZpY2UgVHlwZXMNCj4gPj4gLyBCbG9jayBEZXZpY2UgLyBEZXZpY2UgSW5pdGlhbGl6YXRpb259
-DQo+ID4+DQo+ID4+ICBEZXZpY2VzIFNIT1VMRCBhbHdheXMgb2ZmZXIgVklSVElPX0JMS19GX0ZM
-VVNILCBhbmQgTVVTVCBvZmZlciBpdA0KPiBAQA0KPiA+PiAtDQo+ID4+IDQwMiw2ICs0MzAsMTMg
-QEAgXHN1YnNlY3Rpb257RGV2aWNlIEluaXRpYWxpemF0aW9ufVxsYWJlbHtzZWM6RGV2aWNlDQo+
-ID4+IFR5cGVzIC8gQmxvY2sgRGV2aWNlIC8gRGV2aWMgIFxpdGVtIHRoZSBkZXZpY2UgTVVTVCBp
-bml0aWFsaXplDQo+ID4+IHBhZGRpbmcgYnl0ZXMgXGZpZWxke3VudXNlZDJ9IHRvIDAuDQo+ID4+
-ICBcZW5ke2l0ZW1pemV9DQo+ID4+DQo+ID4+ICtJZiB0aGUgVklSVElPX0JMS19GX0lDRSBmZWF0
-dXJlIGlzIG5lZ290aWF0ZWQsIHRoZW4gdGhlIGZpZWxkcyBpbg0KPiA+PiArXGZpZWxke2NyeXB0
-b30gc3RydWN0IGluIHRoZSBjb25maWd1cmF0aW9uIHNwYWNlIE1VU1QgYmUgc2V0IGJ5IHRoZQ0K
-PiBkZXZpY2UuDQo+ID4+ICtcYmVnaW57aXRlbWl6ZX0NCj4gPj4gK1xpdGVtIHRoZSBcZmllbGR7
-c2xvdF9pbmZvfSBmaWVsZCBvZiBcZmllbGR7Y3J5cHRvfSBNVVNUIGJlIHNldCBieQ0KPiA+PiAr
-dGhlIGRldmljZSB0bw0KPiA+PiBhDQo+ID4+ICsgICAgbWF4X3Nsb3RzIGluIHRoZSBoaWdoZXIg
-OCBiaXRzIGFuZCBzbG90X29mZnNldCBpbiB0aGUgbG93ZXIgOCBiaXRzLg0KPiA+PiArXGVuZHtp
-dGVtaXplfQ0KPiA+PiArDQo+ID4+ICBcc3Vic3Vic2VjdGlvbntMZWdhY3kgSW50ZXJmYWNlOiBE
-ZXZpY2UNCj4gPj4gSW5pdGlhbGl6YXRpb259XGxhYmVse3NlYzpEZXZpY2UgVHlwZXMgLyBCbG9j
-ayBEZXZpY2UgLyBEZXZpY2UNCj4gPj4gSW5pdGlhbGl6YXRpb24gLyBMZWdhY3kgSW50ZXJmYWNl
-OiBEZXZpY2UgSW5pdGlhbGl6YXRpb259DQo+ID4+DQo+ID4+ICBCZWNhdXNlIGxlZ2FjeSBkZXZp
-Y2VzIGRvIG5vdCBoYXZlIEZFQVRVUkVTX09LLCB0cmFuc2l0aW9uYWwgZGV2aWNlcw0KPiA+PiBA
-QCAtDQo+ID4+IDQzNiw2ICs0NzEsMTMgQEAgXHN1YnNlY3Rpb257RGV2aWNlIE9wZXJhdGlvbn1c
-bGFiZWx7c2VjOkRldmljZSBUeXBlcw0KPiA+PiAvIEJsb2NrIERldmljZSAvIERldmljZSBPcGUN
-Cj4gPj4gICAgICAgICAgbGUzMiB0eXBlOw0KPiA+PiAgICAgICAgICBsZTMyIHJlc2VydmVkOw0K
-PiA+PiAgICAgICAgICBsZTY0IHNlY3RvcjsNCj4gPj4gKyAgICAgICAgc3RydWN0IHZpcnRpb19i
-bGtfY3J5cHRvX3BheWxvYWQgew0KPiA+PiArICAgICAgICAgICAgdTggc2xvdDsNCj4gPj4gKyAg
-ICAgICAgICAgIHU4IGFjdGl2YXRlOw0KPiA+PiArICAgICAgICAgICAgbGUxNiByZXNlcnZlZDE7
-DQo+ID4+ICsgICAgICAgICAgICBsZTMyIHJlc2VydmVkMjsNCj4gPj4gKyAgICAgICAgICAgIGxl
-NjQgZGF0YV91bml0X251bTsNCj4gPj4gKyAgICAgICAgfSBwYXlsb2FkOw0KPiA+PiAgICAgICAg
-ICB1OCBkYXRhW107DQo+ID4+ICAgICAgICAgIHU4IHN0YXR1czsNCj4gPj4gIH07DQo+ID4+IEBA
-IC00NDUsOCArNDg3LDkgQEAgXHN1YnNlY3Rpb257RGV2aWNlIE9wZXJhdGlvbn1cbGFiZWx7c2Vj
-OkRldmljZQ0KPiA+PiBUeXBlcyAvIEJsb2NrIERldmljZSAvIERldmljZSBPcGUgIChWSVJUSU9f
-QkxLX1RfT1VUKSwgYSBkaXNjYXJkDQo+ID4+IChWSVJUSU9fQkxLX1RfRElTQ0FSRCksIGEgd3Jp
-dGUgemVyb2VzICAoVklSVElPX0JMS19UX1dSSVRFX1pFUk9FUyksDQo+ID4+IGEgZmx1c2ggKFZJ
-UlRJT19CTEtfVF9GTFVTSCksIGEgZ2V0IGRldmljZSBJRCAgc3RyaW5nIGNvbW1hbmQNCj4gPj4g
-KFZJUlRJT19CTEtfVF9HRVRfSUQpLCBhIHNlY3VyZSBlcmFzZSAtKFZJUlRJT19CTEtfVF9TRUNV
-UkVfRVJBU0UpLA0KPiA+PiBvciBhIGdldCBkZXZpY2UgbGlmZXRpbWUgY29tbWFuZCAtKFZJUlRJ
-T19CTEtfVF9HRVRfTElGRVRJTUUpLg0KPiA+PiArKFZJUlRJT19CTEtfVF9TRUNVUkVfRVJBU0Up
-LCBhIGdldCBkZXZpY2UgbGlmZXRpbWUgY29tbWFuZA0KPiA+PiArKFZJUlRJT19CTEtfVF9HRVRf
-TElGRVRJTUUpLCBvciBhIGdldCBkZXZpY2UgY3J5cHRvIGNhcGFiaWxpdGllcw0KPiA+PiArY29t
-bWFuZCAoVklSVElPX0JMS19UX0dFVF9DUllQVE9fQ0FQQUJJTElUSUVTKS4NCj4gPj4NCj4gPj4g
-IFxiZWdpbntsc3RsaXN0aW5nfQ0KPiA+PiAgI2RlZmluZSBWSVJUSU9fQkxLX1RfSU4gICAgICAg
-ICAgIDANCj4gPj4gQEAgLTQ1NywxMiArNTAwLDI3IEBAIFxzdWJzZWN0aW9ue0RldmljZSBPcGVy
-YXRpb259XGxhYmVse3NlYzpEZXZpY2UNCj4gPj4gVHlwZXMgLyBCbG9jayBEZXZpY2UgLyBEZXZp
-Y2UgT3BlDQo+ID4+ICAjZGVmaW5lIFZJUlRJT19CTEtfVF9ESVNDQVJEICAgICAgMTENCj4gPj4g
-ICNkZWZpbmUgVklSVElPX0JMS19UX1dSSVRFX1pFUk9FUyAxMw0KPiA+PiAgI2RlZmluZSBWSVJU
-SU9fQkxLX1RfU0VDVVJFX0VSQVNFICAgMTQNCj4gPj4gKyNkZWZpbmUgVklSVElPX0JMS19UX0dF
-VF9DUllQVE9fQ0FQQUJJTElUSUVTICAgMjcNCj4gPj4gIFxlbmR7bHN0bGlzdGluZ30NCj4gPj4N
-Cj4gPj4gIFRoZSBcZmllbGR7c2VjdG9yfSBudW1iZXIgaW5kaWNhdGVzIHRoZSBvZmZzZXQgKG11
-bHRpcGxpZWQgYnkgNTEyKQ0KPiA+PiB3aGVyZSAgdGhlIHJlYWQgb3Igd3JpdGUgaXMgdG8gb2Nj
-dXIuIFRoaXMgZmllbGQgaXMgdW51c2VkIGFuZCBzZXQgdG8NCj4gPj4gMCBmb3IgIGNvbW1hbmRz
-IG90aGVyIHRoYW4gcmVhZCwgd3JpdGUgYW5kIHNvbWUgem9uZSBvcGVyYXRpb25zLg0KPiA+Pg0K
-PiA+PiArVGhlIFxmaWVsZHtwYXlsb2FkfSBjb25zaXN0cyBvZiB0aGUgZW5jcnlwdGlvbiBpbmZv
-cm1hdGlvbiBmb3INCj4gPj4gK2N1cnJlbnQgcmVxdWVzdC4gSXQgaXMgb25seSBwcmVzZW50IHdo
-ZW4gdGhlIFZJUlRJT19CTEtfRl9JQ0UNCj4gPj4gK2ZlYXR1cmUgaXMgbmVnb3RpYXRlZCBhbmQg
-XGZpZWxke3R5cGV9IGlzIFZJUlRJT19CTEtfVF9JTiwNCj4gPj4gK1ZJUlRJT19CTEtfVF9PVVQg
-b3INCj4gPj4gVklSVElPX0JMS19UX0ZMVVNILg0KPiA+PiArXGJlZ2lue2l0ZW1pemV9DQo+ID4+
-ICtcaXRlbSBUaGUgXGZpZWxke3Nsb3R9IGZpZWxkIGluIFxmaWVsZHtwYXlsb2FkfSBpbmRpY2F0
-ZXMgdGhlIElDRQ0KPiA+PiArICAoSW5saW5lIENyeXB0byBFbmNyeXB0aW9uKSBzbG90IGluZGV4
-IHdoZXJlIHRoZSBrZXkgcmVzaWRlcy4NCj4gPj4gKw0KPiA+PiArXGl0ZW0gVGhlIFxmaWVsZHth
-Y3RpdmF0ZX0gZmllbGQgaW4gXGZpZWxke3BheWxvYWR9IGltcGxpZXMgdGhpcyBpcw0KPiA+PiAr
-YQ0KPiA+PiArICBpbmxpbmUgZW5jcnlwdGlvbiByZXF1ZXN0Lg0KPiA+PiArDQo+ID4+ICtcaXRl
-bSBUaGUgXGZpZWxke2RhdGFfdW5pdF9udW19IGZpZWxkIGluIFxmaWVsZHtwYXlsb2FkfSBpbmRp
-Y2F0ZXMNCj4gPj4gK3RoZQ0KPiA+PiArICBzdGFydGluZyBibG9jayBvZiB0aGUgcmVxdWVzdC4N
-Cj4gPj4gK1xlbmR7aXRlbWl6ZX0NCj4gPj4gKw0KPiA+PiAgVklSVElPX0JMS19UX0lOIHJlcXVl
-c3RzIHBvcHVsYXRlIFxmaWVsZHtkYXRhfSB3aXRoIHRoZSBjb250ZW50cyBvZg0KPiA+PiBzZWN0
-b3JzIHJlYWQgZnJvbSB0aGUgYmxvY2sgZGV2aWNlIChpbiBtdWx0aXBsZXMgb2YgNTEyIGJ5dGVz
-KS4NCj4gPj4gVklSVElPX0JMS19UX09VVCByZXF1ZXN0cyB3cml0ZSB0aGUgY29udGVudHMgb2Yg
-XGZpZWxke2RhdGF9IHRvIHRoZQ0KPiA+PiBibG9jayBkZXZpY2UgKGluIG11bHRpcGxlcyBAQCAt
-NTMwLDYgKzU4OCw0NyBAQCBcc3Vic2VjdGlvbntEZXZpY2UNCj4gPj4gT3BlcmF0aW9ufVxsYWJl
-bHtzZWM6RGV2aWNlIFR5cGVzIC8gQmxvY2sgRGV2aWNlIC8gRGV2aWNlIE9wZSAgVGhlDQo+ID4+
-IFxmaWVsZHtkZXZpY2VfbGlmZXRpbWVfZXN0X3R5cF9ifSByZWZlcnMgdG8gd2VhciBvZiBNTEMg
-Y2VsbHMgYW5kIGlzDQo+ID4+IHByb3ZpZGVkICB3aXRoIHRoZSBzYW1lIHNlbWFudGljcyBhcyBc
-ZmllbGR7ZGV2aWNlX2xpZmV0aW1lX2VzdF90eXBfYX0uDQo+ID4+DQo+ID4+ICtWSVJUSU9fQkxL
-X1RfR0VUX0NSWVBUT19DQVBBQklMSVRJRVMgcmVxdWVzdHMgZmV0Y2ggdGhlIHN0b3JhZ2UNCj4g
-Pj4gK2hhcmR3YXJlIGNyeXB0byBjYXBhYmlsaXRpZXMgaW50byBcZmllbGR7ZGF0YX0uIEFuZCB0
-aGUgXGZpZWxke2RhdGF9DQo+ID4+ICtpcyBvZiB0aGUgZm9ybQ0KPiA+PiArDQo+ID4+ICtcYmVn
-aW57bHN0bGlzdGluZ30NCj4gPj4gK3N0cnVjdCB2aXJ0aW9fYmxrX2NyeXB0b19jYXBzIHsNCj4g
-Pj4gKyAgdTggc2l6ZTsNCj4gPj4gKyAgbGUzMiBjcnlwdG9fY2FwYWJpbGl0aWVzW107DQo+ID4+
-ICt9Ow0KPiA+PiArXGVuZHtsc3RsaXN0aW5nfQ0KPiA+PiArDQo+ID4+ICtUaGUgXGZpZWxke3Np
-emV9IHNwZWNpZmllcyB0aGUgc2l6ZSBvZiBhcnJheSBcZmllbGR7Y3J5cHRvX2NhcGFiaWxpdGll
-c30uDQo+ID4+ICtUaGUgXGZpZWxke2NyeXB0b19jYXBhYmlsaXRpZXN9IGluZGljYXRlcyB0aGUg
-Y3J5cHRvIGNhcGFiaWxpdGllcw0KPiA+PiArc3VwcG9ydGVkIGJ5IHRoZSBoYXJkd2FyZSBzdG9y
-YWdlIGZvciBpbmxpbmUgZW5jcnlwdGlvbi4NCj4gPj4gKw0KPiA+PiArQSBjcnlwdG8gY2FwYWJp
-bGl0eSBwYWNrcyBmb3VyIDgtYml0cyB2YWx1ZXM6DQo+ID4+ICtcYmVnaW57aXRlbWl6ZX0NCj4g
-Pj4gKyAgICBcaXRlbSBCaXRzflxbMzE6MjRdOiBjcnlwdG8gYWxnb3JpdGhtIGlkZW50aWZpZXJz
-Lg0KPiA+PiArICAgIFRoZSBkZXZpY2Ugc3VwcG9ydHMgcmVwb3J0aW5nIGFuZCBuZWdvdGlhdGlu
-ZyBjcnlwdG9ncmFwaGljDQo+IGFsZ29yaXRobXMNCj4gPj4gKyAgICB1c2luZyB0aGUgZm9sbG93
-aW5nIGFsZ29yaXRobSBpZGVudGlmaWVyczoNCj4gPj4gKyAgICBcYmVnaW57bHN0bGlzdGluZ30N
-Cj4gPj4gKyAgICAgICAgQ1JZUFRPX0FMR19BRVNfWFRTICAgICAgICAgICAgICA9IDB4MA0KPiA+
-PiArICAgICAgICBDUllQVE9fQUxHX0JJVExPQ0tFUl9BRVNfQ0JDICAgID0gMHgxDQo+ID4+ICsg
-ICAgICAgIENSWVBUT19BTEdfQUVTX0VDQiAgICAgICAgICAgICAgPSAweDINCj4gPj4gKyAgICAg
-ICAgQ1JZUFRPX0FMR19FU1NJVl9BRVNfQ0JDICAgICAgICA9IDB4Mw0KPiA+PiArICAgIFxlbmR7
-bHN0bGlzdGluZ30NCj4gPj4gKyAgICBUaGVzZSBpZGVudGlmaWVycyBhYnN0cmFjdCB0aGUgdW5k
-ZXJseWluZyBoYXJkd2FyZSBjcnlwdG8NCj4gPj4gaW1wbGVtZW50YXRpb24NCj4gPj4gKyAgICBh
-bmQgZG9lcyBub3QgYXNzdW1lIGFueSBvcGVyYXRpbmfigJFzeXN0ZW3igJFzcGVjaWZpYyBkYXRh
-IHN0cnVjdHVyZXMgb3INCj4gPj4gKyAgICBjb25zdGFudHMuDQo+ID4+ICsgICAgXGl0ZW0gQml0
-c35cWzIzOjE2XTogbWFzayBvZiBkYXRhIHVuaXQgc2l6ZS4gV2hlbiBiaXQgaiBpbiB0aGlzIGZp
-ZWxkDQo+ID4+ICsgICAgKGo9Ny4uLi4uLjApIGlzIHNldCwgYSBkYXRhIHVuaXQgc2l6ZSBvZiA1
-MTIqMl5qIGJ5dGVzIGlzIHNlbGVjdGVkLg0KPiA+PiArICAgIFxpdGVtIEJpdHN+XFsxNTo4XTog
-Y3J5cHRvIGtleSBzaXplIGlkZW50aWZpZXJzLg0KPiA+PiArICAgIFxiZWdpbntsc3RsaXN0aW5n
-fQ0KPiA+PiArICAgICAgICBDUllQVE9fS0VZX1NJWkVfSU5WQUxJRCAgICAgPSAweDANCj4gPj4g
-KyAgICAgICAgQ1JZUFRPX0tFWV9TSVpFXzEyOF9CSVRTICAgID0gMHgxDQo+ID4+ICsgICAgICAg
-IENSWVBUT19LRVlfU0laRV8xOTJfQklUUyAgICA9IDB4Mg0KPiA+PiArICAgICAgICBDUllQVE9f
-S0VZX1NJWkVfMjU2X0JJVFMgICAgPSAweDMNCj4gPj4gKyAgICAgICAgQ1JZUFRPX0tFWV9TSVpF
-XzUxMl9CSVRTICAgID0gMHg0DQo+ID4+ICsgICAgXGVuZHtsc3RsaXN0aW5nfQ0KPiA+PiArICAg
-IFxpdGVtIEJpdHN+XFs3OjBdOiB1bnVzZWQuDQo+ID4+ICtcZW5ke2l0ZW1pemV9DQo+ID4+ICsN
-Cj4gPj4gIFRoZSBmaW5hbCBcZmllbGR7c3RhdHVzfSBieXRlIGlzIHdyaXR0ZW4gYnkgdGhlIGRl
-dmljZTogZWl0aGVyDQo+ID4+IFZJUlRJT19CTEtfU19PSyBmb3Igc3VjY2VzcywgVklSVElPX0JM
-S19TX0lPRVJSIGZvciBkZXZpY2Ugb3IgZHJpdmVyDQo+ID4+IGVycm9yIG9yIFZJUlRJT19CTEtf
-U19VTlNVUFAgZm9yIGEgcmVxdWVzdCB1bnN1cHBvcnRlZCBieSBkZXZpY2U6DQo+ID4+IEBAIC05
-MTIsNiArMTAxMSwxMyBAQCBcc3Vic2VjdGlvbntEZXZpY2UgT3BlcmF0aW9ufVxsYWJlbHtzZWM6
-RGV2aWNlDQo+ID4+IFR5cGVzIC8gQmxvY2sgRGV2aWNlIC8gRGV2aWNlIE9wZSAgc3VjY2Vzc2Z1
-bGx5LCBmYWlsZWQsIG9yIHdlcmUNCj4gPj4gcHJvY2Vzc2VkIGJ5IHRoZSBkZXZpY2UgYXQgYWxs
-IGlmIHRoZSByZXF1ZXN0ICBmYWlsZWQgd2l0aA0KPiBWSVJUSU9fQkxLX1NfSU9FUlIuDQo+ID4+
-DQo+ID4+ICtUaGUgbGVuZ3RoIG9mIFxmaWVsZHtkYXRhfSBNVVNUIGJlIGEgbXVsdGlwbGUgb2Yg
-NCBieXRlcyBwbHVzIDEgZm9yDQo+ID4+ICtWSVJUSU9fQkxLX1RfR0VUX0NSWVBUT19DQVBBQklM
-SVRJRVMgcmVxdWVzdHMuDQo+ID4+ICsNCj4gPj4gK0EgZHJpdmVyIE1VU1Qgc2V0IFxmaWVsZHth
-Y3RpdmF0ZX0gdG8gMSBmb3INCj4gPj4gVklSVElPX0JMS19UX0lOLFZJUlRJT19CTEtfVF9PVVQs
-DQo+ID4+ICsgICAgYW5kIFZJUlRJT19CTEtfVF9GTFVTSCByZXF1ZXN0cyB0aGF0IHJlcXVpcmUg
-aW5saW5lIGVuY3J5cHRpb24uDQo+ID4+ICsgRm9yDQo+ID4+IG90aGVyDQo+ID4+ICsgICAgcmVx
-dWVzdCB0eXBlcyBvciB3aGVuIGlubGluZSBlbmNyeXB0aW9uIGlzIG5vdCByZXF1aXJlZCwgaXQg
-aXMgc2V0IHRvIDAuDQo+ID4+ICsNCj4gPj4gIFRoZSBmb2xsb3dpbmcgcmVxdWlyZW1lbnRzIG9u
-bHkgYXBwbHkgaWYgdGhlIFZJUlRJT19CTEtfRl9aT05FRA0KPiA+PiBmZWF0dXJlIGlzIG5lZ290
-aWF0ZWQuDQo+ID4+DQo+ID4+IC0tDQo+ID4+IDIuMzQuMQ0KPiA+Pg0KPiA+DQo+ID4gRGlzY2xh
-aW1lcjogVGhpcyBlbWFpbCBhbmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQgbWF5IGNv
-bnRhaW4NCj4gY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIGludGVuZGVkIGZvciB0aGUgYWRkcmVz
-c2VlKHMpIG9ubHkuIFRoZSBpbmZvcm1hdGlvbg0KPiBpcyBub3QgdG8gYmUgc3VycmVuZGVyZWQg
-b3IgY29waWVkIHRvIHVuYXV0aG9yaXplZCBwZXJzb25zLiBJZiB5b3UgaGF2ZQ0KPiByZWNlaXZl
-ZCB0aGlzIGNvbW11bmljYXRpb24gaW4gZXJyb3IsIHBsZWFzZSBub3RpZnkgdGhlIHNlbmRlciBp
-bW1lZGlhdGVseQ0KPiBhbmQgZGVsZXRlIHRoaXMgZS1tYWlsIGZyb20geW91ciBzeXN0ZW0uDQoN
-CkRpc2NsYWltZXI6IFRoaXMgZW1haWwgYW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0
-IG1heSBjb250YWluIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBpbnRlbmRlZCBmb3IgdGhlIGFk
-ZHJlc3NlZShzKSBvbmx5LiBUaGUgaW5mb3JtYXRpb24gaXMgbm90IHRvIGJlIHN1cnJlbmRlcmVk
-IG9yIGNvcGllZCB0byB1bmF1dGhvcml6ZWQgcGVyc29ucy4gSWYgeW91IGhhdmUgcmVjZWl2ZWQg
-dGhpcyBjb21tdW5pY2F0aW9uIGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgaW1t
-ZWRpYXRlbHkgYW5kIGRlbGV0ZSB0aGlzIGUtbWFpbCBmcm9tIHlvdXIgc3lzdGVtLg0K
+
+
+On 2/25/2026 5:55 PM, Stefan Hajnoczi wrote:
+> On Wed, Feb 25, 2026 at 01:33:17PM +0800, Linlin Zhang wrote:
+>>
+>>
+>> On 2/19/2026 5:53 AM, Stefan Hajnoczi wrote:
+>>> On Sat, Feb 14, 2026 at 03:22:21PM +0800, Linlin Zhang wrote:
+>>>>
+>>>>
+>>>> On 2/11/2026 5:18 AM, Stefan Hajnoczi wrote:
+>>>>> On Tue, Feb 10, 2026 at 12:32:08AM -0800, Linlin Zhang wrote:
+>>>>>> Inline encryption on virtio block can only be supported when
+>>>>>> the new feature bit VIRTIO_BLK_F_ICE is negotiated.
+>>>>>>
+>>>>>> Extend struct virtio_blk_config and struct virtio_blk_req,
+>>>>>> so that crypto capabilities can be got in the frontend and
+>>>>>> encryption metadata can be sent to the backend, together with
+>>>>>> each I/O transaction.
+>>>>>>
+>>>>>> About the inline encryption on UFS or eMMC storage, please
+>>>>>> refer to the Linux inline encryption documentation:
+>>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/inline-encryption.rst
+>>>>>>
+>>>>>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/238
+>>>>>> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+>>>>>> Signed-off-by: linlzhan <quic_linlzhan@quicinc.com>
+>>>>>> Signed-off-by: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
+>>>>>> ---
+>>>>>>  device-types/blk/description.tex | 110 ++++++++++++++++++++++++++++++-
+>>>>>>  1 file changed, 108 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
+>>>>>> index 2712ada..60f46af 100644
+>>>>>> --- a/device-types/blk/description.tex
+>>>>>> +++ b/device-types/blk/description.tex
+>>>>>> @@ -66,6 +66,11 @@ \subsection{Feature bits}\label{sec:Device Types / Block Device / Feature bits}
+>>>>>>  	(ZNS). For brevity, these standard documents are referred as "ZBD standards"
+>>>>>>  	from this point on in the text.
+>>>>>>  
+>>>>>> +\item[VIRTIO_BLK_F_ICE(22)] Inline Crypto Extensions are supported. Only when this
+>>>>>> +     feature bit is negotiated, the device need expose crypto characteristics in
+>>>>>> +     configuration space and the driver need provide an extended request header
+>>>>>> +     containing a crypto payload for block I/O.
+>>>>>
+>>>>> Most of the feature bit descriptions are brief and the details are
+>>>>> covered later in the spec. I suggest doing this here too:
+>>>>>
+>>>>>   \item[VIRTIO_BLK_F_ICE (22)] Device supports Inline Crypto Engine functionality.
+>>>>>
+>>>>> I changed the name from Inline Crypto Extensions to Inline Crypto Engine
+>>>>> because that terminology is used in the Linux kernel. Web search results
+>>>>> also favor "inline crypto engine" over "inline crypto extensions". Are
+>>>>> you okay with "engine"?
+>>>> Thanks! ACK
+>>>>
+>>>>>
+>>>>>> +
+>>>>>>  \end{description}
+>>>>>>  
+>>>>>>  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
+>>>>>> @@ -128,6 +133,10 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+>>>>>>                  u8 model;
+>>>>>>                  u8 unused2[3];
+>>>>>>          } zoned;
+>>>>>> +        struct virtio_blk_crypto_characteristics {
+>>>>>> +                __virtio16 slot_info;
+>>>>>> +                __virtio16 reserved;
+>>>>>> +        } crypto;
+>>>>>>  };
+>>>>>>  \end{lstlisting}
+>>>>>>  
+>>>>>> @@ -215,6 +224,18 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+>>>>>>  terminated by the device with a "zone resources exceeded" error as defined for
+>>>>>>  specific commands later.
+>>>>>>  
+>>>>>> +If the VIRTIO_BLK_F_ICE feature is negotiated, then in
+>>>>>> +\field{virtio_blk_crypto_characteristics},
+>>>>>> +\begin{itemize}
+>>>>>> +\item \field{slot_info} value packs two 8-bits values to reduce the number of
+>>>>>
+>>>>> 8-bits -> 8-bit
+>>>>
+>>>> ACK
+>>>>
+>>>>>
+>>>>>> +    Configuration Space reads.
+>>>>>> +    \begin{itemize}
+>>>>>> +        \item Bits~\[15:8] (\emph{max\_slots}): the maximum number of supported
+>>>>>> +            crypto key slots.
+>>>>>> +        \item Bits~\[7:0] (\emph{slot\_offset}): an offset applied to slot numbering.
+>>>>>
+>>>>> What is the purpose of slot_offset? This field is not used much in this
+>>>>> spec, maybe it can be removed?
+>>>>>
+>>>>> Does that mean only slots in the range [slot_offset:max_slots) are
+>>>>> available or does it mean that the range is
+>>>>> [slot_offset:slot_offset+max_slots)?
+>>>>
+>>>> Only slots within the range [slot_offset, slot_offset + max_slots) are accessible to the
+>>>> VM. The slot_offset specifies the base physical ICE slot allocated to the VM and is used
+>>>> to translate a virtual slot index into a physical slot.
+>>>>
+>>>> Because the GVM programs and evicts keys directly—without host/PVM involvement—it must
+>>>> supply the resolved physical slot when invoking key operations in TrustZone or the Secure
+>>>> VM.
+>>>
+>>> It's not clear to me how what you've described offers isolation between
+>>> the PVM and the GVM. What stops the GVM from using key slots outside the
+>>> range that has been assigned to it?
+>>>
+>>> A few options for isolation come to mind:
+>>>
+>>> 1. Expose 2 separate virtio-blk devices, one of which is hidden from the
+>>>    GVM and only accessible to the PVM. The PVM can store its data on the
+>>>    hidden device.
+>>>
+>>> 2. Some kind of VIRTIO Admin queue Virtual Function approach where the
+>>>    PVM can instantiate a virtual function (a sub-device) that the GVM is
+>>>    allowed to access with isolation enforced by the device.
+>>>
+>>> 3. A single device could be used but the GVM cannot access it directly
+>>>    and needs to go through the PVM.
+>>
+>> The slot isolation between GVM and PVM is implemented by the max slots allocated to the GVM and slot offset
+>> the GVM's starting slot relative to the physical starting slot.
+>>
+>> For instance, ICE hardware has 64 slots, the max slots allocated to the GVM is 32, and its slot offset is 20.
+>> The keyslot manager in the GVM ensure the virtual slot rang is [0,31], when programming a key, translate the
+>> virtual slot to a physical slot by using the slot offset, that means the physical slot range this GVM used
+>> is [20,51].
+>>
+>> The max_slots and slot_offset are configured by PVM, and GVM's virtio frontend only gets them from the configuration
+>> space of its virtio devices. So PVM is responsible to ensure the physical slot range of the GVM is valid.
+> 
+> I don't understand how isolation between the PVM and GVM works. To me it
+> seems like if there is isolation, then it would not be necessary to
+> expose slot_offset to the GVM. And if there is no isolation, then this
+> design isn't safe because the PVM is not protected against the GVM.
+> 
+> I'm probably missing something. Can you explain how isolation is
+> enforced?
+
+Appreciate your quick feedback!
+
+The key slots in ICE hardware are used by both PVM/Host and GVMs, the PVM/Host
+specifies the slot range of each VM used (including itself) by defining starting
+slot offest and max slots per VM, ensure that there isn't overlapping b/w these
+slot ranges in physical slot level.
+
+In this way, if only the virtual slot in each VM doesn't exceed the max slots
+allocated to it, the access to its physical ICE slot for one VM doesn' have impact
+on the ICE slots belonging to the range of other VMs. 
+
+You mentioned "this design isn't safe because the PVM is not protected against the
+GVM", do you mean that the slot_offest and/or max_slots of GVM are tampered by a
+malixious program, leading to unexpected access from GVM to a physical ICE slot
+allocated to PVM? If yes, I feel it's not a risk as kernel image can be pretotected
+via dm-verity/AVB, it's impossible for an attacker to rewrite them in runtime from
+both PVM and GVM sides.
+
+> 
+>>
+>>>
+>>>>
+>>>>>
+>>>>>> +    \end{itemize}
+>>>>>> +\end{itemize}
+>>>>>> +
+>>>>>>  \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout / Legacy Interface: Device configuration layout}
+>>>>>>  When using the legacy interface, transitional devices and drivers
+>>>>>>  MUST format the fields in struct virtio_blk_config
+>>>>>> @@ -278,6 +299,10 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>>>>>      \field{zoned} can be read by the driver to determine the zone
+>>>>>>      characteristics of the device. All \field{zoned} fields are read-only.
+>>>>>>  
+>>>>>> +\item If the VIRTIO_BLK_F_ICE feature is negotiated, the fields in
+>>>>>> +    \field{crypto} can be read by the driver to determine the inline crypto
+>>>>>> +    characteristics of the device. All \field{crypto} fields are read-only.
+>>>>>> +
+>>>>>>  \end{enumerate}
+>>>>>>  
+>>>>>>  \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+>>>>>> @@ -317,6 +342,9 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>>>>>      driver SHOULD ignore all other fields in \field{zoned}.
+>>>>>>  \end{itemize}
+>>>>>>  
+>>>>>> +If the VIRTIO_BLK_F_ICE feature is negotiated, then the driver MUST validate
+>>>>>> +    the max_slots in \field{slot_info} before the slot usage.
+>>>>>
+>>>>> I'm not sure how the driver is supposed to validate max_slots?
+>>>>
+>>>> It means the diver validate the virtual slot doesn't exceed the max_slots before translating
+>>>> this virtual slot to a physical slot by using slot_offset. 
+>>>>
+>>>> Can I rewrite it as the following?
+>>>>
+>>>>   If the VIRTIO_BLK_F_ICE feature is negotiated, then the driver MUST validate that
+>>>>   the virtual slot received from upper layer doesn't exceed the max_slots in
+>>>>   \field{slot_info} before the slot usage.
+>>>
+>>> The notion of an "upper layer" can be eliminated so that there is no
+>>> assumption about the software design in the driver:
+>>>
+>>>   If the VIRTIO_BLK_F_ICE feature is negotiated, then the driver MUST
+>>>   ensure that slot_offset <= \field{payload.slot} < slot_offset +
+>>>   max_slots, where slot_offset and max_slots are the values extracted
+>>>   from \field{crypto.slot_info} in configuration space.
+>>
+>> ACK. Thanks!
+>>
+>>>
+>>>>
+>>>>>
+>>>>>> +
+>>>>>>  \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+>>>>>>  
+>>>>>>  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
+>>>>>> @@ -402,6 +430,13 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>>>>>  \item the device MUST initialize padding bytes \field{unused2} to 0.
+>>>>>>  \end{itemize}
+>>>>>>  
+>>>>>> +If the VIRTIO_BLK_F_ICE feature is negotiated, then the fields in \field{crypto}
+>>>>>> +struct in the configuration space MUST be set by the device.
+>>>>>> +\begin{itemize}
+>>>>>> +\item the \field{slot_info} field of \field{crypto} MUST be set by the device to a
+>>>>>> +    max_slots in the higher 8 bits and slot_offset in the lower 8 bits.
+>>>>>> +\end{itemize}
+>>>>>
+>>>>> There is no need for the \begin{itemize} here. It contains no new
+>>>>> information. The fields were already described in the configuration
+>>>>> space section and the previous sentence already said that the fields in
+>>>>> \field{crypto} must be set by the device.
+>>>>
+>>>> ACK, remove this \begin{itemize} here.
+>>>>
+>>>>>
+>>>>>> +
+>>>>>>  \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
+>>>>>>  
+>>>>>>  Because legacy devices do not have FEATURES_OK, transitional devices
+>>>>>> @@ -436,6 +471,13 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>>>>>          le32 type;
+>>>>>>          le32 reserved;
+>>>>>>          le64 sector;
+>>>>>> +        struct virtio_blk_crypto_payload {
+>>>>>> +            u8 slot;
+>>>>>> +            u8 activate;
+>>>>>> +            le16 reserved1;
+>>>>>> +            le32 reserved2;
+>>>>>> +            le64 data_unit_num;
+>>>>>> +        } payload;
+>>>>>
+>>>>> "payload" is a generic term. crypto_payload would be clearer.
+>>>>>
+>>>>> I wonder whether consistently calling this feature "ice" rather than
+>>>>> "crypto" would help in case self-encrypting drive or other cryptographic
+>>>>> functionality is added to virtio-blk in the future. That way the spec
+>>>>> items related to inline crypto engine functionality will be easy to
+>>>>> differentiate from other crypto functionality.
+>>>>
+>>>> Ok, to differentiate ICE and other cryptographic functionality, can I modify it as
+>>>>
+>>>>   struct virtio_blk_ice_payload {
+>>>>       u8 slot;
+>>>>       u8 activate;
+>>>>       le16 reserved1;
+>>>>       le32 reserved2;
+>>>>       le64 data_unit_num;
+>>>>   } ice_payload;
+>>>
+>>> Looks good to me, thanks.
+>>
+>> Thanks!
+>>
+>>>
+>>>>
+>>>>>
+>>>>>>          u8 data[];
+>>>>>>          u8 status;
+>>>>>>  };
+>>>>>> @@ -445,8 +487,9 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>>>>>  (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
+>>>>>>  (VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
+>>>>>>  string command (VIRTIO_BLK_T_GET_ID), a secure erase
+>>>>>> -(VIRTIO_BLK_T_SECURE_ERASE), or a get device lifetime command
+>>>>>> -(VIRTIO_BLK_T_GET_LIFETIME).
+>>>>>> +(VIRTIO_BLK_T_SECURE_ERASE), a get device lifetime command
+>>>>>> +(VIRTIO_BLK_T_GET_LIFETIME), or a get device crypto capabilities command
+>>>>>> +(VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES).
+>>>>>>  
+>>>>>>  \begin{lstlisting}
+>>>>>>  #define VIRTIO_BLK_T_IN           0
+>>>>>> @@ -457,12 +500,27 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>>>>>  #define VIRTIO_BLK_T_DISCARD      11
+>>>>>>  #define VIRTIO_BLK_T_WRITE_ZEROES 13
+>>>>>>  #define VIRTIO_BLK_T_SECURE_ERASE   14
+>>>>>> +#define VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES   27
+>>>>>
+>>>>> The Linux virtio_blk.c driver assumes that odd numbered constants have
+>>>>> data buffers that are read by the device, so you may run into a bug when
+>>>>> using 27.
+>>>>>
+>>>>> There is an informal convention to use even numbers for read requests
+>>>>> and odd numbers for write requests. It doesn't hurt to try to follow the
+>>>>> convention even though it's not strictly necessary.
+>>>>>
+>>>>> The Linux driver could be fixed when adding support for ICE, but 16 is
+>>>>> available and it's safest to use that.
+>>>>
+>>>> OK. Agree to following the convention. But 16, 18,20,22,24,26 are already used by
+>>>> zone device. Seems 12 is available. Correct it to 12.
+>>>>
+>>>>  #define VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES   12
+>>>
+>>> In that case I suggest using 28. I don't remember what 12 was used for
+>>> but there may be a historical reason for the gap.
+>>
+>> Thanks! Change it to 28.
+>>
+>>>
+>>>>
+>>>>>
+>>>>>>  \end{lstlisting}
+>>>>>>  
+>>>>>>  The \field{sector} number indicates the offset (multiplied by 512) where
+>>>>>>  the read or write is to occur. This field is unused and set to 0 for
+>>>>>>  commands other than read, write and some zone operations.
+>>>>>>  
+>>>>>> +The \field{payload} consists of the encryption information for current
+>>>>>> +request. It is only present when the VIRTIO_BLK_F_ICE feature is negotiated and
+>>>>>> +\field{type} is VIRTIO_BLK_T_IN, VIRTIO_BLK_T_OUT or VIRTIO_BLK_T_FLUSH.
+>>>>>
+>>>>> TODO think about layout
+>>>>
+>>>> rewrite to the following
+>>>>
+>>>>   The \field{ice_payload} consists of the encryption information for current
+>>>>   request. When VIRTIO_BLK_F_ICE is negotiated, the request header layout becomes
+>>>>   that struct virtio_blk_outhdr includes \field{ice_payload} as a fixed-size
+>>>>   extension. For non-ICE requests (or types not using crypto), the driver MUST
+>>>>   set \field{ice_payload} to 0 and device ignores them.
+>>>
+>>> Sorry, the TODO was a comment to myself while writing my reply :).
+>>>
+>>> I forgot to investigate. Basically the issue is that the spec must be
+>>> clear on whether:
+>>> 1. A field is absent and fields that follow it are present in the struct
+>>>    layout when a condition is false (e.g. type is not VIRTIO_BLK_T_IN,
+>>>    VIRTIO_BLK_T_OUT, or VIRTIO_BLK_T_FLUSH).
+>>> or
+>>> 2. A field is present but unused (zeroed) when a condition is false.
+>>>
+>>> #2 is usually easier to implement in code because it avoids creating
+>>> many different struct layouts at runtime depending on conditions like
+>>> negotiated feature bits.
+>>>
+>>> I was thinking that the ice fields should always be present but should
+>>> be zero when the feature bit is not negotiated or some other condition
+>>> (like the request type) is false. This way it will be much easier to add
+>>> additional fields later without worrying about struct layouts.
+>>>
+>>> This is how configuration space already works: the offset of the zoned
+>>> field is not affected by whether the device advertises the
+>>> VIRTIO_BLK_F_WRITE_ZEROES feature bit, it just means that the earlier
+>>> write_zeroes_may_unmap field may be unused. This approach should
+>>> probably be used everywhere and the spec language should be careful to
+>>> communicate that the field is still present but zero when unused. It's
+>>> okay for the driver to provide a shorter struct that doesn't include the
+>>> last field(s) to the device when the feature bit is not negotiated
+>>> though.
+>>
+>> Thanks. Refer to the statement you shared, try to rewrite it as the following.
+>>
+>>   The \field{ice_payload} consists of the encryption information for current
+>>   request. It is not affected by whether the device advertises the
+>>   VIRTIO_BLK_F_ICE feature bit, it just SHOULD be zero when the feature bit is
+>>   not negotiated or the \field{type} is not VIRTIO_BLK_T_IN, VIRTIO_BLK_T_OUT
+>>   or VIRTIO_BLK_T_FLUSH. 
+> 
+> Sounds good.
+> 
+>>
+>>>
+>>>>
+>>>>>
+>>>>>> +\begin{itemize}
+>>>>>> +\item The \field{slot} field in \field{payload} indicates the ICE
+>>>>>> +  (Inline Crypto Encryption) slot index where the key resides.
+>>>>>> +
+>>>>>> +\item The \field{activate} field in \field{payload} implies this is a
+>>>>>> +  inline encryption request.
+>>>>>> +
+>>>>>> +\item The \field{data_unit_num} field in \field{payload} indicates the
+>>>>>> +  starting block of the request.
+>>>>>
+>>>>> This is a block device, so the term "block" needs to be qualified to
+>>>>> avoid confusion. I guess this is the cryptography concept of a block
+>>>>> rather than the disk concept of a block. Please clarify this in the
+>>>>> text, maybe by explaining that the ICE handles data in fixed-size "data
+>>>>> units" instead of using the word "block".
+>>>>>
+>>>>> Also, can you explain the relationship between the data unit number and
+>>>>> the sector? In simple cases I imagine the data unit number would be the
+>>>>> sector. How is the driver supposed to pick or calculate the data unit
+>>>>> number?
+>>>>
+>>>> The data unit number is the starting IV for AES crypto in ICE hardware, it's
+>>>> a stable value for I/O request targeting to same storage range. It can be set
+>>>> to the file logic block number or the starting sector of BIO. 
+>>>
+>>> It sounds like the data unit number calculation is up to the driver
+>>> (from the device's perspective) and the important thing is that the same
+>>> data unit number will always be used when reading/writing the same
+>>> logical data location.
+>>
+>> Yes. Correct.
+>>
+>>>
+>>>> The upper layer calculates it and passes it to virtio_blk driver in this patch.
+>>>> ICE uses the data unit number and data unit size (the granularity to use for
+>>>> en/decryption) to derive the next data unit number for the next cryptography
+>>>> block. data unit number in ICE increase 1 per data unit size. For instance,
+>>>>   data unit number = 2048
+>>>>   data unit size = 1024 bytes
+>>>> For the first 1024 bytes of the transaction, ICE hardware encrypt the data
+>>>> with IV equal to 2048.
+>>>> For the second 1024 bytes of the transaction, ICE hardware encrypt the data
+>>>> with IV equal to (2048+1=)2049.
+>>>>
+>>>> Rewrite it as bellow.
+>>>>
+>>>>   \item The \field{data_unit_num} field in \field{ice_payload} indicates the
+>>>>   starting IV. It can be the file logic block number or the starting sector
+>>>>   of BIO.
+>>>
+>>> BIO is a Linux-specific concept, so it would be best to avoid it in the
+>>> VIRTIO spec.
+>>>
+>>>   \item The \field{data_unit_num} field in \field{ice_payload} indicates
+>>>   the starting IV. In order to successfully encrypt/decrypt data this
+>>>   number must be the same for successive read and write operations to
+>>>   the same logical data location. The driver typically sets it to the
+>>>   file logical block number or the disk sector number.
+>>
+>> Thanks! ACK.
+>>
+>>>
+>>>>
+>>>>>
+>>>>>> +\end{itemize}
+>>>>>> +
+>>>>>>  VIRTIO_BLK_T_IN requests populate \field{data} with the contents of sectors
+>>>>>>  read from the block device (in multiples of 512 bytes).  VIRTIO_BLK_T_OUT
+>>>>>>  requests write the contents of \field{data} to the block device (in multiples
+>>>>>> @@ -530,6 +588,47 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>>>>>  The \field{device_lifetime_est_typ_b} refers to wear of MLC cells and is provided
+>>>>>>  with the same semantics as \field{device_lifetime_est_typ_a}.
+>>>>>>  
+>>>>>> +VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES requests fetch the storage hardware crypto
+>>>>>> +capabilities into \field{data}. And the \field{data} is of the form
+>>>>>
+>>>>> How does VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES behave when data[] is too
+>>>>> small to fit all the device's crypto capabilities?
+>>>>
+>>>> Add a new field capability_num to the Configuration space header. The total size of
+>>>> \field{data} shall be computed as:
+>>>>   data_size=capability_num×capability_size
+>>>> where capability_size is the size (in bytes) of one capability structure. Therefore, \field{data} contains exactly capability_num contiguous capability entries, each of length capability_size.
+>>>> Add a capability_num field in Configuration space. So it use size per capability
+>>>> multiply capability_num to define the size of \field{data}.
+>>>>
+>>>> Rewrite it as the following.
+>>>>
+>>>>   VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES requests fetch the storage hardware crypto
+>>>>   capabilities into \field{data}. The crypto capabilities is a zero-padded array
+>>>>   up to (\field{capability_num}×capability_size) bytes long, where capability_size
+>>>>   is the size (in bytes) of one capability structure which is in form of
+>>>>   
+>>>>   \begin{lstlisting}
+>>>>     struct virtio_blk_crypto_cap {
+>>>>         u8 alg;
+>>>>         u8 data_unit_size;
+>>>>         u8 key_size;
+>>>>         u8 reserved;
+>>>>     };
+>>>>   \end{lstlisting}
+>>>>   
+>>>>   \begin{itemize}
+>>>>       \item The \field{alg} implies crypto algorithm identifiers.
+>>>>       The device supports reporting and negotiating cryptographic algorithms
+>>>>       using the following algorithm identifiers:
+>>>>       \begin{lstlisting}
+>>>>           CRYPTO_ALG_AES_XTS              = 0x0
+>>>>           CRYPTO_ALG_BITLOCKER_AES_CBC    = 0x1
+>>>>           CRYPTO_ALG_AES_ECB              = 0x2
+>>>>           CRYPTO_ALG_ESSIV_AES_CBC        = 0x3
+>>>>       \end{lstlisting}
+>>>>       These identifiers abstract the underlying hardware crypto implementation
+>>>>       and does not assume any operating‑system‑specific data structures or
+>>>>       constants.
+>>>>       \item The \field{data_unit_size} implies the mask of data unit size. When
+>>>>       bit j in this field (j=7......0) is set, a data unit size of 512*2^j bytes
+>>>>       is selected.
+>>>>       \item The \field{key_size} is the crypto key size identifiers.
+>>>>       \begin{lstlisting}
+>>>>           CRYPTO_KEY_SIZE_INVALID     = 0x0
+>>>>           CRYPTO_KEY_SIZE_128_BITS    = 0x1
+>>>>           CRYPTO_KEY_SIZE_192_BITS    = 0x2
+>>>>           CRYPTO_KEY_SIZE_256_BITS    = 0x3
+>>>>           CRYPTO_KEY_SIZE_512_BITS    = 0x4
+>>>>       \end{lstlisting}
+>>>>       \item The \field{reserved} is unused.
+>>>>   \end{itemize}
+>>>>   
+>>>>   If the \field{data} is too short, it sets status to BLK_S_IO_ERR.
+>>>
+>>> Looks good. In the final sentence I suggest changing "it" to "the
+>>> device" for clarity.
+>>
+>> Thanks! Done.
+>>
+>>>
+>>>>
+>>>>>
+>>>>>> +
+>>>>>> +\begin{lstlisting}
+>>>>>> +struct virtio_blk_crypto_caps {
+>>>>>> +  u8 size;
+>>>>>> +  le32 crypto_capabilities[];
+>>>>>> +};
+>>>>>> +\end{lstlisting}
+>>>>>> +
+>>>>>> +The \field{size} specifies the size of array \field{crypto_capabilities}.
+>>>>>
+>>>>> "number of elements" would be clearer than "size of array" because the
+>>>>> unit (bytes vs array elements) is ambiguous.
+>>>>>
+>>>>> The size field is not necessary since Used Ring descriptors contain
+>>>>> (struct virtq_used_elem in the spec) a len field indicating how many
+>>>>> bytes were written by the device.
+>>>>
+>>>> Remove virtio_blk_crypto_caps in above modification.
+>>>>
+>>>>>
+>>>>>> +The \field{crypto_capabilities} indicates the crypto capabilities supported by the
+>>>>>> +hardware storage for inline encryption.
+>>>>>> +
+>>>>>> +A crypto capability packs four 8-bits values:
+>>>>>> +\begin{itemize}
+>>>>>> +    \item Bits~\[31:24]: crypto algorithm identifiers.
+>>>>>> +    The device supports reporting and negotiating cryptographic algorithms
+>>>>>> +    using the following algorithm identifiers:
+>>>>>> +    \begin{lstlisting}
+>>>>>> +        CRYPTO_ALG_AES_XTS              = 0x0
+>>>>>> +        CRYPTO_ALG_BITLOCKER_AES_CBC    = 0x1
+>>>>>> +        CRYPTO_ALG_AES_ECB              = 0x2
+>>>>>> +        CRYPTO_ALG_ESSIV_AES_CBC        = 0x3
+>>>>>> +    \end{lstlisting}
+>>>>>> +    These identifiers abstract the underlying hardware crypto implementation
+>>>>>> +    and does not assume any operating‑system‑specific data structures or
+>>>>>> +    constants.
+>>>>>> +    \item Bits~\[23:16]: mask of data unit size. When bit j in this field
+>>>>>> +    (j=7......0) is set, a data unit size of 512*2^j bytes is selected.
+>>>>>
+>>>>> Is only one bit ever set in the mask? If so, then maybe just express j
+>>>>> as an 8-bit unsigned integer (i.e. the exponent in 512*2^j) instead of
+>>>>> as a bit mask. It's simpler and increases the range for j.
+>>>>
+>>>> Yes, it's encoded in one-hot encoding. If j is expressed as an 8-bit unsigned integer,
+>>>> it will confused the reader that more than one bit can be set in the mask of data unit
+>>>> size. right? 
+>>>
+>>> If the field is called the data unit size exponent (data_unit_size_exp)
+>>> then there is no confusion. I agree that calling it a mask would be
+>>> confusing.
+>>
+>> Thanks! Update it to data_unit_size_exp.
+>>
+>>>
+>>>>
+>>>>>
+>>>>>> +    \item Bits~\[15:8]: crypto key size identifiers.
+>>>>>> +    \begin{lstlisting}
+>>>>>> +        CRYPTO_KEY_SIZE_INVALID     = 0x0
+>>>>>> +        CRYPTO_KEY_SIZE_128_BITS    = 0x1
+>>>>>> +        CRYPTO_KEY_SIZE_192_BITS    = 0x2
+>>>>>> +        CRYPTO_KEY_SIZE_256_BITS    = 0x3
+>>>>>> +        CRYPTO_KEY_SIZE_512_BITS    = 0x4
+>>>>>> +    \end{lstlisting}
+>>>>>> +    \item Bits~\[7:0]: unused.
+>>>>>> +\end{itemize}
+>>>>>
+>>>>> A struct would be more natural here (the rest of the VIRTIO
+>>>>> specification rarely packs fields into an integer):
+>>>>>
+>>>>>   struct virtio_blk_crypto_cap {
+>>>>>       u8 alg;
+>>>>>       u8 data_unit_size;
+>>>>>       u8 key_size;
+>>>>>       u8 reserved;
+>>>>>   };
+>>>>
+>>>> ACK, see above rewrite statement.
+>>>>
+>>>>>
+>>>>> By the way, Linux seems to call this a "profile" rather than a
+>>>>> "capability". Do you want to use the same name as Linux for consistency?
+>>>>
+>>>> blk-crypto-profile is the keyslot manager which manage the usage of keyslot and
+>>>> also checks if the key configuration set by upper layer can be supported by the
+>>>> ICE hardware. While the capability aims to illustrate the capability provided by
+>>>> the ICE hardware. What we expected is the capability used to initialized
+>>>> blk-crypto-profile in Guest VM.
+>>>
+>>> I see.
+>>>
+>>>>
+>>>>>
+>>>>>> +
+>>>>>>  The final \field{status} byte is written by the device: either
+>>>>>>  VIRTIO_BLK_S_OK for success, VIRTIO_BLK_S_IOERR for device or driver
+>>>>>>  error or VIRTIO_BLK_S_UNSUPP for a request unsupported by device:
+>>>>>> @@ -912,6 +1011,13 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>>>>>  successfully, failed, or were processed by the device at all if the request
+>>>>>>  failed with VIRTIO_BLK_S_IOERR.
+>>>>>>  
+>>>>>> +The length of \field{data} MUST be a multiple of 4 bytes plus 1 for
+>>>>>> +VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES requests.
+>>>>>> +
+>>>>>> +A driver MUST set \field{activate} to 1 for VIRTIO_BLK_T_IN,VIRTIO_BLK_T_OUT,
+>>>>>> +    and VIRTIO_BLK_T_FLUSH requests that require inline encryption. For other
+>>>>>> +    request types or when inline encryption is not required, it is set to 0.
+>>>>>> +
+>>>>>>  The following requirements only apply if the VIRTIO_BLK_F_ZONED feature is
+>>>>>>  negotiated.
+>>>>>
+>>>>> How does the driver assign a specific capability (algorithm, data unit
+>>>>> size, and key size tuple reported by
+>>>>> VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES) to a slot?
+>>>>>
+>>>>> How does the driver assign the key material for a slot?
+>>>>
+>>>> blk layer will initialize a blk_crypto_key based on the configuration received from
+>>>> FS layer. This blk_crypto_key contains expected algorithm, data unit size and key size expected
+>>>> by the upper layer. When submit_bio, blk_mq tries to program the key included in blk_crypto_key
+>>>> to the ICE hardware slot via blk_crypto_profile. During programming the key, it will compare 
+>>>> the algorithm, data unit size and key size in blk_crypto_key with the capability exposed by ICE
+>>>> hardware.
+>>>>
+>>>> It will follow bellow flow to assign the key material for a slot.
+>>>>   blk_crypto_profile -> virtio_blk driver -> virtio_blk extention -> SCM driver -> TZ
+>>>>
+>>>> That means the driver only maintain the capability in RAM, use it when programming key.
+>>>
+>>> I don't see an interface for programming the key in this spec patch. The
+>>> Linux block driver interface includes struct blk_crypto_ll_ops with
+>>> driver functions for programming keys. I expected this spec would add
+>>> operations to the virtio-blk device for implementing those functions?
+>>
+>> The design is that having a virtio_blk extension driver to handle the initialization of keyslot manager
+>> for virtio block with VIRTIO_BLK_F_ICE feature bit negociated. And this extension driver also define the
+>> implementation of struct blk_crypto_ll_ops with driver functions for programming keys, evicting keys and
+>> derive raw keys. Thees 3 key operation is done in a 'out of band' channel, that LA GVM calls to TrustZone
+>> (or secure VM) directly via SCM driver, bypass PVM.
+>>
+>> Add a new Kconfig VIRTIO_BLK_INLINE_CRYPTO, and this config need always to be set as Y when inline encryption
+>> on virtio block is expected.
+>>
+>> In such scenario, the key programming/eviction/derivation doesn't affect the virtio block protocol, so I didn't
+>> add it in this patch. Do you think it's necessary to be shown in virtio SPEC in such design?
+> 
+> It seems like supporting keyslot manager operations via the virtio-blk
+> device is a possible future use case. The design of VIRTIO_BLK_F_ICE
+> should allow for adding it in the future so that we can be confident
+> that no breaking changes will be needed.
+> 
+> Why are the keyslot manager operations out of band in your TrustZone use
+> case? Maybe this is related to isolation between the PVM and GVM when
+> sharing a device, but it's not clear to me that isolation is actually
+> enforced, so then I see no need for out of band keyslot manager
+> operations.
+> 
+> Stefan
+
+For ICE based disk encryption (like File-Based Encryption), keyslot manager
+(implemeneted in blk-crypot-profile.c in latest kernel version) is responsible
+for forwarding blk-crypto-key from block layer to the bottom layer (i.e.
+storage driver in Bare Metal) implementing blk_crypto_ll_ops for the key
+programming/eviction/derivation. 
+
+So, for a whole inline encryption support in virtio block, virtio block device
+must register a keyslot manager and provide the corresponding implementation of
+blk_crypto_ll_ops. 
+
+The reasons of using out-of-band channel are
+  1. In Bare Metal, the operation of key programming/eviction/derivation is also
+     through a out-of-band channel.
+     keyslot manager -> storage driver -> scm driver -> Trust Zone
+  2. Challenges of using in-band channel
+     a. Passing the blk-crypot-key to virtio blk backend in userspace through the
+        virtqueue. The virtio blk backend need pass this blk-crypot-key to block
+        layer of PVM/Host. But it's not easy to be implemented. Addtional changes
+        (like adding SET_BLK_CRYPTO_KEY blk ioctl syscal) need to be added in block
+        layer. In additiona, virtio block backend uses pread/pwrite implementing
+        I/O in backend, it must ensure that blk-crypto-key is always bound to its
+        corresponded I/O operation.
+     b. For key eviction operation, it's totally irrelevant to I/O operation, the
+        block layer only pass the blk crypto key to virtio block device via keyslot
+        manager. Even refer to virtblk_get_id to send this request to virtio blk
+        backend, it faces on similar issue like programming key, that how to populate
+        blk-crypto-key to the block layer in PVM. Adding EVICT_KEY ioctl seems not a
+        acceptable way as it exposes key evivtion operation to the userspace.
+
+Linlin
+
