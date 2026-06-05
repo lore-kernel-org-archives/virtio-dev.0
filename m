@@ -1,319 +1,185 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 292463815F3
-	for <virtio-dev@lists.linux.dev>; Mon, 18 May 2026 08:44:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D6F236A73
+	for <virtio-dev@lists.linux.dev>; Fri,  5 Jun 2026 14:30:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779093895; cv=none; b=Ofw5iJxAMCS7pNczA/7Np5995v0pKCLtSgXM1pBYvi4KZO7XgEyP5gwYSygJWy3Ld0MO1kbqYZ1Nc9/b2v6dli66U5AD6THsr4gTh6bmJEjjXOs3f5npkqapylN/1zMvUyAxKAifedPUoJXjt22vqoGqOeqbflag3RFSCKiptSc=
+	t=1780669841; cv=none; b=dD7WwBeyMr/KNGECIRUpDSk94pOHtSso4E6u40ffxpiCpXU5CKOLzqEDqJXeJgtUrfRFMm93whYYDOyQTO0c8ijDgRymOqesoxOJcTL9aBK6n6xZczJthF+IFoKmYUoEFkAc2VMWScl9XSnnAC9qOwFJalP0roP+sA37pxpavKc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779093895; c=relaxed/simple;
-	bh=J3TdbTKN+6jsEFYBVrI61aEDvvOtX8coPMu7jiBXh/I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=KfdPN36taMjp6F9Bi01ZtPyJOf9u9fABehLjFXnHnZQIKQ8pfjtot9/No9xChXJJbX/47NdeZIXZtT4Mj8XvvxyMoQYEAshTmhhxmXdNMIP0c7qMcGEzbNtnhCsVNkNit4wTdLeZU2lfxAE2Bm3Es4BwMgsyd9vdGvuUMnQoIbU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JP0EcO0E; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1780669841; c=relaxed/simple;
+	bh=EVj/w6iK3+b4kNl2JDaF+zi/oZ4jg0tk/C1v/bSAc1E=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Y1oJxwtc+mGqE1y9xbkZwpo0r0KYZ057fGPv0UysGSu0dj+Kl22kJ4sRJOepXPQ4hMfmyob6UOh2M6/hv2a7NAUQggvN3m8yFKBSTVIUCT/TBjdKXgXYneDC8rauDuJ/UWc5uGojAivhn17qYtO1e0PF8LdyEwL34qLyzDaKYYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=XLCqL1r9; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=P2L9TZiY; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JP0EcO0E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1779093892;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0tvDmvDzchHkNMk3o3t7Z6hTNydMK2OYHdgG/vThA+Y=;
-	b=JP0EcO0EThpyaprvNwfXylHSOqDSOKxp5lNt63uZptzBzlT6RNCqUvrbGH16sn5dCfFSWO
-	zfXUXF0ufy/llpP04KdAg/NgS6M4oj8rMven+o+QRpZCkbm26lH+j90bW/0amgiycDA077
-	1G2G277hsuRcUIRTsRVoHUYh+rmTa3A=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-464-f12AvTYdNLKLgt-mEvmmUg-1; Mon, 18 May 2026 04:44:50 -0400
-X-MC-Unique: f12AvTYdNLKLgt-mEvmmUg-1
-X-Mimecast-MFC-AGG-ID: f12AvTYdNLKLgt-mEvmmUg_1779093890
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-48fd396daedso14380775e9.0
-        for <virtio-dev@lists.linux.dev>; Mon, 18 May 2026 01:44:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="XLCqL1r9";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="P2L9TZiY"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 655DRCCw4048099
+	for <virtio-dev@lists.linux.dev>; Fri, 5 Jun 2026 14:30:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=YYr53TWlFvQ9X3G8WUw05dDowvGVXxiHZ6r
+	UrNQhMqQ=; b=XLCqL1r9PEVlz/K281DECkdMMmGaJHtmUG9SyD2N+w8KA5Wv4Dl
+	kRBCmlw2a6NZuVTT/sbMHfz8qNOQo43ryWwkO/V7vl2N5MDj3yBWe5uSgZKC9FKD
+	53P6pMshkpq+updZXJ1KhYi95hzrdVSYoe9GVGmpNi7IXtuRka62vRfzLSl9udID
+	nLIUz+I+xZabscPNnwvQx+OzaqtWeVPWNbdpPxkdbuQL9hKg3rtnZt3HYHp8DlDi
+	gwVLsHkRhTupqBf9NqVRChl7RSRk6sZ53rEivBKYt/RlXoZPga8Z2168TCcMcI39
+	xhd4FXc2zIR+BrXkFdyIJGD15P6wnWBBR3Q==
+Received: from mail-vs1-f70.google.com (mail-vs1-f70.google.com [209.85.217.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eksf8humg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <virtio-dev@lists.linux.dev>; Fri, 05 Jun 2026 14:30:37 +0000 (GMT)
+Received: by mail-vs1-f70.google.com with SMTP id ada2fe7eead31-6cfdce65690so774642137.3
+        for <virtio-dev@lists.linux.dev>; Fri, 05 Jun 2026 07:30:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1780669837; x=1781274637; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YYr53TWlFvQ9X3G8WUw05dDowvGVXxiHZ6rUrNQhMqQ=;
+        b=P2L9TZiYHJ2N//E2i3fDNq6XsY8C/tZIuodGs0fmMWkipOrV+7/4z1ePmwrca4DVSF
+         i/w43HO4HXJq4k/kzXOrPAoxFGkoXMOHpt/y1j3B7VvmqH0NRw89Ueo0XqVibA1Xi9Hy
+         gfbPxhIwB3prk57+Tfi25VZiU9TYoLv1Ga65wbBRvXtxUb40m3nt9tVifMD8xdolEy2A
+         5XtS8SWawsC38YU4HRUKH1SZ4GliqlLCNWTSYZDl4lCm1QoyZ9UJaTEDBfFIYZCKn1eU
+         npmLnv1LfdA+7rkbEXApTFARf9I5gZYjnv4zpo3wl5+/6moGL6qFc+zSpNx8z1m0R+uf
+         eYlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779093889; x=1779698689;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0tvDmvDzchHkNMk3o3t7Z6hTNydMK2OYHdgG/vThA+Y=;
-        b=Dc4IeMSLILWKsBc82aB31iIJJZc2QxETonZB4FGsZv3USxLS4LwK3WD2d+UziGUQni
-         oZ2ntt9Qm9G5c0eU4yJF66KtVimMbMwZsqjNeW5/37hw/7XBdy6OlRycxstp1pH/60s4
-         QvkdGHiEosBdiSlC/F/2m87RJK7Uz+OftODqH09lhPsRRaVJaeJ0wlzAUXuPoUCs8jpw
-         Dnzw4bt7AM2orkRI/E99eHEbptDfjPLNcayQiw2KNZO+8a8TIS1A3ez/qRb68DP1g2zb
-         8+XhQi4ZHTB8hi2esh4Hs96jqMivJaYTZB50A5UrGgSD+pVbCYOcwKZ0n/g5n4GR+zvX
-         BHEA==
-X-Gm-Message-State: AOJu0Yw+8AO+nqWKcpn7sQPeYWOh+mME9L5ljtTJZS3KAi+3HU0R3aaN
-	ZLP/XHOxsaCqPzQ9NicMuiRV/1xtCGEXLoverZMQrLjG0HrBi0DVhQdDFX6F23nEafR4YICtMHY
-	7NpMaqq3K37r+mYUYl/YziqG2FzkLmclT6DlzJSK5FKgnA8BnGVS1xtd6G7C33omWzGqmVsg=
-X-Gm-Gg: Acq92OEf4K7dzXexYrqwyk0s4RIskRVfJAG0jX4wbtVKEvoJy5/UABfSe/nS6SzYxlp
-	rkJYj1jUQTTptfvOn7g+tE0+VwIVgaRvc2nIW2GQd2+kTfwF8dk0PZO8TNkx07hzkgy2levnaTG
-	6OB5R+pWEdm2n/a6ZH2gnqEKvouSI0e0ep97UW9y1acaJkLimPJPu5nrT0glfGsYwYz4+uH2U/V
-	rDUt5EFcE1pRC47zbpqeIAnd4wTh8szS/foTJjUQdNF50+RFtQ6eKZS3ptzZxrqOAIL9Wp1eF3r
-	vwJm8+GkpceNhxgHQuMxGbfYjWsVe5ljUnVe8M7pheRlpa164AWyQyo2NNUxwJkQ9y+396xz18t
-	vhejfrBziLx+UnvvhAoA9fnvLHJeL3H1iP9bvGbiocc5Z8SALLi4=
-X-Received: by 2002:a05:600c:4fc9:b0:48a:5821:5ffc with SMTP id 5b1f17b1804b1-48fe60e473bmr189541915e9.2.1779093889302;
-        Mon, 18 May 2026 01:44:49 -0700 (PDT)
-X-Received: by 2002:a05:600c:4fc9:b0:48a:5821:5ffc with SMTP id 5b1f17b1804b1-48fe60e473bmr189541225e9.2.1779093888690;
-        Mon, 18 May 2026 01:44:48 -0700 (PDT)
-Received: from redhat.com (IGLD-80-230-48-7.inter.net.il. [80.230.48.7])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe537c516sm260116735e9.13.2026.05.18.01.44.47
+        d=1e100.net; s=20251104; t=1780669837; x=1781274637;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YYr53TWlFvQ9X3G8WUw05dDowvGVXxiHZ6rUrNQhMqQ=;
+        b=qkUyR+A4BBidgxoKZQK1fW+3WUYxHau/38AVTPkTJxF1s+3lLwN5PXu6rAqcZ5WwFp
+         2fEHKzGlgehumoaTE3/fzgOZ/zwo12lDN3wWbLIWNHdyZhGqFcWS++2zmda80crlIHeC
+         yVRPmW/MOkg6hYv0XuvDVdg315oFv9akJh5oH5ng8BaHqRVBH8uqJYsd4pY7uRZ69Qau
+         vx5tVyzpXYsJAbEpYd8kA7WMxv6exU/AakU55ca7yaOHxEr93kELAPYIkJQ9VY+BnKJs
+         r9N1DAdq9y/BYhsyw5VCqNWI+Z3Cf6EMKnTZBQTHR0b3kwDc+8Fk7Gq43eg0Gjh+Hj+1
+         Vr5w==
+X-Forwarded-Encrypted: i=1; AFNElJ/CYkQXN31jSuMQoDbDpl3u5VlFY2pJ1nE5/7FXNft+UpwkeUh27AxXAb/pk6XP+OAsVKAb5yUubYXb@lists.linux.dev
+X-Gm-Message-State: AOJu0YwCGiFwxviJprOZyOpO4RyiwrCnOQYNhpxJcsbLTUaJEe3D5awq
+	fjfrlwxhR1ckX80G/RlSPZvpPNcr5ujBzdy5aTgPdjocrziAO/MfE1CrYkaSag5qFT44YHAKKIh
+	DjBZYGkv6Ok36Hi71+YqHpj4QbnO5t2uzWu2j3WOKIQel3kHzpKYR9qkdjNZF5Rcs
+X-Gm-Gg: Acq92OFrSvwgLbsjGi7RpfAec0O0NQRWjcuUJIlPyVSG+DuxQNsoD0A+oCYrEWYbwIm
+	YflTXEGh6elko7dG7otGDYNTVDEVTp9ttlkI6UWuSKKWqaRfb6ZpjSqTzdgBdCjm/RrDQXpmeM3
+	ilf9HAJqtsZY9x3K0DsUVdkVkn/26I1cqnZeyK4cMUhCCElJu//YHMS65FQ1SjiMZftQ1n1JUjF
+	KGd0PljRJR2FINuFMedD8gjdOAhvrwPIAJcgbzbT+e1cY8kO3eC38PtLL7ywZ/m5d7Q1V5qj/1F
+	c+8gyr4ivcsQ+TZuD95gF+0Y+WU/lFyrlTVP8b6KXHQBXwotTptq7pGBycorTLcKwept1440uqE
+	gFiTPWBE9ZPb3/L6njARM32HE4btaas8QoRyCIg9fbs6jaBrMD4/1xtqdepVe8rg=
+X-Received: by 2002:a05:6102:5490:b0:6e2:501c:3c93 with SMTP id ada2fe7eead31-6ff0eba884dmr1941949137.14.1780669836894;
+        Fri, 05 Jun 2026 07:30:36 -0700 (PDT)
+X-Received: by 2002:a05:6102:5490:b0:6e2:501c:3c93 with SMTP id ada2fe7eead31-6ff0eba884dmr1941844137.14.1780669836424;
+        Fri, 05 Jun 2026 07:30:36 -0700 (PDT)
+Received: from QCOM-LDTZRie9bq.qualcomm.com ([212.136.9.4])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e64303892sm3814609a12.0.2026.06.05.07.30.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 01:44:48 -0700 (PDT)
-Date: Mon, 18 May 2026 04:44:45 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Manos Pitsidianakis <manos.pitsidianakis@linaro.org>
-Cc: VirtIO Dev List <virtio-dev@lists.linux.dev>,
-	Miguel Ojeda <ojeda@kernel.org>, manos@pitsidianak.is
-Subject: Re: Rust virtio drivers in Linux
-Message-ID: <20260518043103-mutt-send-email-mst@kernel.org>
-References: <20260510-rust-virtio-v3-0-1427f14d67e1@pitsidianak.is>
- <CAAjaMXaOm=sOjO4ksM-PcOf4wqez9+ePBdv9U7prHiVaCx7-+Q@mail.gmail.com>
+        Fri, 05 Jun 2026 07:30:35 -0700 (PDT)
+From: Peter Hilber <peter.hilber@oss.qualcomm.com>
+To: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
+Cc: Trilok Soni <trilok.soni@oss.qualcomm.com>, virtio-dev@lists.linux.dev,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+        virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Peter Hilber <peter.hilber@oss.qualcomm.com>
+Subject: [PATCH] virtio-mmio: add support for transport version 3
+Date: Fri,  5 Jun 2026 16:29:21 +0200
+Message-ID: <20260605142921.2824-1-peter.hilber@oss.qualcomm.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <CAAjaMXaOm=sOjO4ksM-PcOf4wqez9+ePBdv9U7prHiVaCx7-+Q@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: KkBbPuMQKYdz227hnNsFNRIq_FWmB4I4RH1e5VWxW9w_1779093890
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA1MDE0MiBTYWx0ZWRfX32HKM/AZuWru
+ IzF+eS66o6tNPJaj3sSDO80Zmw2XpOqcRlKCSpPm2fwt2SEUWyu1ir0/3pSaEE2WZcex+2Gg0aP
+ f0ZKP8xtiEx8ueYDlNWZgYghumpZHZ/MV+YRs6WRQKN9BDzfTh5p35sjCmyVb0TsT+aWO04O72j
+ LsRQzEwSLhj1W0uOqvmdAafvkzoKMj2gUgZjYRoe67e82WhkeSbWc4hvk30CHs995d7PgPsqdca
+ enqN1ktqVsduuXqdHmEDjmkRaezi2SH/Bj3AvlD/u8wGRg34bMZMJzQSjJ9AqARdVId3XDyaDz+
+ NNbmbf4TriVY8XXhHK1NrzmaCNOsmvnTfAL5XvMNJUoM+A5KIfYwzgIFipfFKPI0wz+AmokKfPu
+ V0u70JJw7h0zlNNKv5qLHpuZ4gqoJ/L//s8lYJWjz5hhqoe8Sdov8EuDwxjqSfY2JGKln/tn2+h
+ PMLOUCj8CK3opEVvJeA==
+X-Authority-Analysis: v=2.4 cv=K8sS2SWI c=1 sm=1 tr=0 ts=6a22dd8d cx=c_pps
+ a=N1BjEkVkxJi3uNfLdpvX3g==:117 a=dNlqnMcrdpbb+gQrTujlOQ==:17
+ a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=NEAV23lmAAAA:8
+ a=EUspDBNiAAAA:8 a=SLj1U74zwwqa45oC7IgA:9 a=crWF4MFLhNY0qMRaF8an:22
+X-Proofpoint-ORIG-GUID: enTlABooH0kRkMZIXy5rb9TiEyM5OAxy
+X-Proofpoint-GUID: enTlABooH0kRkMZIXy5rb9TiEyM5OAxy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-05_02,2026-06-05_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0 lowpriorityscore=0 clxscore=1011 priorityscore=1501
+ bulkscore=0 suspectscore=0 impostorscore=0 malwarescore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606050142
 
-On Mon, May 18, 2026 at 11:12:06AM +0300, Manos Pitsidianakis wrote:
-> Hello all,
-> 
-> I have a new device type proposal for the virtio spec I hope to
-> publish to virtio-comment soon and I have a reference C driver
-> implementation for Linux. However I would prefer to implement the
-> driver in Rust, and should it be accepted upstream, abandon the C
-> driver out-of-tree.
-> 
-> In preparation for that, I wrote bindings for the virtio subsystem and
-> sent them to LKML. I had forgotten to CC virtio-dev.
-> 
-> The RFC I sent 2 weeks ago has a sample virtio-rtc driver that doesn't
-> register itself to the rtc subsystem. Since then I wrote a virtio-rng
-> driver instead that is fully equivalent to the C driver. I haven't
-> sent it yet because my last revision did not receive any comments yet.
-> My WIP tree is https://github.com/epilys/linux/tree/rust-virtio
+Virtio MMIO transport version 3 allows device reset to complete
+asynchronously. Unlike version 2, where writing zero to Status must
+complete the reset before the write returns, version 3 requires the
+driver to poll Status until it reads back zero before considering reset
+complete.
 
-Yea, sorry I didn't start reviewing yet. My problem is my rust knowledge is
-limited, and kernel rust - nonexistent. I did the crab book a while ago
-but didn't do much since except a small terminal emulator project.
+Update virtio-mmio accordingly: accept transport version 3 and, during
+reset, wait for Status to become zero. Keep the polling loop unbounded,
+consistent with virtio-pci, since the reset callback does not return an
+error code.
 
-> I'd like to hear any feedback and suggestions, especially from the
-> kernel virtio and Rust maintainers.
-> 
-> Note: An issue with virtio drivers is that they require bindings both
-> for virtio and the device subsystem. For example I had to write hwrng
-> bindings for the virtio-rng driver. Does this require more
-> co-operation from kernel maintainers in order to get things merged?
+Signed-off-by: Peter Hilber <peter.hilber@oss.qualcomm.com>
+Link: https://github.com/oasis-tcs/virtio-spec/commit/bb1dd2e1fe89b862f38f15873d835a698b196f89
+---
+ drivers/virtio/virtio_mmio.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-Well the rust kernel doc at Documentation/rust/general-information.rst
-says you are supposed to also write
-"abstractions" as opposed to just "bindings" and they have to
-be "ergonomic". I will be frank I'm not the best judge
-about "egonomic". So yes, more kernel maintainers who understand
-this thing would help a lot.
-
-> Miguel: WDYT?
-> 
-> Thanks in advance!
-> 
-> ---------- Forwarded message ---------
-> From: Manos Pitsidianakis <manos@pitsidianak.is>
-> Date: Sun, May 10, 2026 at 4:38 PM
-> Subject: [PATCH RFC v3 0/6] Add Rust virtio bindings and sample device
-> To: Miguel Ojeda <ojeda@kernel.org>
-> Cc: Manos Pitsidianakis <manos.pitsidianakis@linaro.org>, Peter Hilber
-> <peter.hilber@oss.qualcomm.com>, Stefano Garzarella
-> <sgarzare@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Viresh
-> Kumar <viresh.kumar@linaro.org>, Michael S. Tsirkin <mst@redhat.com>,
-> Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, Björn Roy
-> Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>,
-> Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl
-> <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, Danilo
-> Krummrich <dakr@kernel.org>, Daniel Almeida
-> <daniel.almeida@collabora.com>, <rust-for-linux@vger.kernel.org>,
-> Jason Wang <jasowang@redhat.com>, Xuan Zhuo
-> <xuanzhuo@linux.alibaba.com>, Eugenio Pérez <eperezma@redhat.com>,
-> <virtualization@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-> Manos Pitsidianakis <manos@pitsidianak.is>
-> 
-> 
-> Hi all, this RFC series adds Rust bindings for Virtio drivers
-> (frontends in virtio parlance).
-> 
-> As a PoC, it also adds a sample virtio-rtc driver which performs
-> capability discovery through the virtqueue without registering any clock.
-> 
-> Before I send a cleaned-up non-RFC I would like some initial feedback
-> (i.e. is it something the upstream wants?)
-> 
-> This was tested with the rust-vmm vhost-device-rtc device backend that I
-> wrote[^0]:
-> 
-> [^0]: https://github.com/rust-vmm/vhost-device/tree/main/vhost-device-rtc
-> 
-> Instructions:
-> 
->   Run the daemon in a separate terminal:
-> 
->   $ cargo run --bin vhost-device-rtc -- -s /tmp/rtc.sock
-> 
->   Then run the VM:
-> 
->   $ qemu-system-aarch64 \
->     -machine type=virt,virtualization=off,acpi=on \
->     -cpu host \
->     -smp 8 \
->     -accel kvm \
->     -drive if=virtio,format=qcow2,file=./debian-13-nocloud-arm64-daily.qcow2 \
->     -device virtio-net-pci,netdev=unet \
->     -device virtio-scsi-pci \
->     -serial mon:stdio \
->     -m 8192 \
->     -object memory-backend-memfd,id=mem,size=8G,share=on \
->     -numa node,memdev=mem \
->     -display none \
->     -vga none \
->     -kernel /path/to/linux/build/arch/arm64/boot/Image \
->     -device vhost-user-test-device,chardev=rtc,id=rtc,virtio-id=17,num_vqs=2,vq_size=1024
-> \
->     -chardev socket,path=/tmp/rtc.sock,id=rtc \
->     ...
-> 
->   Example output:
->     [    1.105238] rust_virtio_rtc: Probe Rust virtio driver sample.
->     [    1.105645] rust_virtio_rtc: Found 1 vqs.
->     [    1.136050] rust_virtio_rtc: process_requestq got buf 16 bytes
->     [    1.136125] rust_virtio_rtc: Got response! Ok(RespCfg { head:
-> ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> num_clocks: Le16(3), reserved: [0, 0, 0, 0, 0, 0] })
->     [    1.136701] rust_virtio_rtc: Got response! Ok(RespClockCap {
-> head: ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> clock_type: 3, leap_second_smearing: 0, flags: 0, reserved: [0, 0, 0,
-> 0, 0] })
->     [    1.136724] rust_virtio_rtc virtio0: cannot expose clock 0
-> (type 3, variant 0, flags 0) to userspace
->     [    1.137259] rust_virtio_rtc: Got response! Ok(RespRead { head:
-> ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> clock_reading: Le64(1777890485031060388) })
->     [    1.137277] rust_virtio_rtc: #0 clock reading = 1777890485031060388
->     [    1.137749] rust_virtio_rtc: Got response! Ok(RespClockCap {
-> head: ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> clock_type: 1, leap_second_smearing: 0, flags: 0, reserved: [0, 0, 0,
-> 0, 0] })
->     [    1.137769] rust_virtio_rtc virtio0: cannot expose clock 1
-> (type 1, variant 0, flags 0) to userspace
->     [    1.138247] rust_virtio_rtc: Got response! Ok(RespRead { head:
-> ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> clock_reading: Le64(1777890485032086075) })
->     [    1.138264] rust_virtio_rtc: #1 clock reading = 1777890485032086075
->     [    1.138730] rust_virtio_rtc: Got response! Ok(RespClockCap {
-> head: ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> clock_type: 2, leap_second_smearing: 0, flags: 0, reserved: [0, 0, 0,
-> 0, 0] })
->     [    1.138751] rust_virtio_rtc virtio0: cannot expose clock 2
-> (type 2, variant 0, flags 0) to userspace
->     [    1.139253] rust_virtio_rtc: Got response! Ok(RespRead { head:
-> ReqHead { msg_type: Le16(0), reserved: [0, 0, 0, 0, 0, 0] },
-> clock_reading: Le64(338567896865557) })
->     [    1.139270] rust_virtio_rtc: #2 clock reading = 338567896865557
-> 
-> Concerns - Notes - TODOs
-> ========================
-> 
-> - Virtqueue lifetimes don't neatly apply to Rust as expected, so a lot
->   of times we have to go through unsafe pointer dereferences (though
->   which are guaranteed by Virtio subsystem to be valid, for example when
->   a callback is called with the vq argument). There's a potential for
->   misuse and definitely could use better thinking.
-> - `struct virtio_device` is not reference-counted like other implemented
->   device types in rust/kernel. Maybe we need to change C API first to
->   make them reference counted, assuming this doesn't break anything?
-> - The sample driver obviously conflicts with the C implementation, so
->   this would either need to move out of samples/ or figure out some way
->   to handle this in kbuild.
-> - kernel::virtio module and its types need a few rustdoc examples that I
->   will add in followup series
-> - Note that the registration of RTC clocks etc in the sample driver is
->   not done, I'm putting it off until I receive some feedback first. The
->   sample driver otherwise does send and receive data from the virtqueue
->   as a PoC.
-> 
-> PS: No LLMs used so any mistakes and goofs are solely written by me.
-> 
-> Signed-off-by: Manos Pitsidianakis <manos@pitsidianak.is>
-> ---
-> Changes in v3:
-> - Removed unused methods from virtio API
-> - Clean up how scattergather lists are added to virtqueues by using
->   owned SGTables only, and make the API safe(r)
-> - Add RAII cleanup for find_vqs return value that calls del_vqs
-> - Reset device after remove callback
-> - Significantly clean up sample driver as a result of the other cleanups
-> - Link to v2: https://lore.kernel.org/r/20260509-rust-virtio-v2-0-c1e30ec2bd21@pitsidianak.is
-> 
-> Changes in v2:
-> - Move helper ifdefs to helper file (thanks Alice)
-> - Changed CONFIG checks to IS_ENABLED to allow for CONFIG_VIRTIO=m
-> - Split all use imports to one item per line according to style guide
-> - Fixed wait_for_completion_interruptible*() rustdocs
-> - Use Jiffy type alias in wait_for_completion_interruptible_timeout()
-> - Pepper and salt #[inline]s wherever appropriate as per style guide
-> - Split probe() into probe() and init() to allow cleaning up if init
->   fails
-> - Remove unnecessary Send and Sync unsafe impls for
->   kernel::virtio::Device
-> - Remove unnecessary LeSize and BeSize
-> - Accept Option<_> for virtqueue callback when creating a VirtqueueInfo
-> - Made all vq buffer adding operations unsafe
-> - Use AtomicU16 instead of Cell<u16> for sample virtio driver
-> - Fix RespHead field types in sample virtio driver
-> - Fix response error checking in sample virtio driver
-> - Change some device contexts in method signatures
-> - Link to v1: https://lore.kernel.org/r/20260505-rust-virtio-v1-0-9563383909e4@pitsidianak.is
-> 
-> ---
-> Manos Pitsidianakis (6):
->       rust/bindings: generate virtio bindings
->       rust/helpers: add virtio.c
->       rust/kernel/device: return parent at same context
->       rust: add virtio module
->       rust: impl interruptible waits for Completion
->       samples/rust: Add sample virtio-rtc driver [WIP]
-> 
->  MAINTAINERS                     |   9 +
->  rust/bindings/bindings_helper.h |   5 +
->  rust/helpers/helpers.c          |   1 +
->  rust/helpers/virtio.c           |  37 ++++
->  rust/kernel/device.rs           |   2 +-
->  rust/kernel/lib.rs              |   2 +
->  rust/kernel/sync/completion.rs  |  42 +++-
->  rust/kernel/virtio.rs           | 423 ++++++++++++++++++++++++++++++++++++++++
->  rust/kernel/virtio/utils.rs     |  57 ++++++
->  rust/kernel/virtio/virtqueue.rs | 314 +++++++++++++++++++++++++++++
->  samples/rust/Kconfig            |  15 ++
->  samples/rust/Makefile           |   1 +
->  samples/rust/rust_virtio_rtc.rs | 403 ++++++++++++++++++++++++++++++++++++++
->  13 files changed, 1309 insertions(+), 2 deletions(-)
-> ---
-> base-commit: 028ef9c96e96197026887c0f092424679298aae8
-> change-id: 20260504-rust-virtio-8523b01dfdc2
-> 
-> Best regards,
-> --
-> Manos Pitsidianakis <manos@pitsidianak.is>
-> 
-> -- 
-> Manos Pitsidianakis
-> Emulation and Virtualization Engineer at Linaro Ltd
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 510b7c4efdff..316f03b97356 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -55,6 +55,7 @@
+ #define pr_fmt(fmt) "virtio-mmio: " fmt
+ 
+ #include <linux/acpi.h>
++#include <linux/delay.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/highmem.h>
+ #include <linux/interrupt.h>
+@@ -114,9 +115,9 @@ static int vm_finalize_features(struct virtio_device *vdev)
+ 	vring_transport_features(vdev);
+ 
+ 	/* Make sure there are no mixed devices */
+-	if (vm_dev->version == 2 &&
++	if (vm_dev->version >= 2 &&
+ 			!__virtio_test_bit(vdev, VIRTIO_F_VERSION_1)) {
+-		dev_err(&vdev->dev, "New virtio-mmio devices (version 2) must provide VIRTIO_F_VERSION_1 feature!\n");
++		dev_err(&vdev->dev, "New virtio-mmio devices (version >= 2) must provide VIRTIO_F_VERSION_1 feature!\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -254,6 +255,12 @@ static void vm_reset(struct virtio_device *vdev)
+ 
+ 	/* 0 status means a reset. */
+ 	writel(0, vm_dev->base + VIRTIO_MMIO_STATUS);
++
++	if (vm_dev->version >= 3) {
++		/* Wait for reset to complete. */
++		while (vm_get_status(vdev))
++			fsleep(1000);
++	}
+ }
+ 
+ 
+@@ -600,7 +607,7 @@ static int virtio_mmio_probe(struct platform_device *pdev)
+ 
+ 	/* Check device version */
+ 	vm_dev->version = readl(vm_dev->base + VIRTIO_MMIO_VERSION);
+-	if (vm_dev->version < 1 || vm_dev->version > 2) {
++	if (vm_dev->version < 1 || vm_dev->version > 3) {
+ 		dev_err(&pdev->dev, "Version %ld not supported!\n",
+ 				vm_dev->version);
+ 		rc = -ENXIO;
+-- 
+2.43.0
 
