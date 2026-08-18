@@ -1,621 +1,602 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E2D1175A74
-	for <virtio-dev@lists.linux.dev>; Mon, 17 Aug 2026 17:16:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE53368D65
+	for <virtio-dev@lists.linux.dev>; Tue, 18 Aug 2026 04:54:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786987018; cv=none; b=IK+hHYwDY1aqkLGzPM5OZz8x2STc3bf2YqC2NO3F/JsgAAXq8WfiDhmy+u9I8cz5YulLeksbRtvb+xctFaf0X4HpbAh3DoFVvqFFl5Oppn6Weid0OB9ttqP++YgvxvP2VvzJj+PVUBH3LTK8v2yRg652ReX1u8PZtqCEiGrM6d0=
+	t=1787028848; cv=none; b=ZR3tXw5sHKmkYhWhIGukOVx0CY0+9o0+XntOln//zk9S2XLdUyGtmw6bzBoPisJs0UmLz7w2r7Z8enHxRVnNsXdMax1ZxtpyXUv3izW8wYtti0986k+Muo7dBRlZHuEJhdNYQBzpGHWRSw7VDiG2Fb/m7oG9w6IbXVyMuvDAG30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786987018; c=relaxed/simple;
-	bh=q/XXpk03cG9Ip7NiEw9sy74FY9kNp9iPBWLhyoVNwWo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N57dVobk3iFl2yTVSWwl1ICt/zkGyUjyWxFpJ/FWewx700xUNCdL4XmYINzYOGCbR+wJWweXxrg3/FB1DYx3ddUmZRd3uavXkny7s/cj1sWGzEe6b4aDUsZOJ/9uJg42l0rAW7j/VjivAZJtYjPjdlJMlwGlcehXziXmQ8pgLmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NLzAcMZH; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1787028848; c=relaxed/simple;
+	bh=X+V8udPEa5r1AE9aJlaL8TsbMjw1nL0uNEZZB4xfgvA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OVQGt9kr6aE/3cpQYsZE81r3uRgbMejhoBmFTBbcPVQX5ViddxDYF9acu7q69b/TMWi88x5866G7+IEwVg/VGLzFaLh4isCePofSPpDth6TfVISL67dX5xJI8L7CHG47yi7IOfAO2IUM18n4zoLpOQxIVIgWOP2psNuhCA0/A1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=miUZ+YdG; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Vi5upv5J; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NLzAcMZH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1786987015;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0fvVW2l4i77LzuaDnoAVsreCQwQmWGNEBm5bv811roQ=;
-	b=NLzAcMZHUnEJx415likOBeMhvN9EvB0EO9iQLiSzhKllJkqNoxk0qflU3PDucs4n9bUQD3
-	Z0vzX9nUh6ydkVkanuQw14TG7wKdBGSjEFsbz3uhkEbXIVIgSO1EkeiJRAUp6aJEkccFp2
-	UWM5AUfuDRyarOlox3Y/8KemxZrMM8c=
-Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-634-6ALSCGBwPRa_OWaRjxynPA-1; Mon,
- 17 Aug 2026 13:16:53 -0400
-X-MC-Unique: 6ALSCGBwPRa_OWaRjxynPA-1
-X-Mimecast-MFC-AGG-ID: 6ALSCGBwPRa_OWaRjxynPA_1786987012
-Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 4E0B51956096;
-	Mon, 17 Aug 2026 17:16:52 +0000 (UTC)
-Received: from localhost (headnet05.pony-001.prod.iad2.dc.redhat.com [10.2.32.117])
-	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id D5A503000239;
-	Mon, 17 Aug 2026 17:16:51 +0000 (UTC)
-Date: Mon, 17 Aug 2026 13:16:50 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
-Cc: virtio-dev@lists.linux.dev, ebiggers@kernel.org,
-	neeraj.soni@oss.qualcomm.com
-Subject: Re: [PATCH v1] virtio-blk: Add inline encryption support
-Message-ID: <20260817171650.GC143460@fedora>
-References: <20260814142306.3934029-1-linlin.zhang@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="miUZ+YdG";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Vi5upv5J"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67I4fBxS3464524
+	for <virtio-dev@lists.linux.dev>; Tue, 18 Aug 2026 04:54:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	5mhH/fS5Y/mYhecfRucltzTdjQqEteJcJ8H/HfTHtSM=; b=miUZ+YdGYKgQE9Pe
+	/9JZQBb3ZFzDdwRht5vQCyUuUnqVGeWJ2gLnyk/UKv9RAj+snF11HqiYoS2KTg07
+	O+ijhCd5QQqnnt0IUXaFrVdsIV5XFvhEcfz/N3TZFncq54ojR4AJMoDbscOEbKyv
+	Ji0euLkeJu0vVUC26Dhnl6Bymc6yl7vGEmuleLY5pcj98C8haytNbDpoAQcTXEqA
+	Nb0bndmvlQWE78O/P5cNJlQKX1b3N2W2GkNGIJG72MZae+vwXhI9XJcsH/aooLnH
+	q/5FhyF7mkEvNpzJS6gtX4r7ndoSZCnsrTBUEZDdbk4NPBX6G2sMjXaRhHSLDLA1
+	FEM3uQ==
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4611aqj1-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <virtio-dev@lists.linux.dev>; Tue, 18 Aug 2026 04:54:05 +0000 (GMT)
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2d5d00fd19bso9725405ad.1
+        for <virtio-dev@lists.linux.dev>; Mon, 17 Aug 2026 21:54:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787028844; x=1787633644; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=5mhH/fS5Y/mYhecfRucltzTdjQqEteJcJ8H/HfTHtSM=;
+        b=Vi5upv5JyJ6H4QtcI7wTZE278xsabVojDrxkArN6yjcLPiotROZsWDljDfwdQgg0pn
+         AVYOgwCL1lSBlxuqVMjLWH723SwKA7G0Pb4EpQDH4DeXC3CuNVcnXhhUWSqHwx9a1Am5
+         KhI1MlyDu4N81vsFiapO3DMxZ73EsAzoydh+DKV6P7vSAa2splPfUEjPfHMz9d86XM/a
+         HRiJTdV2dpmoIawzi6VnqKJZs6zto/DJOtao2zY7ptSyRmLh+VNzVFS2ft96l9/8pdUg
+         sG1uor4ES15QukYNlznAOm+uhxy9wL3iy/o3RjKKRXKNZhTBt6UFPOJYBAgr6jZFfhcq
+         EYpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787028844; x=1787633644;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=5mhH/fS5Y/mYhecfRucltzTdjQqEteJcJ8H/HfTHtSM=;
+        b=hMrpyyojUAHcULQszzdzmQlb0yuOjZQRG1bAgkrRZ/B0htBPIsoO6EfOtTi4g3529D
+         9W4N5QFTAsLHlNG2yveDaNDsIi1aLJRhf3GfsQ00AypIz9PdtruYTB4GzfwpvlXAs079
+         60PpgNIwoWMIdc2wAwJc6xYXTbNaXyKXBZotKuJM0jbrUE00Twe82UIeNSXIP38VIWfC
+         +mc6yraIemL63SxzfzDR38U8f9x+aRTh/FWbmzRKxCuY5hN/H3kuiFrvSIUVShsardgW
+         49ESCuUYbgkKOFT9Y98WxNV6Y3LbTEeEcFe8EAeUVa1eKjPruTJOGk6xHCH5J8Wot3rX
+         EVTw==
+X-Gm-Message-State: AOJu0YysQAk6YZynyJ+Gw+fYQIdmX+ZjPkDE6Pj7p987iHyFKB3baFDK
+	NOIPemiH487Pd4MHiOozsdUmekrGVaJVmMD1XzY/Q+ui8HYAwJ53d8PKFXY61m9qh9hFexv8+1O
+	HD2H+i0c0iuuQOaD8+Ap2KrB6DLNhgnWmHfc+TKLlHccW9rnZ6acU3PBTlNY6yVc9
+X-Gm-Gg: AR+sD10ubY78w+0i2AfYb/yTCg4u4D71tf8kc5X74l4QH4kTKOYIVR1WeOO+pNJPMOC
+	ktHOg96grKVniNSdyPDq46ksWDoYTI06B20SdRt7MPtok92hVR6utUjTXhCbl2F2Ph5LzPr4k0s
+	j+PEXf6ue3kSROGAj5YF9uTt9piL4EP8O59Fl9ckzbTxAMpbB3JlqF3XtZ3qSC5Eq/cao3IaSww
+	8Haxb2vZuBT6J1wnjDEZ7UAw1d2igpIGpno5nMTr6kb0Ntv9abD7FEtHTvh58C4JSvDhe2sWK8a
+	KMtOWPPkJW1hg5W4Gz9vNb8rOni5O8nBM/9s9rbKZE9nOR/AquuL2dDD0UXxC++DjuPNivWw1xW
+	Ey1empsy85QXc/c7lJ46iOrJGUVVe
+X-Received: by 2002:a17:90b:52cf:b0:37f:ed7e:7e42 with SMTP id 98e67ed59e1d1-3955a7d1a16mr6017860a91.14.1787028843877;
+        Mon, 17 Aug 2026 21:54:03 -0700 (PDT)
+X-Received: by 2002:a17:90b:52cf:b0:37f:ed7e:7e42 with SMTP id 98e67ed59e1d1-3955a7d1a16mr6017788a91.14.1787028843135;
+        Mon, 17 Aug 2026 21:54:03 -0700 (PDT)
+Received: from [10.231.241.142] ([114.94.8.21])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3954d1b0143sm4599981a91.0.2026.08.17.21.54.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Aug 2026 21:54:02 -0700 (PDT)
+Message-ID: <c839f9df-8f2b-4a96-b7ae-3b798b8d11da@oss.qualcomm.com>
+Date: Tue, 18 Aug 2026 12:53:37 +0800
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Xo8IhOv5j2N7+7e4"
-Content-Disposition: inline
-In-Reply-To: <20260814142306.3934029-1-linlin.zhang@oss.qualcomm.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] virtio-blk: Add inline encryption support
+To: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: virtio-dev@lists.linux.dev, ebiggers@kernel.org,
+        neeraj.soni@oss.qualcomm.com,
+        Gaurav Kashyap <gaurav.kashyap@oss.qualcomm.com>
+References: <20260814142306.3934029-1-linlin.zhang@oss.qualcomm.com>
+ <20260817171650.GC143460@fedora>
+Content-Language: en-US
+From: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
+In-Reply-To: <20260817171650.GC143460@fedora>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: IgXJSL3Oa4PZmMDDVXldq8iAI2iL4qxi
+X-Proofpoint-ORIG-GUID: IgXJSL3Oa4PZmMDDVXldq8iAI2iL4qxi
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE4MDAzNCBTYWx0ZWRfXwHRQCgnajLRA
+ wLTwk2VVTOAymvZ/3C/ht8bDTlpdKTsK7gGNf1pqzXpix9IP/KhQ5DHqmOVhfpBclIF/FKtTrqg
+ aE2e8qZeiQTZFzykcB3FU3AJ7c5aqvQ=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE4MDAzNCBTYWx0ZWRfXx/sI6fTSwdFE
+ ojhhJizd23EAJlLDh0Qu/tAuMleLNTSc8oFWfdM7BJIaBjFKNOS76Qklt1RZqcDhE/WAcWxcxkr
+ ZkthKqmjLptRVqBqWogRxUTu/bGXhqyLHo4nAKpklPDUC0BKwJwoKjQ+EhdRfbd75DOGvKNJfCn
+ VfPq2j8GT5DHimFh81jgk4BEoi3xtsRQlyiLUV55PqghyZDBzD45RkGcx7IiO3fok6Tvlma5IG0
+ Ioae+9EiQTiLyNfLVDxkAomD9DmL2N26VEUEYnqX2Aw7qZBfojZht0beogjuDjOdd9mR7pWDOzK
+ 2l7uvkd7fUV3s8gxWIJHf4SY/YPCoMKlcOQXpM1F/hndPpUbRCYpBPvW9F3T0RUIcyeekPcZj+M
+ 4+dx+4ZhTZC0pJUjcMRKaAb5sDKr036cJJAyEEEu1DSi5YwG/Ns1ifu1v+nRpymSUHfdCh4IUe+
+ 6Em5J/+2wKWJBjTk5JA==
+X-Authority-Analysis: v=2.4 cv=UslT8ewB c=1 sm=1 tr=0 ts=6a83e56d cx=c_pps
+ a=IZJwPbhc+fLeJZngyXXI0A==:117 a=Uz3yg00KUFJ2y2WijEJ4bw==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
+ a=VwQbUJbxAAAA:8 a=NEAV23lmAAAA:8 a=EUspDBNiAAAA:8 a=eusnVaB-hU8hlRm4fIMA:9
+ a=QEXdDO2ut3YA:10 a=uG9DUKGECoFWVXl0Dc02:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-17_04,2026-08-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 clxscore=1011 impostorscore=0 suspectscore=0 phishscore=0
+ bulkscore=0 priorityscore=1501 malwarescore=0 spamscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608180034
 
---Xo8IhOv5j2N7+7e4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 14, 2026 at 07:23:01AM -0700, Linlin Zhang wrote:
-> From: linlzhan <linlin.zhang@oss.qualcomm.com>
->=20
-> Add VIRTIO_BLK_F_IE to advertise inline encryption support.
->=20
-> When the feature is negotiated, the device reports inline encryption
-> characteristics through virtio_blk_enc_characteristics. Add
-> VIRTIO_BLK_T_GET_CRYPTO_MODES, VIRTIO_BLK_T_CRYPTO_IN, and
-> VIRTIO_BLK_T_CRYPTO_OUT so that the driver can discover supported
-> crypto modes and submit inline-encrypted I/O requests.
->=20
-> Crypto I/O requests carry a virtual key slot index, data unit size,
-> and initial Data Unit Number (DUN). The device maps the virtual key
-> slot to a physical key slot in the storage backend and uses these
-> parameters for inline encryption or decryption.
->=20
-> Key provisioning is performed through an out-of-band mechanism and is
-> outside the scope of this device type.
->=20
-> For background on inline encryption in UFS and eMMC storage, see:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
-ocumentation/block/inline-encryption.rst
->=20
-> Change-Id: I83c52456bc0c9dd37f39ff46e6bfe73a715138ca
-> Signed-off-by: linlzhan <linlin.zhang@oss.qualcomm.com>
-> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/238
-> ---
->  device-types/blk/description.tex | 297 ++++++++++++++++++++++++++++++-
->  1 file changed, 291 insertions(+), 6 deletions(-)
 
-Hi,
-I will review this on Wednesday, August 19th.
+On 8/18/2026 1:16 AM, Stefan Hajnoczi wrote:
+> On Fri, Aug 14, 2026 at 07:23:01AM -0700, Linlin Zhang wrote:
+>> From: linlzhan <linlin.zhang@oss.qualcomm.com>
+>>
+>> Add VIRTIO_BLK_F_IE to advertise inline encryption support.
+>>
+>> When the feature is negotiated, the device reports inline encryption
+>> characteristics through virtio_blk_enc_characteristics. Add
+>> VIRTIO_BLK_T_GET_CRYPTO_MODES, VIRTIO_BLK_T_CRYPTO_IN, and
+>> VIRTIO_BLK_T_CRYPTO_OUT so that the driver can discover supported
+>> crypto modes and submit inline-encrypted I/O requests.
+>>
+>> Crypto I/O requests carry a virtual key slot index, data unit size,
+>> and initial Data Unit Number (DUN). The device maps the virtual key
+>> slot to a physical key slot in the storage backend and uses these
+>> parameters for inline encryption or decryption.
+>>
+>> Key provisioning is performed through an out-of-band mechanism and is
+>> outside the scope of this device type.
+>>
+>> For background on inline encryption in UFS and eMMC storage, see:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/inline-encryption.rst
+>>
+>> Change-Id: I83c52456bc0c9dd37f39ff46e6bfe73a715138ca
+>> Signed-off-by: linlzhan <linlin.zhang@oss.qualcomm.com>
+>> Fixes: https://github.com/oasis-tcs/virtio-spec/issues/238
+>> ---
+>>  device-types/blk/description.tex | 297 ++++++++++++++++++++++++++++++-
+>>  1 file changed, 291 insertions(+), 6 deletions(-)
+> 
+> Hi,
+> I will review this on Wednesday, August 19th.
+> 
+> In the meantime, is there a changelog from your previous patch series?
+> 
+> Stefan
 
-In the meantime, is there a changelog from your previous patch series?
+Thanks for your time!
 
-Stefan
+Based on your concern about the previous patch series, we updated the design to some degree: 1).the
+key programming is still done in a out-of-bound path, in which the virtual slot is passed to Trust
+Zone/Secure VM, Trust Zone/Secure VM is responsible to translate the virtul slot to physical slot,
+ensuring the key is provisioned to this physical slot finally. 2).the virtual slot is passed from
+Guest VM to the backend in Primary VM via virtio blk request, the Primary VM is responsible to translate
+the virtual slot to the physical slot. This way avoids the VM slot isolation voilation.
 
->=20
-> diff --git a/device-types/blk/description.tex b/device-types/blk/descript=
-ion.tex
-> index 3b3a4e7..f8a544b 100644
-> --- a/device-types/blk/description.tex
-> +++ b/device-types/blk/description.tex
-> @@ -71,7 +71,16 @@ \subsection{Feature bits}\label{sec:Device Types / Blo=
-ck Device / Feature bits}
-> =20
->  \item[VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA (19)] Device supports the
->      VIRTIO_BLK_REQ_FLAG_OUT_FUA flag in the \field{flags} bitfield of the
-> -    \field{virtio_blk_req} structure for VIRTIO_BLK_T_OUT requests.
-> +    request for VIRTIO_BLK_T_OUT and VIRTIO_BLK_T_CRYPTO_OUT requests.
-> +
-> +\item[VIRTIO_BLK_F_IE (22)] Only when the storage backend supports inline
-> +    encryption and this feature bit is negotiated, the data read from or
-> +    written to the device can be decrypted from or encrypted to the stor=
-age
-> +    via inline crypto engine. Keys are provisioned into key slots of the
-> +    inline crypto engine through a mechanism outside the scope of this d=
-evice
-> +    type, and requests identify, by key slot index, which provisioned ke=
-y to
-> +    use. The number of key slots, the maximum DUN size and the supported=
- key
-> +    types are reported in \field{enc_characteristics}.
-> =20
->  \end{description}
-> =20
-> @@ -135,6 +144,12 @@ \subsection{Device configuration layout}\label{sec:D=
-evice Types / Block Device /
->                  u8 model;
->                  u8 unused2[3];
->          } zoned;
-> +        struct virtio_blk_enc_characteristics {
-> +                le16 max_slots;
-> +                u8 max_dun_bytes;
-> +                u8 key_types;
-> +                le32 unused3;
-> +        } enc_characteristics;
->  };
->  \end{lstlisting}
-> =20
-> @@ -222,6 +237,39 @@ \subsection{Device configuration layout}\label{sec:D=
-evice Types / Block Device /
->  terminated by the device with a "zone resources exceeded" error as defin=
-ed for
->  specific commands later.
-> =20
-> +If the VIRTIO_BLK_F_IE feature is negotiated, then in
-> +\field{virtio_blk_enc_characteristics},
-> +\begin{itemize}
-> +\item \field{max_slots} is the number of key slots allocated to the Gues=
-t VM.
-> +    It MUST not exceed the number of key slots supported by the inline c=
-rypto
-> +    engine of the device backend storage. Key slots are indexed from 0 to
-> +    \field{max_slots} - 1.
-> +
-> +\item \field{max_dun_bytes} is the maximum number of bytes of the Data U=
-nit
-> +    Number (DUN) that the device supports for any of its supported crypto
-> +    modes. For example, known inline crypto engines report a
-> +    \field{max_dun_bytes} of 4 (JEDEC eMMC Command Queue Host Controller
-> +    Interface, CQHCI) or 8 (JEDEC UFS Host Controller Interface, UFSHCI);
-> +    a device backed by different inline crypto engine hardware MAY report
-> +    a different value, subject to the constraints in
-> +    \ref{devicenormative:Device Types / Block Device / Device Initializa=
-tion}.
-> +
-> +\item \field{key_types} is a bitmask of the key types the device support=
-s,
-> +    using the following values:
-> +    \begin{lstlisting}
-> +#define VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW    (1 << 0)
-> +#define VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED  (1 << 1)
-> +    \end{lstlisting}
-> +    VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW indicates that keys are provisioned i=
-nto
-> +    key slots in raw (plaintext) form. VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRA=
-PPED
-> +    indicates that the key exists only in ephemerally-wrapped form in me=
-mory
-> +    outside of dedicated hardware, and can only be unwrapped and provisi=
-oned
-> +    into key slots by dedicated hardware (e.g. a hardware key manager). =
-The
-> +    plaintext key never exists in software-accessible memory.
-> +
-> +\item \field{unused3} is reserved for future use.
-> +\end{itemize}
-> +
->  \subsubsection{Legacy Interface: Device configuration layout}\label{sec:=
-Device Types / Block Device / Device configuration layout / Legacy Interfac=
-e: Device configuration layout}
->  When using the legacy interface, transitional devices and drivers
->  MUST format the fields in struct virtio_blk_config
-> @@ -285,6 +333,14 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->      \field{zoned} can be read by the driver to determine the zone
->      characteristics of the device. All \field{zoned} fields are read-onl=
-y.
-> =20
-> +\item If the VIRTIO_BLK_F_IE feature is negotiated, the fields in
-> +    \field{enc_characteristics} can be read by the driver to determine t=
-he
-> +    inline encryption capabilities of the device, and a
-> +    VIRTIO_BLK_T_GET_CRYPTO_MODES request (see
-> +    \ref{sec:Device Types / Block Device / Device Operation}) can be sent
-> +    to retrieve the set of supported crypto modes. All
-> +    \field{enc_characteristics} fields are read-only.
-> +
->  \end{enumerate}
-> =20
->  \drivernormative{\subsubsection}{Device Initialization}{Device Types / B=
-lock Device / Device Initialization}
-> @@ -312,6 +368,10 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->  offered by the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone=
- model,
->  then the driver MAY negotiate these two bits independently.
-> =20
-> +Zoned devices do not support inline encryption. If the VIRTIO_BLK_F_ZONED
-> +feature is offered by the device, then the VIRTIO_BLK_F_IE feature MUST =
-NOT
-> +be negotiated by the driver.
-> +
->  If the VIRTIO_BLK_F_ZONED feature is negotiated, then
->  \begin{itemize}
->  \item if the driver that can not support host-managed zoned devices
-> @@ -327,6 +387,12 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->  The driver MUST NOT negotiate VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without
->  VIRTIO_BLK_F_REQ_FLAGS.
-> =20
-> +Drivers MUST NOT negotiate the VIRTIO_BLK_F_IE feature if they are
-> +incapable of provisioning keys into the key slots of the device backend
-> +storage's inline crypto engine, or of conveying the key slot index,
-> +data unit size in bits, and Data Unit Number (DUN) per request to
-> +the device using the \field{virtio_blk_crypto_msg} structure.
-> +
->  \devicenormative{\subsubsection}{Device Initialization}{Device Types / B=
-lock Device / Device Initialization}
-> =20
->  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
-> @@ -341,9 +407,15 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->  If the device that is being initialized is a not a zoned device, the dev=
-ice
->  SHOULD NOT offer the VIRTIO_BLK_F_ZONED feature.
-> =20
-> +A zoned device MUST NOT offer the VIRTIO_BLK_F_IE feature.
-> +
->  The VIRTIO_BLK_F_ZONED feature cannot be properly negotiated without
->  FEATURES_OK bit. Legacy devices MUST NOT offer VIRTIO_BLK_F_ZONED featur=
-e bit.
-> =20
-> +The VIRTIO_BLK_F_IE feature cannot be properly negotiated without
-> +FEATURES_OK bit. Legacy devices MUST NOT offer the VIRTIO_BLK_F_IE featu=
-re
-> +bit.
-> +
->  If the VIRTIO_BLK_F_ZONED feature is not accepted by the driver,
->  \begin{itemize}
->  \item the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone mode=
-l SHOULD
-> @@ -415,6 +487,26 @@ \subsection{Device Initialization}\label{sec:Device =
-Types / Block Device / Devic
->  The device MUST NOT acknowledge FEATURES_OK if the driver sets
->  VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without VIRTIO_BLK_F_REQ_FLAGS.
-> =20
-> +The device MUST NOT acknowledge FEATURES_OK if the driver negotiates both
-> +VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_IE.
-> +
-> +If the device is incapable of consuming the \field{virtio_blk_crypto_msg=
-},
-> +the device SHOULD NOT offer the VIRTIO_BLK_F_IE feature.
-> +
-> +If the VIRTIO_BLK_F_IE feature is negotiated, the device MUST set
-> +\field{max_slots} in \field{enc_characteristics} to a value greater than=
- 0.
-> +
-> +If the VIRTIO_BLK_F_IE feature is negotiated, the device MUST set
-> +\field{key_types} in \field{enc_characteristics} to have at least one of
-> +VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW or VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED
-> +set, and MUST NOT set any bit in \field{key_types} other than
-> +VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW and VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED.
-> +The device MUST initialize padding bytes \field{unused3} to 0.
-> +
-> +The device MUST NOT set \field{max_dun_bytes} in \field{enc_characterist=
-ics}
-> +to 0 or to a value greater than 8, since \field{dun} of
-> +\field{virtio_blk_crypto_msg} is a fixed 8-byte field.
-> +
->  \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device=
- Types / Block Device / Device Initialization / Legacy Interface: Device In=
-itialization}
-> =20
->  Because legacy devices do not have FEATURES_OK, transitional devices
-> @@ -478,8 +570,8 @@ \subsection{Device Operation}\label{sec:Device Types =
-/ Block Device / Device Ope
->  value is the bit index in the \field{flags} bitfield):
-> =20
->  \begin{description}
-> -\item[VIRTIO_BLK_REQ_FLAG_OUT_FUA (0) for VIRTIO_BLK_T_OUT requests] For=
-ce Unit
-> -    Access (FUA) flag.
-> +\item[VIRTIO_BLK_REQ_FLAG_OUT_FUA (0) for VIRTIO_BLK_T_OUT and
-> +    VIRTIO_BLK_T_CRYPTO_OUT requests] Force Unit Access (FUA) flag.
->  \end{description}
-> =20
->  The \field{sector} number indicates the offset (multiplied by 512) where
-> @@ -886,6 +978,108 @@ \subsection{Device Operation}\label{sec:Device Type=
-s / Block Device / Device Ope
->  operation by setting the VIRTIO_BLK_S_ZONE_INVALID_CMD value in
->  \field{status} of \field{virtio_blk_req} structure.
-> =20
-> +The following requirements only apply if the VIRTIO_BLK_F_IE feature is
-> +negotiated.
-> +
-> +In addition to the request types defined for devices without inline
-> +encryption support, the type of the request can be an inline-encrypted r=
-ead
-> +(VIRTIO_BLK_T_CRYPTO_IN), an inline-encrypted write (VIRTIO_BLK_T_CRYPTO=
-_OUT)
-> +or a get crypto modes command (VIRTIO_BLK_T_GET_CRYPTO_MODES).
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BLK_T_CRYPTO_OUT        27
-> +#define VIRTIO_BLK_T_CRYPTO_IN         28
-> +#define VIRTIO_BLK_T_GET_CRYPTO_MODES  30
-> +\end{lstlisting}
-> +
-> +VIRTIO_BLK_T_CRYPTO_IN and VIRTIO_BLK_T_CRYPTO_OUT requests behave the s=
-ame
-> +as VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests respectively, except th=
-at
-> +the data in \field{data} is decrypted (for VIRTIO_BLK_T_CRYPTO_IN) or is=
- to
-> +be encrypted (for VIRTIO_BLK_T_CRYPTO_OUT) by the inline crypto engine in
-> +the device backend storage using the key already provisioned in the key
-> +slot identified by the request, combined with the request's Data Unit
-> +Number (DUN). For this reason, the VIRTIO_BLK_T_CRYPTO_IN and
-> +VIRTIO_BLK_T_CRYPTO_OUT requests have the layout that is extended to have
-> +the \field{crypto_msg} field to carry this information:
-> +
-> +\begin{lstlisting}
-> +struct virtio_blk_req_crypto {
-> +        le32 type;
-> +        le32 flags;
-> +        le64 sector;
-> +        struct virtio_blk_crypto_msg crypto_msg;
-> +        u8 data[];
-> +        u8 status;
-> +};
-> +\end{lstlisting}
-> +
-> +\field{crypto_msg} has the following structure:
-> +
-> +\begin{lstlisting}
-> +struct virtio_blk_crypto_msg {
-> +        le32 slot;
-> +        le32 data_unit_size_bits;
-> +        le64 dun;
-> +};
-> +\end{lstlisting}
-> +
-> +\field{slot} is the virtual key slot index, in the range from 0 to
-> +\field{max_slots} - 1 of \field{enc_characteristics}. The device maps th=
-is
-> +virtual key slot index to a physical key slot in the inline crypto engin=
-e of
-> +the device backend storage.
-> +\field{data_unit_size_bits} is $log_2$ of the data unit size in bytes,
-> +used for calculating DUNs for sub-requests if the request is split.
-> +\field{dun} is the Data Unit Number, that is, the initial value that the
-> +inline crypto engine increments by one for each successive data unit of
-> +the size specified by \field{data_unit_size_bits}, while encrypting or
-> +decrypting the data of the request.
-> +
-> +VIRTIO_BLK_T_GET_CRYPTO_MODES is a read request that returns the data un=
-it
-> +sizes with which each of the device's crypto modes can be used. The
-> +response consists of a header followed by zero or more \field{le32}
-> +bitmask elements, indexed by crypto mode number:
-> +
-> +\begin{lstlisting}
-> +struct virtio_blk_crypto_modes {
-> +        le32   nr_modes;
-> +        u8     reserved[4];
-> +        le32   modes[];
-> +};
-> +\end{lstlisting}
-> +
-> +The device sets \field{nr_modes} in the response header to the number of
-> +fully transferred \field{modes} elements in the data buffer. \field{mode=
-s[N]},
-> +for crypto mode number N, is a bitmask indicating the data unit sizes wi=
-th
-> +which crypto mode N can be used by the device: the i'th bit of
-> +\field{modes[N]} is set if crypto mode N can be used with a data unit si=
-ze
-> +of $(1 << i)$ bytes. A value of 0 for a \field{modes} element indicates
-> +that the device does not support the corresponding crypto mode at all.
-> +Crypto mode number 0 is reserved; \field{modes[0]} is always set to 0 by
-> +the device.
-> +
-> +Crypto mode numbers are assigned by this specification, independently of
-> +any operating system's internal representation of crypto algorithms, so
-> +that support for additional crypto modes can be added in future revisions
-> +of this specification without changing the meaning of previously assigned
-> +numbers:
-> +
-> +\begin{lstlisting}
-> +#define VIRTIO_BLK_CRYPTO_MODE_AES_256_XTS        1
-> +#define VIRTIO_BLK_CRYPTO_MODE_AES_128_CBC_ESSIV  2
-> +#define VIRTIO_BLK_CRYPTO_MODE_ADIANTUM           3
-> +#define VIRTIO_BLK_CRYPTO_MODE_SM4_XTS            4
-> +\end{lstlisting}
-> +
-> +A driver or device implementation MAY support only a subset of these
-> +crypto modes. Crypto mode numbers already assigned by this or an earlier
-> +version of this specification are never reused for a different crypto
-> +mode; additional crypto modes are assigned new numbers, greater than the
-> +highest number defined by the version of this specification the
-> +implementation supports.
-> +
-> +VIRTIO_BLK_T_CRYPTO_IN and VIRTIO_BLK_T_GET_CRYPTO_MODES requests are re=
-ads,
-> +and VIRTIO_BLK_T_CRYPTO_OUT requests are writes.
-> +
->  \drivernormative{\subsubsection}{Device Operation}{Device Types / Block =
-Device / Device Operation}
-> =20
->  The driver SHOULD check if the content of the \field{capacity} field has
-> @@ -904,8 +1098,8 @@ \subsection{Device Operation}\label{sec:Device Types=
- / Block Device / Device Ope
->  A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
->  A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
-> =20
-> -The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BL=
-K_T_IN
-> -and VIRTIO_BLK_T_OUT requests.
-> +The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BL=
-K_T_IN,
-> +VIRTIO_BLK_T_OUT, VIRTIO_BLK_T_CRYPTO_IN and VIRTIO_BLK_T_CRYPTO_OUT req=
-uests.
-> =20
->  The length of \field{data} MUST be a multiple of the size of struct
->  virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
-> @@ -984,6 +1178,42 @@ \subsection{Device Operation}\label{sec:Device Type=
-s / Block Device / Device Ope
-> =20
->  \end{enumerate}
-> =20
-> +The following requirements only apply if the VIRTIO_BLK_F_IE feature is
-> +negotiated.
-> +
-> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO=
-_OUT
-> +request with a \field{slot} value that is not less than \field{max_slots=
-} of
-> +\field{enc_characteristics}, or that identifies a key slot into which no=
- key
-> +has been provisioned.
-> +
-> +A driver MUST set \field{data_unit_size_bits} of a VIRTIO_BLK_T_CRYPTO_I=
-N or
-> +VIRTIO_BLK_T_CRYPTO_OUT request's \field{crypto_msg} to $log_2$ of the d=
-ata
-> +unit size in bytes associated with the key provisioned in the virtual key
-> +slot identified by \field{slot}. Since data unit sizes are reported by
-> +VIRTIO_BLK_T_GET_CRYPTO_MODES as a bitmask of \field{le32} elements, a
-> +driver MUST NOT set \field{data_unit_size_bits} to a value greater than =
-31.
-> +
-> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO=
-_OUT
-> +request with a zero length \field{data}.
-> +
-> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO=
-_OUT
-> +request unless \field{sector}, multiplied by 512, and the length of
-> +\field{data}, are both a multiple of $(1 << \field{data_unit_size_bits})$
-> +bytes.
-> +
-> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO=
-_OUT
-> +request if \field{dun} + $N$ - 1 is not representable in
-> +\field{max_dun_bytes} bytes, where $N$ is the number of data units of
-> +$2^{\field{data_unit_size_bits}}$ bytes in \field{data}.
-> +
-> +A driver MUST treat any crypto mode number that is not less than
-> +\field{nr_modes} of a VIRTIO_BLK_T_GET_CRYPTO_MODES response as unsuppor=
-ted
-> +by the device.
-> +
-> +A driver MUST provide a \field{data} buffer of at least
-> +sizeof(struct virtio_blk_crypto_modes) (8) bytes for a
-> +VIRTIO_BLK_T_GET_CRYPTO_MODES request.
-> +
->  \devicenormative{\subsubsection}{Device Operation}{Device Types / Block =
-Device / Device Operation}
-> =20
->  The device MAY change the content of the \field{capacity} field during
-> @@ -1030,7 +1260,8 @@ \subsection{Device Operation}\label{sec:Device Type=
-s / Block Device / Device Ope
-> =20
->  \item\label{item:flush3} the VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA feature was
->    negotiated and the VIRTIO_BLK_REQ_FLAG_OUT_FUA bit in \field{flags} wa=
-s set in
-> -  the write request (regardless of whether the VIRTIO_BLK_F_FLUSH or
-> +  the write request (VIRTIO_BLK_T_OUT or VIRTIO_BLK_T_CRYPTO_OUT, regard=
-less of
-> +  whether the VIRTIO_BLK_F_FLUSH or
->    VIRTIO_BLK_F_CONFIG_WCE features were negotiated, and regardless of the
->    current cache mode as expressed by the value of the \field{writeback} =
-field in
->    configuration space).
-> @@ -1225,6 +1456,60 @@ \subsection{Device Operation}\label{sec:Device Typ=
-es / Block Device / Device Ope
->  handles VIRTIO_BLK_T_ZONE_RESET request for the zone range specified in =
-the
->  VIRTIO_BLK_T_SECURE_ERASE request.
-> =20
-> +The following requirements only apply if the VIRTIO_BLK_F_IE feature is
-> +negotiated.
-> +
-> +If a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT request:
-> +\begin{itemize}
-> +\item specifies a \field{slot} value that is not less than \field{max_sl=
-ots},
-> +    or that identifies a key slot into which no key has been provisioned,
-> +
-> +\item specifies a \field{data_unit_size_bits} value greater than 31, or
-> +    that does not match $log_2$ of the data unit size in bytes associated
-> +    with the key provisioned in the virtual key slot identified by the
-> +    \field{slot},
-> +
-> +\item specifies a zero length \field{data},
-> +
-> +\item specifies a \field{sector}, multiplied by 512, or a length of
-> +    \field{data}, that is not a multiple of $(1 << \field{data_unit_size=
-_bits})$
-> +    bytes, or
-> +
-> +\item specifies a \field{dun} such that \field{dun} + $N$ - 1 is not
-> +    representable in \field{max_dun_bytes} bytes, where $N$ is the number
-> +    of data units of $2^{\field{data_unit_size_bits}}$ bytes in
-> +    \field{data},
-> +\end{itemize}
-> +then the device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP =
-and
-> +MUST NOT read or write any data.
-> +
-> +If a VIRTIO_BLK_T_GET_CRYPTO_MODES request's \field{data} buffer is smal=
-ler
-> +than sizeof(struct virtio_blk_crypto_modes) (8) bytes, the device MUST s=
-et
-> +the \field{status} byte to VIRTIO_BLK_S_UNSUPP and MUST NOT write any da=
-ta.
-> +
-> +If the driver's \field{data} buffer in a VIRTIO_BLK_T_GET_CRYPTO_MODES
-> +request is not large enough to hold \field{modes} elements up to the
-> +highest crypto mode number the device supports, the device MUST set
-> +\field{nr_modes} to the number of complete \field{modes} elements that f=
-it
-> +in the buffer, and MUST NOT write a partial element.
-> +
-> +The device MUST initialize padding bytes \field{reserved} of a
-> +VIRTIO_BLK_T_GET_CRYPTO_MODES response to 0.
-> +
-> +For a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT request, the dev=
-ice
-> +MUST use the key provisioned in the virtual key slot identified by
-> +\field{slot} of the request's \field{crypto_msg}, combined with \field{d=
-un},
-> +to decrypt the data read from, or encrypt the data written to, the device
-> +backend storage. If the device backend storage splits the request into
-> +sub-requests, each sub-request MUST begin at a byte offset, from the sta=
-rt
-> +of \field{data}, that is a multiple of $(1 << \field{data_unit_size_bits=
-})$
-> +bytes, MUST have a length that is a multiple of
-> +$(1 << \field{data_unit_size_bits})$ bytes, and MUST use, in place of
-> +\field{dun}, the Data Unit Number
-> +$\field{dun} + (\mathit{byte\_offset} / (1 << \field{data_unit_size_bits=
-}))$,
-> +where $\mathit{byte\_offset}$ is that sub-request's starting byte offset
-> +from the start of \field{data}.
-> +
->  \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Type=
-s / Block Device / Device Operation / Legacy Interface: Device Operation}
->  When using the legacy interface, transitional devices and drivers
->  MUST format the fields in struct virtio_blk_req
-> --=20
-> 2.34.1
->=20
+The major changes between these 2 versions of virtio spec are the following.
 
---Xo8IhOv5j2N7+7e4
-Content-Type: application/pgp-signature; name=signature.asc
+  1. The extended crypto characteristics in virtio blk device space config are changed. max_slots
+     is set in a independent argument, no slot_offset. max_dun_bytes and key_types are also added
+     in the extended crypto characteristics struct.
+  2. The crypto payload added to the out header of virtio blk request is also updated. It's virtual
+     slot, rather physical slot, passed to the virtio block backend. In addition, data unit size is
+     also appended in the out header of virtio blk request, so that the virtio block backend dividing
+     the request to a sub-request set can recalculate the DUN for the sub-request.
+  3. VIRTIO_BLK_T_GET_CRYPTO_CAPABILITIES requests in the previous version fetch the storage hardware
+     crypto capabilities (like crypto algorithms, bitmask of data unit size, and key size) from the
+     storage registers. But in the new version, crypto modes are listed in virtio spec, and
+     VIRTIO_BLK_T_GET_CRYPTO_MODES only gets the data unit size for all crypto mode supported by the
+     storage hardware.
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmqDQgIACgkQnKSrs4Gr
-c8g0ZQf+Ki81ozE2JXHi1p6nLT7l9Bz+CNq+lSrKGgvCPx9VnBFIx88qEcfnJ2IJ
-4xkQOx7+Ss9Vw7wWC5rSBweBfowbPwFzeKFfa4wOsfCNEXxpF1L7twECIcLI5x7e
-SnUCLHjjPCfCJPzfadT+w2hQK8ZgXPCrXnxSMYIcVqAuUl2mhKMGCJg0k6Nr2/Ip
-rYM17DRN6KGsTqlUp1MNzm8/sUBgiPs4W8Vc7AS2oUBVcGFMfel2fYN32AR1rxTT
-b1sUhB4kF3zll659MOgHrLedft2qNj9Xy2xqECcbuLFraaLEQuGF306jMkFlKrMk
-dUQWou+JI0cxSHkAi9YUScqN7SBM/w==
-=meXC
------END PGP SIGNATURE-----
-
---Xo8IhOv5j2N7+7e4--
+> 
+>>
+>> diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
+>> index 3b3a4e7..f8a544b 100644
+>> --- a/device-types/blk/description.tex
+>> +++ b/device-types/blk/description.tex
+>> @@ -71,7 +71,16 @@ \subsection{Feature bits}\label{sec:Device Types / Block Device / Feature bits}
+>>  
+>>  \item[VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA (19)] Device supports the
+>>      VIRTIO_BLK_REQ_FLAG_OUT_FUA flag in the \field{flags} bitfield of the
+>> -    \field{virtio_blk_req} structure for VIRTIO_BLK_T_OUT requests.
+>> +    request for VIRTIO_BLK_T_OUT and VIRTIO_BLK_T_CRYPTO_OUT requests.
+>> +
+>> +\item[VIRTIO_BLK_F_IE (22)] Only when the storage backend supports inline
+>> +    encryption and this feature bit is negotiated, the data read from or
+>> +    written to the device can be decrypted from or encrypted to the storage
+>> +    via inline crypto engine. Keys are provisioned into key slots of the
+>> +    inline crypto engine through a mechanism outside the scope of this device
+>> +    type, and requests identify, by key slot index, which provisioned key to
+>> +    use. The number of key slots, the maximum DUN size and the supported key
+>> +    types are reported in \field{enc_characteristics}.
+>>  
+>>  \end{description}
+>>  
+>> @@ -135,6 +144,12 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+>>                  u8 model;
+>>                  u8 unused2[3];
+>>          } zoned;
+>> +        struct virtio_blk_enc_characteristics {
+>> +                le16 max_slots;
+>> +                u8 max_dun_bytes;
+>> +                u8 key_types;
+>> +                le32 unused3;
+>> +        } enc_characteristics;
+>>  };
+>>  \end{lstlisting}
+>>  
+>> @@ -222,6 +237,39 @@ \subsection{Device configuration layout}\label{sec:Device Types / Block Device /
+>>  terminated by the device with a "zone resources exceeded" error as defined for
+>>  specific commands later.
+>>  
+>> +If the VIRTIO_BLK_F_IE feature is negotiated, then in
+>> +\field{virtio_blk_enc_characteristics},
+>> +\begin{itemize}
+>> +\item \field{max_slots} is the number of key slots allocated to the Guest VM.
+>> +    It MUST not exceed the number of key slots supported by the inline crypto
+>> +    engine of the device backend storage. Key slots are indexed from 0 to
+>> +    \field{max_slots} - 1.
+>> +
+>> +\item \field{max_dun_bytes} is the maximum number of bytes of the Data Unit
+>> +    Number (DUN) that the device supports for any of its supported crypto
+>> +    modes. For example, known inline crypto engines report a
+>> +    \field{max_dun_bytes} of 4 (JEDEC eMMC Command Queue Host Controller
+>> +    Interface, CQHCI) or 8 (JEDEC UFS Host Controller Interface, UFSHCI);
+>> +    a device backed by different inline crypto engine hardware MAY report
+>> +    a different value, subject to the constraints in
+>> +    \ref{devicenormative:Device Types / Block Device / Device Initialization}.
+>> +
+>> +\item \field{key_types} is a bitmask of the key types the device supports,
+>> +    using the following values:
+>> +    \begin{lstlisting}
+>> +#define VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW    (1 << 0)
+>> +#define VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED  (1 << 1)
+>> +    \end{lstlisting}
+>> +    VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW indicates that keys are provisioned into
+>> +    key slots in raw (plaintext) form. VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED
+>> +    indicates that the key exists only in ephemerally-wrapped form in memory
+>> +    outside of dedicated hardware, and can only be unwrapped and provisioned
+>> +    into key slots by dedicated hardware (e.g. a hardware key manager). The
+>> +    plaintext key never exists in software-accessible memory.
+>> +
+>> +\item \field{unused3} is reserved for future use.
+>> +\end{itemize}
+>> +
+>>  \subsubsection{Legacy Interface: Device configuration layout}\label{sec:Device Types / Block Device / Device configuration layout / Legacy Interface: Device configuration layout}
+>>  When using the legacy interface, transitional devices and drivers
+>>  MUST format the fields in struct virtio_blk_config
+>> @@ -285,6 +333,14 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>      \field{zoned} can be read by the driver to determine the zone
+>>      characteristics of the device. All \field{zoned} fields are read-only.
+>>  
+>> +\item If the VIRTIO_BLK_F_IE feature is negotiated, the fields in
+>> +    \field{enc_characteristics} can be read by the driver to determine the
+>> +    inline encryption capabilities of the device, and a
+>> +    VIRTIO_BLK_T_GET_CRYPTO_MODES request (see
+>> +    \ref{sec:Device Types / Block Device / Device Operation}) can be sent
+>> +    to retrieve the set of supported crypto modes. All
+>> +    \field{enc_characteristics} fields are read-only.
+>> +
+>>  \end{enumerate}
+>>  
+>>  \drivernormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+>> @@ -312,6 +368,10 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>  offered by the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone model,
+>>  then the driver MAY negotiate these two bits independently.
+>>  
+>> +Zoned devices do not support inline encryption. If the VIRTIO_BLK_F_ZONED
+>> +feature is offered by the device, then the VIRTIO_BLK_F_IE feature MUST NOT
+>> +be negotiated by the driver.
+>> +
+>>  If the VIRTIO_BLK_F_ZONED feature is negotiated, then
+>>  \begin{itemize}
+>>  \item if the driver that can not support host-managed zoned devices
+>> @@ -327,6 +387,12 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>  The driver MUST NOT negotiate VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without
+>>  VIRTIO_BLK_F_REQ_FLAGS.
+>>  
+>> +Drivers MUST NOT negotiate the VIRTIO_BLK_F_IE feature if they are
+>> +incapable of provisioning keys into the key slots of the device backend
+>> +storage's inline crypto engine, or of conveying the key slot index,
+>> +data unit size in bits, and Data Unit Number (DUN) per request to
+>> +the device using the \field{virtio_blk_crypto_msg} structure.
+>> +
+>>  \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+>>  
+>>  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
+>> @@ -341,9 +407,15 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>  If the device that is being initialized is a not a zoned device, the device
+>>  SHOULD NOT offer the VIRTIO_BLK_F_ZONED feature.
+>>  
+>> +A zoned device MUST NOT offer the VIRTIO_BLK_F_IE feature.
+>> +
+>>  The VIRTIO_BLK_F_ZONED feature cannot be properly negotiated without
+>>  FEATURES_OK bit. Legacy devices MUST NOT offer VIRTIO_BLK_F_ZONED feature bit.
+>>  
+>> +The VIRTIO_BLK_F_IE feature cannot be properly negotiated without
+>> +FEATURES_OK bit. Legacy devices MUST NOT offer the VIRTIO_BLK_F_IE feature
+>> +bit.
+>> +
+>>  If the VIRTIO_BLK_F_ZONED feature is not accepted by the driver,
+>>  \begin{itemize}
+>>  \item the device with the VIRTIO_BLK_Z_HA or VIRTIO_BLK_Z_NONE zone model SHOULD
+>> @@ -415,6 +487,26 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>>  The device MUST NOT acknowledge FEATURES_OK if the driver sets
+>>  VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without VIRTIO_BLK_F_REQ_FLAGS.
+>>  
+>> +The device MUST NOT acknowledge FEATURES_OK if the driver negotiates both
+>> +VIRTIO_BLK_F_ZONED and VIRTIO_BLK_F_IE.
+>> +
+>> +If the device is incapable of consuming the \field{virtio_blk_crypto_msg},
+>> +the device SHOULD NOT offer the VIRTIO_BLK_F_IE feature.
+>> +
+>> +If the VIRTIO_BLK_F_IE feature is negotiated, the device MUST set
+>> +\field{max_slots} in \field{enc_characteristics} to a value greater than 0.
+>> +
+>> +If the VIRTIO_BLK_F_IE feature is negotiated, the device MUST set
+>> +\field{key_types} in \field{enc_characteristics} to have at least one of
+>> +VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW or VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED
+>> +set, and MUST NOT set any bit in \field{key_types} other than
+>> +VIRTIO_BLK_CRYPTO_KEY_TYPE_RAW and VIRTIO_BLK_CRYPTO_KEY_TYPE_HW_WRAPPED.
+>> +The device MUST initialize padding bytes \field{unused3} to 0.
+>> +
+>> +The device MUST NOT set \field{max_dun_bytes} in \field{enc_characteristics}
+>> +to 0 or to a value greater than 8, since \field{dun} of
+>> +\field{virtio_blk_crypto_msg} is a fixed 8-byte field.
+>> +
+>>  \subsubsection{Legacy Interface: Device Initialization}\label{sec:Device Types / Block Device / Device Initialization / Legacy Interface: Device Initialization}
+>>  
+>>  Because legacy devices do not have FEATURES_OK, transitional devices
+>> @@ -478,8 +570,8 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>  value is the bit index in the \field{flags} bitfield):
+>>  
+>>  \begin{description}
+>> -\item[VIRTIO_BLK_REQ_FLAG_OUT_FUA (0) for VIRTIO_BLK_T_OUT requests] Force Unit
+>> -    Access (FUA) flag.
+>> +\item[VIRTIO_BLK_REQ_FLAG_OUT_FUA (0) for VIRTIO_BLK_T_OUT and
+>> +    VIRTIO_BLK_T_CRYPTO_OUT requests] Force Unit Access (FUA) flag.
+>>  \end{description}
+>>  
+>>  The \field{sector} number indicates the offset (multiplied by 512) where
+>> @@ -886,6 +978,108 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>  operation by setting the VIRTIO_BLK_S_ZONE_INVALID_CMD value in
+>>  \field{status} of \field{virtio_blk_req} structure.
+>>  
+>> +The following requirements only apply if the VIRTIO_BLK_F_IE feature is
+>> +negotiated.
+>> +
+>> +In addition to the request types defined for devices without inline
+>> +encryption support, the type of the request can be an inline-encrypted read
+>> +(VIRTIO_BLK_T_CRYPTO_IN), an inline-encrypted write (VIRTIO_BLK_T_CRYPTO_OUT)
+>> +or a get crypto modes command (VIRTIO_BLK_T_GET_CRYPTO_MODES).
+>> +
+>> +\begin{lstlisting}
+>> +#define VIRTIO_BLK_T_CRYPTO_OUT        27
+>> +#define VIRTIO_BLK_T_CRYPTO_IN         28
+>> +#define VIRTIO_BLK_T_GET_CRYPTO_MODES  30
+>> +\end{lstlisting}
+>> +
+>> +VIRTIO_BLK_T_CRYPTO_IN and VIRTIO_BLK_T_CRYPTO_OUT requests behave the same
+>> +as VIRTIO_BLK_T_IN and VIRTIO_BLK_T_OUT requests respectively, except that
+>> +the data in \field{data} is decrypted (for VIRTIO_BLK_T_CRYPTO_IN) or is to
+>> +be encrypted (for VIRTIO_BLK_T_CRYPTO_OUT) by the inline crypto engine in
+>> +the device backend storage using the key already provisioned in the key
+>> +slot identified by the request, combined with the request's Data Unit
+>> +Number (DUN). For this reason, the VIRTIO_BLK_T_CRYPTO_IN and
+>> +VIRTIO_BLK_T_CRYPTO_OUT requests have the layout that is extended to have
+>> +the \field{crypto_msg} field to carry this information:
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_blk_req_crypto {
+>> +        le32 type;
+>> +        le32 flags;
+>> +        le64 sector;
+>> +        struct virtio_blk_crypto_msg crypto_msg;
+>> +        u8 data[];
+>> +        u8 status;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +\field{crypto_msg} has the following structure:
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_blk_crypto_msg {
+>> +        le32 slot;
+>> +        le32 data_unit_size_bits;
+>> +        le64 dun;
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +\field{slot} is the virtual key slot index, in the range from 0 to
+>> +\field{max_slots} - 1 of \field{enc_characteristics}. The device maps this
+>> +virtual key slot index to a physical key slot in the inline crypto engine of
+>> +the device backend storage.
+>> +\field{data_unit_size_bits} is $log_2$ of the data unit size in bytes,
+>> +used for calculating DUNs for sub-requests if the request is split.
+>> +\field{dun} is the Data Unit Number, that is, the initial value that the
+>> +inline crypto engine increments by one for each successive data unit of
+>> +the size specified by \field{data_unit_size_bits}, while encrypting or
+>> +decrypting the data of the request.
+>> +
+>> +VIRTIO_BLK_T_GET_CRYPTO_MODES is a read request that returns the data unit
+>> +sizes with which each of the device's crypto modes can be used. The
+>> +response consists of a header followed by zero or more \field{le32}
+>> +bitmask elements, indexed by crypto mode number:
+>> +
+>> +\begin{lstlisting}
+>> +struct virtio_blk_crypto_modes {
+>> +        le32   nr_modes;
+>> +        u8     reserved[4];
+>> +        le32   modes[];
+>> +};
+>> +\end{lstlisting}
+>> +
+>> +The device sets \field{nr_modes} in the response header to the number of
+>> +fully transferred \field{modes} elements in the data buffer. \field{modes[N]},
+>> +for crypto mode number N, is a bitmask indicating the data unit sizes with
+>> +which crypto mode N can be used by the device: the i'th bit of
+>> +\field{modes[N]} is set if crypto mode N can be used with a data unit size
+>> +of $(1 << i)$ bytes. A value of 0 for a \field{modes} element indicates
+>> +that the device does not support the corresponding crypto mode at all.
+>> +Crypto mode number 0 is reserved; \field{modes[0]} is always set to 0 by
+>> +the device.
+>> +
+>> +Crypto mode numbers are assigned by this specification, independently of
+>> +any operating system's internal representation of crypto algorithms, so
+>> +that support for additional crypto modes can be added in future revisions
+>> +of this specification without changing the meaning of previously assigned
+>> +numbers:
+>> +
+>> +\begin{lstlisting}
+>> +#define VIRTIO_BLK_CRYPTO_MODE_AES_256_XTS        1
+>> +#define VIRTIO_BLK_CRYPTO_MODE_AES_128_CBC_ESSIV  2
+>> +#define VIRTIO_BLK_CRYPTO_MODE_ADIANTUM           3
+>> +#define VIRTIO_BLK_CRYPTO_MODE_SM4_XTS            4
+>> +\end{lstlisting}
+>> +
+>> +A driver or device implementation MAY support only a subset of these
+>> +crypto modes. Crypto mode numbers already assigned by this or an earlier
+>> +version of this specification are never reused for a different crypto
+>> +mode; additional crypto modes are assigned new numbers, greater than the
+>> +highest number defined by the version of this specification the
+>> +implementation supports.
+>> +
+>> +VIRTIO_BLK_T_CRYPTO_IN and VIRTIO_BLK_T_GET_CRYPTO_MODES requests are reads,
+>> +and VIRTIO_BLK_T_CRYPTO_OUT requests are writes.
+>> +
+>>  \drivernormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+>>  
+>>  The driver SHOULD check if the content of the \field{capacity} field has
+>> @@ -904,8 +1098,8 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>  A driver MUST set \field{sector} to 0 for a VIRTIO_BLK_T_FLUSH request.
+>>  A driver SHOULD NOT include any data in a VIRTIO_BLK_T_FLUSH request.
+>>  
+>> -The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_T_IN
+>> -and VIRTIO_BLK_T_OUT requests.
+>> +The length of \field{data} MUST be a multiple of 512 bytes for VIRTIO_BLK_T_IN,
+>> +VIRTIO_BLK_T_OUT, VIRTIO_BLK_T_CRYPTO_IN and VIRTIO_BLK_T_CRYPTO_OUT requests.
+>>  
+>>  The length of \field{data} MUST be a multiple of the size of struct
+>>  virtio_blk_discard_write_zeroes for VIRTIO_BLK_T_DISCARD,
+>> @@ -984,6 +1178,42 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>  
+>>  \end{enumerate}
+>>  
+>> +The following requirements only apply if the VIRTIO_BLK_F_IE feature is
+>> +negotiated.
+>> +
+>> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT
+>> +request with a \field{slot} value that is not less than \field{max_slots} of
+>> +\field{enc_characteristics}, or that identifies a key slot into which no key
+>> +has been provisioned.
+>> +
+>> +A driver MUST set \field{data_unit_size_bits} of a VIRTIO_BLK_T_CRYPTO_IN or
+>> +VIRTIO_BLK_T_CRYPTO_OUT request's \field{crypto_msg} to $log_2$ of the data
+>> +unit size in bytes associated with the key provisioned in the virtual key
+>> +slot identified by \field{slot}. Since data unit sizes are reported by
+>> +VIRTIO_BLK_T_GET_CRYPTO_MODES as a bitmask of \field{le32} elements, a
+>> +driver MUST NOT set \field{data_unit_size_bits} to a value greater than 31.
+>> +
+>> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT
+>> +request with a zero length \field{data}.
+>> +
+>> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT
+>> +request unless \field{sector}, multiplied by 512, and the length of
+>> +\field{data}, are both a multiple of $(1 << \field{data_unit_size_bits})$
+>> +bytes.
+>> +
+>> +A driver MUST NOT submit a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT
+>> +request if \field{dun} + $N$ - 1 is not representable in
+>> +\field{max_dun_bytes} bytes, where $N$ is the number of data units of
+>> +$2^{\field{data_unit_size_bits}}$ bytes in \field{data}.
+>> +
+>> +A driver MUST treat any crypto mode number that is not less than
+>> +\field{nr_modes} of a VIRTIO_BLK_T_GET_CRYPTO_MODES response as unsupported
+>> +by the device.
+>> +
+>> +A driver MUST provide a \field{data} buffer of at least
+>> +sizeof(struct virtio_blk_crypto_modes) (8) bytes for a
+>> +VIRTIO_BLK_T_GET_CRYPTO_MODES request.
+>> +
+>>  \devicenormative{\subsubsection}{Device Operation}{Device Types / Block Device / Device Operation}
+>>  
+>>  The device MAY change the content of the \field{capacity} field during
+>> @@ -1030,7 +1260,8 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>  
+>>  \item\label{item:flush3} the VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA feature was
+>>    negotiated and the VIRTIO_BLK_REQ_FLAG_OUT_FUA bit in \field{flags} was set in
+>> -  the write request (regardless of whether the VIRTIO_BLK_F_FLUSH or
+>> +  the write request (VIRTIO_BLK_T_OUT or VIRTIO_BLK_T_CRYPTO_OUT, regardless of
+>> +  whether the VIRTIO_BLK_F_FLUSH or
+>>    VIRTIO_BLK_F_CONFIG_WCE features were negotiated, and regardless of the
+>>    current cache mode as expressed by the value of the \field{writeback} field in
+>>    configuration space).
+>> @@ -1225,6 +1456,60 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>>  handles VIRTIO_BLK_T_ZONE_RESET request for the zone range specified in the
+>>  VIRTIO_BLK_T_SECURE_ERASE request.
+>>  
+>> +The following requirements only apply if the VIRTIO_BLK_F_IE feature is
+>> +negotiated.
+>> +
+>> +If a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT request:
+>> +\begin{itemize}
+>> +\item specifies a \field{slot} value that is not less than \field{max_slots},
+>> +    or that identifies a key slot into which no key has been provisioned,
+>> +
+>> +\item specifies a \field{data_unit_size_bits} value greater than 31, or
+>> +    that does not match $log_2$ of the data unit size in bytes associated
+>> +    with the key provisioned in the virtual key slot identified by the
+>> +    \field{slot},
+>> +
+>> +\item specifies a zero length \field{data},
+>> +
+>> +\item specifies a \field{sector}, multiplied by 512, or a length of
+>> +    \field{data}, that is not a multiple of $(1 << \field{data_unit_size_bits})$
+>> +    bytes, or
+>> +
+>> +\item specifies a \field{dun} such that \field{dun} + $N$ - 1 is not
+>> +    representable in \field{max_dun_bytes} bytes, where $N$ is the number
+>> +    of data units of $2^{\field{data_unit_size_bits}}$ bytes in
+>> +    \field{data},
+>> +\end{itemize}
+>> +then the device MUST set the \field{status} byte to VIRTIO_BLK_S_UNSUPP and
+>> +MUST NOT read or write any data.
+>> +
+>> +If a VIRTIO_BLK_T_GET_CRYPTO_MODES request's \field{data} buffer is smaller
+>> +than sizeof(struct virtio_blk_crypto_modes) (8) bytes, the device MUST set
+>> +the \field{status} byte to VIRTIO_BLK_S_UNSUPP and MUST NOT write any data.
+>> +
+>> +If the driver's \field{data} buffer in a VIRTIO_BLK_T_GET_CRYPTO_MODES
+>> +request is not large enough to hold \field{modes} elements up to the
+>> +highest crypto mode number the device supports, the device MUST set
+>> +\field{nr_modes} to the number of complete \field{modes} elements that fit
+>> +in the buffer, and MUST NOT write a partial element.
+>> +
+>> +The device MUST initialize padding bytes \field{reserved} of a
+>> +VIRTIO_BLK_T_GET_CRYPTO_MODES response to 0.
+>> +
+>> +For a VIRTIO_BLK_T_CRYPTO_IN or VIRTIO_BLK_T_CRYPTO_OUT request, the device
+>> +MUST use the key provisioned in the virtual key slot identified by
+>> +\field{slot} of the request's \field{crypto_msg}, combined with \field{dun},
+>> +to decrypt the data read from, or encrypt the data written to, the device
+>> +backend storage. If the device backend storage splits the request into
+>> +sub-requests, each sub-request MUST begin at a byte offset, from the start
+>> +of \field{data}, that is a multiple of $(1 << \field{data_unit_size_bits})$
+>> +bytes, MUST have a length that is a multiple of
+>> +$(1 << \field{data_unit_size_bits})$ bytes, and MUST use, in place of
+>> +\field{dun}, the Data Unit Number
+>> +$\field{dun} + (\mathit{byte\_offset} / (1 << \field{data_unit_size_bits}))$,
+>> +where $\mathit{byte\_offset}$ is that sub-request's starting byte offset
+>> +from the start of \field{data}.
+>> +
+>>  \subsubsection{Legacy Interface: Device Operation}\label{sec:Device Types / Block Device / Device Operation / Legacy Interface: Device Operation}
+>>  When using the legacy interface, transitional devices and drivers
+>>  MUST format the fields in struct virtio_blk_req
+>> -- 
+>> 2.34.1
+>>
 
