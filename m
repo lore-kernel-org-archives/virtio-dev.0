@@ -1,176 +1,426 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 213F5374A08
-	for <virtio-dev@lists.linux.dev>; Fri, 28 Aug 2026 15:47:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8723361941
+	for <virtio-dev@lists.linux.dev>; Mon, 31 Aug 2026 20:05:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787932035; cv=none; b=gx5HBY49nkRbOt8WV9rDMgvx2gIy1W5mfALLzpBl+xiKuyznC0YecmLHhYRSC7ASg3QHNKWcB3/CNBQurxg6A8Kke+41Z6zwvM5P9S/gfktsyNtJPAs17fdydHhf7ZrxFxNmILsUJQjFs6XcfkWojzbeLTQgO2Mn2q5LI1o/vgo=
+	t=1788206708; cv=none; b=qhW5M69Ly0GrL+wdIEv8Tg3ov1IeprOX7yvyWtKQbZmeuc8+iK/VO+PqLWLcSs/VRW313FunsattQ3/Twb2n8lnStr74kN+e3RLhfC8Bya29us+ed2AtDhAoB1IXrA1ZOG2AcaG+6/SFg0fifUQvVew4vlDR6jlOh4PrbCMbInI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787932035; c=relaxed/simple;
-	bh=YthO7+pVUqDuN249FoXnsjIRX+sda1Ai3EkDpNAXy68=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g2xdnUs+Oq6GaRecwk7pwT9b1Ovgx5QxrZL6jPWrFd4FnImhYJW3shZW16kwDnr7fpJ4Q5Lr3IY2P57AK1G+yS4b/3ZrjJUYbsk/m0Hcd5VHldMmPLn6AWzQ2rOfMDxF4sbaX+L2xbtbJr1tMIjXMBhn80JFYtcY3GYo3gBl4Aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LNtWPXWS; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=emyQn/TG; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1788206708; c=relaxed/simple;
+	bh=PBIR/pcU+Q2ggkYJlXbFmj/JP2Mgbs7aoWM0o6akx4M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Mxwobv+dsgRbT/UbTyyctFPqTfYUuOu0pArcegZ31xPQUzbKm5p9YwUkOxT0925XiyHQLG3SI81AKwfT2QBxKuLEyq/Ym69dQ3NbWqw/WfFcLN1174ADzv4vDZSJSQEqTqlDSbkaNrRCWxm+3+Ksq93207Y2/oqueifk0/lSDmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=WTIdQuZT; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LNtWPXWS";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="emyQn/TG"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67SDlS4f3546413
-	for <virtio-dev@lists.linux.dev>; Fri, 28 Aug 2026 15:47:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	yzw1PXqFGL1Xkx/jPeN3hYWLyW5oOLQsFTMOnbkgJpQ=; b=LNtWPXWS5ahypMid
-	eLb1qiPeu4WjgcSoaZrPjZy1sBcIrhkxf6m38TCkUTu/rEw1RvLOWdkf81FbH6Up
-	cj50TjY9JYTf0RcL96FyPFRiCfgEpcTpjSNwdctlLz14LqwthkIyaaGu1pqFzCLc
-	j4WaSFCsf9CtyjRLTDKsc9x0IcTsJy01UAveQUGqSl/Kc7ICLIYqzEvDI9czS8YL
-	M/k7rDAuO9HQZGsLJdUu7LbKm1jykWP+0c9l61jolqVasH9zFClitYZmNuuozLS1
-	3PUC0P7BAmyqIhZ6c9NdM8JiEU81cL2+F+A8hv7CzwvjtL3tMub+ANzSuASAdqSv
-	3uMqoQ==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gb47n2dbc-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <virtio-dev@lists.linux.dev>; Fri, 28 Aug 2026 15:47:06 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-388cfc4848dso1469181a91.3
-        for <virtio-dev@lists.linux.dev>; Fri, 28 Aug 2026 08:47:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787932026; x=1788536826; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=yzw1PXqFGL1Xkx/jPeN3hYWLyW5oOLQsFTMOnbkgJpQ=;
-        b=emyQn/TG9vSOx7JBpIlF46mC/+4Hv2H4+es8LENtx84zlV8W7iVdghmChm8WHsZ8jh
-         iYO0z6ECiqdXlnietf3Yge7+T8BgXUitqNnhuaPe80/OmqL2z+lE7VzwAKYaq2NgW2wj
-         k9T/QKlghUhcRi30oEOQ3xK/VzLDt2dtGjjzIp/09JkTO+6/EyJrR+3E4ATNj/nta8gF
-         Mp0OjFBy5YVQxxL46jd/jw4iFCv1pgrSg8+BM/MtUKUC7oEDEx8jX7/47n3eDHMhSzJt
-         HS5+Ua8FehQpwHUp/OLihBPbNxj7XJFAIjhJ/JFFqMbxSBv51UXUZSHXPf6d0iktYRDn
-         sFuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787932026; x=1788536826;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=yzw1PXqFGL1Xkx/jPeN3hYWLyW5oOLQsFTMOnbkgJpQ=;
-        b=s9few8XTOL5Vu58nP1mhSVPaaUQs0EA+5r+3bHbdG+je3KLuu7sdZFQ/WbRCCyKcmi
-         /Ddpk4ezsfXQGP6vXUJuPkdxGXsMEj6cBOGNngXtASleU2CTXETttbNFbIhXjDG8i7zU
-         cIGQj+8N4yxydGDs2EeAe7TtwqolwTbCV9rTSUnRPhgRY2dxhx8RlA5vf+KHSlpLOoWD
-         gOgeRHDfhrLIo6CimkN1WaKVXYTQw5RPzO54BvNVZqpGruWAFJVKDDATHr25wA8jbXwM
-         88tQC32wDxW9aioWU5BRHrJzD5X2m5/EJEImngrO01kWsQzPwu/cJy2XTLL6Kl+uRe15
-         ZMGA==
-X-Gm-Message-State: AFuF++l7gPwQDjG6EgdLLKQz+NR8W1nyjy8sRKyDeONPuEY10KTBXNhB
-	7FMhKAP6nPFUZCYaRXV9wDtvGSW9hO2p7T74jQNLmESGwlwwyxWguowmSPc2QH6Fta2TPi4k2h0
-	MukyEoGLNCvG+HK/JlELKrIeBR4kKDl3i9L1FCCdg76FxLzUYM083frwO4PHiooFB
-X-Gm-Gg: AR+sD13/dwT04ZJqByH3lo2xN7jkLXJGq6ctniJ50gik6BQjtp1NBV93TOujCYHwfgl
-	Bfy8PX/Th71eLO1f2XR/IqFhFBEpbmNmr7G/2FgfuzOZplDtbNd4wby6gdTiD/4pc+nMVt+k3ZT
-	xzjCMEDG6Jhig6SHhQfg5lNVJdM2iPcAQmXJCRulDgW3eBP40xaJrVktA3/timxI21lut4Yq+PC
-	tASFdIBdXbq4ZeoBBIKMIG+0yTkunv6T2CbPbHS2X6pW389qOY4Uc2FlbopFkL7RHgAqtH4BB6G
-	6+qicv4Y0p4lpGStg1kL08sT4MvXPudUHwZDfKpPQGfr5Cp3b4u5blFTPRvCBnWrWgEeaX/gbif
-	FaCJH6bfTfCPys911fneDue2Eq3NHoZukzniT3QJOVNAOrE/rc2ymj2slGic=
-X-Received: by 2002:a17:90a:d2c6:b0:392:c80b:8eff with SMTP id 98e67ed59e1d1-396d0f6cb36mr15799522a91.11.1787932026064;
-        Fri, 28 Aug 2026 08:47:06 -0700 (PDT)
-X-Received: by 2002:a17:90a:d2c6:b0:392:c80b:8eff with SMTP id 98e67ed59e1d1-396d0f6cb36mr15799424a91.11.1787932025580;
-        Fri, 28 Aug 2026 08:47:05 -0700 (PDT)
-Received: from [10.110.102.109] (i-global254.qualcomm.com. [199.106.103.254])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-142e0de4de3sm10203966c88.12.2026.08.28.08.47.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Aug 2026 08:47:05 -0700 (PDT)
-Message-ID: <4f5ad0ca-de69-4bdf-8d4f-33b94e258205@oss.qualcomm.com>
-Date: Fri, 28 Aug 2026 23:47:02 +0800
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="WTIdQuZT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1788206704;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Xjr/ml0NmualOD3BBUsEEtw9iQNH+jzRc0uUiPjbvDs=;
+	b=WTIdQuZTxlcx4y4tnl5Gs3p/A2uI+ny13wqzJA1sOiQEWOUCJKcl54L/OVq7+P/HYU+UO1
+	Lc5696O+WN0PkR0ou6HdKWnyq6yDwSHI/gvTxZV+nHabdPFrIhukuJzYQApN5FOQEX2nFn
+	HWzukY9jvlJBqfH9FIOiJM2+JBjC4fs=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-678-8ALZmOOSNX2WO-N8reo3xg-1; Mon,
+ 31 Aug 2026 16:05:01 -0400
+X-MC-Unique: 8ALZmOOSNX2WO-N8reo3xg-1
+X-Mimecast-MFC-AGG-ID: 8ALZmOOSNX2WO-N8reo3xg_1788206700
+Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 203B018AB44A;
+	Mon, 31 Aug 2026 20:05:00 +0000 (UTC)
+Received: from localhost (headnet05.pony-001.prod.iad2.dc.redhat.com [10.2.32.117])
+	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 73FD61800577;
+	Mon, 31 Aug 2026 20:04:59 +0000 (UTC)
+Date: Mon, 31 Aug 2026 16:04:55 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+To: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
+Cc: Eric Biggers <ebiggers@kernel.org>, virtio-dev@lists.linux.dev,
+	neeraj.soni@oss.qualcomm.com
+Subject: Re: [PATCH v1] virtio-blk: Add inline encryption support
+Message-ID: <20260831200455.GB527638@fedora>
+References: <20260814142306.3934029-1-linlin.zhang@oss.qualcomm.com>
+ <20260819043321.GB9971@sol>
+ <97c80fa6-2e04-490a-8b38-c951d7c80486@oss.qualcomm.com>
+ <20260819193555.GA470114@fedora>
+ <5d1a54d2-9e84-4a85-9124-ac9cbff75fdf@oss.qualcomm.com>
+ <20260825233409.GA282683@fedora>
+ <3605b7f4-820e-4a1d-999b-edaf0dbaea41@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] virtio-blk: Add inline encryption support
-To: Eric Biggers <ebiggers@kernel.org>, Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.linux.dev, neeraj.soni@oss.qualcomm.com
-References: <20260814142306.3934029-1-linlin.zhang@oss.qualcomm.com>
- <20260819043321.GB9971@sol>
- <97c80fa6-2e04-490a-8b38-c951d7c80486@oss.qualcomm.com>
- <20260819193555.GA470114@fedora>
- <5d1a54d2-9e84-4a85-9124-ac9cbff75fdf@oss.qualcomm.com>
- <20260825233409.GA282683@fedora> <20260827184905.GC2137493@google.com>
-Content-Language: en-US
-From: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
-In-Reply-To: <20260827184905.GC2137493@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=a8YAM0SF c=1 sm=1 tr=0 ts=6a91ad7a cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=7LYvqmufGY8V4kgeTd8A:9 a=QEXdDO2ut3YA:10
- a=uKXjsCUrEbL0IQVhDsJ9:22
-X-Proofpoint-ORIG-GUID: ic46IvqAAvfbuKbTOFgL0-Ng3Y4cBiNO
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODI4MDEzNyBTYWx0ZWRfX2WHpVNN9agH0
- JopSskp2DZiBnZYJ/mjqKsI4QwWM8l4Y2sztMmKvJ0fA2pgxoMRZmgzO4p3acfzYnGQ/tGcOD1A
- nRmnBEQjBSJ1x4Efj98FVb05HI04f1I=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI4MDEzNyBTYWx0ZWRfX/BtHGSa4Qg9j
- CJ2b7r312BGXoMcsjXgykh4c1lZG7PzMZwvuha5dOP5U7Bs6hNEzDCFjPuJb6h82csA/3AZJFYt
- iQa2EbWsmbab9edgEJT25urFwnYG9K3D3ADklDlcLzKF+wH6reufHARcAJYcEL+LCsb6XsdCluK
- CkTI55fHdN6o7oeTikMjz8XTuyW8w/kRpEraOUBhW8g8VnUiE+XPW7J1zhf6FTjVahsHdftUREl
- qh0js62uJpwkNrD9OoHwKDKMd2jX9ZIFq+acappp3Tkw1e18PJIqxQ2z+SFdZGo0RV+kcdwNfWt
- 4OZAfAW50g5dsUCb3lm1oOMqeg9Scysd4v98xdW2uYsuI5ohoPrqCK5tSKvJKIhbHj18UDn4fGP
- EZ0tTMQOqhP/+UmNT1Wtz+Q2fcjbi32N44h9UJkC3NcPX2o3o8db5hNOeoyN2rsMdPlzl2QXQB3
- SfAWDeM3io5fmK/XIbg==
-X-Proofpoint-GUID: ic46IvqAAvfbuKbTOFgL0-Ng3Y4cBiNO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-28_04,2026-08-27_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 phishscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0
- spamscore=0 malwarescore=0 priorityscore=1501 suspectscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608280137
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="n04PMN23K8sM2RSv"
+Content-Disposition: inline
+In-Reply-To: <3605b7f4-820e-4a1d-999b-edaf0dbaea41@oss.qualcomm.com>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
 
+--n04PMN23K8sM2RSv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Aug 28, 2026 at 09:08:26PM +0800, Linlin Zhang wrote:
+>=20
+>=20
+> On 8/26/2026 7:34 AM, Stefan Hajnoczi wrote:
+> > On Thu, Aug 20, 2026 at 10:37:47PM +0800, Linlin Zhang wrote:
+> >>
+> >>
+> >> On 8/20/2026 3:35 AM, Stefan Hajnoczi wrote:
+> >>> On Wed, Aug 19, 2026 at 07:30:15PM +0800, Linlin Zhang wrote:
+> >>>>
+> >>>>
+> >>>> On 8/19/2026 12:33 PM, Eric Biggers wrote:
+> >>>>> On Fri, Aug 14, 2026 at 07:23:01AM -0700, Linlin Zhang wrote:
+> >>>>>> When the feature is negotiated, the device reports inline encrypti=
+on
+> >>>>>> characteristics through virtio_blk_enc_characteristics. Add
+> >>>>>> VIRTIO_BLK_T_GET_CRYPTO_MODES, VIRTIO_BLK_T_CRYPTO_IN, and
+> >>>>>> VIRTIO_BLK_T_CRYPTO_OUT so that the driver can discover supported
+> >>>>>> crypto modes and submit inline-encrypted I/O requests.
+> >>>>>
+> >>>>> How is the driver expected to program and evict keyslots?
+> >>>>
+> >>>> There are 2 new added drivers, one is virtio blk extension driver wh=
+ich is
+> >>>> generic, and the other is crypto virtualization driver which is vend=
+or
+> >>>> specific.
+> >>>>
+> >>>> The virtio blk extension driver manages the initialization of blk-cr=
+ypto-profile,
+> >>>> and implements the interfaces of blk_crypto_ll_ops.
+> >>>>
+> >>>> The crypto virtualization driver performs similar operation like the=
+ key handling
+> >>>> part in ufs-qcom and ice drivers. It forwards the key program/evicti=
+on request to
+> >>>> Trust Zone via SMC call.
+> >>>>
+> >>>> For QCOM, the whole flow of key program/eviction is like
+> >>>>   - block layer passes the request to virtio_blk extension driver vi=
+a blk_crypto_ll_ops
+> >>>>   - virtio_blk extension -> crypto virtualization -> qcom_scm -> SCM=
+ -> HYP ->TZ
+> >>>
+> >>> Can you annotate this with "guest" and "host"? Here is my guess:
+> >>> - virtio_blk + extension driver: guest
+> >>> - crypto virtualization + qcom_scm + SCM: guest
+> >>> - HYP: host
+> >>> - TZ: host
+> >>>
+> >>> If this is correct, then it's unclear to me why a vendor-specific gue=
+st
+> >>> component is involved?
+> >>
+> >> Thanks for your comments!
+> >>
+> >> That 's correct basically.
+> >>
+> >> - Guest VM
+> >> - virtio-blk + virtio-blk crypto extension
+> >> - crypto virtualization driver + qcom_scm
+> >> - SCM interface
+> >>
+> >> - Secure World/Platform
+> >> - Hypervisor
+> >> - Trust Zone
+> >>
+> >> The primary purpose of introducing a vendor-specific guest component i=
+s to
+> >> enable the guest VM to handle key programming and eviction directly th=
+rough
+> >> TrustZone, avoiding any dependency on the primary VM for these operati=
+ons.
+> >=20
+> > If I understand correctly, you are saying that the qcom_scm driver
+> > inside the guest (EL1) uses the SMC instruction to trap directly into
+> > the host's Secure World (EL3) without going through the hypervisor
+> > (EL2)?
+> >=20
+>=20
+> There are 2 kinds of hypervisors. Sorry that I only focused on the type-1
+> hypervisor previously.
+>=20
+> For type-1 hypervisor, qcom_scm driver inside the guest (EL1) uses the
+> SMC instruction to trap into the hypervisor (EL2) first, and the hypervis=
+or
+> transfers SMC call to the Secure World (EL3), totally bypass the primary =
+VM.
+>=20
+> For type-2 hypervisor, qcom_scm driver inside the guest (EL1) goes to the
+> host via HAB driver (which is in upstream progress), the host (EL2)
+> transfers SMC call to the Secure World (EL3).
 
-On 8/28/2026 2:49 AM, Eric Biggers wrote:
-> On Tue, Aug 25, 2026 at 07:34:09PM -0400, Stefan Hajnoczi wrote:
->> My concern about the key programming interface being a vendor-specific
->> interface beyond the scope of the VIRTIO spec is that I'm not sure if
->> there will ever be any other users. In other words, should ICE actually
->> go into the VIRTIO spec or is it a vendor-specific functionality?
->>
->> The approach with a separate key programming interface seems very
->> specific to UFS and Qualcomm's SCM. For example, is it possible to have
->> multiple virtio-blk devices with their own ICEs (key spaces) or does
->> this design assume there is only one virtio-blk device with ICE per
->> guest because existing SoCs only support that?
->>
->> It would be cleaner and more obvious from a spec perspective if the key
->> programming interface was part of the VIRTIO spec. Then the spec would
->> be self-contained and the vendor-specific part would only be in the
->> device's implementation on the host without also requiring
->> vendor-specific drivers inside the guest.
->>
->> I took a look at the few blk_ll_crypto_ops drivers in the Linux kernel
->> and they are more or less copy-pasted code that only exists because
->> there is no standardized hardware interface. I think we should avoid
->> propagating that into VIRTIO and instead just define a key programming
->> virtqueue for the virtio-blk device once and for all.
->>
->> Having said that, there is much I don't know about ICE, ARM
->> virtualization, etc and I would like to hear your thoughts if you think
->> I'm wrong.
-> 
-> Looking at the actual Linux kernel patchset that got sent out today
-> (https://lore.kernel.org/linux-block/20260827160806.1295313-1-linlin.zhang@oss.qualcomm.com/T/#u),
-> I agree with Stefan.  It would be much simpler (and also much more open
-> to other implementations) if the key operations were part of the
-> virtio-blk protocol, rather than some unspecified out-of-band thing.
+I see. The VM exit performance advantage with SCM does not seem to be
+that great since EL2 is involved in both cases, just that the primary VM
+can be bypassed in the Type 1 case.
 
-Thanks for your comment!
+Technically it ought to be possible to bypass the Type 1 primary VM even
+with a virtqueue (similar to how vhost devices in the Linux kernel can
+offload virtqueues from QEMU userspace to the host kernel), but that
+involves extra work and complexity - it's only worth it key programming
+this is performance bottleneck.
 
-I replied in detail in the Linux kernel patchset thread.
+> > If the virtio-blk interface standardized blk_crypto_ll_ops requests,
+> > then virtqueue requests would instead be used instead of SMC
+> > instructions and the hypervisor's (EL2) device emulation would handle
+> > the key programming on behalf of the guest.
+> >=20
+>=20
+> Thanks for the point!
+>=20
+> The hypervisor's (EL2) device emulation you mean is QEMU, right?=20
+> I said QEMU in the following as the hypervisor's (EL2) device emulation.
+>=20
+> If I understand correctly, the key programming flow you suggested is like
+> the following.
+>=20
+>   GVM -> blk_crypto_ll_ops in virtio-blk
+>       -> virtqueue request
+>       -> the hypervisor's (EL2) device emulation (QEMU)
+>       -> key programming in Host module
+>       -> ICE
+>=20
+> To support it,=20
+>   1. need create a new control queue for the transmission of blk_crypto_l=
+l_ops
+>      requests
+>   2. in the program key interface of blk_crypto_ll_ops, it has the key
+>      and the slot index the key provisioned to, Guest VM only knows the
+>      virtual slots, so the virt_slot need be transferred to the correspon=
+ding
+>      physical one in QEMU or the following flow before programming it to =
+ICE
 
-> 
-> - Eric
+Security could be improved by limiting QEMU's key slot index range to
+the virtual slots assigned to the guest. That way QEMU has no more
+privileges than the guest and the impact of a VM escape is reduced.
+
+>   3. QEMU is a userspace process, we need add new blk ioctls (like key
+>      generate/import/prepare ioctls added recently) to allow the
+>      userpsace client to program a key to ICE
+>=20
+> The 3rd point is my main concern, if such ioctls (program/evict/derive_sw=
+_secret)
+> can be added, especially that the program key ioctl which specifies the k=
+ey to the exact
+> slot, and the evict key ioctl which allows the usespace client wipe the k=
+ey
+> in a specific slot. I thought it's a high security concern.
+
+Yes, I think it would be necessary to limit userspace's physical key
+slot access. The driver interface (e.g. ioctl) should be designed to
+restrict the key slot index range.
+
+>=20
+> Another concern is the broken of key isolation b/w VMs, except more VM ex=
+it
+> operations.
+>=20
+> >> Because SCM firmware interfaces can differ across vendors, the design
+> >> introduces an intermediate crypto virtualization layer. This layer pro=
+vides
+> >> a common abstraction for key management operations, while allowing each
+> >> vendor to implement the backend interfaces according to its specific S=
+CM
+> >> firmware and security architecture.
+> >=20
+> > Which layer is the "intermediate crypto virtualization layer" that you
+> > are describing? I don't see that in this spec proposal. Is it the
+> > existing blk_crypto_ll_ops struct in Linux?
+> >=20
+>=20
+> I mean the 'crypto virtualization driver', which is corresponding to the
+> crypto_virt.c in the kernel patch series.
+>=20
+> See https://lore.kernel.org/all/20260827160806.1295313-3-linlin.zhang@oss=
+=2Equalcomm.com/
+
+Thanks, I will take a look.
+
+>=20
+> >>> What is the advantage of shipping qcom_scm inside the guest versus
+> >>> defining a standard virtio-blk interface for blk_crypto_ll_ops that t=
+he
+> >>> hypervisor's virtio-blk device implements via TZ on the host?
+> >>
+> >> Keeping SCM in the guest preserves key isolation, minimizes virtio-blk
+> >> payloads, and avoids additional inter-VM communication.
+> >>
+> >> Key programming occurs after a request has entered the block request
+> >> queue. Performing it through a standard virtio-blk request would requi=
+re
+> >> issuing key request in the same request before handling I/O path,
+> >> introducing dead lock concerns.
+> >=20
+> > A separate key programming virtqueue can be used to avoid deadlock
+> > concerns. That way is is still possible to access the key programming
+> > interface when a request queue is full.
+> >=20
+>=20
+> Thanks.
+> I agree with you. A separate control virtqueue must be added for the
+> virtio-blk interface standardized blk_crypto_ll_ops requests.
+>=20
+> >> In my opinion, passing the encryption key in each virtio-blk request is
+> >> also undesirable, as it exposes key material outside the guest, increa=
+ses
+> >> request size, and adds VM transition overhead.
+> >=20
+> > I'm not sure there is a significant security benefit since the device
+> > emulation code in the hypervisor already has access to the plaintext I/O
+> > buffers, can snoop guest memory, and can cause guest code execution
+> > (including accessing the qcom_scm driver inside the guest)?
+> > > Regarding the VM transition overhead, I think you are right unless blk
+> > crypto changes are made to allow a more efficient request submission
+> > scheme (like combining key programming with I/O requests if there is a
+> > bottleneck in the I/O path). However, it's not clear to me whether key
+> > programming is a performance bottleneck: hopefully key programming does
+> > not happen in the I/O path and only in the control path when opening a
+> > file or directory?
+> >=20
+>=20
+> Thanks for the clarification.
+>=20
+> From the memory visibility perspective, I agree with you that the guest
+> keys are transparent for the host. From the key's ownership aspect, I
+> feel that the host programming the key on behalf of the guest leads to
+> the ownership change, I'm not sure if it's a security concern.
+>=20
+> The key programming occurs when submitting BIO to the request in the I/O
+> path, which means pre read/write from the virito device triggers programi=
+ng
+> key first(vm exit -> QEMU -> the host program key module -> TZ -> ICE ->
+> back to the guest), and then send IO request(vm exit -> QEMU -> the host
+> I/O path). Compared with the SMC call from GVM solution (implemented in
+> https://lore.kernel.org/linux-block/20260827160806.1295313-1-linlin.zhang=
+@oss.qualcomm.com/T/#u),
+> the key programming via virtio involves one 1 more vm exit.
+
+Can you clarify what you mean by "1 more vm exit", that wording is
+confusing to me since an SMC guest instruction also causes a vm exit?
+
+>=20
+> > My concern about the key programming interface being a vendor-specific
+> > interface beyond the scope of the VIRTIO spec is that I'm not sure if
+> > there will ever be any other users. In other words, should ICE actually
+> > go into the VIRTIO spec or is it a vendor-specific functionality?
+> >=20
+>=20
+> I have confidence that this is a generic requirement for the virtualizati=
+on
+> platform. It's better to have it in the virtio SPEC.
+> And there is a new common virtio block ops added for the key programming.
+> This allows the vendor to implement the key program based on their platfo=
+rm.
+>=20
+> See https://lore.kernel.org/all/20260827160806.1295313-3-linlin.zhang@oss=
+=2Equalcomm.com/,
+> the vendor need implement the virtblk_crypto_variant_ops in=20
+> https://lore.kernel.org/all/20260827160806.1295313-2-linlin.zhang@oss.qua=
+lcomm.com/#Z31include:linux:virtio_blk_crypto_ext.h
+
+These are Linux kernel patches, not VIRTIO spec definitions. The VIRTIO
+spec is independent of the Linux kernel source code (except where
+explicitly designed to pass through Linux structures). There needs to be
+information in the VIRTIO spec about the key programming interface
+concepts so that someone implementing a driver or device knows how key
+slots behave even if the actual programming interface (e.g. Qualcomm's
+SCM interface) details are not covered by the spec.
+
+>=20
+> > The approach with a separate key programming interface seems very
+> > specific to UFS and Qualcomm's SCM. For example, is it possible to have
+> > multiple virtio-blk devices with their own ICEs (key spaces) or does
+> > this design assume there is only one virtio-blk device with ICE per
+> > guest because existing SoCs only support that?
+> >=20
+>=20
+> Yes. This design does allow multiple virtio-blk devices with inline
+> encryption supported. And per virtio-blk device has its own ICE. Though
+> only one ICE is assumed in above Linux patch set, a small change can
+> be made to support different virtio-blk devices with different ICEs,
+> and don't need update the virtio SPEC.
+>=20
+> > It would be cleaner and more obvious from a spec perspective if the key
+> > programming interface was part of the VIRTIO spec. Then the spec would
+> > be self-contained and the vendor-specific part would only be in the
+> > device's implementation on the host without also requiring
+> > vendor-specific drivers inside the guest.
+> >=20
+> > I took a look at the few blk_ll_crypto_ops drivers in the Linux kernel
+> > and they are more or less copy-pasted code that only exists because
+> > there is no standardized hardware interface. I think we should avoid
+> > propagating that into VIRTIO and instead just define a key programming
+> > virtqueue for the virtio-blk device once and for all.
+> >=20
+>=20
+> I agree with you that programming interfaces in virtio SPEC makes it more
+> clear for the one who implements it. Current design is a compromise of
+> the security concern and the virtio protocol. Implementing it need a
+> full understanding of the inline encryption feature bit in virtio SPEC
+> and the virtio blk code in the Linux kernel.(See the above link of
+> virtio_blk_crypto_ext.h)
+>=20
+> Would you please go through the virtio blk inline encryption support
+> patch (https://lore.kernel.org/all/20260827160806.1295313-3-linlin.zhang@=
+oss.qualcomm.com/)
+> and double confirm if this combination (virtio spec defines the data
+> flow for crypto IO, virtio_blk_crypto_ext defines the control flow
+> of crypto IO) can be accepted?
+>=20
+> I'm appreciated your insights.
+
+Sure, I will take a look at the Linux patches.
+
+Stefan
+
+>=20
+> > Having said that, there is much I don't know about ICE, ARM
+> > virtualization, etc and I would like to hear your thoughts if you think
+> > I'm wrong.
+> >=20
+> > Thanks,
+> > Stefan
+> >=20
+> >>
+> >>>
+> >>> (We talked about this in the past, but I am still not familiar enough
+> >>> with the Qualcomm hypervisor architecture to understand.)
+> >>>
+> >>> Thanks,
+> >>> Stefan
+> >>
+>=20
+
+--n04PMN23K8sM2RSv
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmqV3mcACgkQnKSrs4Gr
+c8gQbwf/Zlkt8uxW9ieOIlYqepDzEMjzaXSBMx0dGQd9fzxyyQsCehT2c+uYhSir
+0WaZ2Mv/c+5lE4OkRdx1f1CaOhVPZq/4NljAlSxbhxKzWhi3rQYlXGXfGc5EkqJK
+f/BAH5L0PJt4jxqxw3uDdQ3jkOuXYvBlXp7nq5u6L4Y9RCib8bMQ5I8bJGM9MEvW
+9crSsPTJuGue5eSa0CWtDRzZsyzOo0bE0oaRv+ji0azmGAphdsCbG0jNsvh55U6f
+r3tluxGEyMHWy/zXDrCWA3jo4uZc2RH6XqbbqBH4WmazugfLhjNIOKBrFq563Mzo
+Nei9MR1IJAD5iQQATz2tImhH/nR4Aw==
+=PN3z
+-----END PGP SIGNATURE-----
+
+--n04PMN23K8sM2RSv--
 
