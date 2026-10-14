@@ -1,359 +1,172 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACFC453C3A9
-	for <virtio-dev@lists.linux.dev>; Tue, 13 Oct 2026 19:08:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B70133AF676
+	for <virtio-dev@lists.linux.dev>; Wed, 14 Oct 2026 09:43:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791918487; cv=none; b=fZznH+r5ITYqZug+50nmxDQxPxzC1f8XBjys4TBlxXjSZaiJCi6s/tx2qlQo3TgOHvElgyenFGOQxCMI1JjBG4qEMz1n+nLKmkBD/dTr7GAe4rSfJgPYkKUm9D6I0E1sWHYjq298Zls+yRiLP+6OzmMXxOQsWCnuxZ0Pf0Ri2hQ=
+	t=1791971034; cv=none; b=Uzjq8Gi5RMbspWTtTylSojOcCpksXiTHaC8V8VRHI/h59u8dvMTCRQc29Bk8aObZB2apLnuDxzFNKE36EiCIt0IsH9jsIyiyFsn4bCYsUeZKn6fg2AdmkGJ5WdLzan94A+Ik5+Kb8ZMPAmn+6jqoxfe2jJbHYoG9oi10CzIgdnM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791918487; c=relaxed/simple;
-	bh=FaZsazd0+cglu7zi8tJsye3fXQFHUPsbCT+/c+k0YQU=;
+	s=arc-20240116; t=1791971034; c=relaxed/simple;
+	bh=nHRl5QYx6Jr0mry67qFHh78Qgu5ZDWxsRh5yfqGNHiA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=jD5ucuhFIFuRkXGunR6GjxLjTd8dwpoL1rG7JDpJH1LGWgnXZ1KxQdjd/IlDY4uXdTDrfq2Vcv1ko4UaJnIQcBWr7hcnZTQQU+CzhuRdVh1yxqPvvpb6oDOxy71uSaWHsLrOfhKliA3hkBoVEozF4Zty+cWVV/NnSIPZugrBf8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=iejS+9vD; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type:Content-Disposition; b=F/13+BwOJRCF23V+N6nILcfPBS8TnPZgyYMhU2wHdwmgl1NpVryEqUnEgUqk2OJNoKmclLVp9yp7aUSlpAhpl9otAE3CyeWzaxoCRQHTaaLt0nNIaBu9Oy2GiQUrEMs6nk8FQ+G9JJcN4e5q9OjoJaniRSfVVtlmZzLVaLhnZt8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=QZhDDzNN; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iejS+9vD"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QZhDDzNN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1791918484;
+	s=mimecast20190719; t=1791971031;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=nkvW3ZcNtZZCu6S1IaNwZGvYiVTJKH9Rr0LFWubBn/k=;
-	b=iejS+9vDlJljcJJkaJsfvcRdJzL4S8LAF7ZPz+UcdqmdTOLnC+M+LiFL953oSHBA4Ku/Gq
-	EyrixVI6Sej3cocWB70N2toCSBxkxXeeWhY87fEWKo4n+qr7/rVTSjwVCTNNfbGRM756Hg
-	ss6IRNLC5Q7VV4c8zDvGce9cSu5HkzE=
-Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-427-ONfZxZPlM1Cgnwz8BIjT3g-1; Tue,
- 13 Oct 2026 19:08:01 +0000
-X-MC-Unique: ONfZxZPlM1Cgnwz8BIjT3g-1
-X-Mimecast-MFC-AGG-ID: ONfZxZPlM1Cgnwz8BIjT3g_1791918480
-Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id ED13218002C0;
-	Tue, 13 Oct 2026 19:07:59 +0000 (UTC)
-Received: from localhost (headnet03.pony-001.prod.iad2.dc.redhat.com [10.2.32.114])
-	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 524B230001B9;
-	Tue, 13 Oct 2026 19:07:59 +0000 (UTC)
-Date: Tue, 13 Oct 2026 15:07:58 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
+	bh=3mWp1irY1ipbIEyWW8FkgZxIFvEYvfkpTktA29Jtnz0=;
+	b=QZhDDzNNK4SCj5yybgVfP6IGB4qSOxYVgyNTLX9vd0BisVV7cNr7u8hkSL7THHY5/CwPL7
+	aKrEjYNkz9rm+mbY4L2xj/90ATTDi4wVJxNN07/keCZv3tv2nXdkOd5IOVgu7NwoA+KqfL
+	GORzKEb8oywNBv51DFwn8pLd8b9QZtk=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-197-R93ZUG3jOsepRZkqHDjR5w-1; Wed, 14 Oct 2026 09:43:50 +0000
+X-MC-Unique: R93ZUG3jOsepRZkqHDjR5w-1
+X-Mimecast-MFC-AGG-ID: R93ZUG3jOsepRZkqHDjR5w_1791971029
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-4a01b112fa2so11530965e9.1
+        for <virtio-dev@lists.linux.dev>; Wed, 14 Oct 2026 02:43:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791971029; x=1792575829;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=3mWp1irY1ipbIEyWW8FkgZxIFvEYvfkpTktA29Jtnz0=;
+        b=ZoCDGHq2sK8TVRNRIHKEMmILfkyhvtVskmyd94P30mIJameBl4NarFMy7jmF0vEsY2
+         HSwYi6DCwsI9D+HPhAfuhEkmNLgx3Q1wgNBM+9RELYifb/1waS+Ne8zUE1VNQwOlFaY8
+         yxA8EDJvpH7oCELQNmhjuth9Idnt+AotexZz5X/Dbljm6iuw2ZGoGsIJ72FKG4z48F28
+         eFqv5vOZdEgBM8YazhsBsG3Jeu3VbecrPs3LcdNV9mpRYbwl6BLpI3lGvjP7/el7elHy
+         FeXL4+3irLTtIsDxzD4dwpwMEHY1oRZpm39xrEhnSgW/Q7wUM/mSag3akEVYAQMwSoLw
+         FWRQ==
+X-Gm-Message-State: AFq9FYKvHNBS7mvpaY5j3+zkflaqQsqP+aQFAp0bvP8V53yw9+pgV5hr
+	KsYtUfgtds0idR2L+pINBG0578nqj3Sk5S/9ZcE2SP5ts+G2zTekpxyA/v9voGBnOW2N405GWRd
+	+zsbOUtN9Fn8AKs2Hyo1QMIiAS8Bsk6KbkXuNwGxJuvLiuligipw6UGP3oCcNCKp12z/FOGk=
+X-Gm-Gg: AYBFou3/PcYQTJCUX5/ofsxBrD4ThmtWleghlN5RKtEIkl2R5CIN6HTJLsd+BZGtqnc
+	zQuYvSqNhWk3GCE8sggsGTrrlkSvVji20euH5VWEyQ+lbBBxRAahj6t8My6lsu2LIKRAcqajDUS
+	pKryPUn+KesBC+xER2jamlBW8IYTL/t3K0YMp2T6JRtaId6Wv8zMnBLcJ/6U8pOYuYv6qQPtMcF
+	C+PIEUSw3afadAVmBaooEUSNq1sSPKrANeBlUGwlSLq16kAAjyq1PXjkASZ1fnDuDBvIcwGq97S
+	/rpz0IwdFf4u9/mHYFh9B2v3QAxPO5qZNxCFDFrHFQmWPN9dChYWFpzYkxyKPLL7iOLYbw==
+X-Received: by 2002:a05:600c:83c7:b0:4a1:7733:5102 with SMTP id 5b1f17b1804b1-4a18e4a3fc8mr289246405e9.15.1791971029095;
+        Wed, 14 Oct 2026 02:43:49 -0700 (PDT)
+X-Received: by 2002:a05:600c:83c7:b0:4a1:7733:5102 with SMTP id 5b1f17b1804b1-4a18e4a3fc8mr289245885e9.15.1791971028561;
+        Wed, 14 Oct 2026 02:43:48 -0700 (PDT)
+Received: from redhat.com ([2a0d:6fc0:3fd7:5300:3d6b:52a4:a23f:9d0b])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1b4819302sm34568045e9.3.2026.10.14.02.43.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Oct 2026 02:43:46 -0700 (PDT)
+Date: Wed, 14 Oct 2026 05:43:44 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>, virtio-dev@lists.linux.dev,
-	ebiggers@kernel.org, neeraj.soni@oss.qualcomm.com
-Subject: Re: [PATCH v3 0/2] virtio-blk: Add inline encryption support
-Message-ID: <20261013190758.GA1301500@shajnocz.csb>
-References: <20260922131442.GB18339@fedora>
- <3a933df3-dff7-4ef3-a120-4c6e22c1fcc1@oss.qualcomm.com>
- <de535820-591b-40f2-b840-d987c3253765@nvidia.com>
- <9515779b-a6da-407f-99f2-011e51683d15@oss.qualcomm.com>
- <20261008060644-mutt-send-email-mst@kernel.org>
- <bfbb51cb-8a90-4b23-8ed1-26ea41102dd6@oss.qualcomm.com>
- <20261009081523-mutt-send-email-mst@kernel.org>
- <e13d2da8-e8e9-4014-98f0-2c1bfa801d59@oss.qualcomm.com>
- <20261012183102-mutt-send-email-mst@kernel.org>
- <7a95c6b2-0a7e-4322-ad77-4e3ea13efdbd@oss.qualcomm.com>
+Cc: virtio-dev@lists.linux.dev, stefanha@redhat.com, ebiggers@kernel.org,
+	neeraj.soni@oss.qualcomm.com
+Subject: Re: [PATCH v3 1/2] virtio-blk: Add the control virtqueue
+Message-ID: <20261014054309-mutt-send-email-mst@kernel.org>
+References: <20260913161628.368484-1-linlin.zhang@oss.qualcomm.com>
+ <20260913161628.368484-2-linlin.zhang@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Subscribe: <mailto:virtio-dev+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:virtio-dev+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <7a95c6b2-0a7e-4322-ad77-4e3ea13efdbd@oss.qualcomm.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
+In-Reply-To: <20260913161628.368484-2-linlin.zhang@oss.qualcomm.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: G6dMkxtibjDc9v1SFKEz6fT_PWIl_N6N967vsIFTyYY_1791918480
+X-Mimecast-MFC-PROC-ID: aS5ryehSG4Sc97VxJs87FVZSSu9vXkxSASA7OYnXYdU_1791971029
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 14, 2026 at 12:23:16AM +0800, Linlin Zhang wrote:
+On Sun, Sep 13, 2026 at 09:16:14AM -0700, Linlin Zhang wrote:
+> From: linlzhan <linlin.zhang@oss.qualcomm.com>
 > 
+> Add VIRTIO_BLK_F_CTRL_VQ to advertise control virtqueue support.
 > 
-> On 10/13/2026 6:33 AM, Michael S. Tsirkin wrote:
-> > On Sat, Oct 10, 2026 at 06:54:06PM +0800, Linlin Zhang wrote:
-> >>
-> >>
-> >> On 10/9/2026 8:25 PM, Michael S. Tsirkin wrote:
-> >>> On Fri, Oct 09, 2026 at 07:21:13PM +0800, Linlin Zhang wrote:
-> >>>>
-> >>>>
-> >>>> On 10/8/2026 6:15 PM, Michael S. Tsirkin wrote:
-> >>>>> On Thu, Oct 08, 2026 at 05:17:30PM +0800, Linlin Zhang wrote:
-> >>>>>>
-> >>>>>>
-> >>>>>> On 9/30/2026 6:46 AM, Max Gurtovoy wrote:
-> >>>>>>>
-> >>>>>>> On 24/09/2026 12:35, Linlin Zhang wrote:
-> >>>>>>>>
-> >>>>>>>> On 9/22/2026 9:14 PM, Stefan Hajnoczi wrote:
-> >>>>>>>>> On Tue, Sep 22, 2026 at 12:29:37PM +0800, Linlin Zhang wrote:
-> >>>>>>>>>>
-> >>>>>>>>>> On 9/18/2026 5:08 AM, Stefan Hajnoczi wrote:
-> >>>>>>>>>>> On Sun, Sep 13, 2026 at 09:16:13AM -0700, Linlin Zhang wrote:
-> >>>>>>>>>>>> From: linlzhan <linlin.zhang@oss.qualcomm.com>
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> This series adds virtio-blk inline encryption support for devices backed
-> >>>>>>>>>>>> by storage hardware with an inline crypto engine.
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> The protocol exposes device capabilities such as keyslot count, maximum
-> >>>>>>>>>>>> DUN size, and supported key types. Encrypted requests identify a
-> >>>>>>>>>>>> provisioned keyslot and carry a 256-bit DUN. Key management and crypto
-> >>>>>>>>>>>> capability discovery use the block device control virtqueue.
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> The control virtqueue is defined as a generic framework so that its
-> >>>>>>>>>>>> buffer layout and queue placement are independent of any particular
-> >>>>>>>>>>>> control command. Inline encryption then builds on this framework with
-> >>>>>>>>>>>> explicit crypto command formats, capability validation, and keyslot
-> >>>>>>>>>>>> state semantics.
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> All key related operatios are handled in the control virtqueue, and
-> >>>>>>>>>>>> the crypto I/O request is handled in the request queue.
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> For background on inline encryption in UFS and eMMC storage, see:
-> >>>>>>>>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/inline-encryption.rst
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> changes in v3:
-> >>>>>>>>>>>>   - Add a control virtqueue
-> >>>>>>>>>>>>   - Move key program/evict/derive_sw_secret/generate/prepare/import to
-> >>>>>>>>>>>>     the control virtqueue
-> >>>>>>>>>>> Thank you. This was a big change, especially if you already have an
-> >>>>>>>>>>> implementation. I appreciate it!
-> >>>>>>>>>>>
-> >>>>>>>>>>> My main feedback is that the new control virtqueue commands are not yet
-> >>>>>>>>>>> documented in enough detail so that implementors could implement them.
-> >>>>>>>>>>> Once you've decided on the precise semantics, error codes, etc and added
-> >>>>>>>>>>> them to the spec, then this will round off the inline encryption
-> >>>>>>>>>>> feature. I look forward to reviewing that in the future.
-> >>>>>>>>>>>
-> >>>>>>>>>> Thanks a lot for your comment!
-> >>>>>>>>>>
-> >>>>>>>>>> Would you please help clarify what the precise semantics are about? detail
-> >>>>>>>>>> introduction of the filed in the inline encryption control command struct?
-> >>>>>>>>>> like struct virtio_blk_crypto_key_desc?
-> >>>>>>>>> By precise semantics, I mean specifying not just the constants and
-> >>>>>>>>> structs, but documenting what each command does and how it can fail.
-> >>>>>>>>> Each of the key slot programming commands needs this. There should be at
-> >>>>>>>>> least one paragraph for each of VIRTIO_BLK_T_CRYPTO_KEYSLOT_PROGRAM,
-> >>>>>>>>> VIRTIO_BLK_T_CRYPTO_KEYSLOT_EVICT, VIRTIO_BLK_T_CRYPTO_DERIVE_SW_SECRET,
-> >>>>>>>>> VIRTIO_BLK_T_CRYPTO_GENERATE_KEY, VIRTIO_BLK_T_CRYPTO_IMPORT_KEY, or
-> >>>>>>>>> VIRTIO_BLK_T_CRYPTO_PREPARE_KEY.
-> >>>>>>>>>
-> >>>>>>>>> For example:
-> >>>>>>>>>
-> >>>>>>>>> The VIRTIO_BLK_T_CRYPTO_KEYSLOT_EVICT command empties a key slot so that
-> >>>>>>>>> key information is removed and the key slot cannot be used until it is
-> >>>>>>>>> programmed again. The key slot index is specified by struct
-> >>>>>>>>> virtio_blk_crypto_key_desc \field{slot} and all other fields in the
-> >>>>>>>>> struct are ignored. The command succeeds with VIRTIO_BLK_S_OK if the key
-> >>>>>>>>> slot index is valid, including if the slot is already empty. If the key
-> >>>>>>>>> slot index is invalid, the command fails with VIRTIO_BLK_S_IOERR.
-> >>>>>>>>>
-> >>>>>>>>> Stefan
-> >>>>>>>> Thanks for the clear example.
-> >>>>>>>>
-> >>>>>>>> I'll follow the same approach and add explicit normative semantics for
-> >>>>>>>> all inline encryption control requests.
-> >>>>>>> Can you please explain why we need to introduce yet another VQ type for control?
-> >>>>>>>
-> >>>>>>> We've added the Admin VQ as a generic VQ for control operations — I'm not sure why it isn't sufficient.
-> >>>>>>>
-> >>>>>>> Adding control VQ to each device type seems strange to me after adding a generic Admin VQ.
-> >>>>>>
-> >>>>>> Thanks for your comment! And I agree that the Admin VQ should be considered before
-> >>>>>> adding another device-specific control virtqueue.
-> >>>>>>
-> >>>>>> My understanding is that some of the inline encryption commands(get_crypto_modes/program key
-> >>>>>> /derive_sw_secret/evict key) are runtime operations of a specific virtio-blk deivce.
-> >>>>>> In particular, different virtio block devices may have different storage hardware sources
-> >>>>>> of crypto modes, and keyslot programming and eviction are invoked through the block device's
-> >>>>>> keyslot manager, and the programmed virtual keyslots are subsequently referenced by the
-> >>>>>> encryption requests submitted on that device's request virtqueues. These commands are
-> >>>>>> not about the management operation of device group.
-> >>>>>>
-> >>>>>> There is also a transport compatibility concern. The current virtio SPEC states that
-> >>>>>> 'Devices and drivers utilizing Virtio Over MMIO do not support VIRTIO_F_ADMIN_VQ'.
-> >>>>>> virtio MMIO is extensively used, so using the Admin VQ would make the feature unavailable
-> >>>>>> for that transport unless the proposal also extended the MMIO transport.
-> >>>>>>
-> >>>>>> For these reasons, currently I believe that a virtio-blk control virtqueue is the better
-> >>>>>> fit: it keeps the complete key lifecycle associated with the block device and remains
-> >>>>>> usable across the transports required by the feature.
-> >>>>>>
-> >>>>>> I would appreciate any feedback or insights from you and Stefan on the V5 patch series
-> >>>>>> posted for review before October ASAP.
-> >>>>>>
-> >>>>>
-> >>>>> Fundamentally, it does not make sense to force all vqs to be admin VQs.
-> >>>>>
-> >>>>> Admin vq would make sense if there is complex resource management going
-> >>>>> on - like what is happening with all the flow control things in the
-> >>>>> network device, since they have extensive functionality for managing
-> >>>>> device resources.
-> >>>>>
-> >>>>> Random device specific commands - I am not sure we want that.
-> >>>>> It remains to be proven.
-> >>>>>
-> >>>>> But generally why does this go on a special VQ? Is there a reason?
-> >>>>>
-> >>>>> You define distinct request types seemingly and we are not short on types?
-> >>>>>
-> >>>>
-> >>>> Thanks for your comments!
-> >>>>
-> >>>> The key programming operation is initiated while preparing a block I/O
-> >>>> request and sent to the VQ after the block I/O request has entered the
-> >>>> block request queue, before the request is submitted to the device's VQ.
-> >>>> see blk_mq_submit_bio(). Using the same virtqueue for both key-program
-> >>>> command and normal I/O could lead to bio_queue_enter() called 2 times
-> >>>> for the same block queue, which is possible to have deadlock if
-> >>>> blk_mq_freeze_queue() is called between above 2 bio_queue_enter() caller.
-> >>>>
-> >>>> A separate control virtqueue provides an independent execution path for
-> >>>> key programming, key eviction, and related operations. It allows these
-> >>>> operations to be issued even when the normal request virtqueues are full
-> >>>> or unable to make progress. Once the operation completes, the corresponding
-> >>>> request can safely reference the programmed virtual keyslot.
-> >>>>
-> >>>> For such reasons, we believe that a virtio-blk-specific control VQ is a
-> >>>> more appropriate mechanism than the standard VQ.
-> >>>
-> >>> I don't understand. Do these commands go through bio queue?
-> >>> Don't they go to VQ directly, just like you would with the control VQ?
-> >>>
-> >>
-> >> Thanks for your comment! my earlier reply conflated two separate concerns.
-> >> Let me address them precisely based on Linux kernel code.
-> >>
-> >> I agree that block-layer queue entry and virtqueue selection are independent
-> >> issues.
-> >>
-> >> Whether key program commands going through bio queue or not depends on the
-> >> implementation.
-> >>
-> >>   - Option A: Reuse the standard block-request helpers (e.g.,
-> >>     blk_mq_alloc_request() + blk_execute_rq(), the same pattern virtblk_get_id()
-> >>     uses):
-> >>     
-> >>       - blk_mq_submit_bio()
-> >>          -> blk_crypto_submit_bio()   # outer bio_queue_enter() already held
-> >>            -> keyslot manager
-> >>              -> virtblk_crypto_keyslot_program()
-> >>                -> blk_mq_alloc_request()
-> >>                  -> blk_queue_enter()    # deadlock: freeze in progress
-> >>
-> >>     This is not safe at the keyslot-manager call site. Key programming is invoked
-> >>     from inside blk_mq_submit_bio(), at a point where the submitting thread already
-> >>     holds an unreleased reference from an earlier bio_queue_enter() call on the same
-> >>     queue. Calling blk_queue_enter() a second time on the same thread and queue —
-> >>     while a concurrent blk_mq_freeze_queue() is in flight — produces a circular wait:
-> >>     the freezer blocks waiting for all references (including the outer one) to drop to
-> >>     zero, while the submitting thread blocks waiting for the freeze depth to clear.
-> >>     Neither can make progress. The problem is not allocation starvation but queue-entry
-> >>     reentrancy under freeze. 
-> >>
-> >>     This is the deadlock concern I mentioned last time.
-> >>
-> >>   - Option B: Bypass the block layer entirely and raw-submit to a data VQ (i.e.,
-> >>     virtqueue_add_sgs() / virtqueue_kick() directly, just targeting a request VQ instead
-> >>     of the control VQ):
-> >>
-> >>     This would indeed sidestep the blk_queue_enter() reentrancy problem. However, it is
-> >>     not equivalent to simply adding a new request type — it would require changing the
-> >>     data VQ token and completion contract:
-> >>
-> >>     virtblk_done() — the completion callback registered for every data VQ — unconditionally
-> >>     calls blk_mq_rq_from_pdu() and then blk_mq_complete_request() for every buffer it pulls
-> >>     off the ring. It assumes every returned token is a struct virtblk_req embedded in a
-> >>     blk-mq–allocated struct request. A new specific virtblk_crypto_request injected into a
-> >>     data VQ ring is not such an object. The completion path has no way to distinguish it,
-> >>     and treating it as one computes a bogus request pointer and corrupts blk-mq tag state.
-> >>
-> >>     Making this safe would require adding out-of-band type tagging and dispatch logic into
-> >>     the hot I/O completion path, making the data-VQ callback polymorphic in a way that
-> >>     currently has no precedent.
-> >>
-> >>     Furthermore, there is a scope mismatch: data VQs are scoped to individual blk-mq hardware
-> >>     queues (hctx->queue_num), whereas keyslot management is a per-device operation. On a
-> >>     multi-queue device, there is no single canonical data VQ to target. Choosing queue[0]
-> >>     arbitrarily concentrates control traffic, causes contention with that hctx's in-flight
-> >>     I/O and submission lock (vblk->vqs[i].lock), and can be blocked entirely if that ring
-> >>     is saturated.
-> >>
-> >>     In summary, using a data VQ in this way is implementable in principle, but it would require
-> >>     changing the established data-VQ token/completion contract and coupling a device-scoped
-> >>     control operation to an arbitrarily chosen hctx-scoped queue.
-> > 
-> > 
-> > Actually even simpler. Option C: spec allows any mix. Linux practically
-> > can choose a VQ and dedicates it to the key slot management.
-> > It can then submit requests there in any way it wants.
-> > No?
+> Define the control virtqueue location, driver queue discovery,
+> and common control request buffer layout. This provides a
+> standard framework for block-device control commands.
 > 
-> Thanks, this seems a simpler implementation. If I understand correctly, the driver could
-> reserve one of the request VQs exclusively for keyslot-management commands and raw-submit
-> the commands to that VQ.
+> Signed-off-by: linlzhan <linlin.zhang@oss.qualcomm.com>
+> ---
+>  device-types/blk/description.tex | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
 > 
-> But I see a few issues that may need to be defined:
->   1. This approach depends on VIRTIO_BLK_F_MQ to be negotiated and requires the device to expose
->      at least two request virtqueues. It would therefore provide no usable fallback for a
->      single-queue device.
->   2. All negotiated queues are exposed through the existing requestq interface, and the
->     spec provides no standardized way to identify one of them as a dedicate queue. Reserving
->     one request VQ for key management would therefore be a driver/backend convention rather
->     than an explicitly negotiated device interface. This also decreasing the code portability.
+> diff --git a/device-types/blk/description.tex b/device-types/blk/description.tex
+> index 3b3a4e7..9bfdc4a 100644
+> --- a/device-types/blk/description.tex
+> +++ b/device-types/blk/description.tex
+> @@ -13,11 +13,16 @@ \subsection{Virtqueues}\label{sec:Device Types / Block Device / Virtqueues}
+>  \item[0] requestq1
+>  \item[\ldots]
+>  \item[N-1] requestqN
+> +\item[N] controlq, if VIRTIO_BLK_F_CTRL_VQ is negotiated
+>  \end{description}
+>  
+>   N=1 if VIRTIO_BLK_F_MQ is not negotiated, otherwise N is set by
+>   \field{num_queues}.
+>  
+> +If VIRTIO_BLK_F_CTRL_VQ is negotiated, the control virtqueue is appended
+> +after the request virtqueues. The control virtqueue is reserved for control
+> +requests defined by this specification.
+> +
+>  \subsection{Feature bits}\label{sec:Device Types / Block Device / Feature bits}
+>  
+>  \begin{description}
+> @@ -73,6 +78,8 @@ \subsection{Feature bits}\label{sec:Device Types / Block Device / Feature bits}
+>      VIRTIO_BLK_REQ_FLAG_OUT_FUA flag in the \field{flags} bitfield of the
+>      \field{virtio_blk_req} structure for VIRTIO_BLK_T_OUT requests.
+>  
+> +\item[VIRTIO_BLK_F_CTRL_VQ (22)] Device supports a control virtqueue.
+> +
+>  \end{description}
+>  
+>  \subsubsection{Legacy Interface: Feature bits}\label{sec:Device Types / Block Device / Feature bits / Legacy Interface: Feature bits}
+> @@ -274,6 +281,9 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>  \item If the VIRTIO_BLK_F_MQ feature is negotiated, \field{num_queues} field
+>      can be read to determine the number of queues.
+>  
+> +\item If the VIRTIO_BLK_F_CTRL_VQ feature is negotiated, the driver MUST
+> +    identify the control virtqueue as queue N, after all request virtqueues.
+> +
+>  \item If the VIRTIO_BLK_F_SECURE_ERASE feature is negotiated,
+>      \field{max_secure_erase_sectors} and \field{max_secure_erase_seg} can be read
+>      to determine the maximum secure erase sectors and maximum number of
+> @@ -327,6 +337,10 @@ \subsection{Device Initialization}\label{sec:Device Types / Block Device / Devic
+>  The driver MUST NOT negotiate VIRTIO_BLK_F_REQ_FLAGS_OUT_FUA without
+>  VIRTIO_BLK_F_REQ_FLAGS.
+>  
+> +If the VIRTIO_BLK_F_CTRL_VQ feature is negotiated, the driver MUST NOT submit
+> +any request to the control virtqueue unless the request is defined by this
+> +specification.
+> +
+>  \devicenormative{\subsubsection}{Device Initialization}{Device Types / Block Device / Device Initialization}
+>  
+>  Devices SHOULD always offer VIRTIO_BLK_F_FLUSH, and MUST offer it
+> @@ -454,6 +468,11 @@ \subsection{Device Operation}\label{sec:Device Types / Block Device / Device Ope
+>  };
+>  \end{lstlisting}
+>  
+> +Control virtqueue requests consist of a type field in an output buffer,
+> +followed by an optional command-specific output buffer, an optional
+> +command-specific input buffer, and a status byte in an input buffer. The
+> +type field and status byte MUST each be in their own buffer.
+> +
+>  The type of the request is either a read (VIRTIO_BLK_T_IN), a write
+>  (VIRTIO_BLK_T_OUT), a discard (VIRTIO_BLK_T_DISCARD), a write zeroes
+>  (VIRTIO_BLK_T_WRITE_ZEROES), a flush (VIRTIO_BLK_T_FLUSH), a get device ID
 
-I'm a little hesitant about this approach because it makes vq affinity
-hard. Today guest drivers that want good multi-core performance will
-dedicate each vq to a specific CPU. In a virtualization use case there
-might be thread pinning on the host side.
+let the driver control buffering.
+you want the status as 1st byte of input. Then driver can separate
+it in a buffer of its own.
 
-Now if the driver arbitrarily chooses a vq for key slot programming,
-then the host-side pinning may be suboptimal and there is no good way of
-configuring this automatically.
-
-In practice maybe the convention will be that drivers choose the vq with
-the index num_vcpu+1 as the key slot programming vq. But then, have we
-achieved anything other than baking in an assumption (i.e. convention)
-that is not in the spec? Better to document that officially the vq with
-the index num_vcpus+1 is always used for keyslot programming in the
-VIRTIO spec.
-
->   3. The dedicated queue would still use the normal virtio-blk request framing, including
->     struct virtio_blk_outhdr, even though fields such as ioprio and sector have no meaningful
->     semantics for key-management commands. This is workable, but it makes the control protocol
->     inherit data-request framing that it does not naturally need.
-> 
-> If these are acceptable, Option C could avoid adding a new control VQ. But I think the
-> queue-selection and feature-dependency rules would still need to be specified explicitly.
-> 
-> Could you please help comments about these above concerns? Taking this concern into account,
-> I feel a dedicate control queue seems more proper.
-
-I still lean towards the dedicated vq - either the Admin VQ or a
-virtio-blk-specific vq.
-
-> > 
-> > 
-> >> While the separate control virtqueue provides a direct submission path without entering the
-> >> block layer, while also providing a distinct request format, completion callback, lock, and
-> >> descriptor pool. This keeps key-management operations separate from blk-mq request/tag
-> >> and from the per-hardware-queue I/O completion path.
-> >>
-> >> Given the above, I prefer to having a new control VQ. I'm appreciated if you have any
-> >> insights about it. 
-> >>
-> >> In addition, the control VQ is currently used for inline encryption. From the virtio
-> >> specification perspective, should we state that it is currently used only for inline
-> >> encryption, or leave room for future extensions?
-> > 
+> -- 
+> 2.34.1
 > 
 
