@@ -1,109 +1,109 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793442135;
-	b=mDHlIdJTPUwrxLe9b7x7v0XSaGDb+b+WOMlpRPCy2+TFdk0244fQkjFsCJmh2qyZeTJE
-	 N8JqAwREP3G5/yhBmYZR2c7c2PV4DoS7/Io8ZvISU2BO+pUO99c6sYLQlaJWtuD/xRzC7
-	 3kTpxAp/0M0xWMb4xc17akIY1cnec25kwsXZrlcs5gzTlWEARNHkkj6DwRi2wB92o6alA
-	 yViTYFWXi8i/8C986pDtjI/M5NoKa+RYTPgUcF5DAlvZhjFhK8bx4wWm5+Cdd01KhZg9J
-	 JgQgCGEUZGIa5S56tDQyj9uiCbLyDo0qqfDHKODNTNY2KiQiA/+TXVPYMD4X8xx6cGQ==
+	t=1794310474;
+	b=fRSuK63s/5Y5bVHyQQllxFAZlBRahIaSm/Y8N+HhvO7Lukl3nJRlwwxaIjYaS8uNrHp4
+	 r4cOhClOKsMoYn1BtPt+F3JG3iGzhbCH4G4AouBA+hok+lG/hSYFfJspw9fHwmUf6uDfo
+	 NfCKy3ooVgf9OSDgd2FGeENHyGS9aTcDdviVabuaGceJNjd/irv2OH1jkqpYz3SllZ/8D
+	 Q6a1tCLUxCj9ZLVkCTBN5Rvd2Q5SsnTGqvOduc6blVlYFlm5cQW2kyZG2VjKWJed02pvG
+	 03RtYwky/nR93H8rDpiopMDXga4sQ8S4GZlQV1c31pD56DkmTxEjPckjCNj0cItrBHg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793442135;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794310474;
 	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
 	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
 	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
 	 User-Agent:Subject:From:To:Cc:References:Content-Language:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-GUID:
-	 X-Authority-Analysis:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=mW0GLuDQXLrjGX3D1UlYLfrOI5fHNdnqftXi/IKFCGI=;
-	b=FHMybysWi4rBsoqCct5xmoUKokjlQ/Xm1FeurXBPS8+UxKyIuoPKKrnSoJHS0JYlXiYU
-	 ecLvGzM5azW5qDxODJ43/0L44EEF/H3udHeVOfV48s9CX4U2/vONnScLNpEK3qtAMHG8F
-	 oCPJ3bzMgkEu+FUsikQg2X8VK76Ly/wyNGdL0ZkJ5/b6jiCwf1wgzmhKO2q447BdsN3py
-	 37L7yKWFiCmLk93s1wNUxlXokO3x4nflj/GLkoQZUc3FmcHE6cCBDGCffkwt0RD5xhu++
-	 iO6ZpfTUjLIL1WhqLrbFU95vdiHYYi1ineZ33XlnQclp+0/drysSuoyps+d3RqGaI0g==
+	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Spam-Info:X-Authority-Analysis:X-Proofpoint-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=N2RrdInhgyeVJm/IQppXSOIoap28k6YqZ5ZwNk7Uev0=;
+	b=mdZRMx5KGP7BgcLWtYdnii+sLaAnDhW2E9A6QrFqEgFxF0PqJq/AF1Yt7zuOkNtWCFqg
+	 SlQsmbmogNlnzNX4OoybMXcgeUjZgvAmYtYc+qcD+ClrWQKaG4Kg7fdIKQrRi8EvG8edF
+	 uG6dtamqwg7cQKyh6M/Aeyfv/fYnzMV5epYpeFb2b313nYc4OkNGZnOpkp5lqq7F7NaaX
+	 obr9y9TwhOolo8hRMMLeAkQ8a60r9ebQbELrjg6nWoJlv70Tl8Nc2FhkmidEUAQa1BPNQ
+	 AUwlrwrjBzL9+hzemr8cGxjl0BAAQ+A2c1DbcwBy0LH2t67L+i7dpTPLKajOHtfL8gQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=oss.qualcomm.com;
 	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=AhXnsvBA;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=WIBX2WGd;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=flPNPfKS;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=EVlnsZuo;
 	arc=none smtp.remote-ip=205.220.180.131
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16E98606A31A
-	for <virtio-dev@lists.linux.dev>; Sat, 31 Oct 2026 10:22:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 16E98606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA03606A32A
+	for <virtio-dev@lists.linux.dev>; Tue, 10 Nov 2026 11:34:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FA03606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=AhXnsvBA;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=WIBX2WGd
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=flPNPfKS;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=EVlnsZuo
 Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69V4a5tg1175373
-	for <virtio-dev@lists.linux.dev>; Sat, 31 Oct 2026 10:22:14 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AAB9uOh3195889
+	for <virtio-dev@lists.linux.dev>; Tue, 10 Nov 2026 11:34:31 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	mW0GLuDQXLrjGX3D1UlYLfrOI5fHNdnqftXi/IKFCGI=; b=AhXnsvBAxao13mRe
-	K0XVd4t0AVBWjnEOH115GY3jqh1xSgurd+5o4KBi6ucf5hNKtSpOqTSLdN4iHKB1
-	qS6i0pqF63Y0gDxvyFE2q1SMmL/T46JUvn3HY/KAFPkjGPOVNkkbszzUfYEu/gMw
-	SwHlmw4ZFvhfSRya3+7tDh8//uS08daId04j9rNsA4W9NBvcOMacj3tkYsWplIf0
-	QHNzSGhw8U4/DRP+sgB75c3mU+docRfhRkEhj9vFrELXtNazIMDCO/o3UEMWDhlj
-	gwpMJI9dMts3QneN19G8sZgKQiZhKzIGwWcWYPQD+Z13KRvC4ATygBZj3ymPp/ae
-	ra4W5g==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hn5pkh72p-1
+	N2RrdInhgyeVJm/IQppXSOIoap28k6YqZ5ZwNk7Uev0=; b=flPNPfKSadZYFRVO
+	s/KVyk4kMjNYo8SSXus9gGsN1i9m0XhzRhm3/K2RuY3p9Pca3v0EIbNEo6z3Ashi
+	1RkPBStkhnYU9qjWBR5J11d9Kc/HwEqgEsPh08E4icK5XTZdmghWo2VNM4Oa0TCr
+	x1U84YKOPtLDx9heHr1Yjj04gt6Vv7Ct+jFHggq5X9HW48LQGMZvFtFhkyDmwX3R
+	LgmgxO+nx3UMZADlz+JRxRYEdJZTCT1T8BxwwrfV9jrCkg6ck+eHabMyGVL+q8Bx
+	XvY4u17VU/uDfMpGsgH9SgsbvWhjH2dZrKj1FZ4M9Rh4P/QRk39kJ0EElsGDtBYD
+	DnVUjA==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hv03crjse-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <virtio-dev@lists.linux.dev>; Sat, 31 Oct 2026 10:22:13 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-3ada8bc8575so3369071a91.3
-        for <virtio-dev@lists.linux.dev>; Sat, 31 Oct 2026 03:22:13 -0700 (PDT)
+	for <virtio-dev@lists.linux.dev>; Tue, 10 Nov 2026 11:34:31 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-33c35f5ca6cso4013045eec.1
+        for <virtio-dev@lists.linux.dev>; Tue, 10 Nov 2026 03:34:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793442133; x=1794046933; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1794310471; x=1794915271; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:content-language
          :references:cc:to:from:subject:user-agent:mime-version:date
          :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=mW0GLuDQXLrjGX3D1UlYLfrOI5fHNdnqftXi/IKFCGI=;
-        b=WIBX2WGdOwqMT87zpYYMCHzamqH9oDyAGzk3EeE9f83He9KbQL/J39GQIWKFKRBjKq
-         ii2Ocr4lord7d8fP5KXRoF1LCV7oNU5OcDDTV1BHt/Ts/noahj1C6d/HtA9S2hwCdLCU
-         ZLaMWsLRtdDmyuk48zM6N1hxgO3tx+UkE51gGJqcMT9Fkw/1NzqituZupJJLkNlBMy3T
-         kaGgdHd92IQ351SOig2jOXBm/6ULlX7sUtlbxk2kL3ijWNIslgwjNfyFjSKNnl1WUyss
-         mO+tr7UNGDQmXWxNChhYXhneQxJoVkVNTezHaPh1JuexcrEACDg+lhuRN7z+dZ4haP0u
-         /SOA==
+        bh=N2RrdInhgyeVJm/IQppXSOIoap28k6YqZ5ZwNk7Uev0=;
+        b=EVlnsZuoBEAQoi8/HmRy+tqZfnlLQGBEHxNBUddjX8w3mTetBafvi9oVWyUjtL2Zd4
+         uuVg9vSG5JMbrww9B7x43vM+AcGbXsDoANVBoFqIOupqGQ24Zg4En1KOzzryqqC6nhDZ
+         FIqYrL59E9LKwdNPf4+h4MSZnUC+1F8vw25YSmnCNODqLG13QoesdChI4BtvtfEzeBmj
+         hi5VoZnA4qV9RbqIVcBqjgBle65SCLLUpK0ihk9SMxo1uh+iaqd/+TQvVwLky5V8DpiS
+         hV8D/XFseOlKBCitMNhDEvhKEpZ5AfWq1AJzb0waHovXQezmIe4APJ380dgn6LMIqFD+
+         kh9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793442133; x=1794046933;
+        d=1e100.net; s=20260707; t=1794310471; x=1794915271;
         h=content-transfer-encoding:content-type:in-reply-to:content-language
          :references:cc:to:from:subject:user-agent:mime-version:date
          :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=mW0GLuDQXLrjGX3D1UlYLfrOI5fHNdnqftXi/IKFCGI=;
-        b=x3AyNJqkbSInv0HOTt8B0r0wQYlRor/79QQclS9XnT31CaLlZFwCSFxldwNoMCRjWp
-         u2qHvUicbTDzUlcu4Yh+kesgZUDZy5bA+BL6UnuzO5tcgAH+7kAZbydNPFKGEBUedhkc
-         N6Zc16VOgujUeJnrLv3Q8ZmqFwBJYPEiUXci4pcV+bqgPWXBKAA4b832JfxJ6lrVJNGV
-         q7vrm8rbHavrSvubgYXdhaIwBB9FsophGg3Pe2hF/SNFfz0v6hPu0rTh2zpgK6Gst8bc
-         nn45eAR6pHoOb5tz/lc+WvdDQAAa8tiPt0dj7mv7FQNHbg+77GRNBNKMilXLIzgJZbtk
-         Zo3w==
-X-Gm-Message-State: AFq9FYJ2DNycWPwLFSG/yKKc3ftUe6OojJT+6bE/J8wUKtN7oib1/B11
-	rfEUu1ewHa24uwxWK/ZNW5HDAPhuY0vihNW+3zXSJGUGu71DjAGr95mc15snSRUJPHr5uoiPvC/
-	Tamj+jpUzvHlAmQ+a4l3EPezkBZK5MCn+3o4LRHWXQIzmv4BQxv1DbwLzFB54fbJ0
-X-Gm-Gg: AYBFou3OPDY96mctQ5usuy9uBYq0rG0axcnMaTevM+8A5ALoFvIkMsOtvxsAziod6i9
-	LnTxc0axl0TY0ea4Lo2VZI5wMZ4X6cXYPiPWbVIAbaVn0mwUiqIvsjr8FYMJk5Bi5YURyS62WN2
-	G18aGt02HRJ0UCaUYIiY69l68R/Ykd07S9hgnj611hJAg6JKI34DVO4iHnxHnpc1LYqlgeuv8/a
-	qlUeyZ/JsevMmzVKVkowwqLNPYHPkx6zqN4Yf9ku5DfMGXe+B7QbKxgpCKsjy6qHFnh8hUCJ1Ku
-	kArsqEzGyFt7T2fKxc3XEH1ln0+0D0buXjb7MfANLu8+vvwVi4Ibjo5mAUVSOIpUddqKkIdfeNU
-	10/JHi5fzzY0QfGlo1UHFamGcQJ7ewCpF+Lw8yXASMkwZvQ1ic+VVI8fxlmucODoO51OIs/FAjw
-	QOLsw=
-X-Received: by 2002:a17:90b:4b8c:b0:3a8:9d0d:ca50 with SMTP id 98e67ed59e1d1-3ae897c853cmr4257893a91.10.1793442132519;
-        Sat, 31 Oct 2026 03:22:12 -0700 (PDT)
-X-Received: by 2002:a17:90b:4b8c:b0:3a8:9d0d:ca50 with SMTP id 98e67ed59e1d1-3ae897c853cmr4257874a91.10.1793442131883;
-        Sat, 31 Oct 2026 03:22:11 -0700 (PDT)
-Received: from [10.231.241.142] ([114.94.8.21])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae845432e4sm7241145a91.3.2026.10.31.03.22.09
+        bh=N2RrdInhgyeVJm/IQppXSOIoap28k6YqZ5ZwNk7Uev0=;
+        b=2PxlwiQVKMXtiwADe676k/pUSdLyUIr8YAx+FL4rUPhJICpj02175HYHPKNYHaWVdh
+         +XpxRBLDHlW/MXoqrKccs5KxmDqe/cAdjBAsQK9gpkjVbWWhsm7W/6z62ebYUlmM3Qk4
+         Ehix1SMmIqQOkgUigQAeAtAMplvx1YEKtkuqYCpJEmMrD6OtewAUfphUJcEnA4Z1Z/Kk
+         P9ay/EleqzK/N5JVHnmLBEwye4igSvXzae6Dr5nE5edmYj/M5QZj55otRsFYAvtgpVwe
+         cO1hw67lyc2gHrwlbe5uXHukv9utYg/dAa9l3bsvvNi9ZPmY9pJG0yPc+/9kESdc4aO/
+         N9hA==
+X-Gm-Message-State: APuU4Z9nvzOpLw5fpIZoyGRqpx0Ml0FJzU3E0EhseMx58BF51bbkR0Iw
+	R18avuV1lJK7Kk0Kv1arIxM69nk9335QdyFzwhrOtMSW51fdIBw1rotUflW7q6XMTGwy76Nj4mD
+	14J0lhAMjWmIxqlF3WDknlKnSb9oAxtlBynJFpsHw7HWg6Z3HP1ZhEOs7IN8sGgixgj9IZz94
+X-Gm-Gg: AYBFou2nl9moJLOVtvtP01lcP5xOgB9XUo+k+KBm1Gs1XMTfCEC1Z7Nb0Te0sbK7H3C
+	vueJLIZ4W+LslCOI8oEfkDsZE46G7QHh5RjOHsW/YWEnvkToIKUVPRUboBpi9lnQ4zsby6lPcU1
+	lK4ochGpjmEE5TMVaigtI1gtQlHbL6UUSBhBRPRNP1jeNCDBbgd7/e7B5994Jp+aXDg+ZMNkI8C
+	1Qp1ifmNuQK3CTCvR2hn42LDkI7oDJqRHAVXQecGrqi7X1J3MMfUm5cv0KD/04WaE5l9kiyYNwz
+	Rhbea9gQPl6ThQXsX0zJDmsyIdrzMebhq0DhEmieAA9O2WzirZM6NRiwa6Pp/oyxhR42SJra7bm
+	zg9hmsA8guQjVkeC8oD6HeWWlbFsggW8SqknbVWcZBeHG7fy1gR188pue8ei+aUv6/g21+/HjIQ
+	FqNpYnnOVijdk47DxYEflqba7MVIbscN4=
+X-Received: by 2002:a05:7300:e3a7:b0:374:c5cd:42cf with SMTP id 5a478bee46e88-3751fc2fb74mr2662981eec.35.1794310470374;
+        Tue, 10 Nov 2026 03:34:30 -0800 (PST)
+X-Received: by 2002:a05:7300:e3a7:b0:374:c5cd:42cf with SMTP id 5a478bee46e88-3751fc2fb74mr2662949eec.35.1794310469664;
+        Tue, 10 Nov 2026 03:34:29 -0800 (PST)
+Received: from [10.110.17.252] (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3751ad6f11csm5765856eec.0.2026.11.10.03.34.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Oct 2026 03:22:11 -0700 (PDT)
-Message-ID: <8bc63230-0955-4f2c-93a3-b9c76085fd19@oss.qualcomm.com>
-Date: Sat, 31 Oct 2026 18:21:46 +0800
+        Tue, 10 Nov 2026 03:34:29 -0800 (PST)
+Message-ID: <ad33bea1-cd2e-4379-a150-7e7d5976f373@oss.qualcomm.com>
+Date: Tue, 10 Nov 2026 19:34:25 +0800
 X-Mailing-List: virtio-dev@lists.linux.dev
 List-Id: <virtio-dev.lists.linux.dev>
 List-Post: <mailto:virtio-dev@lists.linux.dev>
@@ -114,310 +114,166 @@ List-Owner: <mailto:virtio-dev+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] virtio-blk: Add inline encryption support
+Subject: Re: [PATCH v6 0/4] Add inline encryption support
 From: Linlin Zhang <linlin.zhang@oss.qualcomm.com>
-To: Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Michael S. Tsirkin"
- <mst@redhat.com>, parav@nvidia.com,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtio-dev@lists.linux.dev, ebiggers@kernel.org,
-        neeraj.soni@oss.qualcomm.com
-References: <20260913161628.368484-1-linlin.zhang@oss.qualcomm.com>
- <20260917210841.GD331587@fedora>
- <2f9affb3-0d1b-4469-9a66-ba052d2d1b6a@oss.qualcomm.com>
- <20260922131442.GB18339@fedora>
- <3a933df3-dff7-4ef3-a120-4c6e22c1fcc1@oss.qualcomm.com>
- <de535820-591b-40f2-b840-d987c3253765@nvidia.com>
- <9515779b-a6da-407f-99f2-011e51683d15@oss.qualcomm.com>
- <20261008060644-mutt-send-email-mst@kernel.org>
- <d503aee0-9920-4c0b-b9a0-c08e505cc3ea@nvidia.com>
- <426abc9a-c7b4-4631-a5fe-3b2bba1d0414@oss.qualcomm.com>
- <4ed90e46-0dc9-40ba-b8a9-800d40b34ef9@nvidia.com>
- <01f3caa9-a1c3-4511-a104-7179ce1791f8@oss.qualcomm.com>
- <0b6fa40c-5a79-4047-9c20-d5c83dc7ee6c@nvidia.com>
- <a78eab07-9192-4725-905e-6f38d7fbac85@oss.qualcomm.com>
- <81464321-5371-433b-9373-10818b7dc014@nvidia.com>
- <8537dffb-0cb5-41a3-980c-7970ab1bc927@oss.qualcomm.com>
+To: virtio-dev@lists.linux.dev, virtio-comment@lists.linux.dev,
+        stefanha@redhat.com, mst@redhat.com, mgurtovoy@nvidia.com,
+        parav@nvidia.com, ebiggers@kernel.org
+Cc: neeraj.soni@oss.qualcomm.com
+References: <20261027090945.185178-1-linlin.zhang@oss.qualcomm.com>
 Content-Language: en-US
-In-Reply-To: <8537dffb-0cb5-41a3-980c-7970ab1bc927@oss.qualcomm.com>
+In-Reply-To: <20261027090945.185178-1-linlin.zhang@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: XlpUMI_qmdmrzTvSehN0oayuIZ1-Skbe
-X-Authority-Analysis: v=2.4 cv=Z4F5j3RA c=1 sm=1 tr=0 ts=6ae5c155 cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=Uz3yg00KUFJ2y2WijEJ4bw==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: U89wi0A-QyUdAo99c6IZYoDvlfkeMXzh
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEwMDA0NSBTYWx0ZWRfX8u+m3tQlubII
+ L7vChjwKbBXQizeHE7qmZqzk1lWAbLpvCmoXggn56+9kGx30H/TL2nBh6J4kRJKaPqQS+7e6EEw
+ 4C82grjdRoQ1nHw/EZu1yOWM7bqfKH0=
+X-Authority-Analysis: v=2.4 cv=FuiQbGrq c=1 sm=1 tr=0 ts=6af30147 cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
  a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
- a=VwQbUJbxAAAA:8 a=Ikd4Dj_1AAAA:8 a=EUspDBNiAAAA:8 a=OaAf0AF_JBTyiOL3-b4A:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=uKXjsCUrEbL0IQVhDsJ9:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMxMDA0MSBTYWx0ZWRfX+204DXM/2fgc
- 7J3+AQGMPfcLc+vBemBwwbVK0+/nhcTaiIlo6jzrfSHRSUAcIaTwf4evd8EnuchHQ36PO+74A2x
- F0QyUgLgDCpbyJpAO1hYRwzSjMAjva8=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMxMDA0MSBTYWx0ZWRfX+XDWf/T4EJWB
- ru5/ANJ9vtvFRCOXh6445KChpcndIRcFoizIYo5Y/nlWCKOkDd1cwaBDXcWNgp552kGbxsOzwPw
- hDa5OjVYhxzI1J9FN8wMzXnjnNKwX13t0G4Kqso5Ac2HvXs+8huq9gra0XbCL3vJZ/xWpJlN4x7
- 2r/2hzsrxkKVTvEMlGgsXWHhEHgSkhkWo5Trm/QzGUTGx8ADUu+0R8Jb8fBA0Qspqg+T/gcAKea
- U/PH9hxYyy7ZRLztKaH+k8Trb0wBbRiTgspOBEriUEDLovk7C4vUdueuMEk8cf10Mk3hylwuc/j
- CWthbLx7Xjo64hZInlC7VojCibIrrXCdxpqQv+SplJSquHE5ZwTcZ6vBpUFfyCbyTcskhb5UocO
- kyJS4WuFMoLYTh5O5P1R/ATMb/P1kB7hcY3paccO4DOfrqeYOCIER7Y10/9ckeq8J1rcEjWOly7
- kykd45RMiWD6lSD3Q7w==
-X-Proofpoint-ORIG-GUID: XlpUMI_qmdmrzTvSehN0oayuIZ1-Skbe
+ a=VwQbUJbxAAAA:8 a=Ikd4Dj_1AAAA:8 a=AnHlLwozOnVvmI4e6GkA:9 a=QEXdDO2ut3YA:10
+ a=scEy_gLbYbu1JhEsrz4S:22
+X-Proofpoint-GUID: U89wi0A-QyUdAo99c6IZYoDvlfkeMXzh
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEwMDA0NSBTYWx0ZWRfX6/M/lPK8ywsN
+ fNtWk23bM5NHHrwPMpgV2VIRz8i2vebTzebHMqmZL9IK7ovY/MR461eiV+TnCkHLxxSCf37hfU3
+ kml7IOI1K4Q0LHbC2T4gv+EmhXuYNbpoximUkj60z1miYvTHSnzmzKNHLF5L0c/ScJelksdwR6r
+ KOUuiTmBuo/68v3JDOdTv4yhKjyU8K687iuubqYUprLku2EVWVUkrnw+673V08uA/rLbFmYTjMd
+ PDQT+Nbo04DeAwE02BpmvwfunjK9ATnuJOu1f8oVRehjYC7DsjaQF8x6TRtifeYR5WsL8MWxAAn
+ JPgrUl/2Ca3QL1Ki5XpFbJ0mixOHy89cxU8O8zupWlqooyNwfkMoJIrkAR64ZBcI6PhOaomO9U8
+ 2/HMD3md/qqTdJct2fes7JV3ytqpxsqwG6uGlDnAHasxiwPD8o3NGs+7Gt/SPMygHyFgzGriDrF
+ JJFqgHOwK2aL3Arw5Tg==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-31_02,2026-10-21_02,2025-10-01_01
+ definitions=2026-11-10_04,2026-11-06_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 clxscore=1015 priorityscore=1501 lowpriorityscore=0
- phishscore=0 impostorscore=0 adultscore=0 spamscore=0 bulkscore=0
- malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610300000
- definitions=main-2610310041
+ impostorscore=0 bulkscore=0 adultscore=0 malwarescore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 phishscore=0 suspectscore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
+ definitions=main-2611100045
 
+Hi all,
 
+Gentle ping on this proposal.
 
-On 10/20/2026 11:22 AM, Linlin Zhang wrote:
+Following the previous feedback on patch 3, I have updated the inline encryption key management interface to use the Admin VQ instead of a dedicated virtio-blk VQ.
+
+Any further review comments or feedback on the proposed specification changes would be greatly appreciated.
+
+Thanks,
+Linlin
+
+On 10/27/2026 5:09 PM, Linlin Zhang wrote:
+> This series adds inline encryption support to virtio-blk, for devices
+> backed by storage with an inline crypto engine, such as UFS or eMMC.
 > 
+> The device reports its capabilities in the configuration space: the
+> number of keyslots, the maximum Data Unit Number (DUN) size and the
+> supported key types (raw and hardware-wrapped). Keys are managed, and
+> the supported crypto modes are discovered, with group administration
+> commands of the Self group type, so the feature depends on
+> VIRTIO_F_ADMIN_VQ. Encrypted reads and writes are still submitted on
+> the request virtqueues; each of them identifies a programmed keyslot
+> and carries a 256-bit DUN.
 > 
-> On 10/19/2026 8:36 PM, Max Gurtovoy wrote:
->>
->> On 19/10/2026 12:24, Linlin Zhang wrote:
->>>
->>> On 10/15/2026 8:01 PM, Max Gurtovoy wrote:
->>>> On 15/10/2026 14:19, Linlin Zhang wrote:
->>>>> On 10/14/2026 2:07 AM, Max Gurtovoy wrote:
->>>>>> On 13/10/2026 19:23, Linlin Zhang wrote:
->>>>>>> On 10/13/2026 7:12 AM, Max Gurtovoy wrote:
->>>>>>>> On 08/10/2026 13:15, Michael S. Tsirkin wrote:
->>>>>>>>> On Thu, Oct 08, 2026 at 05:17:30PM +0800, Linlin Zhang wrote:
->>>>>>>>>> On 9/30/2026 6:46 AM, Max Gurtovoy wrote:
->>>>>>>>>>> On 24/09/2026 12:35, Linlin Zhang wrote:
->>>>>>>>>>>> On 9/22/2026 9:14 PM, Stefan Hajnoczi wrote:
->>>>>>>>>>>>> On Tue, Sep 22, 2026 at 12:29:37PM +0800, Linlin Zhang wrote:
->>>>>>>>>>>>>> On 9/18/2026 5:08 AM, Stefan Hajnoczi wrote:
->>>>>>>>>>>>>>> On Sun, Sep 13, 2026 at 09:16:13AM -0700, Linlin Zhang wrote:
->>>>>>>>>>>>>>>> From: linlzhan <linlin.zhang@oss.qualcomm.com>
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> This series adds virtio-blk inline encryption support for devices backed
->>>>>>>>>>>>>>>> by storage hardware with an inline crypto engine.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> The protocol exposes device capabilities such as keyslot count, maximum
->>>>>>>>>>>>>>>> DUN size, and supported key types. Encrypted requests identify a
->>>>>>>>>>>>>>>> provisioned keyslot and carry a 256-bit DUN. Key management and crypto
->>>>>>>>>>>>>>>> capability discovery use the block device control virtqueue.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> The control virtqueue is defined as a generic framework so that its
->>>>>>>>>>>>>>>> buffer layout and queue placement are independent of any particular
->>>>>>>>>>>>>>>> control command. Inline encryption then builds on this framework with
->>>>>>>>>>>>>>>> explicit crypto command formats, capability validation, and keyslot
->>>>>>>>>>>>>>>> state semantics.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> All key related operatios are handled in the control virtqueue, and
->>>>>>>>>>>>>>>> the crypto I/O request is handled in the request queue.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> For background on inline encryption in UFS and eMMC storage, see:
->>>>>>>>>>>>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/inline-encryption.rst
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> changes in v3:
->>>>>>>>>>>>>>>>      - Add a control virtqueue
->>>>>>>>>>>>>>>>      - Move key program/evict/derive_sw_secret/generate/prepare/import to
->>>>>>>>>>>>>>>>        the control virtqueue
->>>>>>>>>>>>>>> Thank you. This was a big change, especially if you already have an
->>>>>>>>>>>>>>> implementation. I appreciate it!
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> My main feedback is that the new control virtqueue commands are not yet
->>>>>>>>>>>>>>> documented in enough detail so that implementors could implement them.
->>>>>>>>>>>>>>> Once you've decided on the precise semantics, error codes, etc and added
->>>>>>>>>>>>>>> them to the spec, then this will round off the inline encryption
->>>>>>>>>>>>>>> feature. I look forward to reviewing that in the future.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>> Thanks a lot for your comment!
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Would you please help clarify what the precise semantics are about? detail
->>>>>>>>>>>>>> introduction of the filed in the inline encryption control command struct?
->>>>>>>>>>>>>> like struct virtio_blk_crypto_key_desc?
->>>>>>>>>>>>> By precise semantics, I mean specifying not just the constants and
->>>>>>>>>>>>> structs, but documenting what each command does and how it can fail.
->>>>>>>>>>>>> Each of the key slot programming commands needs this. There should be at
->>>>>>>>>>>>> least one paragraph for each of VIRTIO_BLK_T_CRYPTO_KEYSLOT_PROGRAM,
->>>>>>>>>>>>> VIRTIO_BLK_T_CRYPTO_KEYSLOT_EVICT, VIRTIO_BLK_T_CRYPTO_DERIVE_SW_SECRET,
->>>>>>>>>>>>> VIRTIO_BLK_T_CRYPTO_GENERATE_KEY, VIRTIO_BLK_T_CRYPTO_IMPORT_KEY, or
->>>>>>>>>>>>> VIRTIO_BLK_T_CRYPTO_PREPARE_KEY.
->>>>>>>>>>>>>
->>>>>>>>>>>>> For example:
->>>>>>>>>>>>>
->>>>>>>>>>>>> The VIRTIO_BLK_T_CRYPTO_KEYSLOT_EVICT command empties a key slot so that
->>>>>>>>>>>>> key information is removed and the key slot cannot be used until it is
->>>>>>>>>>>>> programmed again. The key slot index is specified by struct
->>>>>>>>>>>>> virtio_blk_crypto_key_desc \field{slot} and all other fields in the
->>>>>>>>>>>>> struct are ignored. The command succeeds with VIRTIO_BLK_S_OK if the key
->>>>>>>>>>>>> slot index is valid, including if the slot is already empty. If the key
->>>>>>>>>>>>> slot index is invalid, the command fails with VIRTIO_BLK_S_IOERR.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Stefan
->>>>>>>>>>>> Thanks for the clear example.
->>>>>>>>>>>>
->>>>>>>>>>>> I'll follow the same approach and add explicit normative semantics for
->>>>>>>>>>>> all inline encryption control requests.
->>>>>>>>>>> Can you please explain why we need to introduce yet another VQ type for control?
->>>>>>>>>>>
->>>>>>>>>>> We've added the Admin VQ as a generic VQ for control operations — I'm not sure why it isn't sufficient.
->>>>>>>>>>>
->>>>>>>>>>> Adding control VQ to each device type seems strange to me after adding a generic Admin VQ.
->>>>>>>>>> Thanks for your comment! And I agree that the Admin VQ should be considered before
->>>>>>>>>> adding another device-specific control virtqueue.
->>>>>>>>>>
->>>>>>>>>> My understanding is that some of the inline encryption commands(get_crypto_modes/program key
->>>>>>>>>> /derive_sw_secret/evict key) are runtime operations of a specific virtio-blk deivce.
->>>>>>>>>> In particular, different virtio block devices may have different storage hardware sources
->>>>>>>>>> of crypto modes, and keyslot programming and eviction are invoked through the block device's
->>>>>>>>>> keyslot manager, and the programmed virtual keyslots are subsequently referenced by the
->>>>>>>>>> encryption requests submitted on that device's request virtqueues. These commands are
->>>>>>>>>> not about the management operation of device group.
->>>>>>>>>>
->>>>>>>>>> There is also a transport compatibility concern. The current virtio SPEC states that
->>>>>>>>>> 'Devices and drivers utilizing Virtio Over MMIO do not support VIRTIO_F_ADMIN_VQ'.
->>>>>>>>>> virtio MMIO is extensively used, so using the Admin VQ would make the feature unavailable
->>>>>>>>>> for that transport unless the proposal also extended the MMIO transport.
->>>>>>>>>>
->>>>>>>>>> For these reasons, currently I believe that a virtio-blk control virtqueue is the better
->>>>>>>>>> fit: it keeps the complete key lifecycle associated with the block device and remains
->>>>>>>>>> usable across the transports required by the feature.
->>>>>>>>>>
->>>>>>>>>> I would appreciate any feedback or insights from you and Stefan on the V5 patch series
->>>>>>>>>> posted for review before October ASAP.
->>>>>>>>>>
->>>>>>>>> Fundamentally, it does not make sense to force all vqs to be admin VQs.
->>>>>>>>>
->>>>>>>>> Admin vq would make sense if there is complex resource management going
->>>>>>>>> on - like what is happening with all the flow control things in the
->>>>>>>>> network device, since they have extensive functionality for managing
->>>>>>>>> device resources.
->>>>>>>>>
->>>>>>>>> Random device specific commands - I am not sure we want that.
->>>>>>>>> It remains to be proven.
->>>>>>>> Admin vq was added for mgmt/control/admin/non-DATA_IO operations.
->>>>>>>>
->>>>>>>> Fundamentally, it does not make sense to force random device to create new control VQ since we already defined admin VQs for this purpose.
->>>>>>>>
->>>>>>>> We could have introduced control VQ on each device type, but we didn't.
->>>>>>> Thanks for your comment!
->>>>>>>
->>>>>>> My concern is that these inline encryption commands are tightly coupled
->>>>>>> to a specific virtio-blk device rather than providing generic administrative
->>>>>>> functionality.
->>>>>> We've all the needed plumbing in place in the AQ for device specific admin commands - see virtio-net specific admin commands.
->>>>>>
->>>>>>> GET_CRYPTO_MODES exposes capabilities of a particular block device, while
->>>>>>> PROGRAM_KEY and EVICT_KEY operate on that device's keyslot manager. The
->>>>>>> resulting virtual keyslots are then referenced directly by encryption requests
->>>>>>> submitted on the same device's request VQs. The entire key lifecycle therefore
->>>>>>> remains local to a single virtio-blk instance and its I/O path.
->>>>>>>
->>>>>>> My understanding is that Admin VQ was introduced primarily for device agnostic
->>>>>>> commands. The GET_CRYPTO_MODES/PROGRAM_KEY/EVICT_KEY control commands appear to
->>>>>>> be inherently virtio-blk-specific rather than a cross-device interface.
->>>>>>>
->>>>>>> There is also a transport consideration: VIRTIO_F_ADMIN_VQ is currently
->>>>>>> unavailable for virtio-mmio, while the proposed control VQ approach remains
->>>>>>> transport-independent.
->>>>>> This limitation was introduced because we didn't want to add more noise when AQ was added (it was already a big change).
->>>>>>
->>>>>> Nothing really prevents adding AQ to mmio transport.
->>>>>>
->>>>>>> For these reasons, I currently believe a virtio-blk control VQ is the better
->>>>>>> fit.
->>>>>>>
->>>>>>> I'm appreciated if you can give any feedback about it.
->>>>>> I think that the correct path is AQ.
->>>>>>
->>>>>> Introducing another VQ type for the same purpose (mgmt cmds) seems weird and make device implementation harder.
->>>>>>
->>>>>> It is much harder to implement a new VQ type than a new opcode in the existing AQ.
->>>>>>
->>>>> Thanks for your comments!
->>>>>
->>>>> I agree that reusing the existing AQ avoids introducing another VQ type in virtio-blk.
->>>> I'm glad that we're aligned on this one.
->>>>
->>>>> My concern is that AQ is currently not supported with virtio-mmio, and adding such
->>>>> support appears to be significantly more involved than introducing a
->>>>> virtio-blk-specific control VQ.
->>>> I don't think that this is a good enough reason for introducing a new VQ type in Vblk.
->>>>
->>>> We need the best spec definition, one that will serve us for years to come, rather than worrying about 1-2 weeks of additional effort (to a task which is completely orthogonal for adding enc to vblk, IMO).
->>> Thanks for the clarification.
->>>
->>> I still have one concern about using the Admin VQ here. Since the inline encryption
->>> commands are specific to a particular virtio-blk device, how does the host
->>> determine which virtio-blk device an Admin VQ command applies to?
->>
->> Not sure what do you mean.
->>
->> An admin virtqueue belongs to one virtio device (the owner), and every admin command carries
->> a group_type and a group_member_id. The spec defines a Self group (group_type 0x0, member id 0x0)
->> that contains the owner device itself and no other device.
+> Patch summary:
+> 1. Add the feature bit and the configuration fields
+> 2. Add the administration commands to manage the keys and to query the
+>    supported crypto modes
+> 3. Add the encrypted request types
+> 4. Describe what inline encryption does and does not protect against,
+>    in particular for confidential guests
 > 
-> Thanks for the clarification. I misunderstood this earlier.
+> This series is independent of, but is intended to be used together
+> with, the series adding administration virtqueue support to the MMIO
+> transport:
+> https://lore.kernel.org/all/20261017114556.1701355-1-parav@nvidia.com/
 > 
->>
->>
->>>
->>> I couldn't find a host-side Admin VQ implementation, even for virtio-pci. Could you
->>> please point me to an existing implementation or example for reference?
->>
->> there are examples in Linux for AQ usage for LM and vNET special configs.
-> Thanks. I was specifically looking for a device-side/host-side implementation that
-> processes Admin VQ commands, e.g. in QEMU or crosvm, rather than the Linux driver-side
-> Admin VQ implementation. Is there an existing backend implementation that I could use
-> as a reference?
+> For background on inline encryption, see:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/block/inline-encryption.rst
 > 
->>
->>>
->>>> The high level spec enhancements I envision are:
->>>>
->>>>    * Allow ADMIN_VQ on MMIO - Remove VIRTIO_F_ADMIN_VQ from the “reserved” MMIO list. Update the feature-bit text to align.
->>>>    * Add two read-only registers to the MMIO register table, mirroring PCI’s admin_queue_index and admin_queue_num. They are valid only when ADMIN_VQ is negotiated. My suggested offsets are 0x0c4 and 0x0c8, which appear unassigned in my version.
->>>>    * Reuse the existing queue flow. PCI’s rule refers to num_queues, which MMIO lacks. So either reword it as “admin index is above every regular queue index and index plus count stays within 0x10000”, or add a NumQueues register.
->>>>    * State the Self-group scope - An MMIO owner device supports only group type 0x0. Other group types fail with INVALID_GROUP, following the existing validation rule.
->>>>
->>>>
->>>>> Given this constraint, Admin VQ support in virtio MMIO will impact the inline
->>>>> encryption support on virtio block, so, I prefer to the virtio-blk-specific
->>>>> control VQ as this requirement is a more widely and general request, especially
->>>>> in the virtualization platform with a Android guest virtual machine.
->>>> This is not a constraint worth considering a non-optimal architecture.
->>>>
->>>> Creation of VQs takes device resources. We prefer not introducing new VQs if not needed. Adding a new opcode is more reasonable for your requirement.
->>>>
->>>> Imagine a block device with N resources for VQs: N-1 for request VQ and 1 for Admin VQ. If we need to introduce a new CVQ then it will be instead of one request VQ resource.
->>> I agree that the new CVQ would take the place of one request VQ. For a virtio-blk
->>> device with N VQs, this would leave N-2 request VQs, with one CVQ and one Admin VQ.
->>>
->>> I agree this is not ideal. However, if there is no way to handle these
->>> block-device-specific commands through the Admin VQ, a dedicated CVQ seems necessary.
->>
->> Anything you can do with the CVQ, you can also do with the AQ.
-
-Thanks for your comments!
-
-Refer to the virtio spec update of Admin VQ support for virtio mmio (see
-https://lore.kernel.org/all/20261017114556.1701355-1-parav@nvidia.com/), I added the
-Admin VQ support for virtio mmio and update the dedicated control VQ in virtio block
-to Admin VQ. The E2E validation of inline encryption in virtio block pass. 
-
-The updated virtio spec for virtio_blk inline encryption can be found in
-https://lore.kernel.org/all/20261027090945.185178-1-linlin.zhang@oss.qualcomm.com/
-
-Would you please help review it again?
-
->>
->>>
->>>> I prefer having a correct architecture.
->>>>
->>>>
->>>>>>>>> But generally why does this go on a special VQ? Is there a reason?
->>>>>>>> Also in other related protocols the key mgmt goes throw a NON-IO Queue..
->>>>>>>>
->>>>>>>>
->>>>>>>>> You define distinct request types seemingly and we are not short on types?
->>>>>>>>>
+> The new administration command opcodes are allocated from 0x0013, not
+> from 0x0012: the group administration commands table in the current
+> specification lists 0x0013 - 0x7FFF as the range of commands using
+> struct virtio_admin_cmd, so the new commands start at the first opcode
+> of that range.
+> 
+> changes in v6:
+>  - Remove the dedicated control virtqueue and VIRTIO_BLK_F_CTRL_VQ; use
+>    group administration commands of the Self group type on the
+>    administration virtqueue instead, with opcodes 0x0013 - 0x0019
+>  - Change feature bit VIRTIO_BLK_F_INLINE_ENCRYPTION to 20
+>  - Require VIRTIO_F_ADMIN_VQ to be offered with
+>    VIRTIO_BLK_F_INLINE_ENCRYPTION
+>  - Never offer VIRTIO_BLK_F_INLINE_ENCRYPTION together with
+>    VIRTIO_BLK_F_ZONED, as the zoned write constraints do not guarantee
+>    that I/O addresses are aligned to the encryption data unit size
+>  - Widen max_slots to 32 bits, matching the 32-bit slot fields
+>  - Only report the commands in VIRTIO_ADMIN_CMD_LIST_QUERY if the
+>    device offers VIRTIO_BLK_F_INLINE_ENCRYPTION, and the
+>    hardware-wrapped key commands only if the device supports
+>    hardware-wrapped keys; fail VIRTIO_ADMIN_CMD_LIST_USE enabling them
+>    if the feature has not been negotiated
+>  - Define the long-term and ephemerally-wrapped forms of
+>    hardware-wrapped keys, and which form each command takes and returns
+>  - Do not program or evict a keyslot while requests using it are
+>    outstanding
+>  - Change struct virtio_blk_crypto_key_desc and struct
+>    virtio_blk_crypto_key_blob to use variable-length arrays; the key
+>    length is given by key_size, and buffer lengths follow the generic
+>    administration command rules, except that a command fails if a key
+>    would be truncated. Remove VIRTIO_BLK_CRYPTO_MAX_KEY_SIZE
+>  - Empty all keyslots on device reset, and fail requests using an empty
+>    keyslot with VIRTIO_BLK_S_IOERR
+>  - Report a failed GENERATE_KEY with any status other than
+>    VIRTIO_ADMIN_STATUS_OK; require a successful DERIVE_SW_SECRET to
+>    return the whole software secret; KEYSLOT_EVICT ignores all fields
+>    other than slot
+>  - Add a 'Security Considerations' subsection
+>  - Split the series into four patches
+> 
+> changes in v5:
+>  - Change feature bit value of VIRTIO_BLK_F_CTRL_VQ and
+>    VIRTIO_BLK_F_INLINE_ENCRYPTION to 20 and 21 respectively
+> 
+> changes in v4:
+>  - Add a control virtqueue specific subsection for virtio block
+>  - Move all control virtqueue request related to this new subsection
+>  - Add the precise semantics, error codes, etc for the new control
+>    virtqueue commands
+>  - Move 'MUST' to the normative section
+>  - Use c struct to describe control virtqueue request
+> 
+> changes in v3:
+>  - Add a control virtqueue
+>  - Move key program/evict/derive_sw_secret/generate/prepare/import to
+>    the control virtqueue
+>  - Add the driver and device requirements for the request in the control
+>    virtqueue
+>  - Extend DUN in crypto message to a fixed four-element array of 64-bit
+>    fields
+> 
+> changes in v2:
+>  - Remove virtualization-specific terminology
+>  - Move MUST sentence to the device/driver normative section
+>  - Add explicit rejection for CRYPTO request if IE feature bit
+>    isn't negotiated
+>  - Modify the support list of crypto modes and the definition of
+>    the size of the crypto modes buffer
+> ---
+> 
+> Linlin Zhang (4):
+>   virtio-blk: Add inline encryption feature bit and configuration
+>   virtio-blk: Add inline encryption administration commands
+>   virtio-blk: Add inline encryption request types
+>   virtio-blk: Add inline encryption security considerations
+> 
+>  admin.tex                               |  16 +-
+>  device-types/blk/description.tex        | 827 +++++++++++++++++++++++-
+>  device-types/blk/device-conformance.tex |   1 +
+>  device-types/blk/driver-conformance.tex |   1 +
+>  4 files changed, 835 insertions(+), 10 deletions(-)
 > 
 
